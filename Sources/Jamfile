@@ -1,0 +1,18 @@
+SubDir TOP Sources ;
+
+UsePrivateHeaders interface storage ;
+
+SubDirSysHdrs $(SUBDIR) ;
+SubDirHdrs [ FDirName $(SUBDIR) canna ] ;
+
+
+AddOn canna : 
+	CannaInterface.cpp
+	CannaLooper.cpp
+	CannaMethod.cpp
+	KouhoWindow.cpp
+	PaletteWindow.cpp
+	: be textencoding /boot/system/servers/input_server libcanna.a librk.a $(STDC++LIB) ;
+
+SubInclude TOP Sources lib ;
+SubInclude TOP Sources rk ;
