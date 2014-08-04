@@ -21,79 +21,83 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: mode.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: mode.c,v 1.2 2003/01/10 13:08:45 aida_s Exp $";
 #endif /* lint */
 
 #include "canna.h"
 #include <canna/mfdef.h>
 
-extern struct RkRxDic *romajidic, *englishdic;
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
 
 extern int howToReturnModeInfo;
-static WCHAR_T numMode[2];
-static WCHAR_T *bad = (WCHAR_T *)0;
+static wchar_t numMode[2];
+static wchar_t *bad = (wchar_t *)0;
 struct ModeNameRecs ModeNames[CANNA_MODE_MAX_IMAGINARY_MODE];
 
 static
 char *
 _sModeNames[CANNA_MODE_MAX_IMAGINARY_MODE] = {
   "      ",		          /* AlphaMode */
-  "[ \244\242 ]",	/* ¤¢ */  /* EmptyMode */ 
-  "[\265\255\271\346]",	/* µ­¹æ *//* KigoMode */
-  "[\244\350\244\337]",	/* ¤è¤ß *//* YomiMode (¥â¡¼¥ÉÊ¸»úÎóÉ½¼¨¤Ë¤Ï»È¤ï¤Ê¤¤) */
-  "[\273\372\274\357]",	/* »ú¼ï *//* JishuMode */
-  "[\264\301\273\372]",	/* ´Á»ú *//* TanKouhoMode */
-  "[\260\354\315\367]",	/* °ìÍ÷ *//* IchiranMode */
-  "[\274\301\314\344]",	/* ¼ÁÌä *//* YesNoMode */
+  "[ \244\242 ]",	/* あ */  /* EmptyMode */ 
+  "[\265\255\271\346]",	/* 記号 *//* KigoMode */
+  "[\244\350\244\337]",	/* よみ *//* YomiMode (モード文字列表示には使わない) */
+  "[\273\372\274\357]",	/* 字種 *//* JishuMode */
+  "[\264\301\273\372]",	/* 漢字 *//* TanKouhoMode */
+  "[\260\354\315\367]",	/* 一覧 *//* IchiranMode */
+  "[\274\301\314\344]",	/* 質問 *//* YesNoMode */
   NULL,	                          /* OnOffMode */
-  "[\312\270\300\341]", /* Ê¸Àá *//* AdjustBunsetsuMode */
-  "[\303\340\274\241]",	/* Ãà¼¡ *//* ChikujiYomiMode    Ãà¼¡¤Î»þ¤ÎÆÉ¤ßÉôÊ¬ */
-  "[\303\340\274\241]",	/* Ãà¼¡ *//* ChikujiHenkanMode  Ãà¼¡¤Î»þ¤ÎÊÑ´¹¤ÎÉôÊ¬ */
+  "[\312\270\300\341]", /* 文節 *//* AdjustBunsetsuMode */
+  "[\303\340\274\241]",	/* 逐次 *//* ChikujiYomiMode    逐次の時の読み部分 */
+  "[\303\340\274\241]",	/* 逐次 *//* ChikujiHenkanMode  逐次の時の変換の部分 */
 
   /* Imaginary Mode */
 
-  "[ \224\242 ]",	/* ¤¢ */  /* HenkanNyuryokuMode */
-  "[\301\264\244\242]",	/* Á´¤¢ *//* ZenHiraHenkanMode */
-  "[\310\276\244\242]",	/* È¾¤¢ *//* HanHiraHenkanMode */
-  "[\301\264\245\242]",	/* Á´¥¢ *//* ZenKataHenkanMode */
-  "[\310\276\245\242]",	/* È¾¥¢ *//* HanKataHenkanMode */
-  "[\301\264\261\321]",	/* Á´±Ñ *//* ZenAlphaHenkanMode */
-  "[\310\276\261\321]",	/* È¾±Ñ *//* HanAlphaHenkanMode */
-  "<\301\264\244\242>",	/* Á´¤¢ *//* ZenHiraKakuteiMode */
-  "<\310\276\244\242>",	/* È¾¤¢ *//* HanHiraKakuteiMode */
-  "<\301\264\245\242>",	/* Á´¥¢ *//* ZenKataKakuteiMode */
-  "<\310\276\245\242>",	/* È¾¥¢ *//* HanKataKakuteiMode */
-  "<\301\264\261\321>",	/* Á´±Ñ *//* ZenAlphaKakuteiMode */
-  "<\310\276\261\321>",	/* È¾±Ñ *//* HanAlphaKakuteiMode */
-  "[16\277\312]",	/* 16¿Ê *//* HexMode */
-  "[\311\364\274\363]",	/* Éô¼ó *//* BushuMode */
-  "[\263\310\304\245]",	/* ³ÈÄ¥ *//* ExtendMode */
-  "[ \245\355 ]",	/* ¥í */  /* RussianMode */
-  "[ \245\256 ]",	/* ¥® */  /* GreekMode */
-  "[\267\323\300\376]",	/* ·ÓÀþ *//* LineMode */
-  "[\312\321\271\271]",	/* ÊÑ¹¹ *//* ChangingServerMode */
-  "[\312\321\264\271]",	/* ÊÑ´¹ *//* HenkanMethodMode */
-  "[\272\357\275\374]",	/* ºï½ü *//* DeleteDicMode */
-  "[\305\320\317\277]",	/* ÅÐÏ¿ *//* TourokuMode */
-  "[\311\312\273\354]",	/* ÉÊ»ì *//* TourokuHinshiMode */
-  "[\274\255\275\361]",	/* ¼­½ñ *//* TourokuDicMode */
-  "[ \243\361 ]",	/* £ñ */  /* QuotedInsertMode */
-  "[\312\324\275\270]",	/* ÊÔ½¸ *//* BubunMuhenkanMode */
-  "[\274\255\275\361]", /* ¼­½ñ *//* MountDicMode */
+  "[ \224\242 ]",	/* あ */  /* HenkanNyuryokuMode */
+  "[\301\264\244\242]",	/* 全あ *//* ZenHiraHenkanMode */
+  "[\310\276\244\242]",	/* 半あ *//* HanHiraHenkanMode */
+  "[\301\264\245\242]",	/* 全ア *//* ZenKataHenkanMode */
+  "[\310\276\245\242]",	/* 半ア *//* HanKataHenkanMode */
+  "[\301\264\261\321]",	/* 全英 *//* ZenAlphaHenkanMode */
+  "[\310\276\261\321]",	/* 半英 *//* HanAlphaHenkanMode */
+  "<\301\264\244\242>",	/* 全あ *//* ZenHiraKakuteiMode */
+  "<\310\276\244\242>",	/* 半あ *//* HanHiraKakuteiMode */
+  "<\301\264\245\242>",	/* 全ア *//* ZenKataKakuteiMode */
+  "<\310\276\245\242>",	/* 半ア *//* HanKataKakuteiMode */
+  "<\301\264\261\321>",	/* 全英 *//* ZenAlphaKakuteiMode */
+  "<\310\276\261\321>",	/* 半英 *//* HanAlphaKakuteiMode */
+  "[16\277\312]",	/* 16進 *//* HexMode */
+  "[\311\364\274\363]",	/* 部首 *//* BushuMode */
+  "[\263\310\304\245]",	/* 拡張 *//* ExtendMode */
+  "[ \245\355 ]",	/* ロ */  /* RussianMode */
+  "[ \245\256 ]",	/* ギ */  /* GreekMode */
+  "[\267\323\300\376]",	/* 罫線 *//* LineMode */
+  "[\312\321\271\271]",	/* 変更 *//* ChangingServerMode */
+  "[\312\321\264\271]",	/* 変換 *//* HenkanMethodMode */
+  "[\272\357\275\374]",	/* 削除 *//* DeleteDicMode */
+  "[\305\320\317\277]",	/* 登録 *//* TourokuMode */
+  "[\311\312\273\354]",	/* 品詞 *//* TourokuHinshiMode */
+  "[\274\255\275\361]",	/* 辞書 *//* TourokuDicMode */
+  "[ \243\361 ]",	/* ｑ */  /* QuotedInsertMode */
+  "[\312\324\275\270]",	/* 編集 *//* BubunMuhenkanMode */
+  "[\274\255\275\361]", /* 辞書 *//* MountDicMode */
   };
 
 
-static WCHAR_T * _ModeNames[CANNA_MODE_MAX_IMAGINARY_MODE];
+static wchar_t * _ModeNames[CANNA_MODE_MAX_IMAGINARY_MODE];
 
 extern extraFunc *FindExtraFunc();
 #define findExtraMode(mnum) \
  FindExtraFunc((mnum) - CANNA_MODE_MAX_IMAGINARY_MODE + CANNA_FN_MAX_FUNC)
 
-static WCHAR_T *modestr(int mid);
-static void japaneseMode(uiContext d);
-
 newmode *
-findExtraKanjiMode(int mnum)
+findExtraKanjiMode(mnum)
+int mnum;
 {
   extern extraFunc *extrafuncp;
   extraFunc *extrafunc;
@@ -113,10 +117,11 @@ findExtraKanjiMode(int mnum)
   return (newmode *)0;
 }
 
-extern int nothermodes;
+extern nothermodes;
 
-static WCHAR_T *
-modestr(int mid)
+static wchar_t *
+modestr(mid)
+int mid;
 {
   if (mid < CANNA_MODE_MAX_IMAGINARY_MODE) {
       return(ModeNames[mid].name);
@@ -127,11 +132,12 @@ modestr(int mid)
       return ep->display_name;
     }
   }
-  return (WCHAR_T *)0;
+  return (wchar_t *)0;
 }
 
 void    
-currentModeInfo(uiContext d)
+currentModeInfo(d)
+uiContext d;
 {
   coreContext cc = (coreContext)d->modec;
 
@@ -140,13 +146,13 @@ currentModeInfo(uiContext d)
   }
 
   if (howToReturnModeInfo == ModeInfoStyleIsString) {
-    WCHAR_T *modename, *gmodename;
+    wchar_t *modename, *gmodename;
     if (cc->minorMode != d->minorMode) {
       modename = modestr(cc->minorMode);
       gmodename = modestr(d->minorMode);
       d->majorMode = cc->majorMode;
       d->minorMode = cc->minorMode;
-      if (modename && (gmodename == (WCHAR_T *)NULL ||
+      if (modename && (gmodename == (wchar_t *)NULL ||
 		       WStrcmp(modename, gmodename))) {
 	d->kanji_status_return->mode = modename;
 	d->kanji_status_return->info |= KanjiModeInfo;
@@ -157,21 +163,21 @@ currentModeInfo(uiContext d)
     if (cc->majorMode != d->majorMode) {
       d->majorMode = cc->majorMode;
       d->minorMode = cc->minorMode;
-      numMode[0] = (WCHAR_T)('@' + cc->majorMode);
-      numMode[1] = (WCHAR_T) 0;
+      numMode[0] = (wchar_t)('@' + cc->majorMode);
+      numMode[1] = (wchar_t) 0;
       d->kanji_status_return->info |= KanjiModeInfo;
       d->kanji_status_return->mode = numMode;
     }
   }
 }
      
-/* ¤³¤Î¥Õ¥¡¥¤¥ë¤Ë¤Ï¥â¡¼¥ÉÊÑ¹¹¤Ë´Ø¤¹¤ëÁàºî°ìÈÌ¤¬Æþ¤Ã¤Æ¤¤¤ë¡£¥â¡¼¥É¤ÎÊÑ
- * ¹¹¤È¤Ï¡¢¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¤ÎÉ½ÌÌ¤Ë¸½¤ì¤ë¥â¡¼¥É¤ÎÊÑ¹¹¤À¤±¤Ç¤Ï¤Ê¤¯¡¢Á´
- * ¤¯ÆÉ¤ß¤¬¤Ê¤¤¾õÂÖ¤«¤é¡¢ÆÉ¤ß¤¬¤¢¤ë¾õÂÖ¤Ë°Ü¤ë»þ¤Ë¤âÀ¸¤¸¤ë¤â¤Î¤ò»Ø¤¹¡£
+/* このファイルにはモード変更に関する操作一般が入っている。モードの変
+ * 更とは、ローマ字かな変換の表面に現れるモードの変更だけではなく、全
+ * く読みがない状態から、読みがある状態に移る時にも生じるものを指す。
  */
 
 void
-initModeNames(void)
+initModeNames()
 {
   int i;
   
@@ -183,12 +189,12 @@ initModeNames(void)
   if (!bad) {
     bad = WString("\245\341\245\342\245\352\244\254\302\255\244\352\244\336"
 	"\244\273\244\363");
-                  /* ¥á¥â¥ê¤¬Â­¤ê¤Þ¤»¤ó */
+                  /* メモリが足りません */
   }
 }
 
 void
-resetModeNames(void)
+resetModeNames()
 {
   int i;
 
@@ -202,7 +208,8 @@ resetModeNames(void)
 }
 
 static void
-japaneseMode(uiContext d)
+japaneseMode(d)
+uiContext d;
 {
   coreContext cc = (coreContext)d->modec;
 
@@ -214,13 +221,14 @@ japaneseMode(uiContext d)
 
 /* cfuncdef
 
-  JapaneseMode(d) -- ¥â¡¼¥É¤òÆüËÜ¸ìÆþÎÏ¥â¡¼¥É¤ËÊÑ¤¨¤ë¡£
+  JapaneseMode(d) -- モードを日本語入力モードに変える。
 
-  ¢¨Ãí ¤³¤Î´Ø¿ô¤Ï¦Á¥â¡¼¥É¤Ç¤·¤«¸Æ¤ó¤Ç¤Ï¤¤¤±¤Ê¤¤¡£
+  ※注 この関数はαモードでしか呼んではいけない。
 
  */
 
-int JapaneseMode(uiContext d)
+JapaneseMode(d)
+uiContext d;
 {
   coreContext cc = (coreContext)d->modec;
   yomiContext yc = (yomiContext)cc->next;
@@ -234,7 +242,8 @@ int JapaneseMode(uiContext d)
   return 0;
 }
 
-int AlphaMode(uiContext d)
+AlphaMode(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -249,7 +258,8 @@ int AlphaMode(uiContext d)
   }
 }
 
-int HenkanNyuryokuMode(uiContext d)
+HenkanNyuryokuMode(d)
+uiContext d;
 {
   extern KanjiModeRec empty_mode;
   yomiContext yc = (yomiContext)d->modec;
@@ -262,21 +272,23 @@ int HenkanNyuryokuMode(uiContext d)
 		       ~CANNA_YOMI_BASE_HANKAKU);
   d->current_mode = yc->myEmptyMode = &empty_mode;
   yc->majorMode = yc->minorMode = CANNA_MODE_EmptyMode;
-  yc->myMinorMode = 0; /* 0 ¤Ï AlphaMode ¤È½Å¤Ê¤ë¤¬ÌäÂê¤Ï¤Ê¤¤ */
+  yc->myMinorMode = 0; /* 0 は AlphaMode と重なるが問題はない */
   yc->romdic = romajidic;
   EmptyBaseModeInfo(d, yc);
 
   if(yc->rCurs)
-    return RomajiFlushYomi(d, (WCHAR_T *)0, 0); /* ¤³¤ì¤Ï»ÃÄêÅª */
+    return RomajiFlushYomi(d, (wchar_t *)0, 0); /* これは暫定的 */
 
   d->kanji_status_return->length = 0;
   return 0;
 }
 
-int queryMode(uiContext d, WCHAR_T *arg)
+queryMode(d, arg)
+uiContext d;
+wchar_t *arg;
 {
   coreContext cc = (coreContext)d->modec;
-  WCHAR_T *mode_str = (WCHAR_T *)0;
+  wchar_t *mode_str = (wchar_t *)0;
   extraFunc *ep;
 
   switch (howToReturnModeInfo) {
@@ -294,7 +306,7 @@ int queryMode(uiContext d, WCHAR_T *arg)
     if (!mode_str) {
       int ii;
       for (ii = 0; ii < 4; ii++, arg++) {
-	*arg = (WCHAR_T)'\0';
+	*arg = (wchar_t)'\0';
       }
     }
     else {
@@ -334,15 +346,16 @@ int queryMode(uiContext d, WCHAR_T *arg)
         }
         if (fl & (CANNA_YOMI_CHIKUJI_MODE | CANNA_YOMI_BASE_CHIKUJI))
           arg[3] = CANNA_MODE_ChikujiYomiMode;
-      }else{
+      }
+      else {
         res = CANNA_MODE_HanAlphaHenkanMode;
       }
       arg[2] = res;
     }
   case ModeInfoStyleIsExtendedNumeric:
-    arg[1] = (WCHAR_T)('@' + (int)cc->minorMode);
+    arg[1] = (wchar_t)('@' + (int)cc->minorMode);
   case ModeInfoStyleIsNumeric:
-    arg[0] = (WCHAR_T)('@' + (int)cc->majorMode);
+    arg[0] = (wchar_t)('@' + (int)cc->majorMode);
     break;
   default:
     return(-1);
@@ -353,11 +366,13 @@ int queryMode(uiContext d, WCHAR_T *arg)
 }
 
 /* 
- *   ¤¢¤ë¥â¡¼¥É¤ËÂÐ¤·¤Æ¥â¡¼¥ÉÉ½¼¨Ê¸»úÎó¤ò·èÄê¤¹¤ë¡£
+ *   あるモードに対してモード表示文字列を決定する。
  *
  */
 
-int changeModeName(int modeid, char *str)
+changeModeName(modeid, str)
+int modeid;
+char *str;
 {
   extraFunc *ep;
 
@@ -372,9 +387,10 @@ int changeModeName(int modeid, char *str)
       if (str) {
 	ModeNames[modeid].alloc = 1;
 	ModeNames[modeid].name = WString(str);
-      }else{
+      }
+      else {
 	ModeNames[modeid].alloc = 0;
-	ModeNames[modeid].name = (WCHAR_T *)0;
+	ModeNames[modeid].name = (wchar_t *)0;
       }
     }
     else if (modeid < (CANNA_MODE_MAX_IMAGINARY_MODE + nothermodes)) {
@@ -387,9 +403,10 @@ int changeModeName(int modeid, char *str)
 	  ep->display_name = WString(str);
 	}
 	else {
-	  ep->display_name = (WCHAR_T *)0;
+	  ep->display_name = (wchar_t *)0;
 	}
-      }else{
+      }
+      else {
 	return -1;
       }
     }
@@ -398,3 +415,11 @@ int changeModeName(int modeid, char *str)
   return -1;
 }
 
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/

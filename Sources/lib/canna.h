@@ -21,177 +21,165 @@
  */
 
 /*
- * @(#) 102.1 $Id: canna.h 14875 2005-11-12 21:25:31Z bonefish $
+ * @(#) 102.1 $Id: canna.h,v 1.11 2003/09/25 07:24:54 aida_s Exp $
  */
-
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997 */
-/************************************************************************/
-
 
 #ifndef _CANNA_H_
 #define _CANNA_H_
 
-#undef DEBUG
-
 #include "cannaconf.h"
-#include "widedef.h"
+#include "ccompat.h"
 #include <stdio.h>
-#include <canna/cannabuild.h>
-#include <stdlib.h>
-#include <bsd_mem.h>
 
-#include <string.h>
-# ifndef index
-# define index strchr
-# endif
-
+#define CANNA_NEW_WCHAR_AWARE
 #include <canna/RK.h>
 #include <canna/jrkanji.h>
 
-#ifdef BIGPOINTER
-#define POINTERINT long long
-#else
-#define POINTERINT long
+#define POINTERINT canna_intptr_t
+#define exp(x) x
+
+#if 0
+#define USE_MALLOC_FOR_BIG_ARRAY
 #endif
 
-#define	WCHARSIZE	(sizeof(WCHAR_T))
-
-#ifdef HAVE_WCHAR_OPERATION
-
-#ifndef JAPANESE_LOCALE
-#define JAPANESE_LOCALE "japan"
-#endif
-
-#define MBstowcs mbstowcs
-#define WCstombs wcstombs
-
-#else
+#define	WCHARSIZE	(sizeof(cannawc))
 
 #define MBstowcs CANNA_mbstowcs
 #define WCstombs CANNA_wcstombs
 
-extern int CANNA_wcstombs (char *, WCHAR_T *, int);
+#include "sglobal.h"
 
-#endif
+#define XLookupKanji2			 IROHA_G300_XLookupKanji2
+#define XKanjiControl2			 IROHA_G301_XKanjiControl2
+#define XwcLookupKanji2			 IROHA_G425_XwcLookupKanji2
+#define XwcKanjiControl2		 IROHA_G426_XwcKanjiControl2
+#define FirstTime			 CANNA_G271_FirstTime
 
-#define STROKE_LIMIT 500 /* ¥¹¥È¥í¡¼¥¯¤ÇÀÜÂ³¤òÀÚ¤ë */
+#define STROKE_LIMIT 500 /* ストロークで接続を切る */
 
 typedef unsigned char BYTE;
 
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
+
 /*
- * CANNALIBDIR  -- ¥·¥¹¥Æ¥à¤Î¥«¥¹¥¿¥Þ¥¤¥º¥Õ¥¡¥¤¥ë¤ä¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹
- *                 ¥Æ¡¼¥Ö¥ë¤¬ÃÖ¤«¤ì¤ë¥Ç¥£¥ì¥¯¥È¥ê¡£
+ * CANNALIBDIR  -- システムのカスタマイズファイルやローマ字かな変換
+ *                 テーブルが置かれるディレクトリ。
  */
 
-//#ifndef CANNALIBDIR
-//#define CANNALIBDIR "/usr/lib/canna"
-//#endif
+#ifndef CANNALIBDIR
+#define CANNALIBDIR "/usr/lib/canna"
+#endif
 
-/* flags ¤Î¾ðÊó */
+/* flags の情報 */
 #define CANNA_KANJIMODE_TABLE_SHARED	01
 #define CANNA_KANJIMODE_EMPTY_MODE	02
 
-/* func ¤ÎÂè»°°ú¿ô */
+/* func の第三引数 */
 #define KEY_CALL  0
 #define KEY_CHECK 1
 #define KEY_SET   2
 
 extern BYTE default_kmap[];
 
-/* menuitem -- ¥á¥Ë¥å¡¼É½¼¨¤Î¹àÌÜ¤òÄêµÁ¤¹¤ë¥Æ¡¼¥Ö¥ë */
+/* menuitem -- メニュー表示の項目を定義するテーブル */
 
 typedef struct _menuitem {
-  int flag; /* ²¼¤ò¸«¤è */
+  int flag; /* 下を見よ */
   union {
-    struct _menustruct *menu_next; /* ¥á¥Ë¥å¡¼¤Ø¤Î¥Ý¥¤¥ó¥¿ */
-    int fnum;    /* µ¡Ç½ÈÖ¹æ */
-    char *misc;  /* ¤½¤ÎÂ¾(lisp ¤Î¥·¥ó¥Ü¥ë¤Ê¤É) */
+    struct _menustruct *menu_next; /* メニューへのポインタ */
+    int fnum;    /* 機能番号 */
+    char *misc;  /* その他(lisp のシンボルなど) */
   } u;
 } menuitem;
 
-#define MENU_SUSPEND 0 /* ¤Þ¤À·è¤Þ¤Ã¤Æ¤¤¤Ê¤¤(lisp ¤Î¥·¥ó¥Ü¥ë) */
-#define MENU_MENU    1 /* ¥á¥Ë¥å¡¼ */
-#define MENU_FUNC    2 /* µ¡Ç½ÈÖ¹æ */
+#define MENU_SUSPEND 0 /* まだ決まっていない(lisp のシンボル) */
+#define MENU_MENU    1 /* メニュー */
+#define MENU_FUNC    2 /* 機能番号 */
 
-/* menustruct -- ¥á¥Ë¥å¡¼¤ò¤·¤­¤ë¹½Â¤ÂÎ */
+/* menustruct -- メニューをしきる構造体 */
 
 typedef struct _menustruct {
-  int     nentries; /* ¥á¥Ë¥å¡¼¤Î¹àÌÜ¤Î¿ô */
-  WCHAR_T **titles; /* ¥á¥Ë¥å¡¼¤Î¸«½Ð¤·¥ê¥¹¥È */
-  WCHAR_T *titledata; /* ¾å¤Î¥ê¥¹¥È¤Î¼ÂÂÖÊ¸»úÎó */
-  menuitem *body;   /* ¥á¥Ë¥å¡¼¤ÎÃæ¿È(ÇÛÎó) */
-  int     modeid;   /* ¥á¥Ë¥å¡¼¤Î¥â¡¼¥ÉÈÖ¹æ */
-  struct _menustruct *prev; /* °ì¤ÄÁ°¤Î¥á¥Ë¥å¡¼¤Ø¤Î¥Ý¥¤¥ó¥¿ */
+  int     nentries; /* メニューの項目の数 */
+  wchar_t **titles; /* メニューの見出しリスト */
+  wchar_t *titledata; /* 上のリストの実態文字列 */
+  menuitem *body;   /* メニューの中身(配列) */
+  int     modeid;   /* メニューのモード番号 */
+  struct _menustruct *prev; /* 一つ前のメニューへのポインタ */
 } menustruct;
 
 typedef struct _menuinfo {
-  menustruct *mstruct; /* ¤É¤Î¥á¥Ë¥å¡¼¤Î */
-  int        curnum;   /* ¤³¤Ê¤¤¤ÀÁªÂò¤µ¤ì¤¿ÈÖ¹æ¤Ï¤³¤ì¤Ç¤¹¤è */
+  menustruct *mstruct; /* どのメニューの */
+  int        curnum;   /* こないだ選択された番号はこれですよ */
   struct _menuinfo *next;
 } menuinfo;
 
-/* defselection ¤ÇÄêµÁ¤µ¤ì¤¿µ­¹æ´Ø·¸¤Î°ìÍ÷¤ò¤È¤Ã¤Æ¤ª¤¯¹½Â¤ÂÎ */
+/* defselection で定義された記号関係の一覧をとっておく構造体 */
 
 typedef struct {
-  WCHAR_T	**kigo_data;	/* °ìÍ÷É½¼¨¤Î³ÆÍ×ÁÇ¤ÎÇÛÎó */
-  WCHAR_T	*kigo_str;	/* °ìÍ÷É½¼¨¤ÎÁ´Í×ÁÇ¤òÆþ¤ì¤ëÇÛÎó */
-  int		kigo_size;	/* Í×ÁÇ¤Î¿ô */
-  int		kigo_mode;	/* ¤½¤Î¤È¤­¤Î¥â¡¼¥É */
+  wchar_t	**kigo_data;	/* 一覧表示の各要素の配列 */
+  wchar_t	*kigo_str;	/* 一覧表示の全要素を入れる配列 */
+  int		kigo_size;	/* 要素の数 */
+  int		kigo_mode;	/* そのときのモード */
 } kigoIchiran;
 
 typedef struct _selectinfo {
-  kigoIchiran	*ichiran;	/* ¤É¤Î°ìÍ÷¤Î */
-  int		curnum;		/* Á°²óÁªÂò¤µ¤ì¤¿ÈÖ¹æ */
+  kigoIchiran	*ichiran;	/* どの一覧の */
+  int		curnum;		/* 前回選択された番号 */
   struct _selectinfo *next;
 } selectinfo;
 
-/* deldicinfo -- Ã±¸ìºï½ü¤ÎºÝ¤ËÉ¬Í×¤Ê¼­½ñ¤Î¾ðÊó¤ò¤¤¤ì¤Æ¤ª¤¯¹½Â¤ÂÎ */
+/* deldicinfo -- 単語削除の際に必要な辞書の情報をいれておく構造体 */
 
-#define INDPHLENGTH 16 /* ¼«Î©¸ì¤Ç°ìÈÖÄ¹¤¤ÉÊ»ì¤ÎÄ¹¤µ */
+#define INDPHLENGTH 16 /* 自立語で一番長い品詞の長さ */
 
 typedef struct _deldicinfo {
-  WCHAR_T *name;
-  WCHAR_T hcode[INDPHLENGTH];
+  wchar_t *name;
+  wchar_t hcode[INDPHLENGTH];
 } deldicinfo;
   
 /*
- * glineinfo -- ¸õÊä°ìÍ÷É½¼¨¤Î¤¿¤á¤ÎÆâÉô¾ðÊó¤ò³ÊÇ¼¤·¤Æ¤ª¤¯¤¿¤á¤Î¹½Â¤ÂÎ¡£
- * ¤½¤ì¤¾¤ì¤Î¥á¥ó¥Ð¤Ï°Ê²¼¤Î°ÕÌ£¤ò»ý¤Ä¡£
+ * glineinfo -- 候補一覧表示のための内部情報を格納しておくための構造体。
+ * それぞれのメンバは以下の意味を持つ。
  *
- * glkosu -- ¤½¤Î¹Ô¤Ë¤¢¤ë¸õÊä¤Î¿ô
- * glhead -- ¤½¤Î¹Ô¤ÎÀèÆ¬¸õÊä¤¬¡¢kouhoinfo¤Î²¿ÈÖÌÜ¤«(0¤«¤é¿ô¤¨¤ë)
- * gllen  -- ¤½¤Î¹Ô¤òÉ½¼¨¤¹¤ë¤¿¤á¤ÎÊ¸»úÎó¤ÎÄ¹¤µ
- * gldata -- ¤½¤Î¹Ô¤òÉ½¼¨¤¹¤ë¤¿¤á¤ÎÊ¸»úÎó¤Ø¤Î¥Ý¥¤¥ó¥¿
+ * glkosu -- その行にある候補の数
+ * glhead -- その行の先頭候補が、kouhoinfoの何番目か(0から数える)
+ * gllen  -- その行を表示するための文字列の長さ
+ * gldata -- その行を表示するための文字列へのポインタ
  */
 
 typedef struct {
   int glkosu;
   int glhead;
   int gllen;
-  WCHAR_T *gldata;
+  wchar_t *gldata;
 } glineinfo;
 
 /*
- * kouhoinfo -- ¸õÊä°ìÍ÷¤Î¤¿¤á¤ÎÆâÉô¾ðÊó¤ò³ÊÇ¼¤·¤Æ¤ª¤¯¤¿¤á¤Î¹½Â¤ÂÎ
- * ¤½¤ì¤¾¤ì¤Î¥á¥ó¥Ð¤Ï°Ê²¼¤Î°ÕÌ£¤ò»ý¤Ä¡£
+ * kouhoinfo -- 候補一覧のための内部情報を格納しておくための構造体
+ * それぞれのメンバは以下の意味を持つ。
  *
- * khretsu -- ¤½¤Î¸õÊä¤¬¤¢¤ë¹Ô
- * khpoint -- ¤½¤Î¸õÊä¤Î¹Ô¤Î¤Ê¤«¤Ç¤Î°ÌÃÖ
- * khdata -- ¤½¤Î¸õÊä¤ÎÊ¸»úÎó¤Ø¤Î¥Ý¥¤¥ó¥¿
+ * khretsu -- その候補がある行
+ * khpoint -- その候補の行のなかでの位置
+ * khdata -- その候補の文字列へのポインタ
  */
 
 typedef struct {
   int khretsu;
   int khpoint;
-  WCHAR_T *khdata;
+  wchar_t *khdata;
 } kouhoinfo;
 
 #define ROMEBUFSIZE 	1024
-#define	BANGOSIZE	2	/* ¸õÊä¹ÔÃæ¤Î³Æ¸õÊä¤ÎÈÖ¹æ¤Î¥³¥é¥à¿ô */
-#define	BANGOMAX   	9	/* £±¸õÊä¹ÔÃæ¤ÎºÇÂç¸õÊä¿ô */
+#define	BANGOSIZE	2	/* 候補行中の各候補の番号のコラム数 */
+#define	BANGOMAX   	9	/* １候補行中の最大候補数 */
 
-#define	KIGOBANGOMAX   	16	/* £±¸õÊä¹ÔÃæ¤ÎºÇÂç¸õÊä¿ô */
+#define	KIGOBANGOMAX   	16	/* １候補行中の最大候補数 */
 #define GOBISUU		9
 
 #define	ON		1
@@ -215,7 +203,7 @@ typedef struct {
 #define  GAIRAIGO      0x08
 #define  STAYROMAJI    0x10
 
-/* Ã±¸ìÅÐÏ¿¤ÎÉÊ»ì */
+/* 単語登録の品詞 */
 #define MEISHI       0
 #define KOYUMEISHI   1
 #define DOSHI        2
@@ -253,95 +241,95 @@ typedef struct {
 typedef struct _coreContextRec {
   BYTE id;
   BYTE majorMode, minorMode;
-  struct _kanjiMode *prevMode; /* £±¤ÄÁ°¤Î¥â¡¼¥É */
+  struct _kanjiMode *prevMode; /* １つ前のモード */
   struct _coreContextRec *next;
 } coreContextRec, *coreContext;
 
 typedef coreContext mode_context;
 
 typedef struct  _yomiContextRec {
-  /* core ¾ðÊó¤ÈÆ±¤¸¾ðÊó */
+  /* core 情報と同じ情報 */
   BYTE id;
   BYTE majorMode, minorMode;
-  struct _kanjiMode *prevMode;	/* £±¤ÄÁ°¤Î¥â¡¼¥É */
+  struct _kanjiMode *prevMode;	/* １つ前のモード */
   mode_context    next;
 
   struct _kanjiMode *curMode;
   struct _tanContextRec	 *left, *right;
 
-  /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹´Ø·¸ */
-  struct RkRxDic *romdic;	/* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ë */
-  WCHAR_T   romaji_buffer[ROMEBUFSIZE];
-  /* ¥í¡¼¥Þ»ú¥Ð¥Ã¥Õ¥¡¤Ï rStartp, rEndp ¤Î£²¤Ä¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤Ë¤è¤Ã¤Æ´ÉÍý¤µ¤ì
-   * ¤ë¡£rStartp ¤Ï¥«¥Ê¤ËÊÑ´¹¤Ç¤­¤Ê¤«¤Ã¤¿¥í¡¼¥Þ»ú¤ÎºÇ½é¤ÎÊ¸»ú¤Ø¤Î¥¤¥ó¥Ç¥Ã
-   * ¥¯¥¹¤Ç¤¢¤ê¡¢rEndp ¤Ï¿·¤¿¤Ë¥í¡¼¥Þ»ú¤òÆþÎÏ¤¹¤ë»þ¤Ë¡¢³ÊÇ¼¤¹¤Ù¤­ 
-   * romaji_buffer Æâ¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤Ç¤¢¤ë¡£¿·¤¿¤ËÆþÎÏ¤µ¤ì¤ë¥í¡¼¥Þ»ú¤Ï¡¢
-   * romaji_buffer + rEndp ¤è¤êÀè¤Ë³ÊÇ¼¤µ¤ì¡¢¤½¤Î¥í¡¼¥Þ»ú¤ò¥«¥Ê¤ËÊÑ´¹¤¹
-   * ¤ë»þ¤Ï¡¢romaji_buffer + rStartp ¤«¤é rEndp - rStartp ¥Ð¥¤¥È¤ÎÊ¸»ú¤¬
-   * ÂÐ¾Ý¤È¤Ê¤ë¡£ */
-  int		  rEndp, rStartp, rCurs; /* ¥í¡¼¥Þ»ú¥Ð¥Ã¥Õ¥¡¤Î¥Ý¥¤¥ó¥¿ */
-  WCHAR_T         kana_buffer[ROMEBUFSIZE];
+  /* ローマ字かな変換関係 */
+  struct RkRxDic *romdic;	/* ローマ字かな変換テーブル */
+  wchar_t   romaji_buffer[ROMEBUFSIZE];
+  /* ローマ字バッファは rStartp, rEndp の２つのインデックスによって管理され
+   * る。rStartp はカナに変換できなかったローマ字の最初の文字へのインデッ
+   * クスであり、rEndp は新たにローマ字を入力する時に、格納すべき 
+   * romaji_buffer 内のインデックスである。新たに入力されるローマ字は、
+   * romaji_buffer + rEndp より先に格納され、そのローマ字をカナに変換す
+   * る時は、romaji_buffer + rStartp から rEndp - rStartp バイトの文字が
+   * 対象となる。 */
+  int		  rEndp, rStartp, rCurs; /* ローマ字バッファのポインタ */
+  wchar_t         kana_buffer[ROMEBUFSIZE];
   BYTE            rAttr[ROMEBUFSIZE], kAttr[ROMEBUFSIZE];
-  int		  kEndp; /* ¤«¤Ê¥Ð¥Ã¥Õ¥¡¤ÎºÇ¸å¤ò²¡¤¨¤ë¥Ý¥¤¥ó¥¿ */
+  int		  kEndp; /* かなバッファの最後を押えるポインタ */
   int             kRStartp, kCurs;
 
-  /* ¤½¤ÎÂ¾¤Î¥ª¥×¥·¥ç¥ó */
-  BYTE            myMinorMode;  /* yomiContext ¸ÇÍ­¤Î¥Þ¥¤¥Ê¥â¡¼¥É */
-  struct _kanjiMode *myEmptyMode;		/* empty ¥â¡¼¥É¤Ï¤É¤ì¤« */
+  /* その他のオプション */
+  BYTE            myMinorMode;  /* yomiContext 固有のマイナモード */
+  struct _kanjiMode *myEmptyMode;		/* empty モードはどれか */
   long		  generalFlags;		/* see below */
-  long		  savedFlags;		/* ¾å¤Î¥Õ¥é¥°¤Î°ìÉô¤Î¥»¡¼¥Ö */
-  BYTE		  savedMinorMode;	/* ¥Þ¥¤¥Ê¥â¡¼¥É¤Î¥»¡¼¥Ö */
+  long		  savedFlags;		/* 上のフラグの一部のセーブ */
+  BYTE		  savedMinorMode;	/* マイナモードのセーブ */
   BYTE		  allowedChars;		/* see jrkanji.h */
   BYTE		  henkanInhibition;	/* see below */
-  int             cursup;		/* ¥í¤«¤Ê¤ÎÊäÄÉ¤Î»þ¤Ë»È¤¦ */
+  int             cursup;		/* ロかなの補追の時に使う */
 #define SUSPCHARBIAS 100
   int             n_susp_chars;
 
 /* from henkanContext */
-  /* ¥«¥Ê´Á»úÊÑ´¹´Ø·¸ */
+  /* カナ漢字変換関係 */
   int            context;
-  int		 kouhoCount;	/* ²¿²ó henkanNext ¤¬Ï¢Â³¤·¤Æ²¡¤µ¤ì¤¿¤« */
-  WCHAR_T        echo_buffer[ROMEBUFSIZE];
-  WCHAR_T        **allkouho; /* RkGetKanjiList¤ÇÆÀ¤é¤ì¤ëÊ¸»úÎó¤òÇÛÎó¤Ë¤·¤Æ
-				¤È¤Ã¤Æ¤ª¤¯¤È¤³¤í */
-  int            curbun;     /* ¥«¥ì¥ó¥ÈÊ¸Àá */
-  int		 curIkouho;  /* ¥«¥ì¥ó¥È¸õÊä */
-  int            nbunsetsu;  /* Ê¸Àá¤Î¿ô */
+  int		 kouhoCount;	/* 何回 henkanNext が連続して押されたか */
+  wchar_t        echo_buffer[ROMEBUFSIZE];
+  wchar_t        **allkouho; /* RkGetKanjiListで得られる文字列を配列にして
+				とっておくところ */
+  int            curbun;     /* カレント文節 */
+  int		 curIkouho;  /* カレント候補 */
+  int            nbunsetsu;  /* 文節の数 */
 
 /* ifdef MEASURE_TIME */
-  long		 proctime;   /* ½èÍý»þ´Ö(ÊÑ´¹¤Ç·×Â¬¤¹¤ë */
-  long		 rktime;     /* ½èÍý»þ´Ö(RK¤Ë¤«¤«¤ë»þ´Ö) */
+  long		 proctime;   /* 処理時間(変換で計測する) */
+  long		 rktime;     /* 処理時間(RKにかかる時間) */
 /* endif MEASURE_TIME */
 /* end of from henkanContext */
 
-/* Ãà¼¡¥³¥ó¥Æ¥­¥¹¥È¤«¤é */
+/* 逐次コンテキストから */
   int		 ye, ys, status;
-/* Ãà¼¡¥³¥ó¥Æ¥­¥¹¥È¤«¤é(¤³¤³¤Þ¤Ç) */
-  int		 cStartp, cRStartp; /* Ãà¼¡¤ÇÆÉ¤ß¤È¤·¤Æ»Ä¤Ã¤Æ¤¤¤ëÉôÊ¬ */
+/* 逐次コンテキストから(ここまで) */
+  int		 cStartp, cRStartp; /* 逐次で読みとして残っている部分 */
 
-/* »ú¼ï¥³¥ó¥Æ¥­¥¹¥È¤«¤é */
+/* 字種コンテキストから */
   BYTE           inhibition;
   BYTE           jishu_kc, jishu_case;
   int            jishu_kEndp, jishu_rEndp;
   short          rmark;
-/* »ú¼ï¥³¥ó¥Æ¥­¥¹¥È¤«¤é(¤³¤³¤Þ¤Ç) */
+/* 字種コンテキストから(ここまで) */
 
-/* adjustContext ¤«¤é */
-  int kanjilen, bunlen;           /* ´Á»úÉôÊ¬¡¢Ê¸Àá¤ÎÄ¹¤µ */
-/* adjustContext ¤«¤é(¤³¤³¤Þ¤Ç) */
-  struct _kanjiMode *tanMode; /* Ã±¸õÊä¤Î¤È¤­¤Î¥â¡¼¥É */
-  int tanMinorMode;     /*        ¡·            */
+/* adjustContext から */
+  int kanjilen, bunlen;           /* 漢字部分、文節の長さ */
+/* adjustContext から(ここまで) */
+  struct _kanjiMode *tanMode; /* 単候補のときのモード */
+  int tanMinorMode;     /*        〃            */
 
-  /* ºî¶ÈÍÑÊÑ¿ô */
-  int		  last_rule;		/* Á°²ó¤Î¥í¤«¤ÊÊÑ´¹¤Ë»È¤ï¤ì¤¿¥ë¡¼¥ë */
-  WCHAR_T	  *retbuf, *retbufp;
+  /* 作業用変数 */
+  int		  last_rule;		/* 前回のロかな変換に使われたルール */
+  wchar_t	  *retbuf, *retbufp;
   int		  retbufsize;
-  short           pmark, cmark; /* £±¤ÄÁ°¤Î¥Þ¡¼¥¯¤Èº£¤Î¥Þ¡¼¥¯ */
-  BYTE            englishtype;  /* ±Ñ¸ì¥¿¥¤¥×(°Ê²¼¤ò¸«¤è) */
+  short           pmark, cmark; /* １つ前のマークと今のマーク */
+  BYTE            englishtype;  /* 英語タイプ(以下を見よ) */
 } yomiContextRec, *yomiContext;
 
 /* for generalFlags */
-#define CANNA_YOMI_MODE_SAVED		0x01L /* savedFlags ¤Ë¤·¤«»È¤ï¤ì¤Ê¤¤ */
+#define CANNA_YOMI_MODE_SAVED		0x01L /* savedFlags にしか使われない */
 
 #define CANNA_YOMI_BREAK_ROMAN		0x01L
 #define CANNA_YOMI_CHIKUJI_MODE		0x02L
@@ -352,22 +340,22 @@ typedef struct  _yomiContextRec {
 #define CANNA_YOMI_IGNORE_USERSYMBOLS	0x20L
 #define CANNA_YOMI_IGNORE_HENKANKEY	0x40L
 
-#define CANNA_YOMI_BASE_CHIKUJI		0x80L /* ¿´¤ÏÃà¼¡ */
+#define CANNA_YOMI_BASE_CHIKUJI		0x80L /* 心は逐次 */
 
 /* for generalFlags also used in savedFlags */
 
-/* °Ê²¼¤Î ATTRFUNCS ¤Ë¥Þ¥¹¥¯¤µ¤ì¤ë¥Ó¥Ã¥È¤Ï defmode ¤ÎÂ°À­¤È¤·¤Æ»È¤ï¤ì¤ë */
+/* 以下の ATTRFUNCS にマスクされるビットは defmode の属性として使われる */
 #define CANNA_YOMI_KAKUTEI		0x0100L
 #define CANNA_YOMI_HENKAN		0x0200L
 #define CANNA_YOMI_ZENKAKU		0x0400L
-#define CANNA_YOMI_HANKAKU		0x0800L /* ¼ÂºÝ¤ËÈ¾³Ñ */
+#define CANNA_YOMI_HANKAKU		0x0800L /* 実際に半角 */
 #define CANNA_YOMI_HIRAGANA		0x1000L
 #define CANNA_YOMI_KATAKANA		0x2000L
 #define CANNA_YOMI_ROMAJI		0x4000L
 #define CANNA_YOMI_JISHUFUNCS		0x7c00L
 #define CANNA_YOMI_ATTRFUNCS		0x7f00L
 
-#define CANNA_YOMI_BASE_HANKAKU		0x8000L /* ¿´¤ÏÈ¾³Ñ */
+#define CANNA_YOMI_BASE_HANKAKU		0x8000L /* 心は半角 */
 
 /* kind of allowed input keys */
 #define CANNA_YOMI_INHIBIT_NONE		0
@@ -377,7 +365,7 @@ typedef struct  _yomiContextRec {
 #define CANNA_YOMI_INHIBIT_ASBUSHU	8
 #define CANNA_YOMI_INHIBIT_ALL		15
 
-/* ¸õÊä°ìÍ÷¤Î¤¿¤á¤Î¥Õ¥é¥° */
+/* 候補一覧のためのフラグ */
 #define NUMBERING 			1
 #define CHARINSERT			2
 
@@ -387,18 +375,18 @@ typedef struct  _yomiContextRec {
 #define CANNA_JISHU_MAX_CASE		4
 
 /* englishtype */
-#define CANNA_ENG_KANA			0 /* ½Ì¾®¤¹¤ë¤³¤È */
+#define CANNA_ENG_KANA			0 /* 縮小すること */
 #define CANNA_ENG_ENG1			1
-#define CANNA_ENG_ENG2			2 /* Î¾Ã¼¤Ë¶õÇò¤¬Æþ¤Ã¤Æ¤¤¤ë */
+#define CANNA_ENG_ENG2			2 /* 両端に空白が入っている */
 #define CANNA_ENG_NO			3
 
-/* yc->status ¤Î¥Õ¥é¥°(Ãà¼¡ÍÑ) */
+/* yc->status のフラグ(逐次用) */
 
-#define	CHIKUJI_ON_BUNSETSU		0x0001 /* Ê¸Àá¾å¤Ë¤¢¤ë */
-#define	CHIKUJI_OVERWRAP		0x0002 /* Ê¸Àá¤«¤ÄÆÉ¤ß¾õÂÖ¡© */
-#define	CHIKUJI_NULL_STATUS	        0 /* ¾å¤Î¤ò¾Ã¤¹ÍÑ */
+#define	CHIKUJI_ON_BUNSETSU		0x0001 /* 文節上にある */
+#define	CHIKUJI_OVERWRAP		0x0002 /* 文節かつ読み状態？ */
+#define	CHIKUJI_NULL_STATUS	        0 /* 上のを消す用 */
 
-/* yc ¤ò»È¤¦¥â¡¼¥É¤Î¶èÊÌ(Í¥Àè½ç) */
+/* yc を使うモードの区別(優先順) */
 
 #define adjustp(yc) (0< (yc)->bunlen)
 #define jishup(yc) (0 < (yc)->jishu_kEndp)
@@ -410,119 +398,119 @@ typedef struct  _yomiContextRec {
 typedef struct _ichiranContextRec {
   BYTE id;
   BYTE majorMode, minorMode;
-  struct _kanjiMode *prevMode;	/* £±¤ÄÁ°¤Î¥â¡¼¥É */
+  struct _kanjiMode *prevMode;	/* １つ前のモード */
   mode_context    next;
 
-  int            svIkouho;   /* ¥«¥ì¥ó¥È¸õÊä¤ò°ì»þ¤È¤Ã¤Æ¤ª¤¯(°ìÍ÷É½¼¨¹Ô) */
-  int            *curIkouho; /* ¥«¥ì¥ó¥È¸õÊä */
-  int            nIkouho;    /* ¸õÊä¤Î¿ô(°ìÍ÷É½¼¨¹Ô) */
-  int		 tooSmall;   /* ¥«¥é¥à¿ô¤¬¶¹¤¯¤Æ¸õÊä°ìÍ÷¤¬½Ð¤»¤Ê¤¤¤è¥Õ¥é¥° */
-  int            curIchar;   /* Ì¤³ÎÄêÊ¸»úÎó¤¢¤ê¤ÎÃ±¸ìÅÐÏ¿¤ÎÃ±¸ìÆþÎÏ¤Î
-    							ÀèÆ¬Ê¸»ú¤Î°ÌÃÖ */
+  int            svIkouho;   /* カレント候補を一時とっておく(一覧表示行) */
+  int            *curIkouho; /* カレント候補 */
+  int            nIkouho;    /* 候補の数(一覧表示行) */
+  int		 tooSmall;   /* カラム数が狭くて候補一覧が出せないよフラグ */
+  int            curIchar;   /* 未確定文字列ありの単語登録の単語入力の
+    							先頭文字の位置 */
   BYTE           inhibit;
-  BYTE           flags;	     /* ²¼¤ò¸«¤Æ¤Í */
-  WCHAR_T        **allkouho; /* RkGetKanjiList¤ÇÆÀ¤é¤ì¤ëÊ¸»úÎó¤òÇÛÎó¤Ë¤·¤Æ
-				¤È¤Ã¤Æ¤ª¤¯¤È¤³¤í */
-  WCHAR_T        *glinebufp; /* ¸õÊä°ìÍ÷¤Î¤¢¤ë°ì¹Ô¤òÉ½¼¨¤¹¤ë¤¿¤á¤ÎÊ¸»ú
-				Îó¤Ø¤Î¥Ý¥¤¥ó¥¿ */
-  kouhoinfo      *kouhoifp;  /* ¸õÊä°ìÍ÷´Ø·¸¤Î¾ðÊó¤ò³ÊÇ¼¤·¤Æ¤ª¤¯¹½Â¤ÂÎ
-				¤Ø¤Î¥Ý¥¤¥ó¥¿ */
-  glineinfo      *glineifp;  /* ¸õÊä°ìÍ÷´Ø·¸¤Î¾ðÊó¤ò³ÊÇ¼¤·¤Æ¤ª¤¯¹½Â¤ÂÎ
-				¤Ø¤Î¥Ý¥¤¥ó¥¿ */
+  BYTE           flags;	     /* 下を見てね */
+  wchar_t        **allkouho; /* RkGetKanjiListで得られる文字列を配列にして
+				とっておくところ */
+  wchar_t        *glinebufp; /* 候補一覧のある一行を表示するための文字
+				列へのポインタ */
+  kouhoinfo      *kouhoifp;  /* 候補一覧関係の情報を格納しておく構造体
+				へのポインタ */
+  glineinfo      *glineifp;  /* 候補一覧関係の情報を格納しておく構造体
+				へのポインタ */
 } ichiranContextRec, *ichiranContext;
 
-/* ¥Õ¥é¥°¤Î°ÕÌ£ */
-#define ICHIRAN_ALLOW_CALLBACK 1 /* ¥³¡¼¥ë¥Ð¥Ã¥¯¤ò¤·¤Æ¤âÎÉ¤¤ */
-#define ICHIRAN_STAY_LONG    0x02 /* Áª¤Ö¤ÈÈ´¤±¤ë */
-#define ICHIRAN_NEXT_EXIT    0x04 /* ¼¡¤Î quit ¤ÇÈ´¤±¤ë */
+/* フラグの意味 */
+#define ICHIRAN_ALLOW_CALLBACK 1 /* コールバックをしても良い */
+#define ICHIRAN_STAY_LONG    0x02 /* 選ぶと抜ける */
+#define ICHIRAN_NEXT_EXIT    0x04 /* 次の quit で抜ける */
 
 
 typedef struct _foirchiranContextRec {
   BYTE id;
   BYTE majorMode, minorMode;
-  struct _kanjiMode *prevMode;	/* £±¤ÄÁ°¤Î¥â¡¼¥É */
+  struct _kanjiMode *prevMode;	/* １つ前のモード */
   mode_context    next;
 
-  int            curIkouho;  /* ¥«¥ì¥ó¥È¸õÊä */
-  WCHAR_T        **allkouho; /* RkGetKanjiList¤ÇÆÀ¤é¤ì¤ëÊ¸»úÎó¤òÇÛÎó¤Ë¤·¤Æ
-				¤È¤Ã¤Æ¤ª¤¯¤È¤³¤í */
-  menustruct     *table;  /* Ê¸»úÎó¤È´Ø¿ô¤Î¥Æ¡¼¥Ö¥ë */
-  int            *prevcurp;  /* Á°¤Î¥«¥ì¥ó¥È¸õÊä */
+  int            curIkouho;  /* カレント候補 */
+  wchar_t        **allkouho; /* RkGetKanjiListで得られる文字列を配列にして
+				とっておくところ */
+  menustruct     *table;  /* 文字列と関数のテーブル */
+  int            *prevcurp;  /* 前のカレント候補 */
 } forichiranContextRec, *forichiranContext;
 
 typedef struct _mountContextRec {
   BYTE id;
   BYTE majorMode, minorMode;
-  struct _kanjiMode *prevMode;	/* £±¤ÄÁ°¤Î¥â¡¼¥É */
+  struct _kanjiMode *prevMode;	/* １つ前のモード */
   mode_context    next;
 
-  BYTE            *mountOldStatus; /* ¥Þ¥¦¥ó¥È¤µ¤ì¤Æ¤¤¤ë¤«¤¤¤Ê¤¤¤« */
-  BYTE            *mountNewStatus; /* ¥Þ¥¦¥ó¥È¤µ¤ì¤Æ¤¤¤ë¤«¤¤¤Ê¤¤¤« */
-  char            **mountList;   /* ¥Þ¥¦¥ó¥È²ÄÇ½¤Ê¼­½ñ¤Î°ìÍ÷ */
-  int            curIkouho;     /* ¥«¥ì¥ó¥È¸õÊä */
+  BYTE            *mountOldStatus; /* マウントされているかいないか */
+  BYTE            *mountNewStatus; /* マウントされているかいないか */
+  char            **mountList;   /* マウント可能な辞書の一覧 */
+  int            curIkouho;     /* カレント候補 */
 } mountContextRec, *mountContext;
 
 typedef struct _tourokuContextRec {
   BYTE id;
   BYTE majorMode, minorMode;
-  struct _kanjiMode *prevMode;	/* £±¤ÄÁ°¤Î¥â¡¼¥É */
+  struct _kanjiMode *prevMode;	/* １つ前のモード */
   mode_context    next;
 
-  WCHAR_T        genbuf[ROMEBUFSIZE];
-  WCHAR_T        qbuf[ROMEBUFSIZE];
-  WCHAR_T        tango_buffer[ROMEBUFSIZE];
-  int            tango_len;  /* Ã±¸ìÅÐÏ¿¤ÎÃ±¸ì¤ÎÊ¸»úÎó¤ÎÄ¹¤µ */
-  WCHAR_T        yomi_buffer[ROMEBUFSIZE];
-  int            yomi_len;   /* Ã±¸ìÅÐÏ¿¤ÎÆÉ¤ß¤ÎÊ¸»úÎó¤ÎÄ¹¤µ */
-  int            curHinshi;  /* ÉÊ»ì¤ÎÁªÂò */
-  int            workDic;    /* ºî¶ÈÍÑ¤Î¼­½ñ */
-  deldicinfo     *workDic2;  /* Ã±¸ìºï½ü²ÄÇ½¤Ê¼­½ñ */
-  int            nworkDic2;  /* Ã±¸ìºï½ü²ÄÇ½¤Ê¼­½ñ¤Î¿ô */
-  deldicinfo     *workDic3;  /* Ã±¸ìºï½ü¤¹¤ë¼­½ñ */
-  int            nworkDic3;  /* Ã±¸ìºï½ü¤¹¤ë¼­½ñ¤Î¿ô */
-  struct dicname *newDic;    /* ÄÉ²Ã¤¹¤ë¼­½ñ */
-  WCHAR_T        hcode[INDPHLENGTH];  /* Ã±¸ìÅÐÏ¿¤ÎÉÊ»ì */
-  int            katsuyou;   /* Ã±¸ìÅÐÏ¿¤ÎÆ°»ì¤Î³èÍÑ·Á */
-  WCHAR_T        **udic;     /* Ã±¸ìÅÐÏ¿¤Ç¤­¤ë¼­½ñ (¼­½ñÌ¾) */
-  int            nudic;      /* Ã±¸ìÅÐÏ¿¤Ç¤­¤ë¼­½ñ¤Î¿ô */
-  int            delContext; /* Ã±¸ìºï½ü¤Ç£±¤Ä¤Î¼­½ñ¤ò¥Þ¥¦¥ó¥È¤¹¤ë */
+  wchar_t        genbuf[ROMEBUFSIZE];
+  wchar_t        qbuf[ROMEBUFSIZE];
+  wchar_t        tango_buffer[ROMEBUFSIZE];
+  int            tango_len;  /* 単語登録の単語の文字列の長さ */
+  wchar_t        yomi_buffer[ROMEBUFSIZE];
+  int            yomi_len;   /* 単語登録の読みの文字列の長さ */
+  int            curHinshi;  /* 品詞の選択 */
+  int            workDic;    /* 作業用の辞書 */
+  deldicinfo     *workDic2;  /* 単語削除可能な辞書 */
+  int            nworkDic2;  /* 単語削除可能な辞書の数 */
+  deldicinfo     *workDic3;  /* 単語削除する辞書 */
+  int            nworkDic3;  /* 単語削除する辞書の数 */
+  struct dicname *newDic;    /* 追加する辞書 */
+  wchar_t        hcode[INDPHLENGTH];  /* 単語登録の品詞 */
+  int            katsuyou;   /* 単語登録の動詞の活用形 */
+  wchar_t        **udic;     /* 単語登録できる辞書 (辞書名) */
+  int            nudic;      /* 単語登録できる辞書の数 */
+  int            delContext; /* 単語削除で１つの辞書をマウントする */
 } tourokuContextRec, *tourokuContext;
 
 typedef struct _tanContextRec {
   BYTE id;
   BYTE majorMode, minorMode;
-  struct _kanjiMode *prevMode;	/* £±¤ÄÁ°¤Î¥â¡¼¥É */
+  struct _kanjiMode *prevMode;	/* １つ前のモード */
   mode_context    next;
 
   struct _kanjiMode *curMode;
   struct _tanContextRec	 *left, *right;
 
-  struct RkRxDic *romdic;	/* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ë */
-  BYTE            myMinorMode;  /* yomiContext ¸ÇÍ­¤Î¥Þ¥¤¥Ê¥â¡¼¥É */
-  struct _kanjiMode *myEmptyMode;		/* empty ¥â¡¼¥É¤Ï¤É¤ì¤« */
-  long generalFlags, savedFlags; /* yomiContext ¤Î¥³¥Ô¡¼ */
-  BYTE		  savedMinorMode;	/* ¥Þ¥¤¥Ê¥â¡¼¥É¤Î¥»¡¼¥Ö */
+  struct RkRxDic *romdic;	/* ローマ字かな変換テーブル */
+  BYTE            myMinorMode;  /* yomiContext 固有のマイナモード */
+  struct _kanjiMode *myEmptyMode;		/* empty モードはどれか */
+  long generalFlags, savedFlags; /* yomiContext のコピー */
+  BYTE		  savedMinorMode;	/* マイナモードのセーブ */
   BYTE		  allowedChars;		/* see jrkanji.h */
   BYTE		  henkanInhibition;	/* see below */
 
-  WCHAR_T *kanji, *yomi, *roma;
+  wchar_t *kanji, *yomi, *roma;
   BYTE *kAttr, *rAttr;
 } tanContextRec, *tanContext;
 
 struct moreTodo {
-  BYTE          todo; /* ¤â¤Ã¤È¤¢¤ë¤Î¡©¤ò¼¨¤¹ */
-  BYTE          fnum; /* ´Ø¿ôÈÖ¹æ¡££°¤Ê¤é¼¡¤ÎÊ¸»ú¤Ç¼¨¤µ¤ì¤ë¤³¤È¤ò¤¹¤ë */
-  int		ch;   /* Ê¸»ú */
+  BYTE          todo; /* もっとあるの？を示す */
+  BYTE          fnum; /* 関数番号。０なら次の文字で示されることをする */
+  int		ch;   /* 文字 */
 };
 
-/* ¥â¡¼¥ÉÌ¾¤ò³ÊÇ¼¤¹¤ë¥Ç¡¼¥¿¤Î·¿ÄêµÁ */
+/* モード名を格納するデータの型定義 */
 
 struct ModeNameRecs {
   int           alloc;
-  WCHAR_T       *name;
+  wchar_t       *name;
 };
 
-/* °ìÍ÷¤ÎÈÖ¹æ¤Î¥»¥Ñ¥ì¡¼¥¿¡¼¤Î¥Ç¥Õ¥©¥ë¥È¤ÎÄêµÁ */
+/* 一覧の番号のセパレーターのデフォルトの定義 */
 
 #define DEFAULTINDEXSEPARATOR     '.'
 
@@ -538,82 +526,83 @@ typedef struct {
 
 /* 
 
-  uiContext ¤Ï¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¡¢¥«¥Ê´Á»úÊÑ´¹¤Ë»È¤ï¤ì¤ë¹½Â¤ÂÎ¤Ç¤¢¤ë¡£
-  XLookupKanjiString ¤Ê¤É¤Ë¤è¤ëÊÑ´¹¤Ï¡¢¥¦¥£¥ó¥É¥¦¤ËÊ¬Î¥¤µ¤ì¤¿Ê£¿ô¤ÎÆþ
-  ÎÏ¥Ý¡¼¥È¤ËÂÐ±þ¤·¤Æ¤¤¤ë¤Î¤Ç¡¢ÆþÎÏÃæ¤Î¥í¡¼¥Þ»ú¤Î¾ðÊó¤ä¡¢¥«¥Ê´Á»úÊÑ´¹
-  ¤ÎÍÍ»Ò¤Ê¤É¤ò¤½¤ì¤¾¤ì¤Î¥¦¥£¥ó¥É¥¦Ëè¤ËÊ¬Î¥¤·¤ÆÊÝ»ý¤·¤Æ¤ª¤«¤Ê¤±¤ì¤Ð¤Ê
-  ¤é¤Ê¤¤¡£¤³¤Î¹½Â¤ÂÎ¤Ï¤½¤Î¤¿¤á¤Ë»È¤ï¤ì¤ë¹½Â¤ÂÎ¤Ç¤¢¤ë¡£
+  uiContext はローマ字かな変換、カナ漢字変換に使われる構造体である。
+  XLookupKanjiString などによる変換は、ウィンドウに分離された複数の入
+  力ポートに対応しているので、入力中のローマ字の情報や、カナ漢字変換
+  の様子などをそれぞれのウィンドウ毎に分離して保持しておかなければな
+  らない。この構造体はそのために使われる構造体である。
  
-  ¹½Â¤ÂÎ¤Î¥á¥ó¥Ð¤¬¤É¤Î¤è¤¦¤Ê¤â¤Î¤¬¤¢¤ë¤«¤Ï¡¢ÄêµÁ¤ò»²¾È¤¹¤ë¤³¤È
+  構造体のメンバがどのようなものがあるかは、定義を参照すること
  
  */
 
 typedef struct _uiContext {
 
-  /* XLookupKanjiString¤Î¥Ñ¥é¥á¥¿ */
-  WCHAR_T        *buffer_return;
+  /* XLookupKanjiStringのパラメタ */
+  wchar_t        *buffer_return;
   int            n_buffer;
   wcKanjiStatus    *kanji_status_return;
 
-  /* XLookupKanjiString¤ÎÌá¤êÃÍ¤Ç¤¢¤ëÊ¸»úÎó¤ÎÄ¹¤µ */
+  /* XLookupKanjiStringの戻り値である文字列の長さ */
   int		 nbytes;
 
-  /* ¥­¥ã¥é¥¯¥¿ */
+  /* キャラクタ */
   int ch;
 
-  /* ¥»¥ß¥°¥í¡¼¥Ð¥ë¥Ç¡¼¥¿ */
-  int		 contextCache;	 /* ÊÑ´¹¥³¥ó¥Æ¥¯¥¹¥È¥­¥ã¥Ã¥·¥å */
+  /* セミグローバルデータ */
+  int		 contextCache;	 /* 変換コンテクストキャッシュ */
   struct _kanjiMode *current_mode;
-  BYTE		 majorMode, minorMode;	 /* Ä¾Á°¤Î¤â¤Î */
+  BYTE		 majorMode, minorMode;	 /* 直前のもの */
 
-  short		 curkigo;	 /* ¥«¥ì¥ó¥Èµ­¹æ(µ­¹æÁ´ÈÌ) */
-  char           currussia;	 /* ¥«¥ì¥ó¥Èµ­¹æ(¥í¥·¥¢Ê¸»ú) */
-  char           curgreek;	 /* ¥«¥ì¥ó¥Èµ­¹æ(¥®¥ê¥·¥ãÊ¸»ú) */
-  char           curkeisen;	 /* ¥«¥ì¥ó¥Èµ­¹æ(·ÓÀþ) */
-  short          curbushu;       /* ¥«¥ì¥ó¥ÈÉô¼óÌ¾ */
-  int            ncolumns;	 /* °ì¹Ô¤Î¥³¥é¥à¿ô¡¢¸õÊä°ìÍ÷¤Î»þ¤ËÍÑ¤¤¤é¤ì¤ë */
-  WCHAR_T        genbuf[ROMEBUFSIZE];	/* ÈÆÍÑ¥Ð¥Ã¥Õ¥¡ */
-  short          strokecounter;  /* ¥­¡¼¥¹¥È¥í¡¼¥¯¤Î¥«¥¦¥ó¥¿
-				    ¥í¡¼¥Þ»ú¥â¡¼¥É¤Ç¥¯¥ê¥¢¤µ¤ì¤ë */
+  short		 curkigo;	 /* カレント記号(記号全般) */
+  char           currussia;	 /* カレント記号(ロシア文字) */
+  char           curgreek;	 /* カレント記号(ギリシャ文字) */
+  char           curkeisen;	 /* カレント記号(罫線) */
+  short          curbushu;       /* カレント部首名 */
+  int            ncolumns;	 /* 一行のコラム数、候補一覧の時に用いられる */
+  wchar_t        genbuf[ROMEBUFSIZE];	/* 汎用バッファ */
+  short          strokecounter;  /* キーストロークのカウンタ
+				    ローマ字モードでクリアされる */
   wcKanjiAttributeInternal *attr;
 
-  /* ¥ê¥¹¥È¥³¡¼¥ë¥Ð¥Ã¥¯´ØÏ¢ */
-  char           *client_data;   /* ¥¢¥×¥ê¥±¡¼¥·¥ç¥óÍÑ¥Ç¡¼¥¿ */
-  int            (*list_func) (char *, int, WCHAR_T **, int, int *);
-                 /* ¥ê¥¹¥È¥³¡¼¥ë¥Ð¥Ã¥¯´Ø¿ô */
-  /* ¤½¤ÎÂ¾ */
-  char		 flags;		 /* ²¼¤ò¸«¤Æ¤Í */
-  char		 status;	 /* ¤É¤Î¤è¤¦¤Ê¾õÂÖ¤ÇÊÖ¤Ã¤¿¤Î¤«¤ò¼¨¤¹ÃÍ
-				    ¤½¤Î¥â¡¼¥É¤È¤·¤Æ¡¢
-				     ¡¦½èÍýÃæ
-				     ¡¦½èÍý½ªÎ»
-				     ¡¦½èÍýÃæÃÇ
-				     ¡¦¤½¤ÎÂ¾
-				    ¤¬¤¢¤ë¡£(²¼¤ò¸«¤è) */
+  /* リストコールバック関連 */
+  char           *client_data;   /* アプリケーション用データ */
+  int            (*list_func) pro((char *, int, wchar_t **, int, int *));
+  jrEUCListCallbackStruct elistcb; /* EUCの場合の実体(旧wcも兼用) */
+                 /* リストコールバック関数 */
+  /* その他 */
+  char		 flags;		 /* 下を見てね */
+  char		 status;	 /* どのような状態で返ったのかを示す値
+				    そのモードとして、
+				     ・処理中
+				     ・処理終了
+				     ・処理中断
+				     ・その他
+				    がある。(下を見よ) */
 
-  /* ¥³¡¼¥ë¥Ð¥Ã¥¯¥Á¥§¡¼¥ó */
+  /* コールバックチェーン */
   struct callback *cb;
 
-  /* ¤â¤Ã¤È¤¹¤ë¤³¤È¤¬¤¢¤ë¤è¤È¤¤¤¦¹½Â¤ÂÎ */
+  /* もっとすることがあるよという構造体 */
   struct moreTodo more;
 
-  /* ¥¯¥¤¥Ã¥È¥Á¥§¡¼¥ó */
+  /* クイットチェーン */
   menustruct *prevMenu;
 
-  /* ³Æ¥á¥Ë¥å¡¼¤ÇÁª¤Ð¤ì¤¿ÈÖ¹æ¤òµ­Ï¿¤·¤Æ¤ª¤¯¹½Â¤ÂÎ¤Ø¤Î¥Ý¥¤¥ó¥¿ */
+  /* 各メニューで選ばれた番号を記録しておく構造体へのポインタ */
   menuinfo *minfo;
 
-  /* ³Æ°ìÍ÷¤ÇÁª¤Ð¤ì¤¿ÈÖ¹æ¤òµ­Ï¿¤·¤Æ¤ª¤¯¹½Â¤ÂÎ¤Ø¤Î¥Ý¥¤¥ó¥¿ */
+  /* 各一覧で選ばれた番号を記録しておく構造体へのポインタ */
   selectinfo *selinfo;
 
-  /* ¥µ¥Ö¥³¥ó¥Æ¥¯¥¹¥È¤Ø¤Î¥ê¥ó¥¯ */
-  mode_context   modec;		/* Á´Éô¤³¤³¤Ë¤Ä¤Ê¤°Í½Äê */
+  /* サブコンテクストへのリンク */
+  mode_context   modec;		/* 全部ここにつなぐ予定 */
 } uiContextRec, *uiContext;
 
-/* uiContext ¤Î flags ¤Î¥Ó¥Ã¥È¤Î°ÕÌ£ */
-#define PLEASE_CLEAR_GLINE	1	/* GLine ¤ò¾Ã¤·¤Æ¤Í */
-#define PCG_RECOGNIZED		2	/* GLine ¤ò¼¡¤Ï¾Ã¤·¤Þ¤¹¤è */
-#define MULTI_SEQUENCE_EXECUTED	4	/* ¤µ¤Ã¤­¥Þ¥ë¥Á¥·¡¼¥±¥ó¥¹¤¬¹Ô¤ï¤ì¤¿ */
+/* uiContext の flags のビットの意味 */
+#define PLEASE_CLEAR_GLINE	1	/* GLine を消してね */
+#define PCG_RECOGNIZED		2	/* GLine を次は消しますよ */
+#define MULTI_SEQUENCE_EXECUTED	4	/* さっきマルチシーケンスが行われた */
 
 #define EVERYTIME_CALLBACK	0
 #define EXIT_CALLBACK		1
@@ -621,35 +610,35 @@ typedef struct _uiContext {
 #define AUX_CALLBACK		3
 
 /* 
- * ¥«¥Ê´Á»úÊÑ´¹¤Î¤¿¤á¤ÎÍÍ¡¹¤Ê¥­¡¼¥Þ¥Ã¥×¥Æ¡¼¥Ö¥ë 
- * ¥­¡¼¥Þ¥Ã¥×¥Æ¡¼¥Ö¥ë¤Ï½èÍý´Ø¿ô¤Ø¤Î¥Ý¥¤¥ó¥¿¤ÎÇÛÎó¤È¤Ê¤Ã¤Æ¤¤¤ë¡£
+ * カナ漢字変換のための様々なキーマップテーブル 
+ * キーマップテーブルは処理関数へのポインタの配列となっている。
  */
 
 struct funccfunc {
   BYTE funcid;
-  int (*cfunc) (struct _uiContext *);
+  int (*cfunc) pro((struct _uiContext *));
 };
 
 typedef struct _kanjiMode {
-  int (*func) (struct _uiContext *, struct _kanjiMode *, int, int, int);
+  int (*func) pro((struct _uiContext *, struct _kanjiMode *, int, int, int));
   BYTE *keytbl;
-  int flags;			/* ²¼¤ò¸«¤è */
+  int flags;			/* 下を見よ */
   struct funccfunc *ftbl;
 } *KanjiMode, KanjiModeRec;
 
 struct callback {
-  int (*func[NCALLBACK]) (struct _uiContext *, int, mode_context);
+  int (*func[NCALLBACK]) pro((struct _uiContext *, int, mode_context));
   mode_context    env;
   struct callback *next;
 };
 
-/* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ë */
+/* ローマ字かな変換テーブル */
      
-extern struct RkRxDic *RkwOpenRoma(char *romaji);
-extern void RkwCloseRoma(struct RkRxDic *rdic);
+extern struct RkRxDic *romajidic;
+extern struct RkRxDic *RkwOpenRoma pro((char *));
 
 /*
- * ¼­½ñ¤ÎÌ¾Á°¤òÆþ¤ì¤Æ¤ª¤¯ÊÑ¿ô
+ * 辞書の名前を入れておく変数
  */
 
 struct dicname {
@@ -659,16 +648,16 @@ struct dicname {
   unsigned long dicflag;
 };
 
-/* dictype ¤Ë¤Ï°Ê²¼¤Î¤¤¤º¤ì¤«¤¬Æþ¤ë */
-#define DIC_PLAIN 0     /* ÄÌ¾ï¤ÎÍøÍÑ */
-#define DIC_USER  1     /* Ã±¸ìÅÐÏ¿ÍÑ¼­½ñ */
-#define DIC_BUSHU 2     /* Éô¼óÊÑ´¹ÍÑ¼­½ñ */
-#define DIC_GRAMMAR 3   /* Ê¸Ë¡¼­½ñ */
-#define DIC_RENGO 4     /* Ï¢¸ì³Ø½¬¼­½ñ */
-#define DIC_KATAKANA 5  /* ¥«¥¿¥«¥Ê³Ø½¬¼­½ñ */
-#define DIC_HIRAGANA 6  /* ¤Ò¤é¤¬¤Ê³Ø½¬¼­½ñ */
+/* dictype には以下のいずれかが入る */
+#define DIC_PLAIN 0     /* 通常の利用 */
+#define DIC_USER  1     /* 単語登録用辞書 */
+#define DIC_BUSHU 2     /* 部首変換用辞書 */
+#define DIC_GRAMMAR 3   /* 文法辞書 */
+#define DIC_RENGO 4     /* 連語学習辞書 */
+#define DIC_KATAKANA 5  /* カタカナ学習辞書 */
+#define DIC_HIRAGANA 6  /* ひらがな学習辞書 */
 
-/* dicflag ¤Ë¤Ï°Ê²¼¤Î¤¤¤º¤ì¤«¤¬Æþ¤ë */
+/* dicflag には以下のいずれかが入る */
 #define DIC_NOT_MOUNTED  0
 #define DIC_MOUNTED      1
 #define DIC_MOUNT_FAILED 2
@@ -676,19 +665,19 @@ struct dicname {
 extern struct dicname *kanjidicnames;
 
 /*
- * ¥¨¥é¡¼¤Î¥á¥Ã¥»¡¼¥¸¤òÆþ¤ì¤Æ¤ª¤¯ÊÑ¿ô
+ * エラーのメッセージを入れておく変数
  */
 
 extern char *jrKanjiError;
 
 /*
- * ¥Ç¥Ð¥°Ê¸¤òÉ½¼¨¤¹¤ë¤«¤É¤¦¤«¤Î¥Õ¥é¥°
+ * デバグ文を表示するかどうかのフラグ
  */
 
-extern int iroha_debug;
+extern iroha_debug;
 
 /*
- * ¥­¡¼¥·¡¼¥±¥ó¥¹¤òÈ¯À¸¤¹¤ë¤è¤¦¤Ê¥­¡¼
+ * キーシーケンスを発生するようなキー
  */
 
 #define IrohaFunctionKey(key) \
@@ -699,13 +688,13 @@ extern int iroha_debug;
    (0xe0 <= (int)(unsigned char)(key) &&  \
     (int)(unsigned char)(key) <= 0xff) )
 
-/* selectOne ¤Ç¥³¡¼¥ë¥Ð¥Ã¥¯¤òÈ¼¤¦¤«¤É¤¦¤«¤òÉ½¤¹¥Þ¥¯¥í */
+/* selectOne でコールバックを伴うかどうかを表すマクロ */
 
 #define WITHOUT_LIST_CALLBACK 0
 #define WITH_LIST_CALLBACK    1
 
 /*
- * Rk ´Ø¿ô¤ò¥È¥ì¡¼¥¹¤¹¤ë¤¿¤á¤ÎÌ¾Á°¤Î½ñ¤­´¹¤¨¡£
+ * Rk 関数をトレースするための名前の書き換え。
  */
 
 #ifdef DEBUG
@@ -713,7 +702,7 @@ extern int iroha_debug;
 #endif /* DEBUG */
 
 /*
- * ¥Ç¥Ð¥°¥á¥Ã¥»¡¼¥¸½ÐÎÏÍÑ¤Î¥Þ¥¯¥í
+ * デバグメッセージ出力用のマクロ
  */
 
 #ifdef DEBUG
@@ -723,38 +712,38 @@ extern int iroha_debug;
 #endif /* !DEBUG */
 
 /*
- * malloc ¤Î¥Ç¥Ð¥°
+ * malloc のデバグ
  */
 
 #ifdef DEBUG_ALLOC
-extern char *debug_malloc (int);
+extern char *debug_malloc pro((int));
 extern int fail_malloc;
 #define malloc(n) debug_malloc(n)
 #endif /* DEBUG_MALLOC */
 
 /*
- * ¿·¤·¤¤¥â¡¼¥É¤òÄêµÁ¤¹¤ë¹½Â¤ÂÎ
+ * 新しいモードを定義する構造体
  */
 
 typedef struct {
-  char           *romaji_table; /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ëÌ¾(EUC) */
-  struct RkRxDic *romdic;	 /* ¥í¡¼¥Þ»ú¼­½ñ¹½Â¤ÂÎ */
-  int             romdic_owner;  /* ¥í¡¼¥Þ»ú¼­½ñ¤ò¼«Ê¬¤ÇOpen¤·¤¿¤« */
+  char           *romaji_table; /* ローマ字かな変換テーブル名(EUC) */
+  struct RkRxDic *romdic;	 /* ローマ字辞書構造体 */
+  int             romdic_owner;  /* ローマ字辞書を自分でOpenしたか */
   long            flags;	 /* flags for yomiContext->generalFlags */
-  KanjiMode       emode;	 /* current_mode ¤ËÆþ¤ë¹½Â¤ÂÎ */
+  KanjiMode       emode;	 /* current_mode に入る構造体 */
 } newmode;
 
-/* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¤òÊäÂ­¤¹¤ë¥­¡¼¤ÈÊ¸»ú¤ÎÊÑ´¹¥Æ¡¼¥Ö¥ë */
+/* ローマ字かな変換を補足するキーと文字の変換テーブル */
 
 typedef struct {
-  WCHAR_T	key;		/* ¥­¡¼ */
-  WCHAR_T       xkey;
-  int		groupid;	/* ¥°¥ë¡¼¥×id */
-  int           ncand;          /* ¸õÊä¤Î¿ô */
-  WCHAR_T       **cand;         /* ¸õÊä¤ÎÇÛÎó */
-  WCHAR_T	*fullword;	/* ¸õÊäÎó (¸õÊä1@¸õÊä2@...¸õÊän@@) */
+  wchar_t	key;		/* キー */
+  wchar_t       xkey;
+  int		groupid;	/* グループid */
+  int           ncand;          /* 候補の数 */
+  wchar_t       **cand;         /* 候補の配列 */
+  wchar_t	*fullword;	/* 候補列 (候補1@候補2@...候補n@@) */
 #ifdef WIN_CANLISP
-  int		fullwordsize;	/* sizeof fullword by WCHAR_T unit */
+  int		fullwordsize;	/* sizeof fullword by wchar_t unit */
 #endif
 } keySupplement;
 
@@ -773,16 +762,16 @@ typedef struct {
 #define	defineEnd(d) killmenu(d)
 #define	deleteEnd(d) killmenu(d)
 
-/* defmode¡¢defselection¡¢defmenu ÍÑ¤Î¹½Â¤ÂÎ */
+/* defmode、defselection、defmenu 用の構造体 */
 
 typedef struct _extra_func {
-  int  		fnum;		/* ´Ø¿ôÈÖ¹æ */
-  int		keyword;	/* ¿·¤·¤¤¥â¡¼¥É¤¬ÄêµÁ¤µ¤ì¤¿¥­¡¼¥ï¡¼¥É */
-  WCHAR_T	*display_name;	/* ¥â¡¼¥ÉÉ½¼¨Ì¾ */
+  int  		fnum;		/* 関数番号 */
+  int		keyword;	/* 新しいモードが定義されたキーワード */
+  wchar_t	*display_name;	/* モード表示名 */
   union {
-    newmode 	*modeptr;	/* defmode ¤ËÂÐ±þ¤¹¤ë¹½Â¤ÂÎ */
-    kigoIchiran	*kigoptr;	/* defselection ¤ËÂÐ±þ¤¹¤ë¹½Â¤ÂÎ */
-    menustruct	*menuptr;	/* defmenu ¤ËÂÐ±þ¤¹¤ë¹½Â¤ÂÎ */
+    newmode 	*modeptr;	/* defmode に対応する構造体 */
+    kigoIchiran	*kigoptr;	/* defselection に対応する構造体 */
+    menustruct	*menuptr;	/* defmenu に対応する構造体 */
   } u;
 #ifdef BINARY_CUSTOM
   int           mid;
@@ -795,7 +784,7 @@ typedef struct _extra_func {
 #define EXTRA_FUNC_DEFSELECTION	2
 #define EXTRA_FUNC_DEFMENU	3
 
-#define tanbunMode(d, tan) /* tanContext ´ØÏ¢¥â¡¼¥É¤Ø¤Î°Ü¹Ô */ \
+#define tanbunMode(d, tan) /* tanContext 関連モードへの移行 */ \
   { extern KanjiModeRec tankouho_mode; (d)->current_mode = &tankouho_mode; \
     (d)->modec = (mode_context)(tan); currentModeInfo(d); }
 
@@ -804,63 +793,68 @@ typedef struct _extra_func {
 #define freeYomiContext(yc) free((char *)yc)
 #define freeCoreContext(cc) free((char *)cc)
 
+#ifndef DICHOME
+#define DICHOME "/usr/lib/canna/dic"
+#endif
+
 #define DEFAULT_CANNA_SERVER_NAME "cannaserver"
 
 #ifndef	_UTIL_FUNCTIONS_DEF_
 
 #define	_UTIL_FUNCTIONS_DEF_
 
-/* ¤«¤ó¤Ê¤Î¥Ð¡¼¥¸¥ç¥ó¤òÄ´¤Ù¤ë */
+/* かんなのバージョンを調べる */
 #define canna_version(majv, minv) ((majv) * 1024 + (minv))
 
-/* ¤è¤¯¥¹¥Ú¥ë¥ß¥¹¤¹¤ë¤Î¤Ç¥³¥ó¥Ñ¥¤¥ë»þ¤Ë¤Ò¤Ã¤«¤«¤ë¤è¤¦¤ËÆþ¤ì¤ë */
-extern int RkwGoto (char *, int);
+/* よくスペルミスするのでコンパイル時にひっかかるように入れる */
+extern RkwGoto pro((char *, int));
 
 /* storing customize configuration to the following structure. */
-struct CannaConfig { /* °Ê²¼¤Î¥³¥á¥ó¥È¤Ï¥À¥¤¥¢¥í¥°¤Ê¤É¤Ëµ­½Ò¤¹¤ë¤È¤­¤Ê¤É¤Ë
-			ÍÑ¤¤¤ë¸ì×Ã¡£! ¤¬ÀèÆ¬¤Ë¤Ä¤¤¤Æ¤¤¤ë¤Î¤Ï¥í¥¸¥Ã¥¯¤¬È¿Å¾
-			¤·¤Æ¤¤¤ë¤³¤È¤òÉ½¤¹ */
-  int CannaVersion;  /* (¸ß´¹ÍÑ) ¤«¤ó¤Ê¤Î¥Ð¡¼¥¸¥ç¥ó */
-  int kouho_threshold; /* ÊÑ´¹¥­¡¼¤ò²¿²óÂÇ¤Ä¤È°ìÍ÷¤¬½Ð¤ë¤« */
-  int strokelimit;  /* (¸ß´¹ÍÑ) ²¿¥¹¥È¥í¡¼¥¯¥¢¥ë¥Õ¥¡¥Ù¥Ã¥È¤òÆþ¤ì¤ë¤ÈÀÚÃÇ¤« */
-  int indexSeparator; /* (¸ß´¹ÍÑ) °ìÍ÷»þ¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤Î¥»¥Ñ¥ì¡¼¥¿ */
-  BYTE ReverseWidely; /* È¿Å¾ÎÎ°è¤ò¹­¤¯¤È¤ë       */
-  BYTE chikuji;       /* Ãà¼¡¼«Æ°ÊÑ´¹             */
-  BYTE Gakushu;       /* ³Ø½¬¤¹¤ë¤«¤É¤¦¤«         */
-  BYTE CursorWrap;    /* ±¦Ã¼¤Ç±¦¤Çº¸Ã¼¤Ø¹Ô¤¯     */
-  BYTE SelectDirect;  /* °ìÍ÷»þ¡¢ÁªÂò¤Ç°ìÍ÷¤òÈ´¤±¤ë */
-  BYTE HexkeySelect;  /* (¸ß´¹ÍÑ) 16¿Ê¿ô»ú¤Ç¤â°ìÍ÷ÁªÂò²Ä */
-  BYTE BunsetsuKugiri; /* ÊÑ´¹»þÊ¸Àá´Ö¤Ë¶õÇò¤òÁÞÆþ  */
-  BYTE ChBasedMove;   /* !¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹Ã±°Ì¤Î¥«¡¼¥½¥ë°ÜÆ°   */
-  BYTE ReverseWord;   /* (¸ß´¹ÍÑ) °ìÍ÷¤Ç¸ì¤òÈ¿Å¾¤¹¤ë */
-  BYTE QuitIchiranIfEnd; /* °ìÍ÷ËöÈø¤Ç°ìÍ÷¤òÊÄ¤¸¤ë */
-  BYTE kakuteiIfEndOfBunsetsu; /* Ê¸ÀáËöÈø¤Ç±¦°ÜÆ°¤Ç³ÎÄê¤¹¤ë */
-  BYTE stayAfterValidate; /* !°ìÍ÷¤ÇÁªÂò¸å¼¡¤ÎÊ¸Àá¤Ø°ÜÆ° */
-  BYTE BreakIntoRoman;    /* BS¥­¡¼¤Ç¥í¡¼¥Þ»ú¤ØÌá¤¹ */
-  BYTE grammaticalQuestion; /* (¸ß´¹ÍÑ) Ã±¸ìÅÐÏ¿»þÊ¸Ë¡Åª¼ÁÌä¤ò¤¹¤ë */
+struct CannaConfig { /* 以下のコメントはダイアログなどに記述するときなどに
+			用いる語彙。! が先頭についているのはロジックが反転
+			していることを表す */
+  int CannaVersion;  /* (互換用) かんなのバージョン */
+  int kouho_threshold; /* 変換キーを何回打つと一覧が出るか */
+  int strokelimit;  /* (互換用) 何ストロークアルファベットを入れると切断か */
+  int indexSeparator; /* (互換用) 一覧時のインデックスのセパレータ */
+  BYTE ReverseWidely; /* 反転領域を広くとる       */
+  BYTE chikuji;       /* 逐次自動変換             */
+  BYTE Gakushu;       /* 学習するかどうか         */
+  BYTE CursorWrap;    /* 右端で右で左端へ行く     */
+  BYTE SelectDirect;  /* 一覧時、選択で一覧を抜ける */
+  BYTE HexkeySelect;  /* (互換用) 16進数字でも一覧選択可 */
+  BYTE BunsetsuKugiri; /* 変換時文節間に空白を挿入  */
+  BYTE ChBasedMove;   /* !ローマ字かな変換単位のカーソル移動   */
+  BYTE ReverseWord;   /* (互換用) 一覧で語を反転する */
+  BYTE QuitIchiranIfEnd; /* 一覧末尾で一覧を閉じる */
+  BYTE kakuteiIfEndOfBunsetsu; /* 文節末尾で右移動で確定する */
+  BYTE stayAfterValidate; /* !一覧で選択後次の文節へ移動 */
+  BYTE BreakIntoRoman;    /* BSキーでローマ字へ戻す */
+  BYTE grammaticalQuestion; /* (互換用) 単語登録時文法的質問をする */
   BYTE forceKana;           /* Isn't this used? */
-  BYTE kCount;        /* (¸ß´¹ÍÑ) ¸õÊä¤¬²¿ÈÖÌÜ¤«¤òÉ½¼¨¤¹¤ë */
+  BYTE kCount;        /* (互換用) 候補が何番目かを表示する */
   BYTE LearnNumericalType;  /* Isn't this used? */
-  BYTE BackspaceBehavesAsQuit; /* Ãà¼¡¼«Æ°ÊÑ´¹»þ BS ¥­¡¼¤ÇÁ´ÂÎ¤òÆÉ¤ß¤ËÌá¤¹ */
-  BYTE iListCB;       /* (¸ß´¹ÍÑ) ¥ê¥¹¥È¥³¡¼¥ë¥Ð¥Ã¥¯¤ò¶Ø»ß¤¹¤ë */
-  BYTE keepCursorPosition;  /* !ÊÑ´¹»þ¤ËBSÂÇ¸°»þ¥«¡¼¥½¥ë°ÌÃÖ¤òËöÈø¤Ë°ÜÆ° */
-  BYTE abandonIllegalPhono; /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¤Ë»È¤ï¤ì¤Ê¤¤¥­¡¼¤ò¼Î¤Æ¤ë */
+  BYTE BackspaceBehavesAsQuit; /* 逐次自動変換時 BS キーで全体を読みに戻す */
+  BYTE iListCB;       /* (互換用) リストコールバックを禁止する */
+  BYTE keepCursorPosition;  /* !変換時にBS打鍵時カーソル位置を末尾に移動 */
+  BYTE abandonIllegalPhono; /* ローマ字かな変換に使われないキーを捨てる */
   BYTE hexCharacterDefiningStyle; /* Isn't this used? */
-  BYTE kojin;         /* ¸Ä¿Í³Ø½¬ */
-  BYTE indexHankaku;  /* (¸ß´¹ÍÑ) °ìÍ÷»þ¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤òÈ¾³Ñ¤Ë¤¹¤ë */
-  BYTE allowNextInput; /* ¸õÊä°ìÍ÷É½¼¨»þ¡¢¼¡¤ÎÆþÎÏ¤¬²ÄÇ½¤Ë¤¹¤ë */
+  BYTE kojin;         /* 個人学習 */
+  BYTE indexHankaku;  /* (互換用) 一覧時のインデックスを半角にする */
+  BYTE allowNextInput; /* 候補一覧表示時、次の入力が可能にする */
   BYTE doKatakanaGakushu; /* Isn't this used? */
   BYTE doHiraganaGakushu; /* Isn't this used? */ 
-  BYTE ChikujiContinue; /* Ãà¼¡¼«Æ°ÊÑ´¹»þ¼¡¤ÎÆþÎÏ¤Ç´ûÊÑ´¹ÉôÊ¬¤ò³ÎÄê¤·¤Ê¤¤ */
-  BYTE RenbunContinue;  /* Ï¢Ê¸ÀáÊÑ´¹»þ¼¡¤ÎÆþÎÏ¤Ç´ûÊÑ´¹ÉôÊ¬¤ò³ÎÄê¤·¤Ê¤¤ */
-  BYTE MojishuContinue; /* »ú¼ïÊÑ´¹»þ¼¡¤ÎÆþÎÏ¤Ç´ûÊÑ´¹ÉôÊ¬¤ò³ÎÄê¤·¤Ê¤¤ */
-  BYTE chikujiRealBackspace; /* Ãà¼¡¼«Æ°ÊÑ´¹»þBS¤ÇÉ¬¤º°ìÊ¸»ú¾Ãµî¤¹¤ë */
-  BYTE ignore_case;   /* ÂçÊ¸»ú¾®Ê¸»ú¤ò¶èÊÌ¤·¤Ê¤¤ */
-  BYTE romaji_yuusen; /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¤òÍ¥Àè¤¹¤ë */
-  BYTE auto_sync;     /* Äê´üÅª¤Ë¼­½ñ¤ò½ñ¤­Ìá¤¹ */
-  BYTE quickly_escape; /* (¸ß´¹ÍÑ) °ìÍ÷É½¼¨»þ¡¢ÁªÂò¤ÇÂ¨ºÂ¤Ë°ìÍ÷¤òÈ´¤±¤ë */
-  BYTE InhibitHankakuKana; /* È¾³Ñ¥«¥¿¥«¥Ê¤Î¶Ø»ß */
-  BYTE code_input;    /* ¥³¡¼¥É(0: jis, 1: sjis, 2: ¶èÅÀ) */
+  BYTE ChikujiContinue; /* 逐次自動変換時次の入力で既変換部分を確定しない */
+  BYTE RenbunContinue;  /* 連文節変換時次の入力で既変換部分を確定しない */
+  BYTE MojishuContinue; /* 字種変換時次の入力で既変換部分を確定しない */
+  BYTE chikujiRealBackspace; /* 逐次自動変換時BSで必ず一文字消去する */
+  BYTE ignore_case;   /* 大文字小文字を区別しない */
+  BYTE romaji_yuusen; /* ローマ字かな変換を優先する */
+  BYTE auto_sync;     /* 定期的に辞書を書き戻す */
+  BYTE quickly_escape; /* (互換用) 一覧表示時、選択で即座に一覧を抜ける */
+  BYTE InhibitHankakuKana; /* 半角カタカナの禁止 */
+  BYTE code_input;    /* コード(0: jis, 1: sjis, 2: 区点) */
+  BYTE DelayConnect;  /* 初期化時にすぐにサーバに接続しない */
 };
 
 #define CANNA_CODE_JIS   0
@@ -869,407 +863,269 @@ struct CannaConfig { /* °Ê²¼¤Î¥³¥á¥ó¥È¤Ï¥À¥¤¥¢¥í¥°¤Ê
 #define CANNA_MAX_CODE   3
 
 extern struct CannaConfig cannaconf;
-typedef int (* canna_callback_t) (uiContext, int, mode_context);
+extern void InitCannaConfig pro((struct CannaConfig *));
 
-/* RKkana.c */
-int RkCvtZen(unsigned char *zen, int maxzen, unsigned char *han, int maxhan);
-int RkCvtHan(unsigned char *han, int maxhan, unsigned char *zen, int maxzen);
-int RkCvtKana(unsigned char *kana, int maxkana, unsigned char *hira, int maxhira);
-int RkCvtHira(unsigned char *hira, int maxhira, unsigned char *kana, int maxkana);
-int RkCvtNone(unsigned char *dst, int maxdst, unsigned char *src, int maxsrc);
-int RkCvtEuc(unsigned char *euc, int maxeuc, unsigned char *sj, int maxsj);
-int RkCvtSuuji(unsigned char *dst, int maxdst, unsigned char *src, int maxsrc, int format);
-int RkwCvtHan(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen);
-int RkwCvtHira(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen);
-int RkwCvtKana(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen);
-int RkwCvtZen(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen);
-int RkwCvtNone(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen);
-int RkwMapRoma(struct RkRxDic *romaji, WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen, int flags, int *status);
-int RkwMapPhonogram(struct RkRxDic *romaji, WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen, WCHAR_T key, int flags, int *ulen, int *dlen, int *tlen, int *rule);
-int RkwCvtRoma(struct RkRxDic *romaji, WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen, int flags);
+typedef int (* canna_callback_t) pro((uiContext, int, mode_context));
 
-/* RKroma.c */
-int compar(struct romaRec *p, struct romaRec *q);
-struct RkRxDic *RkwOpenRoma(char *romaji);
-void RkwCloseRoma(struct RkRxDic *rdic);
-struct RkRxDic *RkOpenRoma(char *romaji);
-void RkCloseRoma(struct RkRxDic *rdic);
-int RkMapRoma(struct RkRxDic *rdic, unsigned char *dst, int maxdst, unsigned char *src, int maxsrc, int flags, int *status);
-int RkMapPhonogram(struct RkRxDic *rdic, unsigned char *dst, int maxdst, unsigned char *src, int srclen, unsigned key, int flags, int *used_len_return, int *dst_len_return, int *tmp_len_return, int *rule_id_inout);
-int RkCvtRoma(struct RkRxDic *rdic, unsigned char *dst, int maxdst, unsigned char *src, int maxsrc, unsigned flags);
-
-/* bunsetsu.c */
-int enterAdjustMode(uiContext d, yomiContext yc);
-int leaveAdjustMode(uiContext d, yomiContext yc);
-
-/* bushu.c */
-int initBushuTable(void);
-int getForIchiranContext(uiContext d);
-void popForIchiranMode(uiContext d);
-int BushuMode(uiContext d);
-int ConvertAsBushu(uiContext d);
-
-/* chikuji.c */
-void clearHenkanContext(yomiContext yc);
-int chikujiInit(uiContext d);
-int ChikujiSubstYomi(uiContext d);
-int ChikujiTanDeletePrevious(uiContext d);
-void moveToChikujiTanMode(uiContext d);
-void moveToChikujiYomiMode(uiContext d);
-
-/* commondata.c */
-void InitCannaConfig(struct CannaConfig *cf);
-void restoreBindings(void);
-
-/* defaultmap.c */
-int searchfunc (uiContext, KanjiMode, int, int, int);
-int CYsearchfunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum);
-
-/* ebind.c */
-int XLookupKanji2(unsigned int dpy, unsigned int win, char *buffer_return, int bytes_buffer, int nbytes, int functionalChar, jrKanjiStatus *kanji_status_return);
-int XKanjiControl2(unsigned int display, unsigned int window, unsigned int request, BYTE *arg);
-
-/* empty.c */
-extraFunc *FindExtraFunc(int fnum);
-int getBaseMode(yomiContext yc);
-void EmptyBaseModeInfo(uiContext d, yomiContext yc);
-int EmptyBaseHira(uiContext d);
-int EmptyBaseKata(uiContext d);
-int EmptyBaseEisu(uiContext d);
-int EmptyBaseZen(uiContext d);
-int EmptyBaseHan(uiContext d);
-int EmptyBaseKana(uiContext d);
-int EmptyBaseKakutei(uiContext d);
-int EmptyBaseHenkan(uiContext d);
-
-/* engine.c */
-int RkSetServerName(char *s);
-char *RkGetServerHost(void);
-void close_engine(void);
-
-/* henkan.c */
-int KanjiInit(void);
-int KanjiFin(void);
-void freeTanContext(tanContext tan);
-int doTanConvertTb(uiContext d, yomiContext yc);
-int YomiBubunKakutei(uiContext d);
-yomiContext newFilledYomiContext(mode_context next, KanjiMode prev);
-int TanBubunMuhenkan(uiContext d);
-int prepareHenkanMode(uiContext d);
-int doHenkan(uiContext d, int len, WCHAR_T *kanji);
-int TanNop(uiContext d);
-int TanForwardBunsetsu(uiContext d);
-int TanBackwardBunsetsu(uiContext d);
-int TanKouhoIchiran(uiContext d);
-int TanNextKouho(uiContext d);
-int TanPreviousKouho(uiContext d);
-int TanHiragana(uiContext d);
-int TanKatakana(uiContext d);
-int TanRomaji(uiContext d);
-int TanUpper(uiContext d);
-int TanCapitalize(uiContext d);
-int TanZenkaku(uiContext d);
-int TanHankaku(uiContext d);
-int TanKanaRotate(uiContext d);
-int TanRomajiRotate(uiContext d);
-int TanCaseRotateForward(uiContext d);
-int TanBeginningOfBunsetsu(uiContext d);
-int TanEndOfBunsetsu(uiContext d);
-int tanMuhenkan(uiContext d, int kCurs);
-int TanMuhenkan(uiContext d);
-int TanDeletePrevious(uiContext d);
-void finishTanKakutei(uiContext d);
-int TanKakutei(uiContext d);
-int TanPrintBunpou(uiContext d);
-void jrKanjiPipeError(void);
-void setMode(uiContext d, tanContext tan, int forw);
-int TbForward(uiContext d);
-int TbBackward(uiContext d);
-int TbBeginningOfLine(uiContext d);
-int TbEndOfLine(uiContext d);
-
-/* hex.c */
-int HexMode(uiContext d);
-
-/* ichiran.c */
-int initIchiran(void);
-void makeGlineStatus(uiContext d);
-void freeIchiranBuf(ichiranContext ic);
-void freeGetIchiranList(WCHAR_T **buf);
-WCHAR_T **getIchiranList(int context, int *nelem, int *currentkouho);
-ichiranContext newIchiranContext(void);
-int selectOne (uiContext d, WCHAR_T **buf, int *ck, int nelem, int bangomax, unsigned inhibit, int currentkouho, int allowcallback, canna_callback_t everyTimeCallback, canna_callback_t exitCallback, canna_callback_t quitCallback, canna_callback_t auxCallback);
-int allocIchiranBuf(uiContext d);
-int tanKouhoIchiran(uiContext d, int step);
-int IchiranQuit(uiContext d);
-int IchiranNop(uiContext d);
-int IchiranForwardKouho(uiContext d);
-int IchiranBackwardKouho(uiContext d);
-int IchiranPreviousKouhoretsu(uiContext d);
-int IchiranNextKouhoretsu(uiContext d);
-int IchiranBeginningOfKouho(uiContext d);
-int IchiranEndOfKouho(uiContext d);
-void ichiranFin(uiContext d);
-
-/* jishu.c */
-void enterJishuMode(uiContext d, yomiContext yc);
-void leaveJishuMode(uiContext d, yomiContext yc);
-int extractJishuString(yomiContext yc, WCHAR_T *s, WCHAR_T *e, WCHAR_T **sr, WCHAR_T **er);
-
-/* jrbind.c */
-int XwcLookupKanji2(unsigned int dpy, unsigned int win, WCHAR_T *buffer_return, int nbuffer, int nbytes, int functionalChar, wcKanjiStatus *kanji_status_return);
-int XwcKanjiControl2(unsigned int display, unsigned int window, unsigned int request, BYTE *arg);
-struct callback *pushCallback(uiContext d, mode_context env, canna_callback_t ev, canna_callback_t ex, canna_callback_t qu, canna_callback_t au);
-void popCallback(uiContext d);
-
-/* kctrl.c */
-int initRomeStruct(uiContext d, int flg);
-void freeRomeStruct(uiContext d);
-uiContext keyToContext(unsigned int data1, unsigned int data2);
-struct bukRec *internContext(unsigned int data1, unsigned int data2, uiContext context);
-void rmContext(unsigned int data1, unsigned int data2);
-void addWarningMesg(char *s);
-int escapeToBasicStat(uiContext d, int how);
-void makeAllContextToBeClosed(int flag);
-int _do_func_slightly(uiContext d, int fnum, mode_context mode_c, KanjiMode c_mode);
-int _doFunc(uiContext d, int fnum);
-int _afterDoFunc(uiContext d, int retval);
-int doFunc(uiContext d, int fnum);
-int wcCloseKanjiContext (int context);
-int jrCloseKanjiContext (int context);
-int ToggleChikuji(uiContext d, int flg);
-int kanjiControl(int request, uiContext d, caddr_t arg);
-
-/* keydef.c */
-int initKeyTables(void);
-void restoreDefaultKeymaps(void);
-int changeKeyfunc(int modenum, int key, int fnum, unsigned char *actbuff, unsigned char *keybuff);
-int changeKeyfuncOfAll(int key, int fnum, unsigned char *actbuff, unsigned char *keybuff);
-unsigned char *actFromHash(unsigned char *tbl_ptr, unsigned char key);
-struct map *mapFromHash(KanjiMode tbl, unsigned char key, struct map ***ppp);
-int askQuitKey(unsigned key);
-
-/* kigo.c */
-void initKigoTable(void);
-int KigoIchiran(uiContext d);
-int makeKigoIchiran(uiContext d, int major_mode);
-
-/* lisp.c */
-int WCinit(void);
-int clisp_init(void);
-void clisp_fin(void);
-int YYparse_by_rcfilename(char *s);
-int parse_string(char *str);
-void clisp_main(void);
-int DEFVAR(int Vromkana, int StrAcc, char *, int RomkanaTable);
-
-/* mode.c */
-newmode *findExtraKanjiMode(int mnum);
-void currentModeInfo(uiContext d);
-void initModeNames(void);
-void resetModeNames(void);
-int JapaneseMode(uiContext d);
-int AlphaMode(uiContext d);
-int HenkanNyuryokuMode(uiContext d);
-int queryMode(uiContext d, WCHAR_T *arg);
-int changeModeName(int modeid, char *str);
-
-/* multi.c */
-int UseOtherKeymap(uiContext d);
-int DoFuncSequence(uiContext d);
-int multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum);
-
-/* onoff.c */
-int initOnoffTable(void);
-int selectOnOff(uiContext d, WCHAR_T **buf, int *ck, int nelem, int bangomax, int currentkouho, unsigned char *status, int (*everyTimeCallback )(...), int (*exitCallback )(...), int (*quitCallback )(...), int (*auxCallback )(...));
-
-/* parse.c */
-#ifdef BINARY_CUSTOM
-int binparse (void);
-#else
-void parse(void);
-#endif
-
-int parse_string(char *str);
-void clisp_main(void);
-
-/* romaji.c */
-void debug_yomi(yomiContext x);
-void kPos2rPos(yomiContext yc, int s, int e, int *rs, int *re);
-void makeYomiReturnStruct(uiContext d);
-int RomkanaInit(void);
-void RomkanaFin(void);
-yomiContext newYomiContext(WCHAR_T *buf, int bufsize, int allowedc, int chmodinhibit, int quitTiming, int hinhibit);
-yomiContext GetKanjiString(uiContext d, WCHAR_T *buf, int bufsize, int allowedc, int chmodinhibit, int quitTiming, int hinhibit, canna_callback_t everyTimeCallback, canna_callback_t exitCallback, canna_callback_t quitCallback);
-void popYomiMode(uiContext d);
-void fitmarks(yomiContext yc);
-void ReCheckStartp(yomiContext yc);
-void removeCurrentBunsetsu(uiContext d, tanContext tan);
-void restoreChikujiIfBaseChikuji(yomiContext yc);
-int YomiInsert(uiContext d);
-int findSup(WCHAR_T key);
-void moveStrings(WCHAR_T *str, BYTE *attr, int start, int end, int distance);
-int forceRomajiFlushYomi(uiContext d);
-int RomajiFlushYomi(uiContext d, WCHAR_T *b, int bsize);
-void restoreFlags(yomiContext yc);
-int xString(WCHAR_T *str, int len, WCHAR_T *s, WCHAR_T *e);
-int appendTan2Yomi(tanContext tan, yomiContext yc);
-yomiContext dupYomiContext(yomiContext yc);
-void doMuhenkan(uiContext d, yomiContext yc);
-int doKakutei(uiContext d, tanContext st, tanContext et, WCHAR_T *s, WCHAR_T *e, yomiContext *yc_return);
-int cutOffLeftSide(uiContext d, yomiContext yc, int n);
-int YomiKakutei(uiContext d);
-void clearYomiContext(yomiContext yc);
-void RomajiClearYomi(uiContext d);
-int YomiExit(uiContext d, int retval);
-void RomajiStoreYomi(uiContext d, WCHAR_T *kana, WCHAR_T *roma);
-int KanaDeletePrevious(uiContext d);
-coreContext newCoreContext(void);
-int alphaMode(uiContext d);
-int YomiQuotedInsert(uiContext d);
-int convertAsHex(uiContext d);
-int selectKeysup(uiContext d, yomiContext yc, int ind);
-int containUnconvertedKey(yomiContext yc);
-int YomiBaseHiraKataToggle(uiContext d);
-int YomiBaseZenHanToggle(uiContext d);
-int YomiBaseRotateForw(uiContext d);
-int YomiBaseRotateBack(uiContext d);
-int YomiBaseKanaEisuToggle(uiContext d);
-int YomiBaseKakuteiHenkanToggle(uiContext d);
-int YomiModeBackup(uiContext d);
-int exitJishu(uiContext d);
-int YomiMark(uiContext d);
-int Yomisearchfunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum);
-void trimYomi(uiContext d, int sy, int ey, int sr, int er);
-int TanBubunKakutei(uiContext d);
-int TanBubunKakutei(uiContext d);
-void removeKana(uiContext d, yomiContext yc, int k, int r);
-int cvtAsHex(uiContext d, WCHAR_T *buf, WCHAR_T *hexbuf, int hexlen);
-
-/* uiutil.c */
-menustruct *allocMenu(int n, int nc);
-int uiUtilIchiranTooSmall(uiContext d, int retval, mode_context env);
-int UiUtilMode(uiContext d);
-
+extern void makeGLineMessage pro((uiContext, wchar_t *, int));
+extern void makeGLineMessageFromStrings pro((uiContext, char *));
+extern newmode *findExtraKanjiMode pro((int));
+extern setWStrings pro((wchar_t **, char **, int));
+extern WStrlen pro((wchar_t *));
+extern wchar_t *WStrcat pro((wchar_t *, wchar_t *));
+extern wchar_t *WStrcpy pro((wchar_t *, wchar_t *));
+extern wchar_t *WStrncpy pro((wchar_t *, wchar_t *, int));
+extern WStrncmp pro((wchar_t *, wchar_t *, int));
+extern wchar_t *WString pro((char *));
 #ifndef NO_EXTEND_MENU
-int initExtMenu(void);
-int prevMenuIfExist(uiContext d);
-int showmenu(uiContext d, menustruct *table);
-void finExtMenu(void);
-void freeAllMenuInfo(menuinfo *p);
-void freeMenu(menustruct *m);
+extern prevMenuIfExist pro((uiContext));
+extern showmenu pro((uiContext, menustruct *));
 #endif
+extern yomiContext
+  newYomiContext pro((wchar_t *, int, int, int, int, int)),
+  GetKanjiString pro((uiContext, wchar_t *, int, int, int, int, int,
+		      canna_callback_t, canna_callback_t, canna_callback_t));
+extern void restoreFlags pro((yomiContext));
+extern void kPos2rPos pro((yomiContext, int, int, int *, int *));
+extern void makeKanjiStatusReturn pro((uiContext, yomiContext));
+extern wchar_t key2wchar pro((int, int *));
+extern struct bukRec *internContext
+  pro((unsigned int, unsigned int, uiContext));
+extern void freeRomeStruct pro((uiContext));
+extern void rmContext pro((unsigned int, unsigned int));
+extern struct callback *pushCallback
+  pro((uiContext, mode_context,
+       canna_callback_t, canna_callback_t,
+       canna_callback_t, canna_callback_t));
+extern void popCallback pro((uiContext));
+extern void makeYomiReturnStruct pro((uiContext));
+extern void moveToChikujiTanMode pro((uiContext));
+extern void moveToChikujiYomiMode pro((uiContext));
+extern void makeGLineMessageFromString pro((uiContext, char *));
+extern void addWarningMesg pro((char *));
+extern int prepareHenkanMode pro((uiContext));
+extern void makeAllContextToBeClosed pro((int));
+extern void CannaBeep pro((void));
+#ifndef NO_EXTEND_MENU
+extern void freeAllMenuInfo pro((menuinfo *));
+extern void freeMenu pro((menustruct *));
+#endif
+extern void restoreDefaultKeymaps pro((void));
+#ifndef NO_EXTEND_MENU
+extern void finExtMenu pro((void));
+#endif
+extern void freeIchiranBuf pro((ichiranContext));
+extern exp(char *) RkwGetServerName pro((void));
+extern void popForIchiranMode pro((uiContext));
+extern void clisp_main pro((void));
+extern void clisp_fin pro((void));
+extern void popYomiMode pro((uiContext));
+extern void freeTanContext pro((tanContext));
+extern void enterJishuMode pro((uiContext, yomiContext));
+extern void leaveJishuMode pro((uiContext, yomiContext));
+extern void finishTanKakutei pro((uiContext));
+extern void removeKana pro((uiContext, yomiContext, int, int));
+extern void clearHenkanContext pro((yomiContext));
+extern void doMuhenkan pro((uiContext, yomiContext));
+extern void removeCurrentBunsetsu pro((uiContext, tanContext));
+extern int uiUtilIchiranTooSmall pro((uiContext, int, mode_context));
+extern int dicTourokuHinshiDelivery pro((uiContext));
+extern int uuTTangoQuitCatch pro((uiContext, int, mode_context));
+extern void freeAndPopTouroku pro((uiContext));
+extern void popMountMode pro((uiContext));
+extern void freeDic pro((tourokuContext));
 
-/* uldefine.c */
-int dicTouroku(uiContext d);
-int dicSakujo(uiContext d);
-int initHinshiTable(void);
-void clearYomi(uiContext d);
-int getTourokuContext(uiContext d);
-void popTourokuMode(uiContext d);
-int uuTTangoQuitCatch(uiContext d, int retval, mode_context env);
-WCHAR_T **getUserDicName(uiContext d);
-int dicTouroku(uiContext d);
-int dicTourokuTango(uiContext d, canna_callback_t quitfunc);
-int dicTourokuHinshi(uiContext d);
-int dicTourokuControl(uiContext d, WCHAR_T *tango, canna_callback_t quitfunc);
-
-/* uldelete.c */
-void freeWorkDic3(tourokuContext tc);
-void freeWorkDic(tourokuContext tc);
-void freeDic(tourokuContext tc);
-void freeAndPopTouroku(uiContext d);
-int dicSakujo(uiContext d);
-
-/* ulhinshi.c */
-int initHinshiMessage(void);
-void EWStrcat(WCHAR_T *buf, char *xxxx);
-int initGyouTable(void);
-int dicTourokuHinshiDelivery(uiContext d);
-int dicTourokuDictionary(uiContext d, int (*exitfunc )(...), int (*quitfunc )(...));
-
-/* ulkigo.c */
-int initUlKigoTable(void);
-int initUlKeisenTable(void);
-int uuKigoGeneralExitCatch(uiContext d, int retval, mode_context env);
-int uuKigoMake(uiContext d, WCHAR_T **allkouho, int size, char cur, char mode, int (*exitfunc )(...), int *posp);
-int kigoRussia(uiContext d);
-int kigoGreek(uiContext d);
-int kigoKeisen(uiContext d);
-
-/* ulmount.c */
-int getMountContext(uiContext d);
-void popMountMode(uiContext d);
-int dicMount(uiContext d);
-
-/* ulserver.c */
-int serverFin(uiContext d);
-int serverChange(uiContext d);
-
-/* util.c */
-void GlineClear(uiContext d);
-void echostrClear(uiContext d);
-int checkGLineLen(uiContext d);
-int NothingChanged(uiContext d);
-int NothingForGLine(uiContext d);
-void CannaBeep(void);
-int NothingChanged(uiContext d);
-int NothingChangedWithBeep(uiContext d);
-int NothingForGLineWithBeep(uiContext d);
-int Insertable(unsigned char ch);
-int extractTanString(tanContext tan, WCHAR_T *s, WCHAR_T *e);
-int extractTanYomi(tanContext tan, WCHAR_T *s, WCHAR_T *e);
-int extractTanRomaji(tanContext tan, WCHAR_T *s, WCHAR_T *e);
-void makeKanjiStatusReturn(uiContext d, yomiContext yc);
-void makeGLineMessage(uiContext d, WCHAR_T *msg, int sz);
-void makeGLineMessageFromString(uiContext d, char *msg);
-int setWStrings(WCHAR_T **ws, char **s, int sz);
-int dbg_msg(char *fmt, int x, int y, int z);
-int checkModec(uiContext d);
-int showRomeStruct(unsigned int dpy, unsigned int win);
-int NoMoreMemory(void);
-int GLineNGReturn(uiContext d);
-int GLineNGReturnFI(uiContext d);
-int specialfunc(uiContext d, int fn);
-int GLineNGReturnTK(uiContext d);
-int copyAttribute(BYTE *dest, BYTE *src, int n);
-char *debug_malloc(int n);
-int WCinit(void);
-int WStrlen(WCHAR_T *ws);
-WCHAR_T *WStrcpy(WCHAR_T *ws1, WCHAR_T *ws2);
-WCHAR_T *WStrncpy(WCHAR_T *ws1, WCHAR_T *ws2, int cnt);
-WCHAR_T *WStraddbcpy(WCHAR_T *ws1, WCHAR_T *ws2, int cnt);
-WCHAR_T *WStrcat(WCHAR_T *ws1, WCHAR_T *ws2);
-int WStrcmp(WCHAR_T *w1, WCHAR_T *w2);
-int WStrncmp(WCHAR_T *w1, WCHAR_T *w2, int n);
-int WWhatGPlain(WCHAR_T wc);
-int WIsG0(WCHAR_T wc);
-int WIsG1(WCHAR_T wc);
-int WIsG2(WCHAR_T wc);
-int WIsG3(WCHAR_T wc);
-int CANNA_mbstowcs(WCHAR_T *dest, char *src, int destlen);
-int CNvW2E(WCHAR_T *src, int srclen, char *dest, int destlen);
-int CANNA_wcstombs(char *dest, WCHAR_T *src, int destlen);
-int WStringOpen(void);
-WCHAR_T *WString(char *s);
-void WStringClose(void);
-int WSfree(WCHAR_T *s);
-void generalReplace(WCHAR_T *buf, BYTE *attr, int *startp, int *cursor, int *endp, int bytes, WCHAR_T *rplastr, int len, int attrmask);
-int WToupper(WCHAR_T w);
-int WTolower(WCHAR_T w);
-WCHAR_T key2wchar(int key, int *check);
-int confirmContext(uiContext d, yomiContext yc);
-int abandonContext(uiContext d, yomiContext yc);
-int makeRkError(uiContext d, char *str);
-int canna_alert(uiContext d, char *message, canna_callback_t cnt);
-void EWStrcat(WCHAR_T *buf, char *xxxx);
-char *KanjiInitError(void);
-int wchar2ushort(WCHAR_T *src, int slen, uint32 *dst, int dlen);
-int ushort2wchar(uint32 *src, int slen, WCHAR_T *dst, int dlen);
-int euc2ushort(char *src, int srclen, uint32 *dest, int destlen);
-
-/* yesno.c */
-int getYesNoContext(uiContext d, canna_callback_t everyTimeCallback, canna_callback_t exitCallback, canna_callback_t quitCallback, canna_callback_t auxCallback);
+/* for VC++ 4.0, by kon */
+extern int doFunc pro((uiContext, int));
+extern int _doFunc pro((uiContext, int));
+extern int _afterDoFunc pro((uiContext, int));
+extern int alphaMode pro((uiContext));
+extern void jrKanjiPipeError pro((void));
+extern int NoMoreMemory pro((void));
+extern int WCinit pro((void));
+extern int WStringOpen pro((void));
+extern void WStringClose pro((void));
+extern int WStrcmp pro((wchar_t *, wchar_t *));
+extern int WSfree pro((wchar_t *));
+extern void initModeNames pro((void));
+extern int initKeyTables pro((void));
+#ifdef BINARY_CUSTOM
+extern int binparse pro((void));
+#else
+extern void parse pro((void));
+#endif
+extern int initIchiran pro((void));
+extern int RomkanaInit pro((void));
+extern void RomkanaFin pro((void));
+extern int KanjiInit pro((void));
+extern int KanjiFin pro((void));
+extern void resetModeNames pro((void));
+extern int escapeToBasicStat pro((uiContext, int));
+extern void EmptyBaseModeInfo pro((uiContext, yomiContext));
+extern void GlineClear pro((uiContext));
+extern void currentModeInfo pro((uiContext));
+extern int queryMode pro((uiContext, wchar_t *));
+extern int RkSetServerName pro((char *));
+extern int parse_string pro((char *));
+extern void RomajiStoreYomi pro((uiContext, wchar_t *, wchar_t *));
+extern int WWhatGPlain pro((wchar_t));
+extern int WIsG0 pro((wchar_t)), WIsG1 pro((wchar_t));
+extern int WIsG2 pro((wchar_t)), WIsG3 pro((wchar_t));
+extern int XwcKanjiControl2
+  pro((unsigned int, unsigned int, unsigned int, BYTE *));
+extern int XKanjiControl2
+  pro((unsigned int, unsigned int, unsigned int, BYTE *));
+extern int XwcLookupKanji2 pro((unsigned int, unsigned int, wchar_t *, int,
+                                int, int, wcKanjiStatus *));
+extern int NothingChangedWithBeep pro((uiContext));
+extern int searchfunc pro((uiContext, KanjiMode, int, int, int));
+extern int initRomeStruct pro((uiContext, int));
+/* extern int kanjiControl pro((int, uiContext, caddr_t)); */
+extern int getBaseMode pro((yomiContext));
+extern int RkwMapPhonogram
+  pro((struct RkRxDic *, wchar_t *, int, wchar_t *, int, wchar_t, int,
+       int *, int *, int *, int *));
+extern int RkMapPhonogram
+  pro((struct RkRxDic *, unsigned char *, int, unsigned char *, int,
+       unsigned, int,
+       int *, int *, int *, int *));
+extern RkMapRoma
+  pro((struct RkRxDic *, unsigned char *, int, unsigned char *, int,
+       int, int *));
+extern int RkCvtRoma
+  pro((struct RkRxDic *, unsigned char *, int, unsigned char *, int,
+       unsigned));
+extern int RkwCvtRoma
+  pro((struct RkRxDic *, wchar_t *, int, wchar_t *, int, int));
+extern int exitJishu pro((uiContext));
+extern RomajiFlushYomi pro((uiContext, wchar_t *, int));
+extern void generalReplace
+  pro((wchar_t *, BYTE *, int *, int *, int *, int, wchar_t *, int, int));
+extern ChikujiSubstYomi pro((uiContext));
+extern TanMuhenkan pro((uiContext));
+extern CANNA_mbstowcs pro((wchar_t *, char *, int));
+extern CANNA_wcstombs pro((char *, wchar_t *, int));
+extern makeRkError pro((uiContext, char *));
+extern void moveStrings pro((wchar_t *, BYTE *, int, int, int));
+extern TanBackwardBunsetsu pro((uiContext));
+extern TbBackward pro((uiContext));
+extern NothingChanged pro((uiContext));
+extern TbEndOfLine pro((uiContext));
+extern TanForwardBunsetsu pro((uiContext));
+extern TbForward pro((uiContext));
+extern TbBeginningOfLine pro((uiContext));
+extern tanMuhenkan pro((uiContext, int));
+extern extractTanString pro((tanContext, wchar_t *, wchar_t *));
+extern extractTanYomi pro((tanContext, wchar_t *, wchar_t *));
+extern extractTanRomaji pro((tanContext, wchar_t *, wchar_t *));
+extern leaveAdjustMode pro((uiContext, yomiContext));
+extern wchar_t *WStraddbcpy pro((wchar_t *, wchar_t *, int));
+extern YomiExit pro((uiContext, int));
+extern void clearYomiContext pro((yomiContext));
+extern abandonContext pro((uiContext, yomiContext));
+extern void RomajiClearYomi pro((uiContext));
+extern RkCvtEuc pro((unsigned char *, int, unsigned char *, int));
+extern RkCvtNone pro((unsigned char *, int, unsigned char *, int));
+extern selectOne
+  pro((uiContext, wchar_t **, int *, int, int, unsigned, int, int,
+       canna_callback_t, canna_callback_t, canna_callback_t,canna_callback_t));
+extern void makeGlineStatus pro((uiContext));
+extern YomiMark pro((uiContext));
+extern doHenkan pro((uiContext, int, wchar_t *));
+extern tanKouhoIchiran pro((uiContext, int));
+extern EmptyBaseKana pro((uiContext));
+extern EmptyBaseKakutei pro((uiContext));
+extern EmptyBaseHenkan pro((uiContext));
+extern WToupper pro((wchar_t));
+extern WTolower pro((wchar_t));
+extern TanKakutei pro((uiContext));
+extern Yomisearchfunc pro((uiContext, KanjiMode, int, int, int));
+extern CNvW2E pro((wchar_t *, int, char *, int));
+extern void initKigoTable pro((void));
+extern NothingForGLine pro((uiContext));
+extern NothingForGLineWithBeep pro((uiContext));
+extern void echostrClear pro((uiContext));
+extern void freeGetIchiranList pro((wchar_t **));
+extern TanKouhoIchiran pro((uiContext));
+extern GLineNGReturn pro((uiContext));
+extern GLineNGReturnFI pro((uiContext));
+extern appendTan2Yomi pro((tanContext, yomiContext));
+extern confirmContext pro((uiContext, yomiContext));
+extern ChikujiTanDeletePrevious pro((uiContext));
+extern YomiKakutei pro((uiContext));
+extern YomiInsert pro((uiContext));
+extern cutOffLeftSide pro((uiContext, yomiContext, int));
+extern enterAdjustMode pro((uiContext, yomiContext));
+extern TanNextKouho pro((uiContext));
+extern TanPreviousKouho pro((uiContext));
+extern TanBeginningOfBunsetsu pro((uiContext));
+extern TanEndOfBunsetsu pro((uiContext));
+extern TanDeletePrevious pro((uiContext));
+extern TanBubunMuhenkan pro((uiContext));
+extern xString pro((wchar_t *, int, wchar_t *, wchar_t *));
+extern KanaDeletePrevious pro((uiContext));
+extern findSup pro((wchar_t));
+extern selectKeysup pro((uiContext, yomiContext, int));
+extern containUnconvertedKey pro((yomiContext));
+extern CYsearchfunc pro((uiContext, KanjiMode, int, int, int));
+extern TanBubunKakutei pro((uiContext));
+extern TanZenkaku pro((uiContext));
+extern TanHankaku pro((uiContext));
+extern TanHiragana pro((uiContext));
+extern TanKatakana pro((uiContext));
+extern TanRomaji pro((uiContext));
+extern TanUpper pro((uiContext));
+extern TanCapitalize pro((uiContext));
+extern TanPrintBunpou pro((uiContext));
+extern TanNop pro((uiContext));
+extern YomiQuotedInsert pro((uiContext));
+extern AlphaMode pro((uiContext));
+extern HenkanNyuryokuMode pro((uiContext));
+extern KigoIchiran pro((uiContext));
+extern UiUtilMode pro((uiContext));
+extern EmptyBaseHira pro((uiContext));
+extern EmptyBaseKata pro((uiContext));
+extern EmptyBaseEisu pro((uiContext));
+extern EmptyBaseZen pro((uiContext));
+extern EmptyBaseHan pro((uiContext));
+extern YomiBaseHiraKataToggle pro((uiContext));
+extern YomiBaseZenHanToggle pro((uiContext));
+extern YomiBaseKanaEisuToggle pro((uiContext));
+extern YomiBaseKakuteiHenkanToggle pro((uiContext));
+extern YomiBaseRotateForw pro((uiContext));
+extern YomiBaseRotateBack pro((uiContext));
+extern DoFuncSequence pro((uiContext));
+extern YomiModeBackup pro((uiContext));
+extern UseOtherKeymap pro((uiContext));
+extern JapaneseMode pro((uiContext));
+extern void ichiranFin pro((uiContext));
+extern IchiranForwardKouho pro((uiContext));
+extern IchiranBackwardKouho pro((uiContext));
+extern IchiranNextKouhoretsu pro((uiContext));
+extern IchiranPreviousKouhoretsu pro((uiContext));
+extern IchiranBeginningOfKouho pro((uiContext));
+extern IchiranEndOfKouho pro((uiContext));
+extern IchiranQuit pro((uiContext));
+extern IchiranNop pro((uiContext));
+extern RkwCvtNone pro((wchar_t *, int, wchar_t *, int));
+extern RkwSetAppName pro((int, char *));
+extern void close_engine pro((void));
+extern char *KanjiInitError pro((void));
+extern void prepare_autodic pro((void));
+extern int doKakutei
+ pro((uiContext, tanContext, tanContext, wchar_t *, wchar_t *, yomiContext *));
+extern int EUCListCallback pro((char *, int, wchar_t **, int, int *));
+#if SUPPORT_OLD_WCHAR
+extern int owcListCallback pro((char *, int, wchar_t **, int, int *));
+#endif
 
 #endif /* _UTIL_FUNCTIONS_DEF_ */
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/
 #endif /* !_CANNA_H_ */

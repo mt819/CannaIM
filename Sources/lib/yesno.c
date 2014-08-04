@@ -21,7 +21,7 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static	char	rcs_id[] = "@(#) 102.1 $Id: yesno.c 14875 2005-11-12 21:25:31Z bonefish $";
+static	char	rcs_id[] = "@(#) 102.1 $Id: yesno.c,v 1.2 2003/09/17 08:50:53 aida_s Exp $";
 #endif  /* lint */
 
 #include	<errno.h>
@@ -31,27 +31,20 @@ static	char	rcs_id[] = "@(#) 102.1 $Id: yesno.c 14875 2005-11-12 21:25:31Z bonef
 extern int errno;
 #endif
 
-static coreContext newYesNoContext(void);
-static void freeYesNoContext(coreContext qc);
-static void popYesNoMode(uiContext d);
-static int YesNoNop(uiContext d);
-static int YesNo(uiContext d);
-static int YesNoQuit(uiContext d);
-
 /* cfunc yesNoContext
  *
  * yesNoContext
  *
  */
 static coreContext
-newYesNoContext(void)
+newYesNoContext()
 {
   coreContext ccxt;
 
   if ((ccxt = (coreContext)malloc(sizeof(coreContextRec)))
                                        == (coreContext)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (newcoreContext) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (newcoreContext) できませんでした";
 #else
     jrKanjiError = "malloc (newcoreContext) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
 #endif
@@ -63,15 +56,20 @@ newYesNoContext(void)
 }
 
 static void
-freeYesNoContext(coreContext qc)
+freeYesNoContext(qc)
+coreContext qc;
 {
   free(qc);
 }
 
 /*
- * ¸õÊä°ìÍ÷¹Ô¤òºî¤ë
+ * 候補一覧行を作る
  */
-int getYesNoContext(uiContext d, canna_callback_t everyTimeCallback, canna_callback_t exitCallback, canna_callback_t quitCallback, canna_callback_t auxCallback)
+getYesNoContext(d,
+	  everyTimeCallback, exitCallback, quitCallback, auxCallback)
+uiContext d;
+canna_callback_t everyTimeCallback, exitCallback;
+canna_callback_t quitCallback, auxCallback;
 {
   extern KanjiModeRec tourokureibun_mode;
   coreContext qc;
@@ -80,7 +78,7 @@ int getYesNoContext(uiContext d, canna_callback_t everyTimeCallback, canna_callb
   if(pushCallback(d, d->modec,
 	everyTimeCallback, exitCallback, quitCallback, auxCallback) == 0) {
     jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
-                  /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+                  /* できませんでした */
     return(NG);
   }
   
@@ -100,7 +98,8 @@ int getYesNoContext(uiContext d, canna_callback_t everyTimeCallback, canna_callb
 }
 
 static void
-popYesNoMode(uiContext d)
+popYesNoMode(d)
+uiContext d;
 {
   coreContext qc = (coreContext)d->modec;
 
@@ -111,14 +110,15 @@ popYesNoMode(uiContext d)
 
 #if DOYESNONOP
 /*
-  Nop ¤òºî¤í¤¦¤È¤·¤¿¤¬¡¢ getYesNoContext ¤ò¸Æ¤Ó½Ð¤·¤Æ¤¤¤ë¤È¤³¤í¤Ç¡¢
-  everyTimeCallback ¤òÀßÄê¤·¤Æ¤¤¤Ê¤¤¤Î¤Ç¡¢²¼¤Î½èÍý¤¬¤¦¤Þ¤¯Æ°¤«¤Ê¤¤
+  Nop を作ろうとしたが、 getYesNoContext を呼び出しているところで、
+  everyTimeCallback を設定していないので、下の処理がうまく動かない
  */
 
 static
-YesNoNop(uiContext d)
+YesNoNop(d)
+uiContext	d;
 {
-  /* currentModeInfo ¤Ç¥â¡¼¥É¾ðÊó¤¬É¬¤ºÊÖ¤ë¤è¤¦¤Ë¥À¥ß¡¼¤Î¥â¡¼¥É¤òÆþ¤ì¤Æ¤ª¤¯ */
+  /* currentModeInfo でモード情報が必ず返るようにダミーのモードを入れておく */
   d->majorMode = d->minorMode = CANNA_MODE_AlphaMode;
   currentModeInfo(d);
   return 0;
@@ -126,16 +126,17 @@ YesNoNop(uiContext d)
 #endif /* DOYESNONOP */
 
 /*
- * EveryTimeCallback ... y/n °Ê³°¤ÎÊ¸»ú¤¬ÆþÎÏ¤µ¤ì¤¿
- * ExitCallback ...      y ¤¬ÆþÎÏ¤µ¤ì¤¿
- * quitCallback ...      quit ¤¬ÆþÎÏ¤µ¤ì¤¿
- * auxCallback ...       n ¤¬ÆþÎÏ¤µ¤ì¤¿
+ * EveryTimeCallback ... y/n 以外の文字が入力された
+ * ExitCallback ...      y が入力された
+ * quitCallback ...      quit が入力された
+ * auxCallback ...       n が入力された
  */
 
-static int YesNo (uiContext);
+static int YesNo pro((uiContext));
 
 static
-int YesNo(uiContext d)
+YesNo(d)
+uiContext	d;
 {
   if((d->ch == 'y') || (d->ch == 'Y')) {
     popYesNoMode(d);
@@ -151,10 +152,11 @@ int YesNo(uiContext d)
   return(0);
 }
 
-static int YesNoQuit (uiContext);
+static int YesNoQuit pro((uiContext));
 
 static
-int YesNoQuit(uiContext d)
+YesNoQuit(d)
+uiContext	d;
 {
   int retval = 0;
 

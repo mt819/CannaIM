@@ -21,10 +21,12 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char yomimap_id[] = "@(#) 102.1 $Id: yomimap.h 10525 2004-12-23 21:23:50Z korli $";
+static char yomimap_id[] = "@(#) 102.1 $Id: yomimap.h,v 1.1.1.1 2002/10/19 08:27:52 aida_s Exp $";
 #endif /* lint */
 
-#include "canna.h"
+extern ConvertAsBushu pro((uiContext));
+extern DoFuncSequence pro((uiContext)),UseOtherKeymap pro((uiContext));
+extern YomiBubunKakutei pro((uiContext));
 
 static struct funccfunc yomi_funcs[] = {
   {CANNA_FN_FunctionalInsert	,YomiInsert		},

@@ -19,13 +19,13 @@
  * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
  * PERFORMANCE OF THIS SOFTWARE. 
  */
-// Modified by T.Murai
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char t_reimap_id[] = "@(#) 102.1 $Id: t_reimap.h 14875 2005-11-12 21:25:31Z bonefish $";
+static char t_reimap_id[] = "@(#) 102.1 $Id: t_reimap.h,v 1.1.1.1 2002/10/19 08:27:51 aida_s Exp $";
 #endif	/* lint */
 
-#include "canna.h"
+extern DoFuncSequence pro((struct _uiContext *));
+extern UseOtherKeymap pro((struct _uiContext *));
 
 static struct funccfunc tourokureibun_funcs[] = {
   {CANNA_FN_FunctionalInsert	,YesNo		},
@@ -34,7 +34,6 @@ static struct funccfunc tourokureibun_funcs[] = {
   {0				,0		},
 };
 
-extern int searchfunc(...);
 KanjiModeRec tourokureibun_mode = {
   searchfunc,
   default_kmap,

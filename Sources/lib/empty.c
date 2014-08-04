@@ -20,55 +20,22 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: empty.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: empty.c,v 1.2 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
 
 #include "canna.h"
 #include "patchlevel.h"
-#include "RK.h"
-#include "RKintern.h"
-
-extern struct RkRxDic *romajidic, *englishdic;
-
-static int inEmptySelfInsert(uiContext d);
-static int EmptySelfInsert(uiContext d);
-static int EmptyYomiInsert(uiContext d);
-static int EmptyQuotedInsert(uiContext d);
-static int AlphaSelfInsert(uiContext d);
-static int AlphaNop(uiContext d);
-static int EmptyQuit(uiContext d);
-static int EmptyKakutei(uiContext d);
-static int EmptyDeletePrevious(uiContext d);
-static int UserMode(uiContext d, extraFunc *estruct);
-static int UserSelect(uiContext d, extraFunc *estruct);
-static int UserMenu(uiContext d, extraFunc *estruct);
-static int ProcExtraFunc(uiContext d, int fnum);
-static int HenkanRegion(uiContext d);
-static int PhonoEdit(uiContext d);
-static int DicEdit(uiContext d);
-static int Configure(uiContext d);
-static int renbunInit(uiContext d);
-static int showVersion(uiContext d);
-static int showServer(uiContext d);
-static int showGakushu(uiContext d);
-static int showInitFile(uiContext d);
-static int showRomkanaFile(uiContext d);
-static int dicSync(uiContext d);
 
 extern KanjiModeRec yomi_mode, cy_mode;
 
-/* EmptySelfInsert -- ¼«Ê¬¼«¿È¤ò³ÎÄêÊ¸»úÎó¤È¤·¤ÆÊÖ¤¹´Ø¿ô¡£
+/* EmptySelfInsert -- 自分自身を確定文字列として返す関数。
  * 
  */
 
-static int
-inEmptySelfInsert(uiContext d)
+static
+inEmptySelfInsert(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
   int res = 0;
@@ -77,62 +44,69 @@ inEmptySelfInsert(uiContext d)
   if (!(yc->generalFlags & CANNA_YOMI_END_IF_KAKUTEI)) {
     res = d->nbytes;
   }
-  /* else { ³ÎÄê¥Ç¡¼¥¿¤À¤±¤òÂÔ¤Ã¤Æ¤¤¤ë¿Í¤Ë¤Ï³ÎÄê¥Ç¡¼¥¿¤òÅÏ¤µ¤Ê¤¤ } */
+  /* else { 確定データだけを待っている人には確定データを渡さない } */
 
   return res;
 }
 
+static EmptySelfInsert pro((uiContext));
 
-static int
-EmptySelfInsert(uiContext d)
+static
+EmptySelfInsert(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
   int res = inEmptySelfInsert(d);
 
-/* Ã±¸ìÅÐÏ¿¤Î¤È¤­¤Ë yomi mode ¤Î³ÎÄê¥­¡¼¤¬ empty mode ¤Ç¤Ï³ÎÄê¥­¡¼¤Ç¤Ê
-   ¤«¤Ã¤¿¤ê¤¹¤ë¤È¡¢¤½¤Î¥­¡¼¤Î²¡²¼¤Ç»à¤ó¤Ç¤·¤Þ¤Ã¤¿¤ê¤¹¤ë¤Î¤ÎµßºÑ¡£yomi
-   mode ¤Î¾å¤Ë yomi mode ¤¬¾è¤Ã¤Æ¤¤¤ë¤Î¤ÏÃ±¸ìÅÐÏ¿¤Î»þ¤°¤é¤¤¤À¤í¤¦¤È¸À
-   ¤¦¤³¤È¤ÇÈ½ÃÇ¤ÎºàÎÁ¤Ë¤·¤Æ¤¤¤ë¡£ËÜÅö¤Ï¤³¤ó¤Ê¤³¤È¤ä¤ê¤¿¤¯¤Ê¤¤¡£ */
+/* 単語登録のときに yomi mode の確定キーが empty mode では確定キーでな
+   かったりすると、そのキーの押下で死んでしまったりするのの救済。yomi
+   mode の上に yomi mode が乗っているのは単語登録の時ぐらいだろうと言
+   うことで判断の材料にしている。本当はこんなことやりたくない。 */
 
   if (yc->next && yc->next->id == YOMI_CONTEXT &&
       yomi_mode.keytbl[d->buffer_return[0]] == CANNA_FN_Kakutei) {
     d->status = EXIT_CALLBACK;
     if (d->cb->func[EXIT_CALLBACK] != NO_CALLBACK) {
-      d->kanji_status_return->info &= ~KanjiThroughInfo; /* »Å»ö¤·¤¿ */
+      d->kanji_status_return->info &= ~KanjiThroughInfo; /* 仕事した */
       popYomiMode(d);
     }
   }
   return res;
 }
 
-/* EmptyYomiInsert -- ¡û¥â¡¼¥É¤Ë°Ü¹Ô¤·¡¢ÆÉ¤ß¤òÆþÎÏ¤¹¤ë´Ø¿ô
+/* EmptyYomiInsert -- ○モードに移行し、読みを入力する関数
  *
  */
 
+static EmptyYomiInsert pro((uiContext));
 
-static int
-EmptyYomiInsert(uiContext d)
+static
+EmptyYomiInsert(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
   d->current_mode = (yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE) ?
     &cy_mode : &yomi_mode;
   RomajiClearYomi(d);
-  return YomiInsert(d); /* ¥³¡¼¥ë¥Ð¥Ã¥¯¤Î¥Á¥§¥Ã¥¯¤Ï YomiInsert ¤Ç¤µ¤ì¤ë */
+  return YomiInsert(d); /* コールバックのチェックは YomiInsert でされる */
 }
 
-/* EmptyQuotedInsert -- ¼¡¤Î°ì»ú¤¬¤É¤Î¤è¤¦¤ÊÊ¸»ú¤Ç¤â¥¹¥ë¡¼¤ÇÄÌ¤¹´Ø¿ô¡£
+/* EmptyQuotedInsert -- 次の一字がどのような文字でもスルーで通す関数。
  *
  */
 
 /* 
-  Empty ¥â¡¼¥É¤Ç¤Î quotedInset ¤Ï ^Q ¤Î¤è¤¦¤ÊÊ¸»ú¤¬°ì²ó Emacs ¤Ê¤É¤ÎÊý
-  ¤ËÄÌ¤Ã¤Æ¤·¤Þ¤¨¤Ð¥Þ¥Ã¥×¤¬ÊÖ¤é¤ì¤Æ¤·¤Þ¤¦¤Î¤Ç¡¢¥«¥Ê´Á»úÊÑ´¹¤ÎÊý¤Ç²¿¤«¤ò
-  ¤¹¤ë¤Ê¤ó¤Æ¤³¤È¤ÏÉ¬Í×¤Ê¤¤¤Î¤Ç¤Ï¤Ê¤¤¤Î¤«¤Ê¤¡¡£
+  Empty モードでの quotedInset は ^Q のような文字が一回 Emacs などの方
+  に通ってしまえばマップが返られてしまうので、カナ漢字変換の方で何かを
+  するなんてことは必要ないのではないのかなぁ。
  */
 
-static int
-EmptyQuotedInsert(uiContext d)
+static EmptyQuotedInsert pro((uiContext));
+
+static
+EmptyQuotedInsert(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -142,11 +116,14 @@ EmptyQuotedInsert(uiContext d)
 }
 
 /* 
-  AlphaSelfInsert -- ¼«Ê¬¼«¿È¤ò³ÎÄêÊ¸»úÎó¤È¤·¤ÆÊÖ¤¹´Ø¿ô¡£
+  AlphaSelfInsert -- 自分自身を確定文字列として返す関数。
  */
 
-static int
-AlphaSelfInsert(uiContext d)
+static AlphaSelfInsert pro((uiContext));
+
+static
+AlphaSelfInsert(d)
+uiContext d;
 {
   unsigned kanap = (unsigned)d->ch;
 
@@ -156,7 +133,7 @@ AlphaSelfInsert(uiContext d)
   if ( d->nbytes != 1 || kanap <= 0xa0 || 0xe0 <= kanap ) {
     return d->nbytes;
   }
-  else { /* ²¾Ì¾¥­¡¼ÆþÎÏ¤Î¾ì¹ç */
+  else { /* 仮名キー入力の場合 */
     if (d->n_buffer > 1) {
       return 1;
     }
@@ -166,50 +143,62 @@ AlphaSelfInsert(uiContext d)
   }
 }
 
-static int
-AlphaNop(uiContext d)
+static AlphaNop pro((uiContext));
+
+static
+AlphaNop(d)
+uiContext d;
 {
-  /* currentModeInfo ¤Ç¥â¡¼¥É¾ðÊó¤¬É¬¤ºÊÖ¤ë¤è¤¦¤Ë¥À¥ß¡¼¤Î¥â¡¼¥É¤òÆþ¤ì¤Æ¤ª¤¯ */
+  /* currentModeInfo でモード情報が必ず返るようにダミーのモードを入れておく */
   d->majorMode = d->minorMode = CANNA_MODE_KigoMode;
   currentModeInfo(d);
   return 0;
 }
 
-static int
-EmptyQuit(uiContext d)
+static EmptyQuit pro((uiContext));
+
+static
+EmptyQuit(d)
+uiContext d;
 {
   int res;
 
   res = inEmptySelfInsert(d);
   d->status = QUIT_CALLBACK;
   if (d->cb->func[QUIT_CALLBACK] != NO_CALLBACK) {
-    d->kanji_status_return->info &= ~KanjiThroughInfo; /* »Å»ö¤·¤¿ */
+    d->kanji_status_return->info &= ~KanjiThroughInfo; /* 仕事した */
     popYomiMode(d);
   }
   return res;
 }
 
-static int
-EmptyKakutei(uiContext d)
+static EmptyKakutei pro((uiContext));
+
+static
+EmptyKakutei(d)
+uiContext d;
 {
   int res;
 
   res = inEmptySelfInsert(d);
   d->status = EXIT_CALLBACK;
   if (d->cb->func[EXIT_CALLBACK] != NO_CALLBACK) {
-    d->kanji_status_return->info &= ~KanjiThroughInfo; /* »Å»ö¤·¤¿ */
+    d->kanji_status_return->info &= ~KanjiThroughInfo; /* 仕事した */
     popYomiMode(d);
   }
   return res;
 }
 
-static int
-EmptyDeletePrevious(uiContext d)
+static EmptyDeletePrevious pro((uiContext));
+
+static
+EmptyDeletePrevious(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
   if (yc->generalFlags & CANNA_YOMI_DELETE_DONT_QUIT) {
-    /* Delete ¤Ç QUIT ¤·¤Ê¤¤¤Î¤Ç¤¢¤ì¤Ð¡¢selfInsert */
+    /* Delete で QUIT しないのであれば、selfInsert */
     return inEmptySelfInsert(d);
   }
   else {
@@ -218,7 +207,8 @@ EmptyDeletePrevious(uiContext d)
 }
 
 extraFunc *
-FindExtraFunc(int fnum)
+FindExtraFunc(fnum)
+int fnum;
 {
   extern extraFunc *extrafuncp;
   extraFunc *extrafunc;
@@ -231,8 +221,10 @@ FindExtraFunc(int fnum)
   return (extraFunc *)0;
 }
 
-static int
-UserMode(uiContext d, extraFunc *estruct)
+static
+UserMode(d, estruct)
+uiContext d;
+extraFunc *estruct;
 {
   newmode *nmode = estruct->u.modeptr;
   yomiContext yc = (yomiContext)d->modec;
@@ -246,7 +238,7 @@ UserMode(uiContext d, extraFunc *estruct)
   yc->generalFlags &= ~CANNA_YOMI_ATTRFUNCS;
   yc->generalFlags |= nmode->flags;
   if (yc->generalFlags & CANNA_YOMI_END_IF_KAKUTEI) {
-    /* ³ÎÄê¤Ç½ª¤ï¤ë¤è¤¦¤Ê¥â¡¼¥É¤À¤Ã¤¿¤é³ÎÄê¥â¡¼¥É¤Ë¤Ê¤é¤Ê¤¤ */
+    /* 確定で終わるようなモードだったら確定モードにならない */
     yc->generalFlags &= ~CANNA_YOMI_KAKUTEI;
   }
   yc->romdic = nmode->romdic;
@@ -261,11 +253,14 @@ UserMode(uiContext d, extraFunc *estruct)
 }
 
 #ifndef NO_EXTEND_MENU /* continues to the bottom of this file */
-static int
-UserSelect(uiContext d, extraFunc *estruct)
+static
+UserSelect(d, estruct)
+uiContext d;
+extraFunc *estruct;
 {
   int curkigo = 0, *posp = (int *)0;
   kigoIchiran *kigop = (kigoIchiran *)0;
+  extern int uuKigoGeneralExitCatch(), uuKigoMake();
   selectinfo *selinfo = (selectinfo *)0, *info;
   yomiContext yc = (yomiContext)d->modec;
 
@@ -283,7 +278,7 @@ UserSelect(uiContext d, extraFunc *estruct)
 
   if (!selinfo) {
     selinfo = (selectinfo *)malloc(sizeof(selectinfo));
-    /* malloc ¤Ë¼ºÇÔ¤·¤¿¾ì¹ç¤Ï¡¢Á°²óÁªÂò¤·¤¿ÈÖ¹æ¤¬ÊÝÂ¸¤µ¤ì¤Ê¤¤ */
+    /* malloc に失敗した場合は、前回選択した番号が保存されない */
     if (selinfo) {
       selinfo->ichiran = estruct->u.kigoptr;
       selinfo->curnum = 0;
@@ -302,20 +297,24 @@ UserSelect(uiContext d, extraFunc *estruct)
     return NothingChangedWithBeep(d);
   }
   return uuKigoMake(d, kigop->kigo_data, kigop->kigo_size, 
-                    curkigo, kigop->kigo_mode, (int(*)(...))uuKigoGeneralExitCatch, posp);
+                    curkigo, kigop->kigo_mode, uuKigoGeneralExitCatch, posp);
 }
   
-static int
-UserMenu(uiContext d, extraFunc *estruct)
+static
+UserMenu(d, estruct)
+uiContext d;
+extraFunc *estruct;
 {
   return showmenu(d, estruct->u.menuptr);
 }
 #endif /* NO_EXTEND_MENU */
 
-/* ¥Ç¥Õ¥©¥ë¥È°Ê³°¤Î¥â¡¼¥É»ÈÍÑ»þ¤Ë¸Æ¤Ó½Ð¤¹´Ø¿ô¤òÀÚ¤êÊ¬¤±¤ë */
+/* デフォルト以外のモード使用時に呼び出す関数を切り分ける */
 
-static int
-ProcExtraFunc(uiContext d, int fnum)
+static
+ProcExtraFunc(d, fnum)
+uiContext d;
+int fnum;
 {
   extraFunc *extrafunc;
 
@@ -337,8 +336,8 @@ ProcExtraFunc(uiContext d, int fnum)
   return NothingChangedWithBeep(d);
 }
 
-int
-getBaseMode(yomiContext yc)
+getBaseMode(yc)
+yomiContext yc;
 {
   int res;
   long fl = yc->generalFlags;
@@ -372,10 +371,12 @@ getBaseMode(yomiContext yc)
   return res;
 }
 
-/* ¥Ù¡¼¥¹Ê¸»ú¤ÎÀÚ¤êÂØ¤¨ */
+/* ベース文字の切り替え */
 
 void
-EmptyBaseModeInfo(uiContext d, yomiContext yc)
+EmptyBaseModeInfo(d, yc)
+uiContext d;
+yomiContext yc;
 {
   coreContext cc = (coreContext)d->modec;
 
@@ -383,8 +384,8 @@ EmptyBaseModeInfo(uiContext d, yomiContext yc)
   currentModeInfo(d);
 }
 
-int
-EmptyBaseHira(uiContext d)
+EmptyBaseHira(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -397,8 +398,8 @@ EmptyBaseHira(uiContext d)
   return 0;
 }
 
-int
-EmptyBaseKata(uiContext d)
+EmptyBaseKata(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -414,23 +415,23 @@ EmptyBaseKata(uiContext d)
   return 0;
 }
 
-int
-EmptyBaseEisu(uiContext d)
+EmptyBaseEisu(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
   }
-/*  yc->generalFlags &= ~CANNA_YOMI_ATTRFUNCS; ¥¯¥ê¥¢¤¹¤ë¤Î¤ä¤á */
+/*  yc->generalFlags &= ~CANNA_YOMI_ATTRFUNCS; クリアするのやめ */
   yc->generalFlags |= CANNA_YOMI_ROMAJI |
     ((yc->generalFlags & CANNA_YOMI_BASE_HANKAKU) ? 0 : CANNA_YOMI_ZENKAKU);
   EmptyBaseModeInfo(d, yc);
   return 0;
 }
 
-int
-EmptyBaseZen(uiContext d)
+EmptyBaseZen(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -441,8 +442,8 @@ EmptyBaseZen(uiContext d)
   if (yc->generalFlags & CANNA_YOMI_ROMAJI) {
     yc->generalFlags |= CANNA_YOMI_ZENKAKU;
   }
-  /* ¢¨Ãí ¥í¡¼¥Þ»ú¥â¡¼¥É¤Ç¤«¤Ä¥«¥¿¥«¥Ê¥â¡¼¥É¤Î»þ¤¬¤¢¤ë
-          (¤½¤Î¾ì¹çÉ½ÌÌ¾å¤Ï¥í¡¼¥Þ»ú¥â¡¼¥É) */
+  /* ※注 ローマ字モードでかつカタカナモードの時がある
+          (その場合表面上はローマ字モード) */
   if (yc->generalFlags & CANNA_YOMI_KATAKANA) {
     yc->generalFlags &= ~CANNA_YOMI_HANKAKU;
   }
@@ -450,25 +451,25 @@ EmptyBaseZen(uiContext d)
   return 0;
 }
 
-int
-EmptyBaseHan(uiContext d)
+EmptyBaseHan(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
   if ((yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) ||
-      /* ¥â¡¼¥ÉÊÑ¹¹¤¬¶Ø»ß¤µ¤ì¤Æ¤¤¤ë¤È¤« */
+      /* モード変更が禁止されているとか */
       (cannaconf.InhibitHankakuKana &&
        (yc->generalFlags & CANNA_YOMI_KATAKANA) &&
        !(yc->generalFlags & CANNA_YOMI_ROMAJI))) {
-    /* È¾³Ñ¥«¥Ê¤¬¶Ø»ß¤µ¤ì¤Æ¤¤¤ë¤Î¤ËÈ¾³Ñ¥«¥Ê¤Ë¤¤¤­¤½¤¦¤Ê¤È¤­ */
+    /* 半角カナが禁止されているのに半角カナにいきそうなとき */
     return NothingChangedWithBeep(d);
   }
   yc->generalFlags |= CANNA_YOMI_BASE_HANKAKU;
   if (yc->generalFlags & CANNA_YOMI_ROMAJI) {
     yc->generalFlags &= ~CANNA_YOMI_ZENKAKU;
   }
-  /* ¢¨Ãí ¥í¡¼¥Þ»ú¥â¡¼¥É¤Ç¤«¤Ä¥«¥¿¥«¥Ê¥â¡¼¥É¤Î»þ¤¬¤¢¤ë
-          (¤½¤Î¾ì¹çÉ½ÌÌ¾å¤Ï¥í¡¼¥Þ»ú¥â¡¼¥É) */
+  /* ※注 ローマ字モードでかつカタカナモードの時がある
+          (その場合表面上はローマ字モード) */
   if (yc->generalFlags & CANNA_YOMI_KATAKANA) {
     if (!cannaconf.InhibitHankakuKana) {
       yc->generalFlags |= CANNA_YOMI_HANKAKU;
@@ -478,17 +479,17 @@ EmptyBaseHan(uiContext d)
   return 0;
 }
 
-int
-EmptyBaseKana(uiContext d)
+EmptyBaseKana(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
   if ((yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) ||
-      /* ¥â¡¼¥ÉÊÑ¹¹¤¬¶Ø»ß¤µ¤ì¤Æ¤¤¤¿¤ê */
+      /* モード変更が禁止されていたり */
       (!cannaconf.InhibitHankakuKana &&
        (yc->generalFlags & CANNA_YOMI_KATAKANA) &&
        (yc->generalFlags & CANNA_YOMI_BASE_HANKAKU))) {
-    /* È¾³Ñ¥«¥Ê¤¬¶Ø»ß¤µ¤ì¤Æ¤¤¤ë¤Î¤ËÈ¾³Ñ¥«¥Ê¤Ë¤Ê¤Ã¤Æ¤·¤Þ¤¤¤½¤¦¤Ê¾ì¹ç */
+    /* 半角カナが禁止されているのに半角カナになってしまいそうな場合 */
     return NothingChangedWithBeep(d);
   }
   yc->generalFlags &= ~(CANNA_YOMI_ROMAJI | CANNA_YOMI_ZENKAKU);
@@ -501,8 +502,8 @@ EmptyBaseKana(uiContext d)
   return 0;
 }
 
-int
-EmptyBaseKakutei(uiContext d)
+EmptyBaseKakutei(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -515,8 +516,8 @@ EmptyBaseKakutei(uiContext d)
   return 0;
 }
 
-int
-EmptyBaseHenkan(uiContext d)
+EmptyBaseHenkan(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -529,47 +530,10 @@ EmptyBaseHenkan(uiContext d)
   return 0;
 }
 
-#ifdef WIN
-
-extern specialfunc (uiContext, int);
-
-static HenkanRegion (uiContext);
-
-static
-HenkanRegion(uiContext d)
-{
-  return specialfunc(d, CANNA_FN_HenkanRegion);
-}
-
-static PhonoEdit (uiContext);
-
-static
-PhonoEdit(uiContext d)
-{
-  return specialfunc(d, CANNA_FN_PhonoEdit);
-}
-
-static DicEdit (uiContext);
-
-static
-DicEdit(uiContext d)
-{
-  return specialfunc(d, CANNA_FN_DicEdit);
-}
-
-static Configure (uiContext);
-
-static
-Configure(uiContext d)
-{
-  return specialfunc(d, CANNA_FN_Configure);
-}
-
-#endif
-
 #ifndef NO_EXTEND_MENU
 static int
-renbunInit(uiContext d)
+renbunInit(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -582,7 +546,7 @@ renbunInit(uiContext d)
     jrKanjiError = "\317\242\312\270\300\341\312\321\264\271\244\313\300\332"
 	"\302\330\244\250\244\353\244\263\244\310\244\254\244\307\244\255"
 	"\244\336\244\273\244\363";
-                   /* Ï¢Ê¸ÀáÊÑ´¹¤ËÀÚÂØ¤¨¤ë¤³¤È¤¬¤Ç¤­¤Þ¤»¤ó */
+                   /* 連文節変換に切替えることができません */
     makeGLineMessageFromString(d, jrKanjiError);
     currentModeInfo(d);
     return(-1);
@@ -590,14 +554,15 @@ renbunInit(uiContext d)
   else {
     makeGLineMessageFromString(d, "\317\242\312\270\300\341\312\321\264\271"
 	"\244\313\300\332\302\330\244\250\244\336\244\267\244\277");
-                   /* Ï¢Ê¸ÀáÊÑ´¹¤ËÀÚÂØ¤¨¤Þ¤·¤¿ */
+                   /* 連文節変換に切替えました */
     currentModeInfo(d);
     return 0;
   }
 }
 
 static int
-showVersion(uiContext d)
+showVersion(d)
+uiContext d;
 {
   int retval = 0;
   char s[512];
@@ -612,7 +577,7 @@ showVersion(uiContext d)
   sprintf(s, "\306\374\313\334\270\354\306\376\316\317\245\267\245\271\245\306"
 	"\245\340\241\330\244\253\244\363\244\312\241\331Version %d.%d",
 	  cannaconf.CannaVersion / 1000, cannaconf.CannaVersion % 1000);
-             /* ÆüËÜ¸ìÆþÎÏ¥·¥¹¥Æ¥à¡Ø¤«¤ó¤Ê¡Ù */
+             /* 日本語入力システム『かんな』 */
   strcat(s, CANNA_PATCH_LEVEL);
   makeGLineMessageFromString(d, s);
   currentModeInfo(d);
@@ -621,7 +586,8 @@ showVersion(uiContext d)
 }
 
 static int
-showServer(uiContext d)
+showServer(d)
+uiContext d;
 {
 #ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
   int retval = 0;
@@ -639,13 +605,13 @@ showServer(uiContext d)
     sprintf(s, "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
 	"\241\274\245\320\244\310\244\316\300\334\302\263\244\254\300\332"
 	"\244\354\244\306\244\244\244\336\244\271");
-               /* ¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤È¤ÎÀÜÂ³¤¬ÀÚ¤ì¤Æ¤¤¤Þ¤¹ */
+               /* かな漢字変換サーバとの接続が切れています */
   }
   else {
     sprintf(s, "%s \244\316\244\253\244\312\264\301\273\372\312\321\264\271"
 	"\245\265\241\274\245\320\244\313\300\334\302\263\244\267\244\306"
 	"\244\244\244\336\244\271", RkwGetServerName());
-               /* ¤Î¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ËÀÜÂ³¤·¤Æ¤¤¤Þ¤¹ */
+               /* のかな漢字変換サーバに接続しています */
   }
   makeGLineMessageFromString(d, s);
   currentModeInfo(d);
@@ -657,7 +623,8 @@ showServer(uiContext d)
 }
 
 static int
-showGakushu(uiContext d)
+showGakushu(d)
+uiContext d;
 {
   int retval = 0;
   yomiContext yc = (yomiContext)d->modec;
@@ -671,12 +638,12 @@ showGakushu(uiContext d)
   if (cannaconf.Gakushu == 1) {
     makeGLineMessageFromString(d, "\263\330\275\254\244\254\243\317\243\316"
 	"\244\316\276\365\302\326\244\307\244\271");
-                                  /* ³Ø½¬¤¬£Ï£Î¤Î¾õÂÖ¤Ç¤¹ */
+                                  /* 学習がＯＮの状態です */
   }
   else {
     makeGLineMessageFromString(d, "\263\330\275\254\244\254\243\317\243\306"
 	"\243\306\244\316\276\365\302\326\244\307\244\271");
-                                  /* ³Ø½¬¤¬£Ï£Æ£Æ¤Î¾õÂÖ¤Ç¤¹ */
+                                  /* 学習がＯＦＦの状態です */
   }
     currentModeInfo(d);
 
@@ -684,7 +651,8 @@ showGakushu(uiContext d)
 }
 
 static int
-showInitFile(uiContext d)
+showInitFile(d)
+uiContext d;
 {
   int retval = 0;
   char s[512];
@@ -701,14 +669,14 @@ showInitFile(uiContext d)
     sprintf(s, "\245\253\245\271\245\277\245\336\245\244\245\272\245\325"
 	"\245\241\245\244\245\353\244\317 %s \244\362\273\310\315\321\244\267"
 	"\244\306\244\244\244\336\244\271", CANNA_initfilename);
-               /* ¥«¥¹¥¿¥Þ¥¤¥º¥Õ¥¡¥¤¥ë¤Ï %s ¤ò»ÈÍÑ¤·¤Æ¤¤¤Þ¤¹ */
+               /* カスタマイズファイルは %s を使用しています */
     makeGLineMessageFromString(d, s);
   }
   else {
     sprintf(s, "\245\253\245\271\245\277\245\336\245\244\245\272\245\325"
 	"\245\241\245\244\245\353\244\317\300\337\304\352\244\265\244\354"
 	"\244\306\244\244\244\336\244\273\244\363");
-               /* ¥«¥¹¥¿¥Þ¥¤¥º¥Õ¥¡¥¤¥ë¤ÏÀßÄê¤µ¤ì¤Æ¤¤¤Þ¤»¤ó */
+               /* カスタマイズファイルは設定されていません */
     makeGLineMessageFromString(d, s);
   }
     currentModeInfo(d);
@@ -717,7 +685,8 @@ showInitFile(uiContext d)
 }
 
 static int
-showRomkanaFile(uiContext d)
+showRomkanaFile(d)
+uiContext d;
 {
   int retval = 0;
   char s[512];
@@ -735,14 +704,14 @@ showRomkanaFile(uiContext d)
 	"\264\271\245\306\241\274\245\326\245\353\244\317 %s \244\362\273\310"
 	"\315\321\244\267\244\306\244\244\244\336\244\271",
 	    RomkanaTable);
-               /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ë¤Ï %s ¤ò»ÈÍÑ¤·¤Æ¤¤¤Þ¤¹ */
+               /* ローマ字かな変換テーブルは %s を使用しています */
     makeGLineMessageFromString(d, s);
   }
   else {
     sprintf(s, "\245\355\241\274\245\336\273\372\244\253\244\312\312\321"
 	"\264\271\245\306\241\274\245\326\245\353\244\317\273\310\315\321"
 	"\244\265\244\354\244\306\244\244\244\336\244\273\244\363");
-               /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ë¤Ï»ÈÍÑ¤µ¤ì¤Æ¤¤¤Þ¤»¤ó */
+               /* ローマ字かな変換テーブルは使用されていません */
     makeGLineMessageFromString(d, s);
   }
     currentModeInfo(d);
@@ -751,11 +720,12 @@ showRomkanaFile(uiContext d)
 }
 
 static int
-dicSync(uiContext d)
+dicSync(d)
+uiContext d;
 {
   int retval = 0;
   char s[512];
-  extern int defaultContext;
+  extern defaultContext;
   yomiContext yc = (yomiContext)d->modec;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
@@ -768,8 +738,8 @@ dicSync(uiContext d)
   sprintf(s, "\274\255\275\361\244\316 Sync \275\350\315\375%s",
           retval < 0 ? "\244\313\274\272\307\324\244\267\244\336\244\267"
 	"\244\277" : "\244\362\271\324\244\244\244\336\244\267\244\277");
-          /* ¼­½ñ¤Î Sync ½èÍý%s",
-                retval < 0 ? "¤Ë¼ºÇÔ¤·¤Þ¤·¤¿" : "¤ò¹Ô¤¤¤Þ¤·¤¿ */
+          /* 辞書の Sync 処理%s",
+                retval < 0 ? "に失敗しました" : "を行いました */
   makeGLineMessageFromString(d, s);
   currentModeInfo(d);
 

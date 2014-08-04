@@ -19,12 +19,28 @@
  * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
  * PERFORMANCE OF THIS SOFTWARE. 
  */
-// modified by T.Murai 1998
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char emptymap_id[] = "@(#) 102.1 $Id: emptymap.h 10525 2004-12-23 21:23:50Z korli $";
+static char emptymap_id[] = "@(#) 102.1 $Id: emptymap.h,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
-#include "canna.h"
+
+extern AlphaMode(), HenkanNyuryokuMode(), ZenHiraKakuteiMode();
+extern ZenKataKakuteiMode(), HanKataKakuteiMode(), ZenAlphaKakuteiMode();
+extern HanAlphaKakuteiMode(), KigoIchiran();
+#ifndef NO_EXTEND_MENU
+extern HexMode(), BushuMode();
+#endif
+extern KigoIchiran(), UiUtilMode();
+extern YomiBaseHiraKataToggle(), YomiBaseZenHanToggle();
+extern YomiBaseKanaEisuToggle(), YomiBaseKakuteiHenkanToggle();
+extern YomiBaseRotateForw(), YomiBaseRotateBack();
+extern DoFuncSequence(),UseOtherKeymap(), YomiModeBackup();
+extern dicTouroku pro((uiContext)), dicSakujo pro((uiContext));
+#ifndef NO_EXTEND_MENU
+extern kigoRussia(), kigoGreek(), kigoKeisen();
+extern dicMount(), serverChange(), serverFin();
+extern chikujiInit();
+#endif
 
 #define NONE CANNA_FN_Undefined
 
@@ -58,22 +74,12 @@ static struct funccfunc empty_funcs[] = {
 
   {CANNA_FN_Nop			,AlphaNop		},
   {CANNA_FN_UseOtherKeymap	,UseOtherKeymap		},
-  {CANNA_FN_UserMode		,(int (*)(struct _uiContext *))
+  {CANNA_FN_UserMode		,(int (*) pro((struct _uiContext *)))
                                  ProcExtraFunc		},
-#ifdef WIN
-  {CANNA_FN_DefineDicMode	,dicTouroku		},
-  {CANNA_FN_DeleteDicMode	,dicSakujo		},
-  {CANNA_FN_HenkanRegion	,HenkanRegion		},
-  {CANNA_FN_PhonoEdit		,PhonoEdit		},
-  {CANNA_FN_DicEdit		,DicEdit		},
-  {CANNA_FN_Configure		,Configure		},
-#endif
 
 #ifndef NO_EXTEND_MENU
-#ifndef WIN
   {CANNA_FN_DefineDicMode	,dicTouroku		},
   {CANNA_FN_DeleteDicMode	,dicSakujo		},
-#endif
   {CANNA_FN_HexMode		,HexMode		},
   {CANNA_FN_BushuMode		,BushuMode		},
   {CANNA_FN_RussianMode		,kigoRussia		},
@@ -155,7 +161,7 @@ BYTE empty_kmap[256] =
 /* 7 */         CANNA_FN_FunctionalInsert,
 /* 8 */         CANNA_FN_FunctionalInsert,
 /* 9 */         CANNA_FN_FunctionalInsert,
-/*   : */       CANNA_FN_FunctionalInsert,
+/* : */         CANNA_FN_FunctionalInsert,
 /* ; */         CANNA_FN_FunctionalInsert,
 /* < */         CANNA_FN_FunctionalInsert,
 /* = */         CANNA_FN_FunctionalInsert,
@@ -234,13 +240,8 @@ BYTE empty_kmap[256] =
 /* Insert */    CANNA_FN_KigouMode,
 /* Rollup */    NONE,
 /* Rolldown */  NONE,
-#ifdef WIN
-/* Home */      NONE,
-/* Help */      NONE,
-#else
 /* Home */      CANNA_FN_ExtendMode,
 /* Help */      CANNA_FN_ExtendMode,
-#endif
 /* KeyPad */    NONE,
 /* 8c */        NONE,
 /* 8d */        NONE,
@@ -263,69 +264,69 @@ BYTE empty_kmap[256] =
 /* 9e */        NONE,
 /* 9f */        NONE,
 /* KANASPACE */ NONE,
-/* ¡£ */        CANNA_FN_FunctionalInsert,
-/* ¡Ö */        CANNA_FN_FunctionalInsert,
-/* ¡× */        CANNA_FN_FunctionalInsert,
-/* ¡¢ */        CANNA_FN_FunctionalInsert,
-/* ¡¦ */        CANNA_FN_FunctionalInsert,
-/* ¥ò */        CANNA_FN_FunctionalInsert,
-/* ¥¡ */        CANNA_FN_FunctionalInsert,
-/* ¥£ */        CANNA_FN_FunctionalInsert,
-/* ¥¥ */        CANNA_FN_FunctionalInsert,
-/* ¥§ */        CANNA_FN_FunctionalInsert,
-/* ¥© */        CANNA_FN_FunctionalInsert,
-/* ¥ã */        CANNA_FN_FunctionalInsert,
-/* ¥å */        CANNA_FN_FunctionalInsert,
-/* ¥ç */        CANNA_FN_FunctionalInsert,
-/* ¥Ã */        CANNA_FN_FunctionalInsert,
-/* ¡¼ */        CANNA_FN_FunctionalInsert,
-/* ¥¢ */        CANNA_FN_FunctionalInsert,
-/* ¥¤ */        CANNA_FN_FunctionalInsert,
-/* ¥¦ */        CANNA_FN_FunctionalInsert,
-/* ¥¨ */        CANNA_FN_FunctionalInsert,
-/* ¥ª */        CANNA_FN_FunctionalInsert,
-/* ¥« */        CANNA_FN_FunctionalInsert,
-/* ¥­ */        CANNA_FN_FunctionalInsert,
-/* ¥¯ */        CANNA_FN_FunctionalInsert,
-/* ¥± */        CANNA_FN_FunctionalInsert,
-/* ¥³ */        CANNA_FN_FunctionalInsert,
-/* ¥µ */        CANNA_FN_FunctionalInsert,
-/* ¥· */        CANNA_FN_FunctionalInsert,
-/* ¥¹ */        CANNA_FN_FunctionalInsert,
-/* ¥» */        CANNA_FN_FunctionalInsert,
-/* ¥½ */        CANNA_FN_FunctionalInsert,
-/* ¥¿ */        CANNA_FN_FunctionalInsert,
-/* ¥Á */        CANNA_FN_FunctionalInsert,
-/* ¥Ä */        CANNA_FN_FunctionalInsert,
-/* ¥Æ */        CANNA_FN_FunctionalInsert,
-/* ¥È */        CANNA_FN_FunctionalInsert,
-/* ¥Ê */        CANNA_FN_FunctionalInsert,
-/* ¥Ë */        CANNA_FN_FunctionalInsert,
-/* ¥Ì */        CANNA_FN_FunctionalInsert,
-/* ¥Í */        CANNA_FN_FunctionalInsert,
-/* ¥Î */        CANNA_FN_FunctionalInsert,
-/* ¥Ï */        CANNA_FN_FunctionalInsert,
-/* ¥Ò */        CANNA_FN_FunctionalInsert,
-/* ¥Õ */        CANNA_FN_FunctionalInsert,
-/* ¥Ø */        CANNA_FN_FunctionalInsert,
-/* ¥Û */        CANNA_FN_FunctionalInsert,
-/* ¥Þ */        CANNA_FN_FunctionalInsert,
-/* ¥ß */        CANNA_FN_FunctionalInsert,
-/* ¥à */        CANNA_FN_FunctionalInsert,
-/* ¥á */        CANNA_FN_FunctionalInsert,
-/* ¥â */        CANNA_FN_FunctionalInsert,
-/* ¥ä */        CANNA_FN_FunctionalInsert,
-/* ¥æ */        CANNA_FN_FunctionalInsert,
-/* ¥è */        CANNA_FN_FunctionalInsert,
-/* ¥é */        CANNA_FN_FunctionalInsert,
-/* ¥ê */        CANNA_FN_FunctionalInsert,
-/* ¥ë */        CANNA_FN_FunctionalInsert,
-/* ¥ì */        CANNA_FN_FunctionalInsert,
-/* ¥í */        CANNA_FN_FunctionalInsert,
-/* ¥ï */        CANNA_FN_FunctionalInsert,
-/* ¥ó */        CANNA_FN_FunctionalInsert,
-/* ¡« */        CANNA_FN_FunctionalInsert,
-/* ¡¬ */        CANNA_FN_FunctionalInsert,
+/* 。 */        CANNA_FN_FunctionalInsert,
+/* 「 */        CANNA_FN_FunctionalInsert,
+/* 」 */        CANNA_FN_FunctionalInsert,
+/* 、 */        CANNA_FN_FunctionalInsert,
+/* ・ */        CANNA_FN_FunctionalInsert,
+/* ヲ */        CANNA_FN_FunctionalInsert,
+/* ァ */        CANNA_FN_FunctionalInsert,
+/* ィ */        CANNA_FN_FunctionalInsert,
+/* ゥ */        CANNA_FN_FunctionalInsert,
+/* ェ */        CANNA_FN_FunctionalInsert,
+/* ォ */        CANNA_FN_FunctionalInsert,
+/* ャ */        CANNA_FN_FunctionalInsert,
+/* ュ */        CANNA_FN_FunctionalInsert,
+/* ョ */        CANNA_FN_FunctionalInsert,
+/* ッ */        CANNA_FN_FunctionalInsert,
+/* ー */        CANNA_FN_FunctionalInsert,
+/* ア */        CANNA_FN_FunctionalInsert,
+/* イ */        CANNA_FN_FunctionalInsert,
+/* ウ */        CANNA_FN_FunctionalInsert,
+/* エ */        CANNA_FN_FunctionalInsert,
+/* オ */        CANNA_FN_FunctionalInsert,
+/* カ */        CANNA_FN_FunctionalInsert,
+/* キ */        CANNA_FN_FunctionalInsert,
+/* ク */        CANNA_FN_FunctionalInsert,
+/* ケ */        CANNA_FN_FunctionalInsert,
+/* コ */        CANNA_FN_FunctionalInsert,
+/* サ */        CANNA_FN_FunctionalInsert,
+/* シ */        CANNA_FN_FunctionalInsert,
+/* ス */        CANNA_FN_FunctionalInsert,
+/* セ */        CANNA_FN_FunctionalInsert,
+/* ソ */        CANNA_FN_FunctionalInsert,
+/* タ */        CANNA_FN_FunctionalInsert,
+/* チ */        CANNA_FN_FunctionalInsert,
+/* ツ */        CANNA_FN_FunctionalInsert,
+/* テ */        CANNA_FN_FunctionalInsert,
+/* ト */        CANNA_FN_FunctionalInsert,
+/* ナ */        CANNA_FN_FunctionalInsert,
+/* ニ */        CANNA_FN_FunctionalInsert,
+/* ヌ */        CANNA_FN_FunctionalInsert,
+/* ネ */        CANNA_FN_FunctionalInsert,
+/* ノ */        CANNA_FN_FunctionalInsert,
+/* ハ */        CANNA_FN_FunctionalInsert,
+/* ヒ */        CANNA_FN_FunctionalInsert,
+/* フ */        CANNA_FN_FunctionalInsert,
+/* ヘ */        CANNA_FN_FunctionalInsert,
+/* ホ */        CANNA_FN_FunctionalInsert,
+/* マ */        CANNA_FN_FunctionalInsert,
+/* ミ */        CANNA_FN_FunctionalInsert,
+/* ム */        CANNA_FN_FunctionalInsert,
+/* メ */        CANNA_FN_FunctionalInsert,
+/* モ */        CANNA_FN_FunctionalInsert,
+/* ヤ */        CANNA_FN_FunctionalInsert,
+/* ユ */        CANNA_FN_FunctionalInsert,
+/* ヨ */        CANNA_FN_FunctionalInsert,
+/* ラ */        CANNA_FN_FunctionalInsert,
+/* リ */        CANNA_FN_FunctionalInsert,
+/* ル */        CANNA_FN_FunctionalInsert,
+/* レ */        CANNA_FN_FunctionalInsert,
+/* ロ */        CANNA_FN_FunctionalInsert,
+/* ワ */        CANNA_FN_FunctionalInsert,
+/* ン */        CANNA_FN_FunctionalInsert,
+/* ゛ */        CANNA_FN_FunctionalInsert,
+/* ゜ */        CANNA_FN_FunctionalInsert,
 /* F1 */        NONE,
 /* F2 */        NONE,
 /* F3 */        NONE,

@@ -20,64 +20,43 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
-
 /*
-static char rcsid[]="$Id: ncache.c 10525 2004-12-23 21:23:50Z korli $";
+static char rcsid[]="$Id: ncache.c,v 1.2 2003/09/17 08:50:52 aida_s Exp $";
 */
-#include "canna.h"
-#include "RK.h"
-#include "RKintern.h"
 
-#define	NCHASH		101UL
-#define	hash(x)		((int)(((ulong)x)%NCHASH))
+#include	"RKintern.h"
+
+#define	NCHASH		101
+#define	hash(x)		((int)((x)%NCHASH))
 
 static struct ncache	Nchash[NCHASH];
 static struct ncache	Ncfree;
 
-inline void
-ainserttop(struct ncache *p)
-{ 
-	p->nc_anext = Ncfree.nc_anext; 
-	p->nc_aprev = &Ncfree;
-	Ncfree.nc_anext->nc_aprev = p;
-	Ncfree.nc_anext = p;
+#define ainserttop(p) { \
+(p)->nc_anext = Ncfree.nc_anext; (p)->nc_aprev = &Ncfree; \
+Ncfree.nc_anext->nc_aprev = (p); Ncfree.nc_anext = (p); \
 }
 
-inline void
-ainsertbottom(struct ncache *p)
-{
-	p->nc_anext = &Ncfree;
-	p->nc_aprev = Ncfree.nc_aprev;
-	Ncfree.nc_aprev->nc_anext = p;
-	Ncfree.nc_aprev = p;
+#define ainsertbottom(p) { \
+(p)->nc_anext = &Ncfree; (p)->nc_aprev = Ncfree.nc_aprev; \
+Ncfree.nc_aprev->nc_anext = (p); Ncfree.nc_aprev = (p); \
 }
 
-inline void
-aremove(struct ncache *p)
-{
-	p->nc_anext->nc_aprev = p->nc_aprev;
-	p->nc_aprev->nc_anext = p->nc_anext;
-	p->nc_anext = p->nc_aprev = p;
+#define	aremove(p)	{\
+(p)->nc_anext->nc_aprev = (p)->nc_aprev; \
+(p)->nc_aprev->nc_anext = (p)->nc_anext; (p)->nc_anext = (p)->nc_aprev = (p);\
 }
 
-inline void
-hremove(struct ncache *p)	
-{
-	p->nc_hnext->nc_hprev = p->nc_hprev;
-	p->nc_hprev->nc_hnext = p->nc_hnext;
-	p->nc_hnext = p->nc_hprev = p;
+#define	hremove(p)	{\
+(p)->nc_hnext->nc_hprev = (p)->nc_hprev; \
+(p)->nc_hprev->nc_hnext = (p)->nc_hnext; (p)->nc_hnext = (p)->nc_hprev = (p);\
 }
-
-static int flushCache(struct DM *dm, struct ncache *cache);
 
 int	
-_RkInitializeCache(int size)
+_RkInitializeCache(size)
+     int	size;
 {
-  struct RkParam	*sx = &SX;
+  register struct RkParam	*sx = &SX;
   int				i;
 
   sx->maxcache = size;
@@ -99,17 +78,20 @@ _RkInitializeCache(int size)
 }
 
 void
-_RkFinalizeCache(void)
+_RkFinalizeCache()
 {
-  struct RkParam	*sx = &SX;
+  register struct RkParam	*sx = &SX;
   
   if (sx->cache) 
-    free(sx->cache);
+    (void)free((char *)sx->cache);
   sx->cache = (struct ncache *)0;
 }
 
-static int
-flushCache(struct DM *dm, struct ncache *cache)
+static
+int
+flushCache(dm, cache)
+     struct DM		*dm;
+     struct ncache	*cache;
 {
   if (cache->nc_word) {
     if (dm && (cache->nc_flags & NC_DIRTY)) {
@@ -121,40 +103,42 @@ flushCache(struct DM *dm, struct ncache *cache)
   return -1;
 }
 
-inline struct ncache
-*newCache(struct DM *ndm, long address)
+static
+struct ncache	*newCache(ndm, address)
+     register struct DM		*ndm;
+     register long		address;
 {
-  struct ncache	*newc;
+  register struct ncache	*new;
 
-  if ((newc = Ncfree.nc_anext) != &Ncfree) {
-    (void)flushCache(newc->nc_dic, newc);
-    aremove(newc);
-    hremove(newc);
-    newc->nc_dic = ndm;
-    newc->nc_word = (unsigned char *)NULL;
-    newc->nc_flags  = 0;
-    newc->nc_address = address;
-    newc->nc_count = 0;
-    return(newc);
+  if ((new = Ncfree.nc_anext) != &Ncfree) {
+    (void)flushCache(new->nc_dic, new);
+    aremove(new);
+    hremove(new);
+    new->nc_dic = ndm;
+    new->nc_word = (unsigned char *)0;
+    new->nc_flags  = 0;
+    new->nc_address = address;
+    new->nc_count = 0;
+    return(new);
   };
   return (struct ncache *)0;
 }
 
 int
-_RkRelease(void)
+_RkRelease()
 {
-  struct ncache	*newc;
+  register struct ncache	*new;
 
-  for (newc = Ncfree.nc_anext; newc != &Ncfree; newc = newc->nc_anext) {
-    if (!newc->nc_word || (newc->nc_flags & NC_NHEAP))
+  for (new = Ncfree.nc_anext; new != &Ncfree; new = new->nc_anext) {
+    if (!new->nc_word || (new->nc_flags & NC_NHEAP))
       continue;
-    (void)flushCache(newc->nc_dic, newc);
-    hremove(newc);
-    newc->nc_dic = (struct DM *)0;
-    newc->nc_flags  = (unsigned short)0;
-    newc->nc_word = (unsigned char *)0;
-    newc->nc_address = (long)0;
-    newc->nc_count = (unsigned long)0;
+    (void)flushCache(new->nc_dic, new);
+    hremove(new);
+    new->nc_dic = (struct DM *)0;
+    new->nc_flags  = (unsigned short)0;
+    new->nc_word = (unsigned char *)0;
+    new->nc_address = (long)0;
+    new->nc_count = (unsigned long)0;
     return 1;
   };
   return 0;
@@ -172,7 +156,8 @@ _RkEnrefCache(cache)
 */
 
 void
-_RkDerefCache(struct ncache *cache)
+_RkDerefCache(cache)
+     struct ncache *cache;
 {
   struct DM	*dm = cache->nc_dic;
 /*
@@ -180,11 +165,10 @@ _RkDerefCache(struct ncache *cache)
   fprintf(stderr, "_RkDeref(0x%08x), %d\n", cache, ++count);
 */
 
-//  if (cache->nc_count <= 0) {
-//    _Rkpanic("wrong cache count %s %d#%d",
-//	     dm ? dm->dm_dicname : "-", cache->nc_address, cache->nc_count);
-//  };
-
+  if (cache->nc_count <= 0) {
+    _Rkpanic("wrong cache count %s %d#%d",
+	     dm ? dm->dm_dicname : "-", cache->nc_address, cache->nc_count);
+  };
   if (--cache->nc_count == 0) {
     aremove(cache);
     if (cache->nc_flags & NC_ERROR) {
@@ -197,7 +181,8 @@ _RkDerefCache(struct ncache *cache)
 }
 
 void	
-_RkPurgeCache(struct ncache *cache)
+_RkPurgeCache(cache)
+     struct ncache	*cache;
 {
   hremove(cache);
   aremove(cache);
@@ -205,7 +190,8 @@ _RkPurgeCache(struct ncache *cache)
 }
 
 void	
-_RkKillCache(struct DM *dm)
+_RkKillCache(dm)
+     struct DM	*dm;
 {
   struct ncache		*cache;
   int			i;
@@ -218,11 +204,13 @@ _RkKillCache(struct DM *dm)
   };
 }
 
-#if defined(MMAP) || defined(WIN)
+#if defined(MMAP)
 int
-_RkDoInvalidateCache(long addr, unsigned long size)
+_RkDoInvalidateCache(addr, size)
+     long	addr;
+     unsigned long	size;
 {
-  struct ncache	*head, *cache, *tmp;
+  register struct ncache	*head, *cache, *tmp;
   int i;
   int found = 0;
 
@@ -261,9 +249,11 @@ _RkDoInvalidateCache(long addr, unsigned long size)
 #endif
 
 struct ncache	*
-_RkFindCache(struct DM *dm, long addr)
+_RkFindCache(dm, addr)
+     struct DM	*dm;
+     long	addr;
 {
-  struct ncache	*head, *cache;
+  register struct ncache	*head, *cache;
 
   head = &Nchash[hash(addr)];
   for (cache = head->nc_hnext; cache != head; cache = cache->nc_hnext)  
@@ -273,7 +263,9 @@ _RkFindCache(struct DM *dm, long addr)
 }
 
 void
-_RkRehashCache(struct ncache *cache, long addr)
+_RkRehashCache(cache, addr)
+     struct ncache	*cache;
+     long		addr;
 {
   struct ncache	*head;
 
@@ -288,9 +280,11 @@ _RkRehashCache(struct ncache *cache, long addr)
 }
 
 struct ncache	*
-_RkReadCache(struct DM *dm, long addr)
+_RkReadCache(dm, addr)
+     struct DM	*dm;
+     long	addr;
 {
-  struct ncache	*head, *cache;
+  register struct ncache	*head, *cache;
 
   head = &Nchash[hash(addr)];
   for (cache = head->nc_hnext; cache != head; cache = cache->nc_hnext) {

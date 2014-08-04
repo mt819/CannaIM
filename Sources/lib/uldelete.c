@@ -20,89 +20,74 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: uldelete.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: uldelete.c,v 1.4 2003/09/17 08:50:53 aida_s Exp $";
 #endif
 
-
-#if !defined(NO_EXTEND_MENU) && !defined(WIN)
+#if !defined(NO_EXTEND_MENU)
 #include	<errno.h>
 #include 	"canna.h"
-#include "RK.h"
-#include "RKintern.h"
 
-static int uuSYomiEveryTimeCatch(uiContext d, int retval, mode_context env);
-static int uuSYomiExitCatch(uiContext d, int retval, mode_context env);
-static int uuSYomiQuitCatch(uiContext d, int retval, mode_context env);
-static int dicSakujoYomi(uiContext d);
-static int acDicSakujoYomi(uiContext d, int dn, mode_context dm);
-static int acDicSakujoDictionary(uiContext d, int dn, mode_context dm);
-static WCHAR_T **getMountDicName(uiContext d, int *num_return);
-static void CloseDeleteContext(tourokuContext tc);
-static int getEffectDic(tourokuContext tc);
-static int uuSTangoExitCatch(uiContext d, int retval, mode_context env);
-static int uuSTangoQuitCatch(uiContext d, int retval, mode_context env);
-static int dicSakujoBgnBun(uiContext d, RkStat *st);
-static int dicSakujoEndBun(uiContext d);
-static int dicSakujoTango(uiContext d);
-static int getDeleteDic(mountContext mc);
-static int uuSDicExitCatch(uiContext d, int retval, mode_context env);
-static int uuSDicQuitCatch(uiContext d, int retval, mode_context env);
-static int dicSakujoDictionary(uiContext d);
-static int uuSDeleteYesCatch(uiContext d, int retval, mode_context env);
-static int uuSDeleteQuitCatch(uiContext d, int retval, mode_context env);
-static int uuSDeleteNoCatch(uiContext d, int retval, mode_context env);
-static int dicSakujoDo(uiContext d);
+#ifdef luna88k
+extern int errno;
+#endif
 
-extern int RkwGetServerVersion (int *, int *);
-extern int RkwChmodDic (int, char *, int);
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
 
-static int dicSakujoYomi (uiContext),
-           dicSakujoEndBun (uiContext),
-           dicSakujoTango (uiContext),
-           dicSakujoDictionary (uiContext),
-           dicSakujoDo (uiContext);
+extern exp(int) RkwGetServerVersion pro((int *, int *));
+extern exp(int) RkwChmodDic pro((int, char *, int));
+
+static int dicSakujoYomi pro((uiContext)),
+           dicSakujoEndBun pro((uiContext)),
+           dicSakujoTango pro((uiContext)),
+           dicSakujoDictionary pro((uiContext)),
+           dicSakujoDo pro((uiContext));
 
 void
-freeWorkDic3(tourokuContext tc)
+freeWorkDic3(tc)
+tourokuContext tc;
 {
   if (tc->workDic3) {
-    free(tc->workDic3);
+    free((char *)tc->workDic3);
     tc->workDic3 = (deldicinfo *)0;
   }
 }
 
 void
-freeWorkDic(tourokuContext tc)
+freeWorkDic(tc)
+tourokuContext tc;
 {
   if (tc->workDic2) {
-    free(tc->workDic2);
+    free((char *)tc->workDic2);
     tc->workDic2 = (deldicinfo *)0;
   }
   freeWorkDic3(tc);
 }
 
 void
-freeDic(tourokuContext tc)
+freeDic(tc)
+tourokuContext tc;
 {
   if (tc->udic) {
-    WCHAR_T **p = tc->udic;
+    wchar_t **p = tc->udic;
 
     for ( ; *p; p++) {
       WSfree(*p);
     }
-    free(tc->udic);
+    free((char *)tc->udic);
   }
   freeWorkDic(tc);
 }
 
 void
-freeAndPopTouroku(uiContext d)
+freeAndPopTouroku(d)
+uiContext d;
 {
   tourokuContext tc = (tourokuContext)d->modec;
 
@@ -112,14 +97,17 @@ freeAndPopTouroku(uiContext d)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Ã±¸ìºï½ü¤ÎÆÉ¤ß¤ÎÆþÎÏ                                                      *
+ * 単語削除の読みの入力                                                      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 static
-int uuSYomiEveryTimeCatch(uiContext d, int retval, mode_context env)
+uuSYomiEveryTimeCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   int len, echoLen, revPos;
-  WCHAR_T tmpbuf[ROMEBUFSIZE];
+  wchar_t tmpbuf[ROMEBUFSIZE];
 
   retval = 0;
   if((echoLen = d->kanji_status_return->length) < 0)
@@ -130,15 +118,15 @@ int uuSYomiEveryTimeCatch(uiContext d, int retval, mode_context env)
     d->kanji_status_return->revLen = 0;
   }
 
-  /* ¼è¤ê¤¢¤¨¤º echoStr ¤¬ d->genbuf ¤«¤â¤·¤ì¤Ê¤¤¤Î¤Ç copy ¤·¤Æ¤ª¤¯ */
+  /* 取りあえず echoStr が d->genbuf かもしれないので copy しておく */
   WStrncpy(tmpbuf, d->kanji_status_return->echoStr, echoLen);
 
   revPos = MBstowcs(d->genbuf, "\306\311\244\337?[", ROMEBUFSIZE);
-				/* ÆÉ¤ß */
+				/* 読み */
   WStrncpy(d->genbuf + revPos, tmpbuf, echoLen);
-  *(d->genbuf + revPos + echoLen) = (WCHAR_T) ']';
+  *(d->genbuf + revPos + echoLen) = (wchar_t) ']';
   len = revPos + echoLen + 1;
-  *(d->genbuf + len) = (WCHAR_T) '\0';
+  *(d->genbuf + len) = (wchar_t) '\0';
   d->kanji_status_return->gline.line = d->genbuf;
   d->kanji_status_return->gline.length = len;
   if (d->kanji_status_return->revLen) {
@@ -146,7 +134,7 @@ int uuSYomiEveryTimeCatch(uiContext d, int retval, mode_context env)
       d->kanji_status_return->revPos + revPos;
     d->kanji_status_return->gline.revLen = d->kanji_status_return->revLen;
   }
-  else { /* È¿Å¾ÎÎ°è¤¬¤Ê¤¤¾ì¹ç */
+  else { /* 反転領域がない場合 */
     d->kanji_status_return->gline.revPos = len - 1;
     d->kanji_status_return->gline.revLen = 1;
   }
@@ -159,27 +147,33 @@ int uuSYomiEveryTimeCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int uuSYomiExitCatch(uiContext d, int retval, mode_context env)
+uuSYomiExitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   tourokuContext tc;
 
-  popCallback(d); /* ÆÉ¤ß¤ò pop */
+  popCallback(d); /* 読みを pop */
 
   tc = (tourokuContext)d->modec;
 
   WStrncpy(tc->yomi_buffer, d->buffer_return, retval);
-  tc->yomi_buffer[retval] = (WCHAR_T)'\0';
+  tc->yomi_buffer[retval] = (wchar_t)'\0';
   tc->yomi_len = WStrlen(tc->yomi_buffer);
 
   return dicSakujoTango(d);
 }
 
 static
-int uuSYomiQuitCatch(uiContext d, int retval, mode_context env)
+uuSYomiQuitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
-  popCallback(d); /* ÆÉ¤ß¤ò pop */
+  popCallback(d); /* 読みを pop */
 
   clearYomi(d);
 
@@ -191,13 +185,14 @@ int uuSYomiQuitCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int dicSakujoYomi(uiContext d)
+dicSakujoYomi(d)
+uiContext d;
 {
   yomiContext yc;
 
   d->status = 0;
 
-  yc = GetKanjiString(d, (WCHAR_T *)NULL, 0,
+  yc = GetKanjiString(d, (wchar_t *)NULL, 0,
 	       CANNA_NOTHING_RESTRICTED,
 	       (int)CANNA_YOMI_CHGMODE_INHIBITTED,
 	       (int)CANNA_YOMI_END_IF_KAKUTEI,
@@ -217,7 +212,10 @@ int dicSakujoYomi(uiContext d)
 }
 
 static
-int acDicSakujoYomi(uiContext d, int dn, mode_context dm)
+acDicSakujoYomi(d, dn, dm)
+uiContext d;
+int dn;
+mode_context dm;
 /* ARGSUSED */
 {
   popCallback(d);
@@ -225,7 +223,10 @@ int acDicSakujoYomi(uiContext d, int dn, mode_context dm)
 }
 
 static
-int acDicSakujoDictionary(uiContext d, int dn, mode_context dm)
+acDicSakujoDictionary(d, dn, dm)
+uiContext d;
+int dn;
+mode_context dm;
 /* ARGSUSED */
 {
   popCallback(d);
@@ -233,44 +234,46 @@ int acDicSakujoDictionary(uiContext d, int dn, mode_context dm)
 }
 
 /*
- * ¥Þ¥¦¥ó¥È¤µ¤ì¤Æ¤¤¤ë¼­½ñ¤«¤é WRITE ¸¢¤Î¤¢¤ë¤â¤Î¤ò¼è¤ê½Ð¤¹
+ * マウントされている辞書から WRITE 権のあるものを取り出す
  */
 static
-WCHAR_T **
-getMountDicName(uiContext d, int *num_return)
+wchar_t **
+getMountDicName(d, num_return)
+uiContext d;
+int *num_return;
 /* ARGSUSED */
 {
   int nmmdic, check, majv, minv;
   struct dicname *p;
-  WCHAR_T **tourokup, **tp;
-  extern int defaultContext;
+  wchar_t **tourokup, **tp;
+  extern defaultContext;
 
   if (defaultContext < 0) {
     if ((KanjiInit() < 0) || (defaultContext < 0)) {
 #ifdef STANDALONE
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
 #endif
 #else
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ÈÄÌ¿®¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換サーバと通信できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
 	"\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336"
-	"\244\273\244\363";    /* ¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ÈÄÌ¿®¤Ç¤­¤Þ¤»¤ó */
+	"\244\273\244\363";    /* かな漢字変換サーバと通信できません */
 #endif
 #endif /* STANDALONE */
       return 0;
     }
   }
 
-  /* ¥µ¡¼¥Ð¤Î Version ¤Ë¤è¤Ã¤Æ¼è¤ê½Ð¤¹¼­½ñ¤òÊ¬¤±¤ë */
+  /* サーバの Version によって取り出す辞書を分ける */
   RkwGetServerVersion(&majv, &minv);
 
   if (canna_version(majv, minv) < canna_version(3, 2)) {
-    /* Version3.2 ¤è¤êÁ°¤Î¥µ¡¼¥Ð¤Î¾ì¹ç */
+    /* Version3.2 より前のサーバの場合 */
     for (nmmdic = 0, p = kanjidicnames; p; p = p->next) {
       if (p->dicflag == DIC_MOUNTED && p->dictype == DIC_USER) {
         nmmdic++;
@@ -278,29 +281,34 @@ getMountDicName(uiContext d, int *num_return)
     }
   }
   else {
-    /* Version3.2 °Ê¹ß¤Î¥µ¡¼¥Ð¤Î¾ì¹ç */
+    /* Version3.2 以降のサーバの場合 */
     for (nmmdic = 0, p = kanjidicnames ; p ; p = p->next) {
       if (p->dicflag == DIC_MOUNTED) {
         check = RkwChmodDic(defaultContext, p->name, 0);
         if (check >= 0 && (check & RK_ENABLE_WRITE)) {
           nmmdic++;
-        }
+        } else {
+	  check = RkwChmodDic(defaultContext, p->name, RK_GRP_DIC);
+	  if (check >= 0 && (check & RK_ENABLE_WRITE)) {
+	    nmmdic++;
+	  }
+	}
       }
     }
   }
 
-  /* return BUFFER ¤Î alloc */
-  if ((tourokup = (WCHAR_T **)calloc(nmmdic + 1, sizeof(WCHAR_T *)))
-                                                  == (WCHAR_T **)NULL) {
-    /* + 1 ¤Ê¤Î¤ÏÂÇ¤Á»ß¤á¥Þ¡¼¥¯¤ò¤¤¤ì¤ë¤¿¤á */
+  /* return BUFFER の alloc */
+  if ((tourokup = (wchar_t **)calloc(nmmdic + 1, sizeof(wchar_t *)))
+                                                  == (wchar_t **)NULL) {
+    /* + 1 なのは打ち止めマークをいれるため */
     jrKanjiError = "malloc (getMountDicName) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
-                       /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+                       /* できませんでした */
     return 0;
   }
 
   if (canna_version(majv, minv) < canna_version(3, 2)) {
-    /* Version3.2 ¤è¤êÁ°¤Î¥µ¡¼¥Ð¤Î¾ì¹ç */
+    /* Version3.2 より前のサーバの場合 */
     for (tp = tourokup + nmmdic, p = kanjidicnames ; p ; p = p->next) {
       if (p->dicflag == DIC_MOUNTED && p->dictype == DIC_USER) {
         *--tp = WString(p->name);
@@ -308,25 +316,31 @@ getMountDicName(uiContext d, int *num_return)
     }
   }
   else {
-    /* Version3.2 °Ê¹ß¤Î¥µ¡¼¥Ð¤Î¾ì¹ç */
+    /* Version3.2 以降のサーバの場合 */
     for (tp = tourokup + nmmdic, p = kanjidicnames ; p ; p = p->next) {
       if (p->dicflag == DIC_MOUNTED) {
         check = RkwChmodDic(defaultContext, p->name, 0);
         if (check >= 0 && (check & RK_ENABLE_WRITE)) {
           *--tp = WString(p->name);
+        } else {
+	  check = RkwChmodDic(defaultContext, p->name, RK_GRP_DIC);
+	  if (check >= 0 && (check & RK_ENABLE_WRITE)) {
+	    *--tp = WString(p->name);
+	  }
         }
       }
     }
   }
-  tourokup[nmmdic] = (WCHAR_T *)0;
+  tourokup[nmmdic] = (wchar_t *)0;
   *num_return = nmmdic;
 
   return tourokup;
 }
 
-int dicSakujo(uiContext d)
+dicSakujo(d)
+uiContext d;
 {
-  WCHAR_T **mp, **p;
+  wchar_t **mp, **p;
   tourokuContext tc;
   int num;
   yomiContext yc = (yomiContext)d->modec;
@@ -336,7 +350,7 @@ int dicSakujo(uiContext d)
   }    
   d->status = 0;
 
-  /* ¥Þ¥¦¥ó¥È¤µ¤ì¤Æ¤¤¤ë¼­½ñ¤Ç WRITE ¸¢¤Î¤¢¤ë¤â¤Î¤ò¼è¤Ã¤Æ¤¯¤ë */
+  /* マウントされている辞書で WRITE 権のあるものを取ってくる */
   if ((mp = getMountDicName(d, &num)) != 0) {
     if (getTourokuContext(d) != NG) {
       tc = (tourokuContext)d->modec;
@@ -346,7 +360,7 @@ int dicSakujo(uiContext d)
         makeGLineMessageFromString(d, "\303\261\270\354\272\357\275\374"
 	"\262\304\307\275\244\312\274\255\275\361\244\254\302\270\272\337"
 	"\244\267\244\336\244\273\244\363");           
-			/* Ã±¸ìºï½ü²ÄÇ½¤Ê¼­½ñ¤¬Â¸ºß¤·¤Þ¤»¤ó */
+			/* 単語削除可能な辞書が存在しません */
      
         freeAndPopTouroku(d);
         deleteEnd(d);
@@ -359,18 +373,19 @@ int dicSakujo(uiContext d)
     for ( p = mp; *p; p++) {
       WSfree(*p);
     }
-    free(mp);
+    free((char *)mp);
   }
   deleteEnd(d);
   return GLineNGReturn(d);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Ã±¸ìºï½ü¤ÎÃ±¸ì¤ÎÆþÎÏ                                                      *
+ * 単語削除の単語の入力                                                      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void
-CloseDeleteContext(tourokuContext tc)
+static
+CloseDeleteContext(tc)
+tourokuContext tc;
 {
   if(tc->delContext >= 0) {
     if (RkwCloseContext(tc->delContext) < 0) {
@@ -386,21 +401,23 @@ CloseDeleteContext(tourokuContext tc)
 }
 
 /*
- * »ØÄê¤µ¤ì¤¿Ã±¸ì¤¬ÅÐÏ¿¤µ¤ì¤Æ¤¤¤ë¼­½ñ¤ò¼è¤ê½Ð¤¹
+ * 指定された単語が登録されている辞書を取り出す
  */
 static
-int getEffectDic(tourokuContext tc)
+getEffectDic(tc)
+tourokuContext tc;
 {
   int workContext, currentkouho, nbunsetsu, nelem = tc->nudic;
-  WCHAR_T **mdic, **cands, **work;
+  wchar_t **mdic, **cands, **work;
+  wchar_t **getIchiranList();
   char dicname[1024], tmpbuf[64];
   RkLex lex[5];
   deldicinfo *dic;
 
   dic = (deldicinfo *)malloc((nelem + 1) * sizeof(deldicinfo));
   if (dic == (deldicinfo *)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (getEffectDic) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (getEffectDic) できませんでした";
 #else
     jrKanjiError = "malloc (getEffectDic) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
@@ -413,8 +430,8 @@ int getEffectDic(tourokuContext tc)
     if (errno == EPIPE) {
       jrKanjiPipeError();
     }
-#ifndef WIN
-    jrKanjiError = "¼­½ñ¸¡º÷ÍÑ¥³¥ó¥Æ¥¯¥¹¥È¤òºîÀ®¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "辞書検索用コンテクストを作成できませんでした";
 #else
     jrKanjiError = "\274\255\275\361\270\241\272\367\315\321\245\263\245\363"
 	"\245\306\245\257\245\271\245\310\244\362\272\356\300\256\244\307"
@@ -425,8 +442,8 @@ int getEffectDic(tourokuContext tc)
 
 #ifdef STANDALONE
   if ((RkwSetDicPath(workContext, "iroha")) == NG) {
-#ifndef WIN
-    jrKanjiError = "¼­½ñ¥Ç¥£¥ì¥¯¥È¥ê¤òÀßÄê¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "辞書ディレクトリを設定できませんでした";
 #else
     jrKanjiError = "\274\255\275\361\245\307\245\243\245\354\245\257\245\310\245\352\244\362\300\337\304\352\244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
 #endif
@@ -445,7 +462,7 @@ int getEffectDic(tourokuContext tc)
 	"\245\306\245\257\245\271\245\310\244\313\274\255\275\361\244\362"
 	"\245\336\245\246\245\363\245\310\244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
-              /* ¼­½ñ¸¡º÷ÍÑ¥³¥ó¥Æ¥¯¥¹¥È¤Ë¼­½ñ¤ò¥Þ¥¦¥ó¥È¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+              /* 辞書検索用コンテクストに辞書をマウントできませんでした */
       RkwCloseContext(workContext);
       return NG;
     }
@@ -463,7 +480,7 @@ int getEffectDic(tourokuContext tc)
               jrKanjiError = "\245\253\245\354\245\363\245\310\270\365\312\344"
 			     "\244\362\274\350\244\352\275\320\244\273\244\336"
 			     "\244\273\244\363\244\307\244\267\244\277";
-               /* ¥«¥ì¥ó¥È¸õÊä¤ò¼è¤ê½Ð¤»¤Þ¤»¤ó¤Ç¤·¤¿ */
+               /* カレント候補を取り出せませんでした */
               freeGetIchiranList(cands);
               RkwEndBun(workContext, 0);
               RkwUnmountDic(workContext, dicname);
@@ -476,7 +493,7 @@ int getEffectDic(tourokuContext tc)
               jrKanjiError = "\267\301\302\326\301\307\276\360\312\363\244\362"
 		"\274\350\244\352\275\320\244\273\244\336\244\273\244\363"
 		"\244\307\244\267\244\277";
-                /* ·ÁÂÖÁÇ¾ðÊó¤ò¼è¤ê½Ð¤»¤Þ¤»¤ó¤Ç¤·¤¿ */
+                /* 形態素情報を取り出せませんでした */
               freeGetIchiranList(cands);
               RkwEndBun(workContext, 0);
               RkwUnmountDic(workContext, dicname);
@@ -501,7 +518,7 @@ int getEffectDic(tourokuContext tc)
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\316"
 	"\275\252\316\273\244\313\274\272\307\324\244\267\244\336\244\267"
 	"\244\277";
-       /* ¤«¤Ê´Á»úÊÑ´¹¤Î½ªÎ»¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+       /* かな漢字変換の終了に失敗しました */
       RkwUnmountDic(workContext, dicname);
       RkwCloseContext(workContext);
       return NG;
@@ -514,7 +531,7 @@ int getEffectDic(tourokuContext tc)
       jrKanjiError = "\274\255\275\361\270\241\272\367\315\321\244\316\274\255"
 	"\275\361\244\362\245\242\245\363\245\336\245\246\245\363\245\310"
 	"\244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
-       /* ¼­½ñ¸¡º÷ÍÑ¤Î¼­½ñ¤ò¥¢¥ó¥Þ¥¦¥ó¥È¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+       /* 辞書検索用の辞書をアンマウントできませんでした */
       RkwCloseContext(workContext);
       return NG;
     }
@@ -528,23 +545,26 @@ int getEffectDic(tourokuContext tc)
 	"\245\363\245\306\245\257\245\271\245\310\244\362\245\257\245\355"
 	"\241\274\245\272\244\307\244\255\244\336\244\273\244\363\244\307"
 	"\244\267\244\277";
-     /* ¼­½ñ¸¡º÷ÍÑ¤Î¥³¥ó¥Æ¥¯¥¹¥È¤ò¥¯¥í¡¼¥º¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+     /* 辞書検索用のコンテクストをクローズできませんでした */
     return NG;
   }
 
-  dic->name = (WCHAR_T *)0;
+  dic->name = (wchar_t *)0;
   tc->nworkDic2 = dic - tc->workDic2;
   return 0;
 }
 
 static
-int uuSTangoExitCatch(uiContext d, int retval, mode_context env)
+uuSTangoExitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   forichiranContext fc;
   tourokuContext tc;
 
-  popCallback(d); /* °ìÍ÷¤ò pop */
+  popCallback(d); /* 一覧を pop */
 
   fc = (forichiranContext)d->modec;
   freeGetIchiranList(fc->allkouho);
@@ -569,12 +589,15 @@ int uuSTangoExitCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int uuSTangoQuitCatch(uiContext d, int retval, mode_context env)
+uuSTangoQuitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   forichiranContext fc;
 
-  popCallback(d); /* °ìÍ÷¤ò pop */
+  popCallback(d); /* 一覧を pop */
 
   fc = (forichiranContext)d->modec;
   freeGetIchiranList(fc->allkouho);
@@ -587,23 +610,25 @@ int uuSTangoQuitCatch(uiContext d, int retval, mode_context env)
 }
 
 /*
- * ÆÉ¤ß¤ò»ØÄê¤µ¤ì¤¿¼­½ñ¤«¤éÊÑ´¹¤¹¤ë
+ * 読みを指定された辞書から変換する
  */
 static
-int dicSakujoBgnBun(uiContext d, RkStat *st)
+dicSakujoBgnBun(d, st)
+uiContext d;
+RkStat *st;
 {
   tourokuContext tc = (tourokuContext)d->modec;
   int nbunsetsu;
   char dicname[1024];
-  WCHAR_T **mdic;
+  wchar_t **mdic;
 
   if(!tc) {
-#if !defined(DEBUG) && !defined(WIN)
+#if !defined(DEBUG)
     printf("tc = NULL\n");
 #endif
   }
   if(!tc->udic) {
-#if !defined(DEBUG) && !defined(WIN)
+#if !defined(DEBUG)
     printf("tc->udic = NULL\n");
 #endif
   }
@@ -615,14 +640,14 @@ int dicSakujoBgnBun(uiContext d, RkStat *st)
     jrKanjiError = "\303\261\270\354\272\357\275\374\315\321\244\316\245\263"
 	"\245\363\245\306\245\257\245\271\245\310\244\362\272\356\300\256"
 	"\244\307\244\255\244\336\244\273\244\363";
-     /* Ã±¸ìºï½üÍÑ¤Î¥³¥ó¥Æ¥¯¥¹¥È¤òºîÀ®¤Ç¤­¤Þ¤»¤ó */
+     /* 単語削除用のコンテクストを作成できません */
     return(NG);
   }
 
 #ifdef STANDALONE
   if ((RkwSetDicPath(tc->delContext, "iroha")) == NG) {
-#ifndef WIN
-    jrKanjiError = "¼­½ñ¥Ç¥£¥ì¥¯¥È¥ê¤òÀßÄê¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "辞書ディレクトリを設定できませんでした";
 #else
     jrKanjiError = "\274\255\275\361\245\307\245\243\245\354\245\257\245\310\245\352\244\362\300\337\304\352\244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
 #endif
@@ -640,7 +665,7 @@ int dicSakujoBgnBun(uiContext d, RkStat *st)
       jrKanjiError = "\303\261\270\354\272\357\275\374\315\321\244\316\274"
 	"\255\275\361\244\362\245\336\245\246\245\363\245\310\244\307\244"
 	"\255\244\336\244\273\244\363\244\307\244\267\244\277";
-        /* Ã±¸ìºï½üÍÑ¤Î¼­½ñ¤ò¥Þ¥¦¥ó¥È¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+        /* 単語削除用の辞書をマウントできませんでした */
       CloseDeleteContext(tc);
       return(NG);
     }
@@ -653,20 +678,20 @@ int dicSakujoBgnBun(uiContext d, RkStat *st)
     }
     jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\313"
 	"\274\272\307\324\244\267\244\336\244\267\244\277";
-      /* ¤«¤Ê´Á»úÊÑ´¹¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+      /* かな漢字変換に失敗しました */
     CloseDeleteContext(tc);
     return(NG);
   }
   
   if(RkwGetStat(tc->delContext, st) == -1) {
-    RkwEndBun(tc->delContext, 0); /* 0:³Ø½¬¤·¤Ê¤¤ */
+    RkwEndBun(tc->delContext, 0); /* 0:学習しない */
     if(errno == EPIPE)
       jrKanjiPipeError();
     jrKanjiError = "\245\271\245\306\245\244\245\277\245\271\244\362\274\350"
 	"\244\352\275\320\244\273\244\336\244\273\244\363\244\307\244\267"
 	"\244\277";
-               /* ¥¹¥Æ¥¤¥¿¥¹¤ò¼è¤ê½Ð¤»¤Þ¤»¤ó¤Ç¤·¤¿ */
-    /* ¥¢¥ó¥Þ¥¦¥ó¥È¤·¤Æ¤Ê¤¤ */
+               /* ステイタスを取り出せませんでした */
+    /* アンマウントしてない */
     CloseDeleteContext(tc);
     return(NG);
   }
@@ -675,17 +700,18 @@ int dicSakujoBgnBun(uiContext d, RkStat *st)
 }
 
 static
-int dicSakujoEndBun(uiContext d)
+dicSakujoEndBun(d)
+uiContext d;
 {
   tourokuContext tc = (tourokuContext)d->modec;
 
-  if(RkwEndBun(tc->delContext, 0) == -1) {	/* 0:³Ø½¬¤·¤Ê¤¤ */
+  if(RkwEndBun(tc->delContext, 0) == -1) {	/* 0:学習しない */
     if(errno == EPIPE)
       jrKanjiPipeError();
     jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\316"
 	"\275\252\316\273\244\313\274\272\307\324\244\267\244\336\244\267"
 	"\244\277";
-       /* ¤«¤Ê´Á»úÊÑ´¹¤Î½ªÎ»¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+       /* かな漢字変換の終了に失敗しました */
     return(NG);
   }
 
@@ -693,12 +719,13 @@ int dicSakujoEndBun(uiContext d)
 }
 
 static
-int dicSakujoTango(uiContext d)
+dicSakujoTango(d)
+uiContext d;
 {
   tourokuContext tc = (tourokuContext)d->modec;
   forichiranContext fc;
   ichiranContext ic;
-  WCHAR_T **allDelCands;
+  wchar_t **allDelCands, **getIchiranList();
   BYTE inhibit = 0;
   int nbunsetsu, nelem, currentkouho, retval = 0;
   RkStat st;
@@ -706,7 +733,7 @@ int dicSakujoTango(uiContext d)
   if(tc->yomi_len < 1) {
     return canna_alert(d, "\306\311\244\337\244\362\306\376\316\317\244\267"
 	"\244\306\244\257\244\300\244\265\244\244", acDicSakujoYomi);
-		/* ÆÉ¤ß¤òÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤ */ 
+		/* 読みを入力してください */ 
   }
 
   if((nbunsetsu = dicSakujoBgnBun(d, &st)) == NG) {
@@ -715,7 +742,7 @@ int dicSakujoTango(uiContext d)
     return(GLineNGReturnTK(d));
   }
   if((nbunsetsu != 1) || (st.maxcand == 0)) {
-    /* ¸õÊä¤¬¤Ê¤¤ */
+    /* 候補がない */
     if(dicSakujoEndBun(d) == NG) {
       freeDic(tc);
       CloseDeleteContext(tc);
@@ -726,7 +753,7 @@ int dicSakujoTango(uiContext d)
     makeGLineMessageFromString(d, "\244\263\244\316\306\311\244\337\244\307"
 	"\305\320\317\277\244\265\244\354\244\277\303\261\270\354\244\317"
 	"\302\270\272\337\244\267\244\336\244\273\244\363");
-         /* ¤³¤ÎÆÉ¤ß¤ÇÅÐÏ¿¤µ¤ì¤¿Ã±¸ì¤ÏÂ¸ºß¤·¤Þ¤»¤ó */
+         /* この読みで登録された単語は存在しません */
     CloseDeleteContext(tc);
     freeAndPopTouroku(d);
     deleteEnd(d);
@@ -734,7 +761,7 @@ int dicSakujoTango(uiContext d)
     return(0);
   }
 
-  /* ¤¹¤Ù¤Æ¤Î¸õÊä¤ò¼è¤ê½Ð¤¹ */
+  /* すべての候補を取り出す */
   if((allDelCands = 
       getIchiranList(tc->delContext, &nelem, &currentkouho)) == 0) {
     freeDic(tc);
@@ -767,10 +794,10 @@ int dicSakujoTango(uiContext d)
   else
     inhibit |= (BYTE)CHARINSERT;
 
-  fc->curIkouho = currentkouho;	/* ¸½ºß¤Î¥«¥ì¥ó¥È¸õÊäÈÖ¹æ¤òÊÝÂ¸¤¹¤ë */
-  currentkouho = 0;	/* ¥«¥ì¥ó¥È¸õÊä¤«¤é²¿ÈÖÌÜ¤ò¥«¥ì¥ó¥È¸õÊä¤È¤¹¤ë¤« */
+  fc->curIkouho = currentkouho;	/* 現在のカレント候補番号を保存する */
+  currentkouho = 0;	/* カレント候補から何番目をカレント候補とするか */
 
-  /* ¸õÊä°ìÍ÷¤Ë°Ü¹Ô¤¹¤ë */
+  /* 候補一覧に移行する */
   if((retval = selectOne(d, fc->allkouho, &fc->curIkouho, nelem, BANGOMAX,
                inhibit, currentkouho, WITHOUT_LIST_CALLBACK,
 	       NO_CALLBACK, uuSTangoExitCatch,
@@ -798,17 +825,18 @@ int dicSakujoTango(uiContext d)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Ã±¸ìºï½ü¤Î¼­½ñ°ìÍ÷                                                        *
+ * 単語削除の辞書一覧                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static
-int getDeleteDic(mountContext mc)
+getDeleteDic(mc)
+mountContext mc;
 {
   tourokuContext tc = (tourokuContext)mc->next;
   int i, num = 0;
   deldicinfo *dic, *srcp;
 
-  /* ¤Þ¤º¡¢Ã±¸ìºï½ü¤¹¤ë¼­½ñ¤Î¿ô¤ò¿ô¤¨¤ë */
+  /* まず、単語削除する辞書の数を数える */
   for (i = 0; mc->mountList[i]; i++) {
     if (mc->mountOldStatus[i] != mc->mountNewStatus[i]) {
       num++;
@@ -819,26 +847,29 @@ int getDeleteDic(mountContext mc)
   if (dic != (deldicinfo *)NULL) {
     tc->workDic3 = dic;
 
-    /* ¤É¤Î¼­½ñ¤«¤éÃ±¸ì¤òºï½ü¤¹¤ë¤« */
+    /* どの辞書から単語を削除するか */
     srcp = tc->workDic2;
     for (i = 0; mc->mountList[i]; i++, srcp++) {
       if (mc->mountOldStatus[i] != mc->mountNewStatus[i]) {
         *dic++ = *srcp;
       }
     }
-    dic->name = (WCHAR_T *)0;
+    dic->name = (wchar_t *)0;
     tc->nworkDic3 = dic - tc->workDic3;
     return 0;
   }
   jrKanjiError ="malloc (uuSDicExitCatch) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
-                 /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+                 /* できませんでした */
   return NG;
 }
 
 
 static
-int uuSDicExitCatch(uiContext d, int retval, mode_context env)
+uuSDicExitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   mountContext mc;
@@ -846,7 +877,7 @@ int uuSDicExitCatch(uiContext d, int retval, mode_context env)
 
   d->nbytes = 0;
 
-  popCallback(d); /* °ìÍ÷¤ò pop */
+  popCallback(d); /* 一覧を pop */
 
   mc = (mountContext)d->modec;
 
@@ -863,22 +894,25 @@ int uuSDicExitCatch(uiContext d, int retval, mode_context env)
   popCallback(d);
 
   tc = (tourokuContext)d->modec;
-  /* ¼­½ñ¤¬ÁªÂò¤µ¤ì¤Ê¤«¤Ã¤¿¤È¤­¤Ï¡¢¥á¥Ã¥»¡¼¥¸¤ò½Ð¤·¡¢
-     ²¿¤«¤Î¥­¡¼¤¬ÆþÎÏ¤µ¤ì¤¿¤é¡¢ ¼­½ñÁªÂò¤ËÌá¤ë¡£     */
+  /* 辞書が選択されなかったときは、メッセージを出し、
+     何かのキーが入力されたら、 辞書選択に戻る。     */
   if (tc->nworkDic3 == 0) {
     return canna_alert(d, "\274\255\275\361\244\362\301\252\302\362\244\267"
 	"\244\306\244\257\244\300\244\265\244\244", acDicSakujoDictionary);
-		/* ¼­½ñ¤òÁªÂò¤·¤Æ¤¯¤À¤µ¤¤ */
+		/* 辞書を選択してください */
   }
 
   return dicSakujoDo(d);
 }
 
 static
-int uuSDicQuitCatch(uiContext d, int retval, mode_context env)
+uuSDicQuitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
-  popCallback(d); /* °ìÍ÷¤ò pop */
+  popCallback(d); /* 一覧を pop */
 
   popMountMode(d);
   popCallback(d);
@@ -888,7 +922,8 @@ int uuSDicQuitCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int dicSakujoDictionary(uiContext d)
+dicSakujoDictionary(d)
+uiContext d;
 {
   tourokuContext tc = (tourokuContext)d->modec;
   mountContext mc;
@@ -898,7 +933,7 @@ int dicSakujoDictionary(uiContext d)
   int retval, i, upnelem = tc->nworkDic2;
   char *dicLbuf, **dicLp, *wptr;
   BYTE *soldp, *snewp;
-  WCHAR_T *xxxx[100];
+  wchar_t *xxxx[100];
 
   retval = d->nbytes = 0;
   d->status = 0;
@@ -908,14 +943,14 @@ int dicSakujoDictionary(uiContext d)
       = (deldicinfo *)malloc((1 /* upnelem(==1) */ + 1) * sizeof(deldicinfo));
     if (work != (deldicinfo *)NULL) {
       tc->workDic3 = work;
-      *work++ = *tc->workDic2; /* ¹½Â¤ÂÎ¤ÎÂåÆþ */
-      work->name = (WCHAR_T *)0;
+      *work++ = *tc->workDic2; /* 構造体の代入 */
+      work->name = (wchar_t *)0;
       tc->nworkDic3 = 1; /* work - tc->workDic3 == 1 */
       return dicSakujoDo(d);
     }
     jrKanjiError = "malloc (dicSakujoDictionary) \244\307\244\255\244\336"
 	"\244\273\244\363\244\307\244\267\244\277";
-                 /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+                 /* できませんでした */
     freeDic(tc);
     deleteEnd(d);
     return GLineNGReturnTK(d);
@@ -938,7 +973,7 @@ int dicSakujoDictionary(uiContext d)
       }
       dicLp[i] = (char *)NULL;
 
-      /* ¸½ºß¤Î¾õÂÖ¤Ï¤¹¤Ù¤Æ off ¤Ë¤·¤Æ¤ª¤¯ */
+      /* 現在の状態はすべて off にしておく */
       if ((soldp = (BYTE *)calloc(upnelem + 1, sizeof(BYTE)))
                                                != (BYTE *)NULL) {
         if ((snewp = (BYTE *)calloc(upnelem + 1, sizeof(BYTE)))
@@ -949,7 +984,7 @@ int dicSakujoDictionary(uiContext d)
             mc->mountNewStatus = snewp;
             mc->mountList = dicLp;
 
-            /* selectOnOff ¤ò¸Æ¤Ö¤¿¤á¤Î½àÈ÷ */
+            /* selectOnOff を呼ぶための準備 */
 
             mc->curIkouho = 0;
             if (!cannaconf.HexkeySelect)
@@ -966,9 +1001,8 @@ int dicSakujoDictionary(uiContext d)
             }
             if ((retval = selectOnOff(d, xxxx, &mc->curIkouho, upnelem,
 		            BANGOMAX, 0, mc->mountOldStatus,
-		            (int(*)(...))NO_CALLBACK, (int(*)(...))uuSDicExitCatch, 
-                            (int(*)(...))uuSDicQuitCatch,
-							(int(*)(...))uiUtilIchiranTooSmall)) == NG) {
+		            NO_CALLBACK, uuSDicExitCatch, 
+                            uuSDicQuitCatch, uiUtilIchiranTooSmall)) == NG) {
               popMountMode(d);
               popCallback(d);
               deleteEnd(d);
@@ -980,15 +1014,15 @@ int dicSakujoDictionary(uiContext d)
             ic->minorMode = CANNA_MODE_DeleteDicMode;
             currentModeInfo(d);
 
-            /* ¸õÊä°ìÍ÷¹Ô¤¬¶¹¤¯¤Æ¸õÊä°ìÍ÷¤¬½Ð¤»¤Ê¤¤ */
+            /* 候補一覧行が狭くて候補一覧が出せない */
             if (ic->tooSmall) {
               jrKanjiError = "\274\255\275\361\260\354\315\367\315\321\244\316"
 		"\311\375\244\254\266\271\244\244\244\316\244\307\274\255"
 		"\275\361\244\316\301\252\302\362\244\254\244\307\244\255"
 		"\244\336\244\273\244\363";
-                /* ¼­½ñ°ìÍ÷ÍÑ¤ÎÉý¤¬¶¹¤¤¤Î¤Ç¼­½ñ¤ÎÁªÂò¤¬¤Ç¤­¤Þ¤»¤ó */
+                /* 辞書一覧用の幅が狭いので辞書の選択ができません */
               ichiranFin(d);
-              popCallback(d); /* OnOff ¤ò¥Ý¥Ã¥× */
+              popCallback(d); /* OnOff をポップ */
               popMountMode(d);
               popCallback(d);
               currentModeInfo(d);
@@ -1002,52 +1036,56 @@ int dicSakujoDictionary(uiContext d)
 
             return(retval);
           }
-          free(snewp);
+          free((char *)snewp);
         }
-        free(soldp);
+        free((char *)soldp);
       }
-      free(dicLp);
+      free((char *)dicLp);
     }
     free(dicLbuf);
   }
   jrKanjiError = "malloc (dicSakujoDictionary) \244\307\244\255\244\336"
 	"\244\273\244\363\244\307\244\267\244\277";
-     /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+     /* できませんでした */
   freeDic(tc);
   deleteEnd(d);
   return GLineNGReturnTK(d);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Ã±¸ìºï½ü                                                                  *
+ * 単語削除                                                                  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static
-int uuSDeleteYesCatch(uiContext d, int retval, mode_context env)
+uuSDeleteYesCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   tourokuContext tc;
   char dicname[1024];
+  wchar_t *WStraddbcpy();
   deldicinfo *dic;
   int bufcnt, l;
-  extern int defaultContext;
+  extern defaultContext;
 
   deleteEnd(d);
-  popCallback(d); /* yesNo ¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* yesNo をポップ */
 
   tc = (tourokuContext)d->modec;
 
   if(defaultContext == -1) {
     if((KanjiInit() < 0) || (defaultContext == -1)) {
 #ifdef STANDALONE
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
 #endif
 #else
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ÈÄÌ¿®¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換サーバと通信できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
 	"\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336"
@@ -1059,17 +1097,17 @@ int uuSDeleteYesCatch(uiContext d, int retval, mode_context env)
     }
   }
 
-  /* ¼­½ñ¤«¤éÃ±¸ì¤òºï½ü¤¹¤ë */
-  /* Ã±¸ìºï½üÍÑ¤Î°ì¹Ô¤òºî¤ë(³Æ¼­½ñ¶¦ÄÌ) */
+  /* 辞書から単語を削除する */
+  /* 単語削除用の一行を作る(各辞書共通) */
   WStraddbcpy(d->genbuf, tc->yomi_buffer, ROMEBUFSIZE);
   l = WStrlen(tc->yomi_buffer);
-  d->genbuf[l] = (WCHAR_T)' ';
+  d->genbuf[l] = (wchar_t)' ';
   l += 1;
   for (dic = tc->workDic3; dic->name; dic++) {
-    /* Ã±¸ìºï½üÍÑ¤Î°ì¹Ô¤òºî¤ë(³Æ¼­½ñ¸ÇÍ­) */
+    /* 単語削除用の一行を作る(各辞書固有) */
     WStrcpy(d->genbuf + l, dic->hcode);
     bufcnt = l + WStrlen(dic->hcode);
-    d->genbuf[bufcnt] = (WCHAR_T)' ';
+    d->genbuf[bufcnt] = (wchar_t)' ';
     bufcnt += 1;
     WStraddbcpy(d->genbuf + bufcnt, tc->tango_buffer, 
                                                  ROMEBUFSIZE - bufcnt);
@@ -1080,7 +1118,7 @@ int uuSDeleteYesCatch(uiContext d, int retval, mode_context env)
         jrKanjiPipeError();
       MBstowcs(d->genbuf, "\303\261\270\354\272\357\275\374\244\307\244\255"
 	"\244\336\244\273\244\363\244\307\244\267\244\277", 512);
-		/* Ã±¸ìºï½ü¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+		/* 単語削除できませんでした */
       goto close;
     }
     if (cannaconf.auto_sync) {
@@ -1088,29 +1126,29 @@ int uuSDeleteYesCatch(uiContext d, int retval, mode_context env)
     }
   }
 
-  /* ºï½ü¤Î´°Î»¤òÉ½¼¨¤¹¤ë */
+  /* 削除の完了を表示する */
   l = MBstowcs(d->genbuf, "\241\330", ROMEBUFSIZE);
-			/* ¡Ø */
+			/* 『 */
   WStrcpy(d->genbuf + l, tc->tango_buffer);
   l += WStrlen(tc->tango_buffer);
   l += MBstowcs(d->genbuf + l, "\241\331(", ROMEBUFSIZE - l);
-				/* ¡Ù */
+				/* 』 */
   WStrcpy(d->genbuf + l, tc->yomi_buffer);
   l += WStrlen(tc->yomi_buffer);
   l += MBstowcs(d->genbuf + l, ")\244\362\274\255\275\361 ", ROMEBUFSIZE - l);
-			/* ¤ò¼­½ñ */
+			/* を辞書 */
   dic = tc->workDic3;
   WStrcpy(d->genbuf + l, dic->name);
   l += WStrlen(dic->name);
   for (dic++; dic->name; dic++) {
     l += MBstowcs(d->genbuf + l, " \244\310 ", ROMEBUFSIZE - l);
-				/* ¤È */
+				/* と */
     WStrcpy(d->genbuf + l, dic->name);
     l += WStrlen(dic->name);
   }
   l += MBstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
 	"\244\336\244\267\244\277", ROMEBUFSIZE - l);
-			/* ¤«¤éºï½ü¤·¤Þ¤·¤¿ */
+			/* から削除しました */
 
  close:
   makeGLineMessage(d, d->genbuf, WStrlen(d->genbuf));
@@ -1123,12 +1161,15 @@ int uuSDeleteYesCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int uuSDeleteQuitCatch(uiContext d, int retval, mode_context env)
+uuSDeleteQuitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   tourokuContext tc = (tourokuContext)env;
 
-  popCallback(d); /* yesNo ¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* yesNo をポップ */
 
   if (tc->nworkDic2 == 1) {
     freeWorkDic(tc);
@@ -1139,10 +1180,13 @@ int uuSDeleteQuitCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int uuSDeleteNoCatch(uiContext d, int retval, mode_context env)
+uuSDeleteNoCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
-  popCallback(d); /* yesNo ¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* yesNo をポップ */
 
   freeAndPopTouroku(d);
   deleteEnd(d);
@@ -1154,34 +1198,35 @@ int uuSDeleteNoCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int dicSakujoDo(uiContext d)
+dicSakujoDo(d)
+uiContext d;
 {
   tourokuContext tc = (tourokuContext)d->modec;
   int l;
   deldicinfo *dic;
 
   l = MBstowcs(d->genbuf, "\241\330", ROMEBUFSIZE);
-			/* ¡Ø */
+			/* 『 */
   WStrcpy(d->genbuf + l, tc->tango_buffer);
   l += WStrlen(tc->tango_buffer);
   l += MBstowcs(d->genbuf + l, "\241\331(", ROMEBUFSIZE - l);
-				/* ¡Ù */
+				/* 』 */
   WStrcpy(d->genbuf + l, tc->yomi_buffer);
   l += WStrlen(tc->yomi_buffer);
   l += MBstowcs(d->genbuf + l, ")\244\362\274\255\275\361 ", ROMEBUFSIZE - l);
-			/* ¤ò¼­½ñ */
+			/* を辞書 */
   dic = tc->workDic3;
   WStrcpy(d->genbuf + l, dic->name);
   l += WStrlen(dic->name);
   for (dic++; dic->name; dic++) {
-    l += MBstowcs(d->genbuf + l, " \244\310¤È ", ROMEBUFSIZE - l);
-				/* ¤È */
+    l += MBstowcs(d->genbuf + l, " \244\310と ", ROMEBUFSIZE - l);
+				/* と */
     WStrcpy(d->genbuf + l, dic->name);
     l += WStrlen(dic->name);
   }
   l += MBstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
 	"\244\336\244\271\244\253?(y/n)", ROMEBUFSIZE - l);
-		/* ¤«¤éºï½ü¤·¤Þ¤¹¤« */
+		/* から削除しますか */
   if (getYesNoContext(d,
 	     NO_CALLBACK, uuSDeleteYesCatch,
 	     uuSDeleteQuitCatch, uuSDeleteNoCatch) == NG) {
@@ -1193,4 +1238,13 @@ int dicSakujoDo(uiContext d)
 
   return(0);
 }
-#endif /* !NO_EXTEND_MENU && !WIN */
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/
+
+#endif /* !NO_EXTEND_MENU */

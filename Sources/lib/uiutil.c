@@ -20,17 +20,20 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: uiutil.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: uiutil.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif
 
 #include "canna.h"
 #include "patchlevel.h"
+
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
 
 #ifndef NO_EXTEND_MENU
 
@@ -40,8 +43,8 @@ typedef struct {
   int funcd;
 } e_menuitem;
 
-#define MENU_NEXT_MENU 0 /* ¥¨¥ó¥È¥ê¤Ï¥á¥Ë¥å¡¼¤Ç¤¢¤ë */
-#define MENU_FUNC_NUM  1 /* ¥¨¥ó¥È¥ê¤Ï¡Ø¤«¤ó¤Ê¡Ù¤Îµ¡Ç½ÈÖ¹æ¤Ç¤¢¤ë */
+#define MENU_NEXT_MENU 0 /* エントリはメニューである */
+#define MENU_FUNC_NUM  1 /* エントリは『かんな』の機能番号である */
 
 #ifdef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
 #define MT_HELP   0
@@ -61,88 +64,88 @@ typedef struct {
 #endif
 
 static e_menuitem e_helptable[] = { 
-  /* µ­¹æÆþÎÏ */
+  /* 記号入力 */
   {"\265\255\271\346\306\376\316\317",   MENU_NEXT_MENU, MT_KIGO}, 
-  /* ¥³¡¼¥ÉÆþÎÏ */
+  /* コード入力 */
   {"\245\263\241\274\245\311\306\376\316\317", MENU_FUNC_NUM,  CANNA_FN_HexMode},  
-  /* Éô¼óÆþÎÏ */
+  /* 部首入力 */
   {"\311\364\274\363\306\376\316\317",   MENU_FUNC_NUM,  CANNA_FN_BushuMode}, 
-  /* Ã±¸ìÅÐÏ¿ */
+  /* 単語登録 */
   {"\303\261\270\354\305\320\317\277",   MENU_NEXT_MENU, MT_TANGO},
-  /* ´Ä¶­ÀßÄê */
+  /* 環境設定 */
   {"\264\304\266\255\300\337\304\352",   MENU_NEXT_MENU, MT_SONOTA},
 };
 
 static e_menuitem e_uusonotatable[] = { 
-#ifdef WIN
-  {"ÊÑ´¹Êý¼°",       MENU_NEXT_MENU, MT_HENKAN},
-#ifndef STANDALONE // This is not used in Windows environment 
-  {"¥µ¡¼¥ÐÁàºî",     MENU_NEXT_MENU, MT_SERV},
+#ifdef CODED_MESSAGE
+  {"変換方式",       MENU_NEXT_MENU, MT_HENKAN},
+#ifndef STANDALONE /* This is not used in Windows environment */
+  {"サーバ操作",     MENU_NEXT_MENU, MT_SERV},
 #endif
-  {"¼­½ñ¥Þ¥¦¥ó¥È¡¿¥¢¥ó¥Þ¥¦¥ó¥È", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
-  {"³Ø½¬¾õÂÖÉ½¼¨",   MENU_FUNC_NUM,  CANNA_FN_ShowGakushu},
-  {"¥Ð¡¼¥¸¥ç¥óÉ½¼¨", MENU_FUNC_NUM,  CANNA_FN_ShowVersion},
-  {"¥Õ¥¡¥¤¥ëÉ½¼¨",   MENU_NEXT_MENU, MT_FILE},
+  {"辞書マウント／アンマウント", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
+  {"学習状態表示",   MENU_FUNC_NUM,  CANNA_FN_ShowGakushu},
+  {"バージョン表示", MENU_FUNC_NUM,  CANNA_FN_ShowVersion},
+  {"ファイル表示",   MENU_NEXT_MENU, MT_FILE},
 #else
-  /* ÊÑ´¹Êý¼° */
+  /* 変換方式 */
   {"\312\321\264\271\312\375\274\260",       MENU_NEXT_MENU, MT_HENKAN},
 #ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
-  /* ¥µ¡¼¥ÐÁàºî */
+  /* サーバ操作 */
   {"\245\265\241\274\245\320\301\340\272\356",     MENU_NEXT_MENU, MT_SERV},
 #endif
-  /* ¼­½ñ¥Þ¥¦¥ó¥È¡¿¥¢¥ó¥Þ¥¦¥ó¥È */
+  /* 辞書マウント／アンマウント */
   {"\274\255\275\361\245\336\245\246\245\363\245\310\241\277\245\242\245\363\245\336\245\246\245\363\245\310", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
-  /* ³Ø½¬¾õÂÖÉ½¼¨ */
+  /* 学習状態表示 */
   {"\263\330\275\254\276\365\302\326\311\275\274\250",   MENU_FUNC_NUM,  CANNA_FN_ShowGakushu},
-  /* ¥Ð¡¼¥¸¥ç¥óÉ½¼¨ */
+  /* バージョン表示 */
   {"\245\320\241\274\245\270\245\347\245\363\311\275\274\250", MENU_FUNC_NUM,  CANNA_FN_ShowVersion},
-  /* ¥Õ¥¡¥¤¥ëÉ½¼¨ */
+  /* ファイル表示 */
   {"\245\325\245\241\245\244\245\353\311\275\274\250",   MENU_NEXT_MENU, MT_FILE},
-#endif /* WIN */
+#endif
 };
 
 static e_menuitem e_uukigotable[] = {
-  /* µ­¹æÁ´ÈÌ */
+  /* 記号全般 */
   {"\265\255\271\346\301\264\310\314",     MENU_FUNC_NUM, CANNA_FN_KigouMode},
-  /* ¥í¥·¥¢Ê¸»ú */
+  /* ロシア文字 */
   {"\245\355\245\267\245\242\312\270\273\372",   MENU_FUNC_NUM, CANNA_FN_RussianMode},
-  /* ¥®¥ê¥·¥ãÊ¸»ú */
+  /* ギリシャ文字 */
   {"\245\256\245\352\245\267\245\343\312\270\273\372", MENU_FUNC_NUM, CANNA_FN_GreekMode},
-  /* ·ÓÀþ */
+  /* 罫線 */
   {"\267\323\300\376",         MENU_FUNC_NUM, CANNA_FN_LineMode},
 };
 
 #ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
 static e_menuitem e_uuservertable[] = {
-  /* ¥µ¡¼¥Ð¤ÎÀÚ¤êÎ¥¤· */
+  /* サーバの切り離し */
   {"\245\265\241\274\245\320\244\316\300\332\244\352\316\245\244\267", MENU_FUNC_NUM, CANNA_FN_DisconnectServer},
-  /* ¥µ¡¼¥Ð¤ÎÀÚ¤êÂØ¤¨ */
+  /* サーバの切り替え */
   {"\245\265\241\274\245\320\244\316\300\332\244\352\302\330\244\250", MENU_FUNC_NUM, CANNA_FN_ChangeServerMode},
-  /* ¥µ¡¼¥Ð¤ÎÉ½¼¨ */
+  /* サーバの表示 */
   {"\245\265\241\274\245\320\244\316\311\275\274\250",     MENU_FUNC_NUM, CANNA_FN_ShowServer},
 };
 #endif /* STANDALONE */
 
 static e_menuitem e_uutangotable[] = {
-  /* Ã±¸ìÅÐÏ¿ */
+  /* 単語登録 */
   {"\303\261\270\354\305\320\317\277", MENU_FUNC_NUM, CANNA_FN_DefineDicMode},
-  /* Ã±¸ìºï½ü */
+  /* 単語削除 */
   {"\303\261\270\354\272\357\275\374", MENU_FUNC_NUM, CANNA_FN_DeleteDicMode},
-  /* ¼­½ñ¥Þ¥¦¥ó¥È¡¿¥¢¥ó¥Þ¥¦¥ó¥È */
+  /* 辞書マウント／アンマウント */
   {"\274\255\275\361\245\336\245\246\245\363\245\310\241\277\245\242\245\363\245\336\245\246\245\363\245\310", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
   };
 
 static e_menuitem e_uuhenkantable[] = {
-  /* Ï¢Ê¸ÀáÊÑ´¹ */
+  /* 連文節変換 */
   {"\317\242\312\270\300\341\312\321\264\271",   MENU_FUNC_NUM, CANNA_FN_EnterRenbunMode},
-  /* Ãà¼¡¼«Æ°ÊÑ´¹ */
+  /* 逐次自動変換 */
   {"\303\340\274\241\274\253\306\260\312\321\264\271", MENU_FUNC_NUM, CANNA_FN_EnterChikujiMode},
 };
 
 static e_menuitem e_uufiletable[] = {
-  /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ë */
+  /* ローマ字かな変換テーブル */
   {"\245\355\241\274\245\336\273\372\244\253\244\312\312\321\264\271\245\306\241\274\245\326\245\353", MENU_FUNC_NUM, CANNA_FN_ShowPhonogramFile},
-  /* ¥«¥¹¥¿¥Þ¥¤¥º¥Õ¥¡¥¤¥ë */
+  /* カスタマイズファイル */
   {"\245\253\245\271\245\277\245\336\245\244\245\272\245\325\245\241\245\244\245\353", MENU_FUNC_NUM, CANNA_FN_ShowCannaFile},
 };
 
@@ -152,7 +155,7 @@ static e_menuitem e_uufiletable[] = {
 static struct _e_menu {
   e_menuitem *mi;
   int ni;
-} e_me[] = {                                    /* MT_ ¤Î½ç¤È¹ç¤ï¤»¤ë¤³¤È */
+} e_me[] = {                                    /* MT_ の順と合わせること */
   {e_helptable,     numitems(e_helptable)},     /* MT_HELP */
   {e_uusonotatable, numitems(e_uusonotatable)}, /* MT_SONOTA */
   {e_uukigotable,   numitems(e_uukigotable)},   /* MT_KIGO */
@@ -170,35 +173,29 @@ static menustruct *me[N_BUILTIN_MENU];
 
 #define MBUFSIZE 512
 
-static menustruct *copystruct(struct _e_menu *eucmenu);
-static int makeUiUtilEchoStr(uiContext d);
-static void pushmenu(uiContext d, menustruct *tab);
-static int uuflExitCatch(uiContext d, int retval, mode_context env);
-static int uuflQuitCatch(uiContext d, int retval, mode_context env);
-static menuinfo *newMenuInfo(menustruct *tab);
-static menuinfo *findMenuInfo(menuinfo *p, menustruct *ms);
-
 void
-freeMenu(menustruct *m)
+freeMenu(m)
+menustruct *m;
 {
-  free(m->titles);
-  free(m->titledata);
-  free(m->body);
-  free(m);
+  free((char *)m->titles);
+  free((char *)m->titledata);
+  free((char *)m->body);
+  free((char *)m);
 }
 
 menustruct *
-allocMenu(int n, int nc)
+allocMenu(n, nc)
+int n, nc;
 {
-  WCHAR_T *wctab, **wcs;
+  wchar_t *wctab, **wcs;
   menuitem *menubody;
   menustruct *res;
 
   res = (menustruct *)malloc(sizeof(menustruct));
   if (res) {
-    wctab = (WCHAR_T *)malloc(sizeof(WCHAR_T) * nc);
+    wctab = (wchar_t *)malloc(sizeof(wchar_t) * nc);
     if (wctab) {
-      wcs = (WCHAR_T **)malloc(sizeof(WCHAR_T *) * n);
+      wcs = (wchar_t **)malloc(sizeof(wchar_t *) * n);
       if (wcs) {
 	menubody = (menuitem *)malloc(sizeof(menuitem) * n);
 	if (menubody) {
@@ -207,33 +204,34 @@ allocMenu(int n, int nc)
 	  res->body = menubody;
 	  return res;
 	}
-	free(wcs);
+	free((char *)wcs);
       }
-      free(wctab);
+      free((char *)wctab);
     }
-    free(res);
+    free((char *)res);
   }
   return (menustruct *)0;
 }
 
 static menustruct *
-copystruct(struct _e_menu *eucmenu)
+copystruct(eucmenu)
+struct _e_menu *eucmenu;
 {
   int i, nc, len, n = eucmenu->ni;
   e_menuitem *euctable = eucmenu->mi;
   menuitem *menubody;
-  WCHAR_T *wp, **wpp;
+  wchar_t *wp, **wpp;
   menustruct *res = (menustruct *)0;
-#ifndef WIN
-  WCHAR_T buf[MBUFSIZE];
+#ifndef USE_MALLOC_FOR_BIG_ARRAY
+  wchar_t buf[MBUFSIZE];
 #else
-  WCHAR_T *buf = (WCHAR_T *)malloc(sizeof(WCHAR_T) * MBUFSIZE);
+  wchar_t *buf = (wchar_t *)malloc(sizeof(wchar_t) * MBUFSIZE);
   if (!buf) {
     return res;
   }
 #endif
 
-  /* ¥¿¥¤¥È¥ë¤ÎÊ¸»ú¿ô¤ò¥«¥¦¥ó¥È */
+  /* タイトルの文字数をカウント */
   for (i = 0, nc = 0 ; i < n ; i++) {
     len = MBstowcs(buf, euctable[i].title, MBUFSIZE);
     nc += len + 1;
@@ -242,13 +240,13 @@ copystruct(struct _e_menu *eucmenu)
   res = allocMenu(n, nc);
   if (res) {
     menubody = res->body;
-    /* ¥¿¥¤¥È¥ëÊ¸»ú¤ò¥Ç¡¼¥¿¥Ð¥Ã¥Õ¥¡¤Ë¥³¥Ô¡¼ */
+    /* タイトル文字をデータバッファにコピー */
     for (i = 0, wp = res->titledata, wpp = res->titles ; i < n ; i++) {
       len = MBstowcs(wp, euctable[i].title, MBUFSIZE);
       *wpp++ = wp;
       wp += len + 1;
 
-      /* ¹½Â¤ÂÎ¤ò¥³¥Ô¡¼¤¹¤ë */
+      /* 構造体をコピーする */
       switch (euctable[i].func) {
       case MENU_NEXT_MENU:
 	menubody[i].flag = MENU_MENU;
@@ -263,17 +261,17 @@ copystruct(struct _e_menu *eucmenu)
     res->nentries = n;
     res->modeid = CANNA_MODE_ExtendMode;
   }
-#ifdef WIN
-  free(buf);
+#ifdef USE_MALLOC_FOR_BIG_ARRAY
+  (void)free((char *)buf);
 #endif
   return res;
 }
 
 /*
- * menuitem·¿¤ÎÁ´¤Æ¤Î¹½Â¤ÂÎ¤ò"unsigned char"¤«¤é"WCHAR_T"¤ËÊÑ´¹¤¹¤ë
+ * menuitem型の全ての構造体を"unsigned char"から"wchar_t"に変換する
  */
 int
-initExtMenu(void)
+initExtMenu()
 {
   int i, j;
 
@@ -301,7 +299,7 @@ initExtMenu(void)
 #undef numitems
 
 void
-finExtMenu(void)
+finExtMenu()
 {
   int i;
   for (i = 0 ; i < N_BUILTIN_MENU ; i++) {
@@ -311,7 +309,8 @@ finExtMenu(void)
 #endif /* NO_EXTEND_MENU */
 
 static
-int makeUiUtilEchoStr(uiContext d)
+makeUiUtilEchoStr(d)
+uiContext d;
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
@@ -324,7 +323,10 @@ int makeUiUtilEchoStr(uiContext d)
 }
 
 int
-uiUtilIchiranTooSmall(uiContext d, int retval, mode_context env)
+uiUtilIchiranTooSmall(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   makeUiUtilEchoStr(d);
@@ -333,18 +335,23 @@ uiUtilIchiranTooSmall(uiContext d, int retval, mode_context env)
 
 #ifndef NO_EXTEND_MENU
 static void
-pushmenu(uiContext d, menustruct *tab)
+pushmenu(d, tab)
+uiContext d;
+menustruct *tab;
 {
   tab->prev = d->prevMenu;
   d->prevMenu = tab;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * UI¥æ¡¼¥Æ¥£¥ê¥Æ¥£¤Î°ìÍ÷É½¼¨(FirstLine)                                     *
+ * UIユーティリティの一覧表示(FirstLine)                                     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static
-int uuflExitCatch(uiContext d, int retval, mode_context env)
+uuflExitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -354,7 +361,7 @@ int uuflExitCatch(uiContext d, int retval, mode_context env)
 
   d->nbytes = 0;
 
-  popCallback(d); /* °ìÍ÷¤ò pop */
+  popCallback(d); /* 一覧を pop */
 
   fc = (forichiranContext)d->modec;
   cur = fc->curIkouho;
@@ -376,7 +383,7 @@ int uuflExitCatch(uiContext d, int retval, mode_context env)
 	jrKanjiError = "\244\263\244\316\271\340\314\334\244\316\245\341"
 	"\245\313\245\345\241\274\244\317\272\306\265\242\305\252\244\313"
 	"\301\252\302\362\244\265\244\354\244\306\244\244\244\336\244\271";
-                     /* ¤³¤Î¹àÌÜ¤Î¥á¥Ë¥å¡¼¤ÏºÆµ¢Åª¤ËÁªÂò¤µ¤ì¤Æ¤¤¤Þ¤¹ */
+                     /* この項目のメニューは再帰的に選択されています */
 	makeGLineMessageFromString(d, jrKanjiError);
 	currentModeInfo(d);
 	return 0;
@@ -388,7 +395,7 @@ int uuflExitCatch(uiContext d, int retval, mode_context env)
       jrKanjiError = "\244\263\244\316\271\340\314\334\244\317\300\265\244\267"
 	"\244\257\304\352\265\301\244\265\244\354\244\306\244\244\244\336"
 	"\244\273\244\363";                
-	    /* ¤³¤Î¹àÌÜ¤ÏÀµ¤·¤¯ÄêµÁ¤µ¤ì¤Æ¤¤¤Þ¤»¤ó */
+	    /* この項目は正しく定義されていません */
       killmenu(d);
       makeGLineMessageFromString(d, jrKanjiError);
       currentModeInfo(d);
@@ -397,16 +404,17 @@ int uuflExitCatch(uiContext d, int retval, mode_context env)
     else {
       d->more.todo = 1;
       d->more.fnum = men->u.fnum;
-      /* °Ê²¼¤Î£²¤Ä¤ÏÉ¬Í×¤«¤É¤¦¤«ÎÉ¤¯Ê¬¤«¤é¤Ê¤¤ */
+      /* 以下の２つは必要かどうか良く分からない */
       GlineClear(d);
       echostrClear(d);
       return 0;
     }
   }
-  return NothingChangedWithBeep(d); /* ¤³¤³¤Ë¤ÏÍè¤Ê¤¤¤Ï¤º */
+  return NothingChangedWithBeep(d); /* ここには来ないはず */
 }
 
-int prevMenuIfExist(uiContext d)
+prevMenuIfExist(d)
+uiContext d;
 {
   menustruct *m = d->prevMenu;
 
@@ -422,10 +430,13 @@ int prevMenuIfExist(uiContext d)
 }
 
 static
-int uuflQuitCatch(uiContext d, int retval, mode_context env)
+uuflQuitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
-  popCallback(d); /* °ìÍ÷¤ò pop */
+  popCallback(d); /* 一覧を pop */
 
   popForIchiranMode(d);
   popCallback(d);
@@ -437,10 +448,11 @@ int uuflQuitCatch(uiContext d, int retval, mode_context env)
 
 /* cfuncdef
 
-  UiUtilMode -- UI¥æ¡¼¥Æ¥£¥ê¥Æ¥£¥â¡¼¥É¤Ë¤Ê¤ë¤È¤­¤Ë¸Æ¤Ð¤ì¤ë¡£
+  UiUtilMode -- UIユーティリティモードになるときに呼ばれる。
 
  */
-int UiUtilMode(uiContext d)
+UiUtilMode(d)
+uiContext d;
 {
 #ifdef NO_EXTEND_MENU
   d->kanji_status_return->info |= KanjiExtendInfo;
@@ -452,11 +464,12 @@ int UiUtilMode(uiContext d)
 
 #ifndef NO_EXTEND_MENU
 /*
- * newMenuInfo() -- ¿·¤·¤¤¥á¥Ë¥å¡¼¾ðÊó¤Î¼èÆÀ
+ * newMenuInfo() -- 新しいメニュー情報の取得
  */
 
-inline menuinfo *
-newMenuInfo(menustruct *tab)
+static menuinfo *
+newMenuInfo(tab)
+menustruct *tab;
 {
   menuinfo *res;
 
@@ -469,19 +482,22 @@ newMenuInfo(menustruct *tab)
 }
 
 void
-freeAllMenuInfo(menuinfo *p)
+freeAllMenuInfo(p)
+menuinfo *p;
 {
   menuinfo *q;
 
   while (p) {
     q = p->next;
-    free(p);
+    free((char *)p);
     p = q;
   }
 }
 
-inline menuinfo *
-findMenuInfo(menuinfo *p, menustruct *ms)
+static menuinfo *
+findMenuInfo(p, ms)
+menuinfo *p;
+menustruct *ms;
 {
   while (p) {
     if (p->mstruct == ms) {
@@ -493,15 +509,17 @@ findMenuInfo(menuinfo *p, menustruct *ms)
 }
 
 /*
- * showmenu -- ¥á¥Ë¥å¡¼¤ÎÉ½¼¨
+ * showmenu -- メニューの表示
  *
- * °ú¿ô
+ * 引数
  *   d         : uiContext
- *   table     : ¥á¥Ë¥å¡¼¼«¿È(menustruct ¤Ø¤Î¥Ý¥¤¥ó¥¿)
+ *   table     : メニュー自身(menustruct へのポインタ)
  */
 
 int
-showmenu(uiContext d, menustruct *table)
+showmenu(d, table)
+uiContext d;
+menustruct *table;
 {
   yomiContext yc = (yomiContext)d->modec;
   forichiranContext fc;
@@ -537,7 +555,7 @@ showmenu(uiContext d, menustruct *table)
   fc->prevcurp = prevcurp;
   fc->table = table;
 
-  /* selectOne ¤ò¸Æ¤Ö¤¿¤á¤Î½àÈ÷ */
+  /* selectOne を呼ぶための準備 */
   fc->allkouho = table->titles;
   fc->curIkouho = 0;
   if (!cannaconf.HexkeySelect)
@@ -563,7 +581,7 @@ showmenu(uiContext d, menustruct *table)
     *(ic->curIkouho) = 0;
   }
 
-  /* ¸õÊä°ìÍ÷¹Ô¤¬¶¹¤¯¤Æ¸õÊä°ìÍ÷¤¬½Ð¤»¤Ê¤¤ */
+  /* 候補一覧行が狭くて候補一覧が出せない */
   if(ic->tooSmall) {
     d->status = AUX_CALLBACK;
     return(retval);
@@ -575,3 +593,11 @@ showmenu(uiContext d, menustruct *table)
   return(retval);
 }
 #endif /* NO_EXTEND_MENU */
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/

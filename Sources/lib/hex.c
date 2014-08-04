@@ -21,36 +21,42 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: hex.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: hex.c,v 1.2 2003/01/10 13:08:44 aida_s Exp $";
 #endif /* lint */
 
 #ifndef NO_EXTEND_MENU
 #include "canna.h"
 
 #define HEXPROMPT "\245\263\241\274\245\311: "
-#define HEXPROMPTLEN  5 /* "¥³¡¼¥É: " ¤ÎÄ¹¤µ¤Ï5¥Ð¥¤¥È */
+#define HEXPROMPTLEN  5 /* "コード: " の長さは5バイト */
 
-static int hexEveryTimeCatch(uiContext d, int retval, mode_context env);
-static int exitHex(uiContext d, int retval, mode_context env);
-static int quitHex(uiContext d, int retval, mode_context env);
-static int hexMode(uiContext d, int major_mode);
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
 
 static int quitHex();
 
 /* cfuncdef
 
-  hexEveryTimeCatch -- ÆÉ¤ß¤ò£±£¶¿ÊÆþÎÏ¥â¡¼¥É¤ÇÉ½¼¨¤¹¤ë´Ø¿ô
+  hexEveryTimeCatch -- 読みを１６進入力モードで表示する関数
 
  */
 
-static int
-hexEveryTimeCatch(uiContext d, int retval, mode_context env)
+static
+hexEveryTimeCatch(d, retval, env)
+     uiContext d;
+     int retval;
+     mode_context env;
      /* ARGSUSED */
 {
   yomiContext yc = (yomiContext)d->modec;
-  static WCHAR_T buf[256];
-  /* ??? ¤³¤Î¤è¤¦¤Ê¥Ð¥Ã¥Õ¥¡¤ò¤¤¤í¤¤¤í¤ÊÉôÊ¬¤Ç»ý¤Ä¤Î¤Ï¹¥¤Þ¤·¤¯¤Ê¤¤¤Î¤Ç¡¢
-     uiContext ¤Ë¤Þ¤È¤á¤Æ»ý¤Ã¤Æ¶¦Í­¤·¤Æ»È¤Ã¤¿Êý¤¬ÎÉ¤¤ */
+  static wchar_t buf[256];
+  /* ??? このようなバッファをいろいろな部分で持つのは好ましくないので、
+     uiContext にまとめて持って共有して使った方が良い */
   int codelen = d->kanji_status_return->length;
 
   d->kanji_status_return->info &= ~(KanjiThroughInfo | KanjiEmptyInfo);
@@ -65,7 +71,7 @@ hexEveryTimeCatch(uiContext d, int retval, mode_context env)
     d->kanji_status_return->gline.revLen = d->kanji_status_return->revLen;
     d->kanji_status_return->info |= KanjiGLineInfo;
     echostrClear(d);
-    if (codelen == 4) { /* £´Ê¸»ú¤Ë¤Ê¤Ã¤¿¤È¤­¤Ë¤Ï.... */
+    if (codelen == 4) { /* ４文字になったときには.... */
       if (convertAsHex(d)) {
 	yc->allowedChars = CANNA_NOTHING_ALLOWED;
 	*(d->kanji_status_return->echoStr = yc->kana_buffer + yc->kEndp + 1)
@@ -78,7 +84,8 @@ hexEveryTimeCatch(uiContext d, int retval, mode_context env)
 	  d->more.ch = d->ch;
 	  d->more.fnum = CANNA_FN_Kakutei;
 	}
-      }else{
+      }
+      else {
 	CannaBeep();
 	d->more.todo = 1;
 	d->more.ch = d->ch;
@@ -93,8 +100,11 @@ hexEveryTimeCatch(uiContext d, int retval, mode_context env)
   return retval;
 }
 
-static int
-exitHex(uiContext d, int retval, mode_context env)
+static
+exitHex(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 {
   killmenu(d);
   if (cvtAsHex(d, d->buffer_return, d->buffer_return, d->nbytes)) {
@@ -109,8 +119,11 @@ exitHex(uiContext d, int retval, mode_context env)
   }
 }
 
-static int
-quitHex(uiContext d, int retval, mode_context env)
+static
+quitHex(d, retval, env)
+     uiContext d;
+     int retval;
+     mode_context env;
      /* ARGSUSED */
 {
   GlineClear(d);
@@ -121,12 +134,14 @@ quitHex(uiContext d, int retval, mode_context env)
 
 yomiContext GetKanjiString();
 
-static int
-hexMode(uiContext d, int major_mode)
+static
+hexMode(d, major_mode)
+uiContext d;
+int major_mode;
 {
   yomiContext yc;
 
-  yc = GetKanjiString(d, (WCHAR_T *)NULL, 0,
+  yc = GetKanjiString(d, (wchar_t *)NULL, 0,
 		      CANNA_ONLY_HEX,
 		      (int)CANNA_YOMI_CHGMODE_INHIBITTED,
 		      (int)CANNA_YOMI_END_IF_KAKUTEI,
@@ -143,11 +158,12 @@ hexMode(uiContext d, int major_mode)
 
 /* cfuncdef
 
-  HexMode -- £±£¶¿ÊÆþÎÏ¥â¡¼¥É¤Ë¤Ê¤ë¤È¤­¤Ë¸Æ¤Ð¤ì¤ë¡£
+  HexMode -- １６進入力モードになるときに呼ばれる。
 
  */
 
-int HexMode(uiContext d)
+HexMode(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -159,3 +175,11 @@ int HexMode(uiContext d)
 }
 
 #endif /* NO_EXTEND_MENU */
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/

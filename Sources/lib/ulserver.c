@@ -21,7 +21,7 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: ulserver.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: ulserver.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif
 
 #ifndef NO_EXTEND_MENU
@@ -32,18 +32,22 @@ static char rcs_id[] = "@(#) 102.1 $Id: ulserver.c 14875 2005-11-12 21:25:31Z bo
 extern int errno;
 #endif
 
-static int uuServerChangeEveryTimeCatch(uiContext d, int retval, mode_context env);
-static int uuServerChangeExitCatch(uiContext d, int retval, mode_context env);
-static int uuServerChangeQuitCatch(uiContext d, int retval, mode_context env);
-static int serverChangeDo(uiContext d, int len);
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
 
 static int serverChangeDo();
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * ¥µ¡¼¥Ð¤ÎÀÚ¤êÎ¥¤·                                                          *
+ * サーバの切り離し                                                          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int serverFin(uiContext d)
+serverFin(d)
+uiContext d;
 {
   int retval = 0;
   yomiContext yc = (yomiContext)d->modec;
@@ -58,7 +62,7 @@ int serverFin(uiContext d)
   jrKanjiPipeError();
   
   makeGLineMessageFromString(d, "\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\310\244\316\300\334\302\263\244\362\300\332\244\352\244\336\244\267\244\277");
-            /* ¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤È¤ÎÀÜÂ³¤òÀÚ¤ê¤Þ¤·¤¿ */
+            /* かな漢字変換サーバとの接続を切りました */
   currentModeInfo(d);
 #endif /* STANDALONE */
 
@@ -66,24 +70,27 @@ int serverFin(uiContext d)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * ¥µ¡¼¥Ð¤ÎÀÚ¤ê´¹¤¨                                                          *
+ * サーバの切り換え                                                          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #ifndef STANDALONE
 
 static
-uuServerChangeEveryTimeCatch(uiContext d, int retval, mode_context env)
+uuServerChangeEveryTimeCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   int len, echoLen, revPos;
   static int lmachinename;
-  static WCHAR_T *wmachinename;
+  static wchar_t *wmachinename;
 
   if (!wmachinename) {
-    WCHAR_T xxx[30]; /* 30 ¤Ã¤Æ¤Î¤Ï "¥Þ¥·¥óÌ¾?[" ¤è¤ê¤ÏÄ¹¤¤¤Ù¤È¤¤¤¦¤³¤È */
+    wchar_t xxx[30]; /* 30 ってのは "マシン名?[" よりは長いべということ */
     lmachinename = MBstowcs(xxx, "\245\336\245\267\245\363\314\276?[", 30);
-                              /* ¥Þ¥·¥óÌ¾ */
-    wmachinename = (WCHAR_T *)malloc((lmachinename + 1)* sizeof(WCHAR_T));
+                              /* マシン名 */
+    wmachinename = (wchar_t *)malloc((lmachinename + 1)* sizeof(wchar_t));
     if (!wmachinename) {
       return -1;
     }
@@ -100,11 +107,11 @@ uuServerChangeEveryTimeCatch(uiContext d, int retval, mode_context env)
 
   WStrncpy(d->genbuf + lmachinename,
 	   d->kanji_status_return->echoStr, echoLen);
-  /* echoStr == d->genbuf ¤À¤È¤Þ¤º¤¤¤Î¤ÇÀè¤ËÆ°¤«¤¹ */
+  /* echoStr == d->genbuf だとまずいので先に動かす */
   WStrncpy(d->genbuf, wmachinename, lmachinename);
   revPos = len = lmachinename;
   len += echoLen;
-  d->genbuf[len++] = (WCHAR_T)']';
+  d->genbuf[len++] = (wchar_t)']';
 
   d->kanji_status_return->gline.line = d->genbuf;
   d->kanji_status_return->gline.length = len;
@@ -113,7 +120,7 @@ uuServerChangeEveryTimeCatch(uiContext d, int retval, mode_context env)
       d->kanji_status_return->revPos + revPos;
     d->kanji_status_return->gline.revLen = d->kanji_status_return->revLen;
   }
-  else { /* È¿Å¾ÎÎ°è¤¬¤Ê¤¤¾ì¹ç */
+  else { /* 反転領域がない場合 */
     d->kanji_status_return->gline.revPos = len - 1;
     d->kanji_status_return->gline.revLen = 1;
   }
@@ -126,19 +133,25 @@ uuServerChangeEveryTimeCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-uuServerChangeExitCatch(uiContext d, int retval, mode_context env)
+uuServerChangeExitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
-  popCallback(d); /* ÆÉ¤ß¤ò pop */
+  popCallback(d); /* 読みを pop */
 
   return(serverChangeDo(d, retval));
 }
 
 static
-uuServerChangeQuitCatch(uiContext d, int retval, mode_context env)
+uuServerChangeQuitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
-  popCallback(d); /* ÆÉ¤ß¤ò pop */
+  popCallback(d); /* 読みを pop */
 
   return prevMenuIfExist(d);
 }
@@ -146,12 +159,13 @@ uuServerChangeQuitCatch(uiContext d, int retval, mode_context env)
 extern exp(char *) RkwGetServerName();
 #endif /* STANDALONE */
 
-int serverChange(uiContext d)
+serverChange(d)
+uiContext d;
 {
   int retval = 0;
-  WCHAR_T *w;
+  wchar_t *w;
   extern KanjiModeRec yomi_mode;
-  extern int defaultContext;
+  extern defaultContext;
   yomiContext yc = (yomiContext)d->modec;
 
 #ifndef STANDALONE
@@ -160,7 +174,7 @@ int serverChange(uiContext d)
   }    
   d->status = 0;
 
-  if ((yc = GetKanjiString(d, (WCHAR_T *)NULL, 0,
+  if ((yc = GetKanjiString(d, (wchar_t *)NULL, 0,
 		     CANNA_ONLY_ASCII,
 		     (int)CANNA_YOMI_CHGMODE_INHIBITTED,
 		     (int)CANNA_YOMI_END_IF_KAKUTEI,
@@ -175,8 +189,8 @@ int serverChange(uiContext d)
   if(defaultContext != -1) {
     char *servname;
     servname = RkwGetServerName();
-    if (servname && (w = WString(servname)) != (WCHAR_T *)0) {
-      RomajiStoreYomi(d, w, (WCHAR_T *)0);
+    if (servname && (w = WString(servname)) != (wchar_t *)0) {
+      RomajiStoreYomi(d, w, (wchar_t *)0);
       WSfree(w);
       yc->kRStartp = yc->kCurs = 0;
       yc->rStartp = yc->rCurs = 0;
@@ -192,11 +206,13 @@ int serverChange(uiContext d)
 		 
 #ifndef STANDALONE
 static
-serverChangeDo(uiContext d, int len)
+serverChangeDo(d, len)
+uiContext d;
+int len;
 {
-/* WCHAR_T ¤ÇÎÉ¤¤¤«¡© 256 ¤ÇÎÉ¤¤¤«¡© */
-  WCHAR_T newServerName[256];
-  WCHAR_T w1[512];
+/* wchar_t で良いか？ 256 で良いか？ */
+  wchar_t newServerName[256];
+  wchar_t w1[512];
   char tmpServName[256];
   extern defaultContext;
   char *p;
@@ -208,7 +224,7 @@ serverChangeDo(uiContext d, int len)
 
   WStrncpy(newServerName, d->buffer_return, len);
   newServerName[len] = 0;
-#if defined(DEBUG) && !defined(WIN)
+#if defined(DEBUG)
   if(iroha_debug)
     printf("iroha_server_name = [%s]\n", newServerName);
 #endif
@@ -216,15 +232,11 @@ serverChangeDo(uiContext d, int len)
   jrKanjiPipeError();
   WCstombs(tmpServName, newServerName, 256);
   if (RkSetServerName(tmpServName) && (p = index((char *)tmpServName, '@'))) {
-#ifdef WIN
-    char xxxx[512];
-#else
     char xxxx[1024];
-#endif
     *p = '\0';
     sprintf(xxxx, "\244\253\244\312\264\301\273\372\312\321\264\271\245\250\245\363\245\270\245\363 %s \244\317\315\370\315\321\244\307\244\255\244\336\244\273\244\363\n",
 	    tmpServName);
-          /* ¤«¤Ê´Á»úÊÑ´¹¥¨¥ó¥¸¥ó %s ¤ÏÍøÍÑ¤Ç¤­¤Þ¤»¤ó */
+          /* かな漢字変換エンジン %s は利用できません */
     makeGLineMessageFromString(d, xxxx);
 
     RkSetServerName((char *)0);
@@ -236,7 +248,7 @@ serverChangeDo(uiContext d, int len)
   if(defaultContext == -1) {
     if((KanjiInit() != 0) || (defaultContext == -1)) {
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336\244\273\244\363";
-                   /* ¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ÈÄÌ¿®¤Ç¤­¤Þ¤»¤ó */
+                   /* かな漢字変換サーバと通信できません */
       killmenu(d);
       return(GLineNGReturn(d));
     }
@@ -244,16 +256,16 @@ serverChangeDo(uiContext d, int len)
   }
 
   p = RkwGetServerName();
-  if (p) { /* ÀäÂÐÀ®¸ù¤¹¤ë¤ó¤À¤±¤É¤Í */
+  if (p) { /* 絶対成功するんだけどね */
     if ((int)strlen(p) < 256) {
       MBstowcs(newServerName, p, 256);
     }
   }
 
   MBstowcs(w1, " \244\316\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\313\300\334\302\263\244\267\244\336\244\267\244\277", 512);
-              /* ¤Î¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ËÀÜÂ³¤·¤Þ¤·¤¿ */
-  WStrcpy((WCHAR_T *)d->genbuf, (WCHAR_T *)newServerName);
-  WStrcat((WCHAR_T *)d->genbuf, (WCHAR_T *)w1);
+              /* のかな漢字変換サーバに接続しました */
+  WStrcpy((wchar_t *)d->genbuf, (wchar_t *)newServerName);
+  WStrcat((wchar_t *)d->genbuf, (wchar_t *)w1);
 
   makeGLineMessage(d, d->genbuf, WStrlen(d->genbuf));
   killmenu(d);
@@ -264,3 +276,11 @@ serverChangeDo(uiContext d, int len)
 
 #endif /* STANDALONE */
 #endif /* NO_EXTEND_MENU */
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/

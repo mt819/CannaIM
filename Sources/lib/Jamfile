@@ -5,7 +5,8 @@ TARGET_WARNING_CCFLAGS_$(TARGET_PACKAGING_ARCH)
 	= [ FFilter $(TARGET_WARNING_CCFLAGS_$(TARGET_PACKAGING_ARCH))
 		: -Wmissing-prototypes ] ;
 
-SubDirCcFlags -x c++ -ansi -trigraphs -funsigned-char -funsigned-bitfields -w -Wno-multichar -Wno-ctor-dtor-privacy -pedantic -Wno-long-long -Woverloaded-virtual -D_BUILDING_CANNALIB -D_WCHAR_T ;
+#SubDirCcFlags -x c++ -ansi -trigraphs -funsigned-char -funsigned-bitfields -w -Wno-multichar -Wno-ctor-dtor-privacy -pedantic -Wno-long-long -Woverloaded-virtual -D_BUILDING_CANNALIB -D_WCHAR_T ;
+SubDirCcFlags  -Wall -g3  -O0 -fno-strict-aliasing ;
 
 SubDirHdrs [ FDirName $(SUBDIR) $(DOTDOT) canna ] ;
 SubDirHdrs [ FDirName $(SUBDIR) $(DOTDOT) rk ] ;
@@ -33,6 +34,7 @@ StaticLibrary libcanna.a :
 	lisp.c
 	mode.c
 	multi.c
+	obind.c
 	onoff.c
 	parse.c
 	romaji.c

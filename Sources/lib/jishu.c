@@ -21,41 +21,47 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: jishu.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: jishu.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
 
 #include "canna.h"
 #include <ctype.h>
 
-extern struct RkRxDic *romajidic, *englishdic;
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
 
-extern int WToupper (WCHAR_T);
-static void setInhibitInformation (yomiContext);
-static void jishuAdjustRome (uiContext), jishuAdjustRome (uiContext);
+extern int WToupper pro((wchar_t));
+static void setInhibitInformation pro((yomiContext));
+static void jishuAdjustRome pro((uiContext)), jishuAdjustRome pro((uiContext));
 static int JishuZenkaku();
 static int JishuHankaku();
 
-/* yc->jishu_kc          ²¿¤ÎÊ¸»ú¼ï¤«
+/* yc->jishu_kc          何の文字種か
  * d->jishu_rEndp
  * d->jishu_kEndp
- * ¡ÚÎã¡Û 
- *               ¤¢¤¤¤·sh|
- * C-            ¥¢¥¤¥·sh|
- * C-            ¥¢¥¤¥·s|h
- * C-            ¥¢¥¤¥·|sh
- * C-            ¥¢¥¤|¤·sh
+ * 【例】 
+ *               あいしsh|
+ * C-            アイシsh|
+ * C-            アイシs|h
+ * C-            アイシ|sh
+ * C-            アイ|しsh
  *
- *               ¤¢¤¤¤·sh|
+ *               あいしsh|
  * C-            aishish|
- * C-            £á£é£ó£è£é£ó£è|
- * C-            £á£é£ó£è£é£ó|h
- * C-            £á£é£ó£è£é|sh
- * C-            £á£é£ó£è|¤¤sh
- * C-            aish|¤¤sh
- * C-            ¤¢¤¤sh|¤¤sh
- * C-            ¥¢¥¤sh|sh
- * C-            ¥¢¥¤s|¤Òsh
- * C-            ¥¢¥¤|¤·sh
+ * C-            ａｉｓｈｉｓｈ|
+ * C-            ａｉｓｈｉｓ|h
+ * C-            ａｉｓｈｉ|sh
+ * C-            ａｉｓｈ|いsh
+ * C-            aish|いsh
+ * C-            あいsh|いsh
+ * C-            アイsh|sh
+ * C-            アイs|ひsh
+ * C-            アイ|しsh
  * C-
  * 
  */
@@ -65,45 +71,16 @@ static int JishuHankaku();
 #define INHIBIT_ALPHA	0x04
 #define INHIBIT_HIRA	0x08
 
-static void setInhibitInformation(yomiContext yc);
-static int inhibittedJishu(uiContext d);
-static int nextJishu(uiContext d);
-static int previousJishu(uiContext d);
-static int JishuNextJishu(uiContext d);
-static int JishuPreviousJishu(uiContext d);
-static int JishuRotateWithInhibition(uiContext d, unsigned inhibit);
-static int JishuKanaRotate(uiContext d);
-static int JishuRomajiRotate(uiContext d);
-static int JishuShrink(uiContext d);
-static int JishuNop(uiContext d);
-static int JishuExtend(uiContext d);
-static void jishuAdjustRome(uiContext d);
-static void myjishuAdjustRome(uiContext d);
-static int JishuZenkaku(uiContext d);
-static int JishuHankaku(uiContext d);
-static int exitJishuAndDoSomething(uiContext d, int fnum);
-static int JishuYomiInsert(uiContext d);
-static int JishuQuit(uiContext d);
-static int JishuToUpper(uiContext d);
-static int JishuCapitalize(uiContext d);
-static int JishuToLower(uiContext d);
-static int JishuHiragana(uiContext d);
-static int JishuKatakana(uiContext d);
-static int JishuRomaji(uiContext d);
-static void nextCase(yomiContext yc);
-static int JishuCaseRotateForward(uiContext d);
-static int JishuKanjiHenkan(uiContext d);
-static int JishuKanjiHenkanOInsert(uiContext d);
-static int JishuKanjiHenkanONothing(uiContext d);
-
 void
-enterJishuMode(uiContext d, yomiContext yc)
+enterJishuMode(d, yc)
+uiContext d;
+yomiContext yc;
 {
   extern KanjiModeRec jishu_mode;
   int pos;
 
-  yc->jishu_kc = JISHU_HIRA;/* º£¤Ï¤Ò¤é¤¬¤Ê¥â¡¼¥É¤Ç¤¹ */
-  yc->jishu_case = 0; /* Case ÊÑ´¹¤Ê¤·¤Î¥â¡¼¥É¤Ç¤¹ */
+  yc->jishu_kc = JISHU_HIRA;/* 今はひらがなモードです */
+  yc->jishu_case = 0; /* Case 変換なしのモードです */
   setInhibitInformation(yc);
   if (yc->cmark < yc->cStartp) {
     yc->cmark = yc->cStartp;
@@ -132,7 +109,9 @@ enterJishuMode(uiContext d, yomiContext yc)
 }
 
 void
-leaveJishuMode(uiContext d, yomiContext yc)
+leaveJishuMode(d, yc)
+uiContext d;
+yomiContext yc;
 {
   extern KanjiModeRec yomi_mode, cy_mode;
 
@@ -148,7 +127,8 @@ leaveJishuMode(uiContext d, yomiContext yc)
 }
 
 static void
-setInhibitInformation(yomiContext yc)
+setInhibitInformation(yc)
+yomiContext yc;
 {
   int i;
 
@@ -166,22 +146,24 @@ setInhibitInformation(yomiContext yc)
   }
 }
 
-int extractJishuString(yomiContext yc, WCHAR_T *s, WCHAR_T *e, WCHAR_T **sr, WCHAR_T **er)
+extractJishuString(yc, s, e, sr, er)
+yomiContext yc;
+wchar_t *s, *e, **sr, **er;
 {
-  WCHAR_T *ss = s;
+  wchar_t *ss = s;
   int jishulen, len, revlen;
-#ifndef WIN
-  WCHAR_T xxxx[1024], yyyy[1024];
+#ifndef USE_MALLOC_FOR_BIG_ARRAY
+  wchar_t xxxx[1024], yyyy[1024];
 #else
-  WCHAR_T *xxxx, *yyyy;
-  xxxx = (WCHAR_T *)malloc(sizeof(WCHAR_T) * 1024);
-  yyyy = (WCHAR_T *)malloc(sizeof(WCHAR_T) * 1024);
+  wchar_t *xxxx, *yyyy;
+  xxxx = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
+  yyyy = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
   if (!xxxx || !yyyy) {
     if (xxxx) {
-      free(xxxx);
+      (void)free((char *)xxxx);
     }
     if (yyyy) {
-      free(yyyy);
+      (void)free((char *)yyyy);
     }
     return 0;
   }
@@ -200,7 +182,7 @@ int extractJishuString(yomiContext yc, WCHAR_T *s, WCHAR_T *e, WCHAR_T **sr, WCH
        yc->jishu_kc == JISHU_HAN_KATA ||
        yc->jishu_kc == JISHU_HIRA)) {
     int i, j, m, n, t, r;
-    WCHAR_T *p = yyyy;
+    wchar_t *p = yyyy;
     for (i = yc->cmark ; i < yc->jishu_kEndp ;) {
       if (yc->kAttr[i] & STAYROMAJI) {
 	j = i++;
@@ -214,12 +196,13 @@ int extractJishuString(yomiContext yc, WCHAR_T *s, WCHAR_T *e, WCHAR_T **sr, WCH
 	  RkwMapPhonogram(yc->romdic, p, 1024 - (int)(p - yyyy), 
 			  xxxx, st + i - j, xxxx[0],
 			  RK_FLUSH | RK_SOKON, &n, &m, &t, &r);
-	  /* RK_SOKON ¤òÉÕ¤±¤ë¤Î¤Ïµì¼­½ñÍÑ */
+	  /* RK_SOKON を付けるのは旧辞書用 */
 	  p += m;
 	  j += n - st;
 	  WStrncpy(xxxx, p, t);
 	}
-      }else{
+      }
+      else {
 	*p++ = yc->kana_buffer[i++];
       }
     }
@@ -228,27 +211,27 @@ int extractJishuString(yomiContext yc, WCHAR_T *s, WCHAR_T *e, WCHAR_T **sr, WCH
 
   switch (yc->jishu_kc)
     {
-    case JISHU_ZEN_KATA: /* Á´³Ñ¥«¥¿¥«¥Ê¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_ZEN_KATA: /* 全角カタカナに変換する */
       len = RkwCvtZen(xxxx, 1024, yyyy, jishulen);
       revlen = RkwCvtKana(s, (int)(e - s), xxxx, len);
       break;
 
-    case JISHU_HAN_KATA: /* È¾³Ñ¥«¥¿¥«¥Ê¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_HAN_KATA: /* 半角カタカナに変換する */
       len = RkwCvtKana(xxxx, 1024, yyyy, jishulen);
       revlen = RkwCvtHan(s, (int)(e - s), xxxx, len);
       break;
 
-    case JISHU_HIRA: /* ¤Ò¤é¤¬¤Ê¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_HIRA: /* ひらがなに変換する */
       len = RkwCvtZen(xxxx, 1024, yyyy, jishulen);
       revlen = RkwCvtHira(s, (int)(e - s), xxxx, len);
       break;
 
-    case JISHU_ZEN_ALPHA: /* Á´³Ñ±Ñ¿ô¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_ZEN_ALPHA: /* 全角英数に変換する */
       if (yc->jishu_case == CANNA_JISHU_UPPER ||
 	  yc->jishu_case == CANNA_JISHU_LOWER ||
 	  yc->jishu_case == CANNA_JISHU_CAPITALIZE) {
 	int i, head = 1;
-	WCHAR_T *p = yc->romaji_buffer;
+	wchar_t *p = yc->romaji_buffer;
 
 	for (i = yc->rmark ; i < yc->jishu_rEndp ; i++) {
 	  xxxx[i - yc->rmark] =
@@ -282,13 +265,13 @@ int extractJishuString(yomiContext yc, WCHAR_T *s, WCHAR_T *e, WCHAR_T **sr, WCH
       }
       break;
 
-    case JISHU_HAN_ALPHA: /* È¾³Ñ±Ñ¿ô¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_HAN_ALPHA: /* 半角英数に変換する */
       revlen = yc->jishu_rEndp - yc->rmark;
       if (yc->jishu_case == CANNA_JISHU_UPPER ||
 	  yc->jishu_case == CANNA_JISHU_LOWER ||
 	  yc->jishu_case == CANNA_JISHU_CAPITALIZE) {
 	int i, head = 1;
-	WCHAR_T *p = yc->romaji_buffer + yc->rmark;
+	wchar_t *p = yc->romaji_buffer + yc->rmark;
 
 	for (i = 0 ; i < revlen && s < e ; i++) {
 	  *s++ =
@@ -319,13 +302,14 @@ int extractJishuString(yomiContext yc, WCHAR_T *s, WCHAR_T *e, WCHAR_T **sr, WCH
       }
       else if (s + revlen < e) {
 	WStrncpy(s, yc->romaji_buffer + yc->rmark, revlen);
-      }else{
+      }
+      else {
 	WStrncpy(s, yc->romaji_buffer + yc->rmark, (int)(e - s));
 	revlen = (int)(e - s);
       }
       break;
 
-    default:/* ¤É¤ì¤Ç¤â¤Ê¤«¤Ã¤¿¤éÊÑ´¹½ÐÍè¤Ê¤¤¤Î¤Ç²¿¤â¤·¤Ê¤¤ */
+    default:/* どれでもなかったら変換出来ないので何もしない */
       break;
     }
 
@@ -333,47 +317,49 @@ int extractJishuString(yomiContext yc, WCHAR_T *s, WCHAR_T *e, WCHAR_T **sr, WCH
   s += revlen;
   *er = s;
 
-/* Ê¸»ú¼ïÊÑ´¹¤·¤Ê¤¤ÉôÊ¬¤òÉÕ¤±²Ã¤¨¤ë */
+/* 文字種変換しない部分を付け加える */
   switch (yc->jishu_kc)
     {
-    case JISHU_HIRA: /* ¤Ò¤é¤¬¤Ê¤Ê¤é */
-    case JISHU_ZEN_KATA: /* Á´³Ñ¥«¥¿¥«¥Ê¤Ê¤é */
-    case JISHU_HAN_KATA: /* È¾³Ñ¥«¥¿¥«¥Ê¤Ê¤é */
-      /* ¤«¤Ê¥Ð¥Ã¥Õ¥¡¤«¤éÊ¸»úÎó¤ò¼è¤ê½Ð¤¹ */
+    case JISHU_HIRA: /* ひらがななら */
+    case JISHU_ZEN_KATA: /* 全角カタカナなら */
+    case JISHU_HAN_KATA: /* 半角カタカナなら */
+      /* かなバッファから文字列を取り出す */
       if (s + yc->kEndp - yc->jishu_kEndp < e) {
 	WStrncpy(s, yc->kana_buffer + yc->jishu_kEndp, 
 		 yc->kEndp - yc->jishu_kEndp);
 	s += yc->kEndp - yc->jishu_kEndp;
-      }else{
+      }
+      else {
 	WStrncpy(s, yc->kana_buffer + yc->jishu_kEndp, (int)(e - s));
 	s = e;
       }
       break;
 
-    case JISHU_ZEN_ALPHA: /* Á´³Ñ±Ñ¿ô¤Ê¤é */
-    case JISHU_HAN_ALPHA: /* È¾³Ñ±Ñ¿ô¤Ê¤é */
+    case JISHU_ZEN_ALPHA: /* 全角英数なら */
+    case JISHU_HAN_ALPHA: /* 半角英数なら */
       len = RkwCvtRoma(romajidic, s, (int)(e - s),
 		       yc->romaji_buffer + yc->jishu_rEndp,
 		       yc->rEndp - yc->jishu_rEndp,
 		       RK_FLUSH | RK_SOKON | RK_XFER);
       s += len;
       break;
-    default:/* ¤É¤ì¤Ç¤â¤Ê¤«¤Ã¤¿¤é²¿¤â¤·¤Ê¤¤ */
+    default:/* どれでもなかったら何もしない */
       break;
     }
 
   if (s < e) {
-    *s = (WCHAR_T)0;
+    *s = (wchar_t)0;
   }
-#ifdef WIN
-  free(xxxx);
-  free(yyyy);
+#ifdef USE_MALLOC_FOR_BIG_ARRAY
+  (void)free((char *)xxxx);
+  (void)free((char *)yyyy);
 #endif
   return (int)(s - ss);
 }
 
 static
-int inhibittedJishu(uiContext d)
+inhibittedJishu(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -389,7 +375,8 @@ int inhibittedJishu(uiContext d)
 }
 
 static
-int nextJishu(uiContext d)
+nextJishu(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
   BYTE startkc = yc->jishu_kc;
@@ -401,7 +388,8 @@ int nextJishu(uiContext d)
 }
 
 static
-int previousJishu(uiContext d)
+previousJishu(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
   BYTE startkc = yc->jishu_kc;
@@ -413,14 +401,15 @@ int previousJishu(uiContext d)
   return yc->jishu_kc != startkc;
 }
 
-static int JishuNextJishu (uiContext);	    
+static JishuNextJishu pro((uiContext));	    
 
 static
-int JishuNextJishu(uiContext d)
+JishuNextJishu(d) /* 字種モードの時に順回り文字種変換をする */
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-/* ¼è¤ê½Ð¤·¤¿Ê¸»úÎó¤òÊÑ´¹¤¹¤ë */
+/* 取り出した文字列を変換する */
   if (!nextJishu(d)) {
     return NothingChangedWithBeep(d);
   }
@@ -433,14 +422,15 @@ int JishuNextJishu(uiContext d)
   return 0;
 }
 
-static int JishuPreviousJishu (uiContext);
+static JishuPreviousJishu pro((uiContext));
 
 static
-int JishuPreviousJishu(uiContext d)
+JishuPreviousJishu(d) /* 字種モードの時に逆回り文字種変換をする */
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-/* ¼è¤ê½Ð¤·¤¿Ê¸»úÎó¤òÊÑ´¹¤¹¤ë */
+/* 取り出した文字列を変換する */
   if (!previousJishu(d)) {
     return NothingChangedWithBeep(d);
   }
@@ -453,10 +443,12 @@ int JishuPreviousJishu(uiContext d)
   return 0;
 }
 
-static int JishuRotateWithInhibition (uiContext, unsigned);
+static JishuRotateWithInhibition pro((uiContext, unsigned));
 
 static
-int JishuRotateWithInhibition(uiContext d, unsigned inhibit)
+JishuRotateWithInhibition(d, inhibit)
+uiContext d;
+unsigned inhibit;
 {
   yomiContext yc = (yomiContext)d->modec;
   BYTE savedInhibition = yc->inhibition;
@@ -469,76 +461,79 @@ int JishuRotateWithInhibition(uiContext d, unsigned inhibit)
   return res;
 }
 
-static int JishuKanaRotate (uiContext);
+static JishuKanaRotate pro((uiContext));
 
 static
-int JishuKanaRotate(uiContext d)
+JishuKanaRotate(d) /* 字種モードの時に順回りかな文字種変換をする */
+uiContext d;
 {
   return JishuRotateWithInhibition(d, INHIBIT_ALPHA);
 }
 
-static int JishuRomajiRotate (uiContext);
+static JishuRomajiRotate pro((uiContext));
 
 static
-int JishuRomajiRotate(uiContext d)
+JishuRomajiRotate(d) /* 字種モードの時に順回り英数文字種変換をする */
+uiContext d;
 {
   return JishuRotateWithInhibition(d, INHIBIT_KANA | INHIBIT_HIRA);
 }
 
-static void myjishuAdjustRome (uiContext);
-static int JishuShrink (uiContext);
+static void myjishuAdjustRome pro((uiContext));
+static JishuShrink pro((uiContext));
 
 static
-int JishuShrink(uiContext d)
+JishuShrink(d) /* 文字種変換領域を縮める */
+uiContext d;
 {  
   yomiContext yc = (yomiContext)d->modec;
 
-  /* ¼ï¡¹¤Î¥Ý¥¤¥ó¥¿¤òÌá¤¹ */
+  /* 種々のポインタを戻す */
   switch (yc->jishu_kc)
     {
     case JISHU_ZEN_ALPHA:
-    case JISHU_HAN_ALPHA: /* Á´³Ñ±Ñ¿ô»ú¤«È¾³Ñ±Ñ¿ô»ú¤Ê¤é */
+    case JISHU_HAN_ALPHA: /* 全角英数字か半角英数字なら */
       myjishuAdjustRome(d);
-      yc->jishu_rEndp--; /* »ú¼ï¥í¡¼¥Þ»ú¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò£±Ìá¤¹ */
+      yc->jishu_rEndp--; /* 字種ローマ字バッファインデックスを１戻す */
       if (yc->rAttr[yc->jishu_rEndp] & SENTOU) {
-	                       /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹ÀèÆ¬¥Õ¥é¥°¥Ð¥Ã¥Õ¥¡¤¬
-				* Î©¤Ã¤Æ¤¤¤¿¤é
+	                       /* ローマ字かな変換先頭フラグバッファが
+				* 立っていたら
 			        */
 	for (--yc->jishu_kEndp ; 
 	     yc->jishu_kEndp > 0 && !(yc->kAttr[yc->jishu_kEndp] & SENTOU) ;) {
 	  --yc->jishu_kEndp;
 	}
-	                       /* ¤«¤ÊÊÑ´¹¤·¤¿¥Õ¥é¥°¥Ð¥Ã¥Õ¥¡¤ÎÀèÆ¬¤¬
-				* Î©¤Ã¤Æ¤¤¤ë½ê¤Þ¤Ç
-				* »ú¼ï¤«¤Ê¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò
-				* Ìá¤¹
+	                       /* かな変換したフラグバッファの先頭が
+				* 立っている所まで
+				* 字種かなバッファインデックスを
+				* 戻す
 			        */
       }
       break;
     case JISHU_HIRA:
     case JISHU_ZEN_KATA:
-    case JISHU_HAN_KATA: /* ¤Ò¤é¤¬¤Ê¤«Á´³Ñ¥«¥¿¥«¥Ê¤«È¾³Ñ¥«¥¿¥«¥Ê¤Ê¤é */
+    case JISHU_HAN_KATA: /* ひらがなか全角カタカナか半角カタカナなら */
       jishuAdjustRome(d);
-      yc->jishu_kEndp--; /* »ú¼ï¤«¤Ê¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò£±Ê¸»úÊ¬Ìá¤¹ */
+      yc->jishu_kEndp--; /* 字種かなバッファインデックスを１文字分戻す */
       if (yc->kAttr[yc->jishu_kEndp] & SENTOU) {
-                               /* ¤«¤ÊÊÑ´¹¤·¤¿¥Õ¥é¥°¥Ð¥Ã¥Õ¥¡¤¬
-				* Î©¤Ã¤Æ¤¤¤¿¤é
+                               /* かな変換したフラグバッファが
+				* 立っていたら
 			        */
 	for (--yc->jishu_rEndp ; 
 	     yc->jishu_rEndp > 0 && !(yc->rAttr[yc->jishu_rEndp] & SENTOU) ;) {
 	  --yc->jishu_rEndp;
 	}
-	                       /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹ÀèÆ¬¥Õ¥é¥°¥Ð¥Ã¥Õ¥¡¤¬
-				* Î©¤Ã¤Æ¤¤¤ë½ê¤Þ¤Ç
-				* »ú¼ï¥í¡¼¥Þ»ú¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò
-				* Ìá¤¹
+	                       /* ローマ字かな変換先頭フラグバッファが
+				* 立っている所まで
+				* 字種ローマ字バッファインデックスを
+				* 戻す
 			        */
       }
       break;
     }
 
-  if(yc->jishu_rEndp <= yc->rmark) {/* £±¼þ¤·¤¿¤é»ú¼ï¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò
-				     * ¸µ¤ÎÄ¹¤µ¤ËÌá¤¹
+  if(yc->jishu_rEndp <= yc->rmark) {/* １周したら字種バッファインデックスを
+				     * 元の長さに戻す
 				     */
     yc->jishu_kEndp = yc->kEndp;
     yc->jishu_rEndp = yc->rEndp;
@@ -547,12 +542,13 @@ int JishuShrink(uiContext d)
   return 0;
 }
 
-static int JishuNop (uiContext);
+static JishuNop pro((uiContext));
 
 static
-int JishuNop(uiContext d)
+JishuNop(d)
+uiContext d;
 {
-  /* currentModeInfo ¤Ç¥â¡¼¥É¾ðÊó¤¬É¬¤ºÊÖ¤ë¤è¤¦¤Ë¥À¥ß¡¼¤Î¥â¡¼¥É¤òÆþ¤ì¤Æ¤ª¤¯ */
+  /* currentModeInfo でモード情報が必ず返るようにダミーのモードを入れておく */
   d->majorMode = d->minorMode = CANNA_MODE_AlphaMode;
   currentModeInfo(d);
 
@@ -560,70 +556,71 @@ int JishuNop(uiContext d)
   return 0;
 }
 
-static int JishuExtend (uiContext);
+static JishuExtend pro((uiContext));
 
 static
-int JishuExtend(uiContext d)
+JishuExtend(d) /* 文字種変換領域を伸ばす */
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  /* ¼ï¡¹¤Î¥Ý¥¤¥ó¥¿¤òÁý¤ä¤¹ */
+  /* 種々のポインタを増やす */
   switch (yc->jishu_kc) {
     case JISHU_ZEN_ALPHA:
-    case JISHU_HAN_ALPHA: /* Á´³Ñ±Ñ¿ô»ú¤«È¾³Ñ±Ñ¿ô»ú¤Ê¤é */
+    case JISHU_HAN_ALPHA: /* 全角英数字か半角英数字なら */
       myjishuAdjustRome(d);
 
       if(yc->jishu_rEndp >= yc->rEndp && yc->jishu_kEndp >= yc->kEndp ) {
-                                    /* £±¼þ¤·¤¿¤é»ú¼ï¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò
-				     * °ìÈÖÁ°¤ËÌá¤¹
+                                    /* １周したら字種バッファインデックスを
+				     * 一番前に戻す
 				     */
 	yc->jishu_rEndp = yc->rmark;
 	yc->jishu_kEndp = yc->cmark;
       }
 
       if (yc->rAttr[yc->jishu_rEndp] & SENTOU) {
-	                       /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹ÀèÆ¬¥Õ¥é¥°¥Ð¥Ã¥Õ¥¡¤¬
-				* Î©¤Ã¤Æ¤¤¤¿¤é
+	                       /* ローマ字かな変換先頭フラグバッファが
+				* 立っていたら
 			        */
 
 	for (yc->jishu_kEndp++ ; 
 	     yc->jishu_kEndp > 0 && !(yc->kAttr[yc->jishu_kEndp] & SENTOU) ;) {
 	  yc->jishu_kEndp++;
 	}
-	                       /* ¤«¤ÊÊÑ´¹¤·¤¿¥Õ¥é¥°¥Ð¥Ã¥Õ¥¡¤ÎÀèÆ¬¤¬
-				* Î©¤Ã¤Æ¤¤¤ë½ê¤Þ¤Ç
-				* »ú¼ï¤«¤Ê¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤òÁý¤ä¤¹
+	                       /* かな変換したフラグバッファの先頭が
+				* 立っている所まで
+				* 字種かなバッファインデックスを増やす
 			        */
       }
-      yc->jishu_rEndp++; /* »ú¼ï¥í¡¼¥Þ»ú¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò£±Áý¤ä¤¹ */
+      yc->jishu_rEndp++; /* 字種ローマ字バッファインデックスを１増やす */
       break;
     case JISHU_HIRA:
     case JISHU_ZEN_KATA:
-    case JISHU_HAN_KATA: /* ¤Ò¤é¤¬¤Ê¤«Á´³Ñ¥«¥¿¥«¥Ê¤«È¾³Ñ¥«¥¿¥«¥Ê¤Ê¤é */
+    case JISHU_HAN_KATA: /* ひらがなか全角カタカナか半角カタカナなら */
       jishuAdjustRome(d);
 
       if(yc->jishu_rEndp >= yc->rEndp && yc->jishu_kEndp >= yc->kEndp ) {
-                                    /* £±¼þ¤·¤¿¤é»ú¼ï¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò
-				     * °ìÈÖÁ°¤ËÌá¤¹
+                                    /* １周したら字種バッファインデックスを
+				     * 一番前に戻す
 				     */
 	yc->jishu_rEndp = yc->rmark;
 	yc->jishu_kEndp = yc->cmark;
       }
 
       if (yc->kAttr[yc->jishu_kEndp] & SENTOU) {
-                               /* ¤«¤ÊÊÑ´¹¤·¤¿¥Õ¥é¥°¥Ð¥Ã¥Õ¥¡¤¬
-				* Î©¤Ã¤Æ¤¤¤¿¤é
+                               /* かな変換したフラグバッファが
+				* 立っていたら
 			        */
 	for (yc->jishu_rEndp++ ; 
 	     yc->jishu_rEndp > 0 && !(yc->rAttr[yc->jishu_rEndp] & SENTOU) ;) {
 	  yc->jishu_rEndp++;
 	}
-	                       /* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹ÀèÆ¬¥Õ¥é¥°¥Ð¥Ã¥Õ¥¡¤¬
-				* Î©¤Ã¤Æ¤¤¤ë½ê¤Þ¤Ç
-				* »ú¼ï¥í¡¼¥Þ»ú¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤òÁý¤ä¤¹
+	                       /* ローマ字かな変換先頭フラグバッファが
+				* 立っている所まで
+				* 字種ローマ字バッファインデックスを増やす
 			        */
       }
-      yc->jishu_kEndp++; /* »ú¼ï¤«¤Ê¥Ð¥Ã¥Õ¥¡¥¤¥ó¥Ç¥Ã¥¯¥¹¤ò£±Ê¸»úÊ¬Áý¤ä¤¹ */
+      yc->jishu_kEndp++; /* 字種かなバッファインデックスを１文字分増やす */
       break;
     }
   makeKanjiStatusReturn(d, yc);
@@ -631,7 +628,8 @@ int JishuExtend(uiContext d)
 }
 
 static void
-jishuAdjustRome(uiContext d)
+jishuAdjustRome(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -641,7 +639,8 @@ jishuAdjustRome(uiContext d)
 }
 
 static void
-myjishuAdjustRome(uiContext d)
+myjishuAdjustRome(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -651,32 +650,35 @@ myjishuAdjustRome(uiContext d)
   }
 }
 
-static int
-JishuZenkaku(uiContext d)
+static JishuZenkaku pro((uiContext));
+
+static
+JishuZenkaku(d) /* 全角変換 */
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-/* ¼è¤ê½Ð¤·¤¿Ê¸»úÎó¤òÊÑ´¹¤¹¤ë */
+/* 取り出した文字列を変換する */
   switch(yc->jishu_kc)
     {
-    case JISHU_HIRA: /* ¤Ò¤é¤¬¤Ê¤Ê¤é²¿¤â¤·¤Ê¤¤ */
+    case JISHU_HIRA: /* ひらがななら何もしない */
       break;
       
-    case JISHU_HAN_ALPHA: /* È¾³Ñ±Ñ¿ô¤Ê¤éÁ´³Ñ±Ñ¿ô¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_HAN_ALPHA: /* 半角英数なら全角英数に変換する */
       yc->jishu_kc = JISHU_ZEN_ALPHA;
       break;
       
-    case JISHU_ZEN_ALPHA: /* Á´³Ñ±Ñ¿ô¤Ê¤é²¿¤â¤·¤Ê¤¤ */
+    case JISHU_ZEN_ALPHA: /* 全角英数なら何もしない */
       break;
       
-    case JISHU_HAN_KATA: /* È¾³Ñ¥«¥¿¥«¥Ê¤Ê¤éÁ´³Ñ¥«¥¿¥«¥Ê¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_HAN_KATA: /* 半角カタカナなら全角カタカナに変換する */
       yc->jishu_kc = JISHU_ZEN_KATA;
       break;
       
-    case JISHU_ZEN_KATA: /* Á´³Ñ¥«¥¿¥«¥Ê¤Ê¤é²¿¤â¤·¤Ê¤¤ */
+    case JISHU_ZEN_KATA: /* 全角カタカナなら何もしない */
       break;
       
-    default: /* ¤É¤ì¤Ç¤â¤Ê¤«¤Ã¤¿¤éÊÑ´¹½ÐÍè¤Ê¤¤¤Î¤Ç²¿¤â¤·¤Ê¤¤ */
+    default: /* どれでもなかったら変換出来ないので何もしない */
       break;
     }
 
@@ -684,39 +686,42 @@ JishuZenkaku(uiContext d)
   return 0;
 }
 
-static int
-JishuHankaku(uiContext d)
+static JishuHankaku pro((uiContext));
+
+static
+JishuHankaku(d) /* 半角変換 */
+     uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
   
-  /* ¼è¤ê½Ð¤·¤¿Ê¸»úÎó¤òÊÑ´¹¤¹¤ë */
+  /* 取り出した文字列を変換する */
   switch(yc->jishu_kc)
     {
-    case JISHU_HIRA: /* ¤Ò¤é¤¬¤Ê¤Ê¤éÈ¾³Ñ¥«¥¿¥«¥Ê¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_HIRA: /* ひらがななら半角カタカナに変換する */
       if (cannaconf.InhibitHankakuKana) {
 	return NothingChangedWithBeep(d);
       }
       yc->jishu_kc = JISHU_HAN_KATA;
       break;
       
-    case JISHU_ZEN_KATA: /* Á´³Ñ¥«¥¿¥«¥Ê¤Ê¤éÈ¾³Ñ¥«¥¿¥«¥Ê¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_ZEN_KATA: /* 全角カタカナなら半角カタカナに変換する */
       if (cannaconf.InhibitHankakuKana) {
 	return NothingChangedWithBeep(d);
       }
       yc->jishu_kc = JISHU_HAN_KATA;
       break;
       
-    case JISHU_HAN_KATA: /* È¾³Ñ¥«¥¿¥«¥Ê¤Ê¤é²¿¤â¤·¤Ê¤¤ */
+    case JISHU_HAN_KATA: /* 半角カタカナなら何もしない */
       break;
       
-    case JISHU_ZEN_ALPHA: /* Á´³Ñ±Ñ¿ô¤Ê¤éÈ¾³Ñ±Ñ¿ô¤ËÊÑ´¹¤¹¤ë */
+    case JISHU_ZEN_ALPHA: /* 全角英数なら半角英数に変換する */
       yc->jishu_kc = JISHU_HAN_ALPHA;
       break;
       
-    case JISHU_HAN_ALPHA: /* È¾³Ñ±Ñ¿ô¤Ê¤é²¿¤â¤·¤Ê¤¤ */
+    case JISHU_HAN_ALPHA: /* 半角英数なら何もしない */
       break;
       
-    default: /* ¤É¤ì¤Ç¤â¤Ê¤«¤Ã¤¿¤éÊÑ´¹½ÐÍè¤Ê¤¤¤Î¤Ç²¿¤â¤·¤Ê¤¤ */
+    default: /* どれでもなかったら変換出来ないので何もしない */
       break;
     }
 
@@ -725,7 +730,9 @@ JishuHankaku(uiContext d)
 }
 
 static
-int exitJishuAndDoSomething(uiContext d, int fnum)
+exitJishuAndDoSomething(d, fnum)
+uiContext d;
+int fnum;
 {
   exitJishu(d);
   d->more.todo = 1;
@@ -736,10 +743,11 @@ int exitJishuAndDoSomething(uiContext d, int fnum)
   return d->nbytes = 0;
 }
 
-static int JishuYomiInsert (uiContext);
+static JishuYomiInsert pro((uiContext));
 
 static
-int JishuYomiInsert(uiContext d)
+JishuYomiInsert(d)
+uiContext d;
 {
   if (cannaconf.MojishuContinue) {
     return exitJishuAndDoSomething(d, 0);
@@ -748,8 +756,8 @@ int JishuYomiInsert(uiContext d)
     int res;
 
     res = YomiKakutei(d);
-    /* ¿·¤·¤¯¥Õ¥é¥°¤òÀß¤±¤Æ¡¢¤½¤ì¤Ë¤è¤Ã¤Æ¡¢
-       YomiKakutei(); more.todo = self-insert ¤âÁªÂò¤Ç¤­¤ë¤è¤¦¤Ë¤·¤è¤¦ */
+    /* 新しくフラグを設けて、それによって、
+       YomiKakutei(); more.todo = self-insert も選択できるようにしよう */
     d->more.todo = 1;
     d->more.ch = d->ch;
     d->more.fnum = CANNA_FN_FunctionalInsert;
@@ -759,26 +767,28 @@ int JishuYomiInsert(uiContext d)
   }
 }
 
-static int JishuQuit (uiContext);
+static JishuQuit pro((uiContext));
 
 static
-int JishuQuit(uiContext d)
+JishuQuit(d)
+uiContext d;
 {
   leaveJishuMode(d, (yomiContext)d->modec);
   makeKanjiStatusReturn(d, (yomiContext)d->modec);
   return 0;
 }
 
-/* ÂçÊ¸»ú¤Ë¤¹¤ë´Ø¿ô */
+/* 大文字にする関数 */
 
-static int JishuToUpper (uiContext);
+static JishuToUpper pro((uiContext));
 
 static
-int JishuToUpper(uiContext d)
+JishuToUpper(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  if (!(yc->inhibition & INHIBIT_ALPHA)) { /* ÌµÍýÌðÍýÂçÊ¸»ú¤ËÊÑ´¹¤¹¤ë */
+  if (!(yc->inhibition & INHIBIT_ALPHA)) { /* 無理矢理大文字に変換する */
     if (yc->jishu_kc == JISHU_HIRA || yc->jishu_kc == JISHU_ZEN_KATA) {
       yc->jishu_kc = JISHU_ZEN_ALPHA;
     }
@@ -793,20 +803,21 @@ int JishuToUpper(uiContext d)
     return 0;
   }
   else {
-    /* Á°¤È²¿¤âÊÑ¤ï¤ê¤Þ¤»¤ó */
+    /* 前と何も変わりません */
     d->kanji_status_return->length = -1;
     return 0;
   }
 }
 
-static int JishuCapitalize (uiContext);
+static JishuCapitalize pro((uiContext));
 
 static
-int JishuCapitalize(uiContext d)
+JishuCapitalize(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  if (!(yc->inhibition & INHIBIT_ALPHA)) { /* ÌµÍýÌðÍýÂçÊ¸»ú¤ËÊÑ´¹¤¹¤ë */
+  if (!(yc->inhibition & INHIBIT_ALPHA)) { /* 無理矢理大文字に変換する */
     if (yc->jishu_kc == JISHU_HIRA || yc->jishu_kc == JISHU_ZEN_KATA) {
       yc->jishu_kc = JISHU_ZEN_ALPHA;
     }
@@ -821,20 +832,21 @@ int JishuCapitalize(uiContext d)
     return 0;
   }
   else {
-    /* Á°¤È²¿¤âÊÑ¤ï¤ê¤Þ¤»¤ó */
+    /* 前と何も変わりません */
     d->kanji_status_return->length = -1;
     return 0;
   }
 }
 
-static int JishuToLower (uiContext);
+static JishuToLower pro((uiContext));
 
 static
-int JishuToLower(uiContext d)
+JishuToLower(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  if (!(yc->inhibition & INHIBIT_ALPHA)) { /* ÌµÍýÌðÍýÂçÊ¸»ú¤ËÊÑ´¹¤¹¤ë */
+  if (!(yc->inhibition & INHIBIT_ALPHA)) { /* 無理矢理大文字に変換する */
     if (yc->jishu_kc == JISHU_HIRA || yc->jishu_kc == JISHU_ZEN_KATA) {
       yc->jishu_kc = JISHU_ZEN_ALPHA;
     }
@@ -849,16 +861,17 @@ int JishuToLower(uiContext d)
     return 0;
   }
   else {
-    /* Á°¤È²¿¤âÊÑ¤ï¤ê¤Þ¤»¤ó */
+    /* 前と何も変わりません */
     d->kanji_status_return->length = -1;
     return 0;
   }
 }
 
-static int JishuHiragana (uiContext);
+static JishuHiragana pro((uiContext));
 
 static
-int JishuHiragana(uiContext d)
+JishuHiragana(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -867,10 +880,11 @@ int JishuHiragana(uiContext d)
   return 0;
 }
 
-static int JishuKatakana (uiContext);
+static JishuKatakana pro((uiContext));
 
 static
-int JishuKatakana(uiContext d)
+JishuKatakana(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -879,10 +893,11 @@ int JishuKatakana(uiContext d)
   return 0;
 }
 
-static int JishuRomaji (uiContext);
+static JishuRomaji pro((uiContext));
 
 static
-int JishuRomaji(uiContext d)
+JishuRomaji(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -895,15 +910,17 @@ int JishuRomaji(uiContext d)
 }
 
 static void
-nextCase(yomiContext yc)
+nextCase(yc)
+yomiContext yc;
 {
   yc->jishu_case = (BYTE)(((int)yc->jishu_case + 1) % CANNA_JISHU_MAX_CASE);
 }
 
-static int JishuCaseRotateForward (uiContext);
+static JishuCaseRotateForward pro((uiContext));
 
 static
-int JishuCaseRotateForward(uiContext d)
+JishuCaseRotateForward(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -925,34 +942,45 @@ int JishuCaseRotateForward(uiContext d)
 }
 
 /*
- * ¤«¤Ê´Á»úÊÑ´¹¤ò¹Ô¤¤(ÊÑ´¹¥­¡¼¤¬½é¤á¤Æ²¡¤µ¤ì¤¿)¡¢TanKouhoMode¤Ë°Ü¹Ô¤¹¤ë
+ * かな漢字変換を行い(変換キーが初めて押された)、TanKouhoModeに移行する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0	°Û¾ï½ªÎ»»þ -1
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static int JishuKanjiHenkan (uiContext);
+static JishuKanjiHenkan pro((uiContext));
 
 static
-int JishuKanjiHenkan(uiContext d)
+JishuKanjiHenkan(d)
+uiContext	d;
 {
   return exitJishuAndDoSomething(d, CANNA_FN_Henkan);
 }
 
-static int JishuKanjiHenkanOInsert (uiContext);
+static JishuKanjiHenkanOInsert pro((uiContext));
 
 static
-int JishuKanjiHenkanOInsert(uiContext d)
+JishuKanjiHenkanOInsert(d)
+uiContext	d;
 {
   return exitJishuAndDoSomething(d, CANNA_FN_HenkanOrInsert);
 }
 
-static int JishuKanjiHenkanONothing (uiContext);
+static JishuKanjiHenkanONothing pro((uiContext));
 
 static
-int JishuKanjiHenkanONothing(uiContext d)
+JishuKanjiHenkanONothing(d)
+uiContext	d;
 {
   return exitJishuAndDoSomething(d, CANNA_FN_HenkanOrNothing);
 }
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/
 
 #include "jishumap.h"

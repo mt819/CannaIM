@@ -21,17 +21,28 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char chikuji_id[] = "$Id: chikujimap.h 10525 2004-12-23 21:23:50Z korli $";
+static char chikuji_id[] = "$Id: chikujimap.h,v 1.1.1.1 2002/10/19 08:27:48 aida_s Exp $";
 #endif
-#include "canna.h"
 
 #define BUNPOU_DISPLAY
+
+extern TanKouhoIchiran(), TanKatakana();
+extern TanPrintBunpou();
+extern TanMuhenkan(), TanBubunKakutei(), TanHankaku();
+extern TanHiragana(), TanRomaji(), TanZenkaku();
+extern TanForwardBunsetsu(), TanBackwardBunsetsu();
+extern TanNextKouho(), TanPreviousKouho();
+extern TanBeginningOfBunsetsu(), TanEndOfBunsetsu(), TanBubunMuhenkan();
+extern TanUpper(), TanCapitalize(), TanDeletePrevious();
+extern TanKanaRotate pro((uiContext)), TanRomajiRotate pro((uiContext));
+extern TanCaseRotateForward pro((uiContext));
+
 #define NONE CANNA_FN_Undefined
 
-/* CYsearchfunc ¤¬»È¤ï¤ì¤ë¤Î¤Ç°Ê²¼¤ÎÉ½¤Ë²Ã¤¨¤Æ yomi_mode ¤Î¥Þ¥Ã¥×¤â»È¤ï¤ì¤ë */
+/* CYsearchfunc が使われるので以下の表に加えて yomi_mode のマップも使われる */
 
 static struct funccfunc cy_funcs[] = {
-  {CANNA_FN_FunctionalInsert	, YomiInsert/* ËÜÅö¤ÏÍ×¤é¤Ê¤¤ */},
+  {CANNA_FN_FunctionalInsert	, YomiInsert/* 本当は要らない */},
   {CANNA_FN_DeletePrevious	, ChikujiYomiDeletePrevious	},
   {CANNA_FN_Henkan		, ChikujiHenkan			},
   {CANNA_FN_HenkanOrInsert	, ChikujiHenkanNaive		},
@@ -40,6 +51,7 @@ static struct funccfunc cy_funcs[] = {
   {0				, 0				},
 };
 
+extern searchfunc(), CYsearchfunc(), Yomisearchfunc();
 extern BYTE default_kmap[];
 
 KanjiModeRec cy_mode = {
@@ -50,7 +62,7 @@ KanjiModeRec cy_mode = {
 };
 
 static struct funccfunc cb_funcs[] = {
-  {CANNA_FN_FunctionalInsert	, YomiInsert/* ËÜÅö¤ÏÍ×¤é¤Ê¤¤ */},
+  {CANNA_FN_FunctionalInsert	, YomiInsert/* 本当は要らない */},
   {CANNA_FN_Forward		, TanForwardBunsetsu		},
   {CANNA_FN_Backward		, TanBackwardBunsetsu		},
   {CANNA_FN_Next		, TanNextKouho			},

@@ -25,17 +25,34 @@
  *	8/16 bit String Manipulations.
  *
  *      "@(#)kanji.h	2.3    88/10/03 10:25:34"
- *      "@(#) 102.1 $Id: jrkanji.h 10527 2004-12-23 22:08:39Z korli $"
+ *      "@(#) 102.1 $Id: jrkanji.h,v 1.8.2.2 2003/12/27 17:15:20 aida_s Exp $"
  */
 
 #ifndef _JR_KANJI_H_
 #define _JR_KANJI_H_
 
+#ifndef _WCHAR_T
+# if defined(WCHAR_T) || defined(_WCHAR_T_) || defined(__WCHAR_T) \
+  || defined(_GCC_WCHAR_T) || defined(_WCHAR_T_DEFINED)
+#  define _WCHAR_T
+# endif
+#endif
+
+#ifdef pro
+#define CANNA_PRO_PREDEFINED
+#else
+#if defined(__STDC__) || defined(__cplusplus)
+#define pro(x) x
+#else
+#define pro(x) ()
+#endif
+#endif
+
+#include <canna/sysdep.h>
 #include <canna/keydef.h>
 #include <canna/mfdef.h>
-#include <canna/cannabuild.h>
-#include "widedef.h"
-/* ¤É¤Î¤è¤¦¤Ê¾ğÊó¤¬¤¢¤ë¤«¤ò¼¨¤¹¥Õ¥é¥° */
+
+/* ã©ã®ã‚ˆã†ãªæƒ…å ±ãŒã‚ã‚‹ã‹ã‚’ç¤ºã™ãƒ•ãƒ©ã‚° */
 
 #define KanjiModeInfo   	0x1
 #define KanjiGLineInfo  	0x2
@@ -52,7 +69,7 @@
 #define KanjiAttributeInfo	0x400
 #define KanjiSpecialFuncInfo	0x800
 
-/* KanjiControl ´Ø·¸ */
+/* KanjiControl é–¢ä¿‚ */
 
 #define KC_INITIALIZE		0
 #define KC_FINALIZE		1
@@ -131,14 +148,14 @@ typedef struct {
     int length;		        /* length of echo string */
     int revPos;                 /* reverse position  */
     int revLen;                 /* reverse length    */
-    unsigned long info;		/* ¤½¤ÎÂ¾¤Î¾ğÊó */
-    unsigned char *mode;	/* ¥â¡¼¥É¾ğÊó */
+    unsigned long info;		/* ãã®ä»–ã®æƒ…å ± */
+    unsigned char *mode;	/* ãƒ¢ãƒ¼ãƒ‰æƒ…å ± */
     struct {
       unsigned char *line;
       int           length;
       int           revPos;
       int           revLen;
-    } gline;			/* °ìÍ÷É½¼¨¤Î¤¿¤á¤Î¾ğÊó */
+    } gline;			/* ä¸€è¦§è¡¨ç¤ºã®ãŸã‚ã®æƒ…å ± */
 } jrKanjiStatus;
 
 typedef struct {
@@ -149,52 +166,73 @@ typedef struct {
 } jrKanjiStatusWithValue;
 
 typedef struct {
-  char *uname;		/* ¥æ¡¼¥¶Ì¾ */
-  char *gname;		/* ¥°¥ë¡¼¥×Ì¾ */
-  char *srvname;	/* ¥µ¡¼¥ĞÌ¾ */
-  char *topdir;		/* ¥¤¥ó¥¹¥È¡¼¥ë¥Ç¥£¥ì¥¯¥È¥ê */
-  char *cannafile;	/* ¥«¥¹¥¿¥Ş¥¤¥º¥Õ¥¡¥¤¥ëÌ¾ */
-  char *romkanatable;   /* ¥í¡¼¥Ş»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ëÌ¾ */
-  char *appname;	/* ¥¢¥×¥ê¥±¡¼¥·¥ç¥óÌ¾ */
+  char *uname;		/* ãƒ¦ãƒ¼ã‚¶å */
+  char *gname;		/* ã‚°ãƒ«ãƒ¼ãƒ—å */
+  char *srvname;	/* ã‚µãƒ¼ãƒå */
+  char *topdir;		/* ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª */
+  char *cannafile;	/* ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºãƒ•ã‚¡ã‚¤ãƒ«å */
+  char *romkanatable;   /* ãƒ­ãƒ¼ãƒå­—ã‹ãªå¤‰æ›ãƒ†ãƒ¼ãƒ–ãƒ«å */
+  char *appname;	/* ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å */
 } jrUserInfoStruct;
 
 typedef struct {
-  char *codeinput;	/* ¥³¡¼¥É¼ïÊÌ */
-  int  quicklyescape;	/* µ­¹æÏ¢Â³ÆşÎÏ flag */
-  int  indexhankaku;	/* ¥¬¥¤¥É¥é¥¤¥ó¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹»ØÄê */
-  int  indexseparator;	/* ¥¬¥¤¥É¥é¥¤¥ó¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹»ØÄê */
-  int  selectdirect;	/* ¿ô»ú¥­¡¼¤Ë¤è¤ëÁªÂò flag */
-  int  numericalkeysel;	/* ¿ô»ú¥­¡¼¤Ë¤è¤ë¸õÊäÁªÂò»ØÄê */
-  int  kouhocount;	/* ¸õÊä¿ôÉ½¼¨ */
+  char *codeinput;	/* ã‚³ãƒ¼ãƒ‰ç¨®åˆ¥ */
+  int  quicklyescape;	/* è¨˜å·é€£ç¶šå…¥åŠ› flag */
+  int  indexhankaku;	/* ã‚¬ã‚¤ãƒ‰ãƒ©ã‚¤ãƒ³ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æŒ‡å®š */
+  int  indexseparator;	/* ã‚¬ã‚¤ãƒ‰ãƒ©ã‚¤ãƒ³ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æŒ‡å®š */
+  int  selectdirect;	/* æ•°å­—ã‚­ãƒ¼ã«ã‚ˆã‚‹é¸æŠ flag */
+  int  numericalkeysel;	/* æ•°å­—ã‚­ãƒ¼ã«ã‚ˆã‚‹å€™è£œé¸æŠæŒ‡å®š */
+  int  kouhocount;	/* å€™è£œæ•°è¡¨ç¤º */
 } jrCInfoStruct;
 
-#ifdef _WCHAR_T
+#define CANNA_EUC_LISTCALLBACK
+typedef struct {
+  char *client_data;
+  int (*callback_func) pro((char *, int, char **, int, int *));
+} jrEUCListCallbackStruct;
+
+#ifndef CANNAWC_DEFINED
+# if defined(_WCHAR_T) || defined(CANNA_NEW_WCHAR_AWARE)
+#  define CANNAWC_DEFINED
+#  ifdef CANNA_NEW_WCHAR_AWARE
+#   ifdef CANNA_WCHAR16
+typedef canna_uint16_t cannawc;
+#   else
+typedef canna_uint32_t cannawc;
+#   endif
+#  elif defined(_WCHAR_T) /* !CANNA_NEW_WCHAR_AWARE */
+typedef wchar_t cannawc;
+#  endif
+# endif
+#endif
+
+#ifdef CANNAWC_DEFINED
 
 typedef struct {
-    WCHAR_T *echoStr;		/* local echo string */
+    cannawc *echoStr;		/* local echo string */
     int length;		        /* length of echo string */
     int revPos;                 /* reverse position  */
     int revLen;                 /* reverse length    */
-    unsigned long info;		/* ¤½¤ÎÂ¾¤Î¾ğÊó */
-    WCHAR_T  *mode;		/* ¥â¡¼¥É¾ğÊó */
+    unsigned long info;		/* ãã®ä»–ã®æƒ…å ± */
+    cannawc  *mode;		/* ãƒ¢ãƒ¼ãƒ‰æƒ…å ± */
     struct {
-      WCHAR_T       *line;
+      cannawc       *line;
       int           length;
       int           revPos;
       int           revLen;
-    } gline;			/* °ìÍ÷É½¼¨¤Î¤¿¤á¤Î¾ğÊó */
+    } gline;			/* ä¸€è¦§è¡¨ç¤ºã®ãŸã‚ã®æƒ…å ± */
 } wcKanjiStatus;
 
 typedef struct {
   int  val;
-  WCHAR_T *buffer;
+  cannawc *buffer;
   int  n_buffer;
   wcKanjiStatus *ks;
 } wcKanjiStatusWithValue;
 
 typedef struct {
   char *client_data;
-  int (*callback_func) (char *, int, WCHAR_T **, int, int *);
+  int (*callback_func) pro((char *, int, cannawc **, int, int *));
 } jrListCallbackStruct;
 
 typedef struct {
@@ -220,7 +258,7 @@ typedef struct {
 #define CANNA_LIST_Convert	  13
 #define CANNA_LIST_Insert	  14
 
-#endif /* _WCHAR_T */
+#endif /* CANNAWC_DEFINED */
 
 #define CANNA_NO_VERBOSE   0
 #define CANNA_HALF_VERBOSE 1
@@ -231,10 +269,14 @@ typedef struct {
 
 #ifdef __cplusplus
 extern "C" {
+#endif
 extern char *jrKanjiError;
+#ifdef CANNA_NEW_WCHAR_AWARE /* to avoid problems in old programs */
+extern int (*jrBeepFunc) pro((void));
+# define CANNA_JR_BEEP_FUNC_DECLARED
+#endif
+#ifdef __cplusplus
 }
-#else
-extern char *jrKanjiError;
 #endif
 
 #define wcBeepFunc jrBeepFunc
@@ -243,21 +285,38 @@ extern char *jrKanjiError;
 extern "C" {
 #endif
 
-canna_export int jrKanjiString (const int, const int, char *, const int, jrKanjiStatus *);
-canna_export int jrKanjiControl (const int, const int, char *);
-canna_export int kanjiInitialize (char ***);
-canna_export int kanjiFinalize (char ***);
-canna_export int createKanjiContext (void);
-canna_export int jrCloseKanjiContext (const int, jrKanjiStatusWithValue *);
-canna_export void setBasePath(const char *path);
-#ifdef _WCHAR_T
-canna_export int wcKanjiString (const int, const int, WCHAR_T *, const int, wcKanjiStatus *);
-canna_export int wcKanjiControl (const int, const int, char *);
-canna_export int wcCloseKanjiContext (const int, wcKanjiStatusWithValue *);
-#endif /* _WCHAR_T */
+int jrKanjiString pro((const int, const int, char *, const int,
+			    jrKanjiStatus *));
+int jrKanjiControl pro((const int, const int, char *));
+int kanjiInitialize pro((char ***));
+int kanjiFinalize pro((char ***));
+int createKanjiContext pro((void));
+int jrCloseKanjiContext pro((const int, jrKanjiStatusWithValue *));
+
+#ifdef CANNAWC_DEFINED
+#ifdef CANNA_NEW_WCHAR_AWARE
+# define wcKanjiString cannawcKanjiString
+# define wcKanjiControl cannawcKanjiControl
+# define wcCloseKanjiContext cannawcCloseKanjiContext
+#endif /*CANNA_NEW_WCHAR_AWARE */
+int wcKanjiString pro((const int, const int, cannawc *, const int,
+			    wcKanjiStatus *));
+int wcKanjiControl pro((const int, const int, char *));
+int wcCloseKanjiContext pro((const int, wcKanjiStatusWithValue *));
+#endif /* CANNAWC_DEFINED */
+
+#ifdef __HAIKU__
+void setBasePath(const char *path);
+#endif
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef CANNA_PRO_PREDEFINED
+#undef CANNA_PRO_PREDEFINED
+#else
+#undef pro
 #endif
 
 #endif /* _JR_KANJI_H_ */

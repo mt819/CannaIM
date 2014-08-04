@@ -21,22 +21,25 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "$Id: permdic.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "$Id: permdic.c,v 1.8 2003/09/17 08:50:52 aida_s Exp $";
 #endif
 
-#include	<unistd.h>
-#include	<string.h>
 #include	"RKintern.h"
-#include <fcntl.h>
+
+
+#ifdef SVR4
+#include	<unistd.h>
+#endif
+
+#ifdef __CYGWIN32__
+#include <fcntl.h> /* for O_BINARY */
+#endif
 
 #define dm_xdm	dm_extdata.ptr
-#ifndef WIN
 #define df_fdes	df_extdata.var
-#else
-#define df_fdes df_extdata.hnd
-#endif
 
 extern	unsigned	_RkCalcLVO();
+extern	Wchar		uniqAlnum();
 
 #ifdef MMAP
 /* If you compile with Visual C++, then please comment out the next 3 lines. */
@@ -46,14 +49,13 @@ extern	unsigned	_RkCalcLVO();
 extern int fd_dic;      /* mmap */
 #endif
 
-static unsigned char *assurep(struct ND *dic, int id);
-static int readThisCache(struct DM *dm, struct ND *xdm, long pgno, unsigned long val, WCHAR_T *key, int cur, int ylen, struct nread *nread, int mc, int nc, int *cf);
-static int SearchInPage(struct DM *dm, struct ND *xdm, long pgno, unsigned char *buf, unsigned long val, WCHAR_T *key, int cur, int ylen, struct nread *nread, int mc, int nc, int *cf);
-static int SearchInDir(struct DM *dm, struct ND *xdm, unsigned char *pos, WCHAR_T *key, int cur, int ylen, struct nread *nread, int mc, int nc, int *cf);
-static void ch_perm(struct DM *qm, unsigned offset, int size, int num);
-
-inline int
-openDF(struct DF *df, char *dfnm, int *w)
+static int
+openDF(df, dfnm, w, gramoff, gramsz)
+     struct DF	*df;
+     char	*dfnm;
+     int        *w;
+     off_t	*gramoff;
+     size_t	*gramsz;
 {
   struct HD	hd;
   struct ND	nd, *xnd;
@@ -61,26 +63,14 @@ openDF(struct DF *df, char *dfnm, int *w)
   off_t		off;
   unsigned char	ll[4];
   int		count = 0, err;
-#ifdef WIN
-  HANDLE fd;
-  DWORD readsize;
-  HANDLE errres = INVALID_HANDLE_VALUE;
-#else
   int		fd;
   int errres = -1;
-#endif
     
   *w = 0;
-#ifdef WIN
-  fd = CreateFile(dfnm, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-		  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-  if (fd == INVALID_HANDLE_VALUE) {
-    return fd;
-  }
-#else
   if ((fd = open(dfnm, 0)) == -1) 
     return errres;
+#ifdef __CYGWIN32__
+  setmode(fd, O_BINARY);
 #endif
 
   for (off = 0, err = 0; !err && _RkReadHeader(fd, &hd, off) >= 0;) {
@@ -90,6 +80,13 @@ openDF(struct DF *df, char *dfnm, int *w)
       break;
     }
     nd.time = hd.data[HD_TIME].var;
+    /* XXX: sanity check taking advantage of this CRC */
+    if (hd.flag[HD_CRC]) {
+      nd.crc = hd.data[HD_CRC].var;
+      nd.crc_found = 1;
+    } else {
+      nd.crc_found = 0;
+    }
     nd.rec = hd.data[HD_REC].var;
     nd.can = hd.data[HD_CAN].var;
     nd.doff = off + hd.data[HD_HSZ].var;
@@ -100,21 +97,31 @@ openDF(struct DF *df, char *dfnm, int *w)
     nd.fd = fd;
     nd.buf = (unsigned char *)0;
     nd.pgs = (struct NP *)0;
+    nd.version = HD_VERSION(&hd);
     off += hd.data[HD_SIZ].var;
     if (!strncmp(".swd",
 		 (char *)(hd.data[HD_DMNM].ptr
 			  + strlen((char *)hd.data[HD_DMNM].ptr) - 4),
 		 4)) {
-#ifndef WIN
-      if (lseek(fd, off, 0) < 0 || read(fd, (char *)ll, 4) != 4)
-	err++;
-#else
-      if (SetFilePointer(fd, off, NULL, FILE_BEGIN) == 0xFFFFFFFF ||
-	  !ReadFile(fd, (char *)ll, 4, &readsize, NULL) || readsize != 4) {
-	err++;
+      if (nd.version >= 0x300702L) {
+	if (hd.flag[HD_GRAM] == -1) {
+	  *gramoff = hd.data[HD_GRAM].var;
+	  *gramsz = hd.data[HD_GRSZ].var;
+	} else {
+	  *gramoff = 0;
+	  *gramsz = 0;
+	}
+      } else {
+	if (lseek(fd, off, 0) < 0 || read(fd, (char *)ll, 4) != 4) {
+	  err++;
+	  *gramoff = 0;
+	  *gramsz = 0;
+	} else {
+	  *gramoff = off;
+	  *gramsz = (size_t)-1;
+	  off += bst4_to_l(ll) + 4;
+	}
       }
-#endif
-      off += bst4_to_l(ll) + 4;
     }
     dmh = &df->df_members;
     for (dm = dmh->dm_next; dm != dmh; dm = dm->dm_next) {
@@ -136,40 +143,32 @@ openDF(struct DF *df, char *dfnm, int *w)
   _RkClearHeader(&hd);
   df->df_size = off;
   if (!count) {
-#ifndef WIN
     (void)close(fd);
-#else
-    CloseHandle(fd);
-#endif
     return errres;
   }
   return (df->df_fdes = fd);
 }
 
 int
-_Rkpopen(struct DM *dm, char *dfnm, int mode, struct RkKxGram *gram) /* ARGSUSED */
+_Rkpopen(dm, dfnm, mode, gram)
+     struct DM	*dm;
+     char	*dfnm;
+     int	mode;
+     struct RkKxGram *gram; /* ARGSUSED */
 {
   struct DF	*df;
   struct DD	*dd;
   struct ND	*xdm;
   int 		writable, i, readsize;
-#ifndef WIN
   int fd;
-#else
-  HANDLE fd;
-#endif
+  off_t		gramoff;
+  size_t	gramsz;
   
   if (!(df = dm->dm_file) || !(dd = df->df_direct))
     return -1;
   if (!df->df_rcount) {
-#ifndef WIN
-    if ((df->df_fdes = (long)openDF(df, dfnm, &writable)) < 0)
+    if ((df->df_fdes = (long)openDF(df, dfnm, &writable, &gramoff, &gramsz)) < 0)
       return -1;
-#else
-    if ((df->df_fdes = openDF(df, dfnm, &writable)) == INVALID_HANDLE_VALUE) {
-      return -1;
-    }
-#endif
     if (writable)
       df->df_flags |= DF_WRITABLE;
     else
@@ -188,7 +187,7 @@ _Rkpopen(struct DM *dm, char *dfnm, int mode, struct RkKxGram *gram) /* ARGSUSED
   }
   if (!(xdm->pgs
           = (struct NP *)malloc((size_t)(sizeof(struct NP) * xdm->ttlpg)))) {
-    free(xdm->buf);
+    (void)free((char *)xdm->buf);
     xdm->buf = (unsigned char *)0;
     return(-1);
   }
@@ -202,33 +201,20 @@ _Rkpopen(struct DM *dm, char *dfnm, int mode, struct RkKxGram *gram) /* ARGSUSED
     xdm->pgs[i].buf = (unsigned char *) 0;
   }
 
-#ifndef WIN
   (void)lseek(fd, xdm->doff, 0);
   readsize = read(fd, (char *)xdm->buf, (unsigned int) xdm->drsz);
-#else
-  SetFilePointer(fd, xdm->doff, NULL, FILE_BEGIN);
-  if (!ReadFile(fd, (char *)xdm->buf, (unsigned int)xdm->drsz,
-		&readsize, NULL)) {
-    readsize = 0;
-  }
-#endif
   if (readsize != ((int) xdm->drsz)) {
-    free(xdm->pgs);
-    free(xdm->buf);
+    (void)free((char *)xdm->pgs);
+    (void)free((char *)xdm->buf);
     xdm->buf = (unsigned char *)0;
     xdm->pgs = (struct NP *)0;
     return(-1);
   }
-  if (dm->dm_class == ND_SWD) {
+  if (dm->dm_class == ND_SWD && gramsz) {
     struct RkKxGram *gram;
 
-#ifndef WIN
-    lseek(fd, xdm->doff + xdm->drsz + xdm->ttlpg * xdm->pgsz, 0);
-#else
-    SetFilePointer(fd, xdm->doff + xdm->drsz + xdm->ttlpg * xdm->pgsz, NULL,
-		   FILE_BEGIN);
-#endif
-    gram = RkReadGram(fd);
+    lseek(fd, gramoff, 0);
+    gram = RkReadGram(fd, gramsz);
     if (gram) {
       dm->dm_gram = (struct RkGram *)malloc(sizeof(struct RkGram));
       if (dm->dm_gram) {
@@ -238,9 +224,10 @@ _Rkpopen(struct DM *dm, char *dfnm, int mode, struct RkKxGram *gram) /* ARGSUSED
 	dm->dm_gram->P_T00 = RkGetGramNum(gram, "T00");
 	dm->dm_gram->P_T30 = RkGetGramNum(gram, "T30");
 	dm->dm_gram->P_T35 = RkGetGramNum(gram, "T35");
-#ifdef FUJIEDA_HACK
+#ifdef LOGIC_HACK
 	dm->dm_gram->P_KJ  = RkGetGramNum(gram, "KJ");
 #endif
+	dm->dm_gram->P_Ftte = RkGetGramNum(gram, "Ftte");
 	dm->dm_gram->refcount = 1;
 	goto next;
       }
@@ -256,7 +243,10 @@ _Rkpopen(struct DM *dm, char *dfnm, int mode, struct RkKxGram *gram) /* ARGSUSED
 }
 
 int	
-_Rkpclose(struct DM *dm, char *dfnm, struct RkKxGram *gram) /* ARGSUSED */
+_Rkpclose(dm, dfnm, gram)
+     struct DM	*dm;
+     char		*dfnm;
+     struct RkKxGram *gram; /* ARGSUSED */
 {
   struct DF	*df = dm->dm_file;
   struct ND	*xdm = (struct ND *)dm->dm_xdm;
@@ -267,7 +257,7 @@ _Rkpclose(struct DM *dm, char *dfnm, struct RkKxGram *gram) /* ARGSUSED */
     dm->dm_gram->refcount--;
     if (dm->dm_gram->refcount == 0) {
       (void)RkCloseGram(dm->dm_gram->gramdic);
-      free(dm->dm_gram);
+      free((char *)dm->dm_gram);
     }
   }
   if (xdm) {
@@ -279,40 +269,32 @@ _Rkpclose(struct DM *dm, char *dfnm, struct RkKxGram *gram) /* ARGSUSED */
 	    munmap((caddr_t)xdm->pgs[i].buf, xdm->pgsz);
 #else
 	  if (xdm->pgs[i].buf) {
-	    free(xdm->pgs[i].buf);
+	    (void)free((char *)xdm->pgs[i].buf);
 	  }
 #endif
 	  xdm->pgs[i].flags &= ~RK_PG_LOADED;
 	}
-      free(xdm->pgs);
+      (void)free((char *)xdm->pgs);
       xdm->pgs = (struct NP *)0;
     }
     if (xdm->buf) { 
-      free( xdm->buf);
+      (void)free((char *) xdm->buf);
       xdm->buf = (unsigned char *)0;
     }
   }
 
   if (--df->df_rcount == 0)  {
-#ifndef WIN
     int	fd;
-#else
-    HANDLE fd;
-#endif
     struct DM	*dmh, *ddm;
 
     fd = df->df_fdes;
     
-#ifndef WIN
     (void)close(fd);
-#else
-    CloseHandle(fd);
-#endif
     dmh = &df->df_members;
     for (ddm = dmh->dm_next; ddm != dmh; ddm = ddm->dm_next) {
       xdm = (struct ND *)ddm->dm_xdm;
       if (xdm) {
-	free(xdm);
+	(void)free((char *)xdm);
 	ddm->dm_xdm = (pointer)0;
       }
     }
@@ -322,17 +304,15 @@ _Rkpclose(struct DM *dm, char *dfnm, struct RkKxGram *gram) /* ARGSUSED */
 
 static
 unsigned char *
-assurep(struct ND *dic, int id)
+assurep(dic, id)
+     struct ND	*dic;
+     int	id;
 {
   off_t	off = dic->doff + dic->drsz + dic->pgsz * id;
   unsigned	size = dic->pgsz;
   unsigned char	*buf;
   int i;
-#ifndef WIN
   int fd;
-#else
-  HANDLE fd;
-#endif
 
   fd = dic->fd;
   if (!dic->pgs)
@@ -340,26 +320,6 @@ assurep(struct ND *dic, int id)
   if ((unsigned)id >= dic->ttlpg)
     return((unsigned char *)0);
   if (!isLoadedPage(dic->pgs + id)) {
-#ifdef WIN
-    for(i = 0; i < (int)dic->ttlpg; i++) {
-      if (dic->pgs[i].flags & RK_PG_LOADED) { 
-        if (_RkDoInvalidateCache((long)dic->pgs[i].buf, dic->pgsz) == 1) {
-	  if (dic->pgs[i].buf) {
-	    free(dic->pgs[i].buf); 
-	  }
-
-          dic->pgs[i].buf = (unsigned char *)0;
-
-          dic->pgs[i].lnksz = (unsigned) 0;
-          dic->pgs[i].ndsz = (unsigned) 0;
-          dic->pgs[i].lvo = (unsigned) 0;
-          dic->pgs[i].csn = (unsigned) 0;
-          dic->pgs[i].flags = (unsigned) 0;
-          dic->pgs[i].count = 0;
-	}
-      }
-    }
-#endif
 
 #ifdef MMAP
     buf = (unsigned char *)mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd_dic, 0);
@@ -369,24 +329,11 @@ assurep(struct ND *dic, int id)
     if (!(buf = (unsigned char *)malloc(size)))
       return((unsigned char *)0);
 #endif
-#ifndef WIN
     (void)lseek(fd, off, 0);
     if (read(fd, (char *)buf, size) != (int)size) {
-      free(buf);
+      free((char *)buf);
       return((unsigned char *)0);
     }
-#else
-    SetFilePointer(fd, off, NULL, FILE_BEGIN);
-    {
-      DWORD foo;
-
-      if (!ReadFile(fd, (char *)buf, size, &foo, NULL) ||
-	  foo != size) {
-	free(buf);
-	return (unsigned char *)0;
-      }
-    }
-#endif
 
     dic->pgs[id].buf = buf;
     dic->pgs[id].count = 0;
@@ -402,9 +349,12 @@ assurep(struct ND *dic, int id)
 }
 
 int
-_RkEql(WCHAR_T *a, unsigned char *b, int n)
+_RkEql(a, b, n)
+     Wchar		*a;
+     unsigned char	*b;
+     int		n;
 {
-  WCHAR_T	c, d;
+  Wchar	c, d;
   for (; n-- > 0; b += 2) {
     c = uniqAlnum(*a++);
     d = (*b << 8) | *(b+1);
@@ -415,7 +365,18 @@ _RkEql(WCHAR_T *a, unsigned char *b, int n)
 }
 
 static
-int readThisCache(struct DM *dm, struct ND *xdm, long pgno, unsigned long val, WCHAR_T *key, int cur, int ylen, struct nread *nread, int mc, int nc, int *cf)
+readThisCache(dm, xdm, pgno, val, key, cur, ylen, nread, mc, nc, cf)
+     struct DM		*dm;
+     struct ND		*xdm;
+     long		pgno;
+     unsigned long	val;
+     Wchar		*key;
+     int		cur;
+     int		ylen;
+     struct nread	*nread;
+     int		mc;
+     int		nc;
+     int		*cf;
 {
   int		remlen;
   unsigned char	*wrec1, *wrec;
@@ -447,9 +408,21 @@ int readThisCache(struct DM *dm, struct ND *xdm, long pgno, unsigned long val, W
 }
 
 static int
-SearchInPage(struct DM *dm, struct ND *xdm, long pgno, unsigned char *buf, unsigned long val, WCHAR_T *key, int cur, int ylen, struct nread *nread, int mc, int nc, int *cf)
+SearchInPage(dm, xdm, pgno, buf, val, key, cur, ylen, nread, mc, nc, cf)
+     struct DM		*dm;
+     struct ND		*xdm;
+     unsigned char	*buf;
+     long		pgno;
+     unsigned long	val;
+     Wchar		*key;
+     int		cur;
+     int		ylen;
+     struct nread	*nread;
+     int		mc;
+     int		nc;
+     int		*cf;
 {
-  WCHAR_T		kv, wc;
+  Wchar		kv, wc;
   unsigned char	*pos = buf + val;
 
   if (!*pos && !*(pos + 1)) {
@@ -481,9 +454,19 @@ SearchInPage(struct DM *dm, struct ND *xdm, long pgno, unsigned char *buf, unsig
 }
 
 static int
-SearchInDir(struct DM *dm, struct ND *xdm, unsigned char *pos, WCHAR_T *key, int cur, int ylen, struct nread *nread, int mc, int nc, int *cf)
+SearchInDir(dm, xdm, pos, key, cur, ylen, nread, mc, nc, cf)
+     struct DM		*dm;
+     struct ND		*xdm;
+     unsigned char	*pos;
+     Wchar		*key;
+     int		cur;
+     int		ylen;
+     struct nread	*nread;
+     int		mc;
+     int		nc;
+     int		*cf;
 {
-  WCHAR_T		kv, wc, nw;
+  Wchar		kv, wc, nw;
   unsigned long	val;
   long		next, pgno, iw;
   unsigned char	*p;
@@ -508,7 +491,7 @@ SearchInDir(struct DM *dm, struct ND *xdm, unsigned char *pos, WCHAR_T *key, int
   kv = uniqAlnum(*(key + cur));
   next = (int)(kv % nw);
   do {
-    p = pos + (((WCHAR_T) next++) % nw) * 5;
+    p = pos + (((Wchar) next++) % nw) * 5;
     if ((wc = bst2_to_s(p)) == 0xffff)
       return(nc);
   } while (wc != kv);
@@ -539,7 +522,14 @@ SearchInDir(struct DM *dm, struct ND *xdm, unsigned char *pos, WCHAR_T *key, int
 }
 
 int		
-_Rkpsearch(struct RkContext *cx, struct DM *dm, WCHAR_T *key, int n, struct nread *nread, int mc, int *cf)
+_Rkpsearch(cx, dm, key, n, nread, mc, cf)
+     struct RkContext	*cx;
+     struct DM		*dm;
+     Wchar		*key;
+     int		n;
+     struct nread	*nread;
+     int		mc;
+     int		*cf;
 /* ARGSUSED */
 {
   struct ND	*xdm;
@@ -554,7 +544,10 @@ _Rkpsearch(struct RkContext *cx, struct DM *dm, WCHAR_T *key, int n, struct nrea
 }
 
 int	
-_Rkpio(struct DM *dm, struct ncache *cp, int io)
+_Rkpio(dm, cp, io)
+     struct DM		*dm;
+     struct ncache	*cp;
+     int		io;
 /* ARGSUSED */
 {
   if (io == 0) {
@@ -564,9 +557,12 @@ _Rkpio(struct DM *dm, struct ncache *cp, int io)
   return 0;
 }
 
-#if 0 /* »È¤ï¤ì¤Æ¤¤¤Ê¤¤¤Î¤Ç¤È¤ê¤¢¤¨¤º¥³¥á¥ó¥È¤Ë¤¹¤ë */
+#if 0 /* 使われていないのでとりあえずコメントにする */
 static void
-ch_perm(struct DM *qm, unsigned offset, int size, int num)
+ch_perm(qm, offset, size, num)
+     struct DM  *qm;
+     unsigned   offset;
+     int        size, num;
 {
   unsigned char	tmp[8192];
   /* I leave this stack located array because of it is not used */
@@ -584,30 +580,35 @@ ch_perm(struct DM *qm, unsigned offset, int size, int num)
 #define PERM_NREADSIZE 128
 
 int	
-_Rkpctl(struct DM *dm, struct DM *qm, int what, WCHAR_T *arg, struct RkKxGram *gram)
+_Rkpctl(dm, qm, what, arg, gram)
+     struct DM	*dm;
+     struct DM	*qm;
+     int	what;
+     Wchar	*arg;
+     struct RkKxGram *gram;
 {
   int		nc, cf = 0, ret = -1;
   struct ND	*xdm;
   unsigned long	lucks[2];
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   Wrec		wrec[PERM_WRECSIZE];
-  WCHAR_T         key[64];
+  Wchar         key[64];
   struct nread  nread[PERM_NREADSIZE];
   unsigned	permutation[RK_CAND_NMAX];
 #else
   Wrec *wrec;
-  WCHAR_T *key;
+  Wchar *key;
   struct nread *nread;
   unsigned *permutation;
   wrec = (Wrec *)malloc(sizeof(Wrec) * PERM_WRECSIZE);
-  key = (WCHAR_T *)malloc(sizeof(WCHAR_T) * 64);
+  key = (Wchar *)malloc(sizeof(Wchar) * 64);
   nread = (struct nread *)malloc(sizeof(struct nread) * PERM_NREADSIZE);
   permutation = (unsigned *)malloc(sizeof(unsigned) * RK_CAND_NMAX);
   if (!wrec || !key || !nread || !permutation) {
-    if (wrec) free(wrec);
-    if (key) free(key);
-    if (nread) free(nread);
-    if (permutation) free(permutation);
+    if (wrec) (void)free((char *)wrec);
+    if (key) (void)free((char *)key);
+    if (nread) (void)free((char *)nread);
+    if (permutation) (void)free((char *)permutation);
     return ret;
   }
 #endif
@@ -622,7 +623,7 @@ _Rkpctl(struct DM *dm, struct DM *qm, int what, WCHAR_T *arg, struct RkKxGram *g
   
     if (RkParseOWrec(gram, arg, wrec, PERM_WRECSIZE, lucks)) {
       Wrec	    *p, *q, *kanji;
-      WCHAR_T         *wkey;
+      Wchar         *wkey;
       int	    maxcache = PERM_NREADSIZE;
       int           ylen, klen, cnum, y_off = 2, k_off;
       
@@ -638,7 +639,7 @@ _Rkpctl(struct DM *dm, struct DM *qm, int what, WCHAR_T *arg, struct RkKxGram *g
       }
       *(key+ylen) = 0;
       
-      /* ÉÊ»ì¡¢´Á»ú¾ðÊó¤Î¼è¤ê½Ð¤· */
+      /* 品詞、漢字情報の取り出し */
       k_off = y_off + ylen * 2;
       klen = (wrec[k_off] >> 1) & 0x7f;
       cnum = ((wrec[k_off] & 0x01) << 8) | wrec[k_off+1];
@@ -665,7 +666,7 @@ _Rkpctl(struct DM *dm, struct DM *qm, int what, WCHAR_T *arg, struct RkKxGram *g
 	    break;
 	  }
 	} 
-	/* »È¤ï¤Ê¤¤Ã±¸ì¸õÊä¤Ï¤¢¤é¤«¤¸¤á _RkDerefCache ¤¹¤ë */
+	/* 使わない単語候補はあらかじめ _RkDerefCache する */
 	for (pre = 0 ; pre < nc ; pre++) {
 	  if (pre != i) {
 	    thisRead = nread + pre;
@@ -685,12 +686,12 @@ _Rkpctl(struct DM *dm, struct DM *qm, int what, WCHAR_T *arg, struct RkKxGram *g
 	    wp += 2;
 	  wp += 2 + nl *2;
 	
-	/* ¤³¤³¤ÎÉôÊ¬¤Ç¼­½ñ¤Î²¿ÈÖÌÜ¤Ë¤Ç¤Æ¤¯¤ë¤« (fnum) ¤òÃµ¤¹ */
+	/* ここの部分で辞書の何番目にでてくるか (fnum) を探す */
 	  for (i = 0; i < nk; i++) {
 	    unsigned char	*kp;
 	  
-	    nl = (*wp >> 1) & 0x7f;               /* ¸õÊäÄ¹ */
-	    nnum = ((*wp & 0x01) << 8) | *(wp+1); /* ÉÊ»ìÈÖ¹æ */
+	    nl = (*wp >> 1) & 0x7f;               /* 候補長 */
+	    nnum = ((*wp & 0x01) << 8) | *(wp+1); /* 品詞番号 */
 	    if (nl == klen && nnum == cnum) {
 	      int lc;
 	      
@@ -751,7 +752,7 @@ _Rkpctl(struct DM *dm, struct DM *qm, int what, WCHAR_T *arg, struct RkKxGram *g
 		  switch (what) {
 		  case DST_DoDefine:
 		    _RkSetBitNum(qm->dm_qbits, offset, bitSize, dn, fnum*2);
-/*		  ¤³¤³¤ÏÊÂ¤Ó½ç¤òÊÑ¹¹¤¹¤ë´Ø¿ô¤À¤¬¤È¤ê¤¢¤¨¤º¥³¥á¥ó¥È¤Ë¤¹¤ë¡£
+/*		  ここは並び順を変更する関数だがとりあえずコメントにする。
                  ch_perm(qm, offset, bitSize, dn);
 */
 		    break;
@@ -774,16 +775,18 @@ _Rkpctl(struct DM *dm, struct DM *qm, int what, WCHAR_T *arg, struct RkKxGram *g
   }
  done:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free(wrec);
-  free(key);
-  free(nread);
-  free(permutation);
+  (void)free((char *)wrec);
+  (void)free((char *)key);
+  (void)free((char *)nread);
+  (void)free((char *)permutation);
 #endif
   return ret;
 }  
 
 int	
-_Rkpsync(struct RkContext *cx, struct DM *dm, struct DM *qm)
+_Rkpsync(cx, dm, qm)
+     struct RkContext *cx;
+     struct DM	*dm, *qm;
 {
   struct DF	*df;
   struct DD     *dd;
@@ -802,7 +805,7 @@ _Rkpsync(struct RkContext *cx, struct DM *dm, struct DM *qm)
       int j;
 #endif
       i = FQsync(cx, dm, qm, file);
-      free(file);
+      (void)free(file);
 #ifdef MMAP
       dic = (struct ND *)dm->dm_xdm;
       if(dic)
@@ -826,3 +829,4 @@ _Rkpsync(struct RkContext *cx, struct DM *dm, struct DM *qm)
   }
   return (0);
 }
+/* vim: set sw=2: */

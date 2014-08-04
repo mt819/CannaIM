@@ -19,13 +19,19 @@
  * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
  * PERFORMANCE OF THIS SOFTWARE. 
  */
-//Modified by T.Murai
 
-#include "canna.h"
+#if !defined(lint) && !defined(__CODECENTER__)
+static char onoffmap_id[] = "@(#) 102.1 $Id: onoffmap.h,v 1.1.1.1 2002/10/19 08:27:50 aida_s Exp $";
+#endif /* lint */
 
 #ifdef NO_EXTEND_MENU
 static struct funccfunc onoff_funcs[] = {{0, 0},};
 #else
+extern  DoFuncSequence(),UseOtherKeymap();
+extern  IchiranForwardKouho(), IchiranBackwardKouho(), IchiranNextKouhoretsu();
+extern  IchiranPreviousKouhoretsu(), IchiranBeginningOfKouho();
+extern  IchiranEndOfKouho(), IchiranQuit(), IchiranNop();
+
 static struct funccfunc onoff_funcs[] = {
   {CANNA_FN_Forward		,IchiranForwardKouho		},
   {CANNA_FN_Backward		,IchiranBackwardKouho		},
@@ -46,7 +52,6 @@ static struct funccfunc onoff_funcs[] = {
 };
 #endif /* NO_EXTEND_MENU */
 
-extern int searchfunc(...);
 KanjiModeRec onoff_mode = {
   searchfunc,
   default_kmap,

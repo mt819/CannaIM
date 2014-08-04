@@ -21,11 +21,31 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="$Id: dicsw.c 10525 2004-12-23 21:23:50Z korli $";
+static char rcsid[]="$Id: dicsw.c,v 1.1.1.1 2002/10/19 08:27:45 aida_s Exp $";
 #endif
 /*LINTLIBRARY*/
 
 #include	"RKintern.h"
+
+extern _Rkpopen pro((struct DM *, char *, int, struct RkKxGram *));
+extern _Rkpclose pro((struct DM *, char *, struct RkKxGram *));
+extern _Rkpsearch
+  pro((struct RkContext *, struct DM *, Wchar *, int, struct nread *,
+       int, int *));
+extern _Rkpio pro((struct DM *, struct ncache *, int));
+extern _Rkpctl
+  pro((struct DM *, struct DM *, int, Wchar *, struct RkKxGram *));
+extern _Rkpsync pro((struct RkContext *, struct DM *, struct DM *));
+
+extern _Rktopen pro((struct DM *, char *, int, struct RkKxGram *));
+extern _Rktclose pro((struct DM *, char *, struct RkKxGram *));
+extern _Rktsearch
+  pro((struct RkContext *, struct DM *, Wchar *, int, struct nread *,
+       int, int *));
+extern _Rktio pro((struct DM *, struct ncache *, int));
+extern _Rktctl
+  pro((struct DM *, struct DM *, int, Wchar *, struct RkKxGram *));
+extern _Rktsync pro((struct RkContext *, struct DM *, struct DM *));
 
 struct RkDST 	_RkDST[] = {
 /* PERMDIC */ { _Rkpopen, _Rkpclose, _Rkpsearch, _Rkpio, _Rkpctl, _Rkpsync, },

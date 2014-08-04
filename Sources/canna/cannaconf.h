@@ -1,21 +1,20 @@
-// CanBe:Canna for Be
+#ifndef CANNACONF_H
+#define CANNACONF_H
+#include "accanna.h"
 
-#define CANNA_WCHAR
-#define HAVE_RENAME
-#define WCHAR16
-#define CANNA_WCHAR
+#define CANNA_WCHAR16
+#define CANNA_NEW_WCHAR_AWARE
+
+ /* for lib/canna */
+#define SUPPORT_OLD_WCHAR 1
+/* others */
+#define CANNA_LIGHT 1
 #define USE_MALLOC_FOR_BIG_ARRAY
 #define STANDALONE
-#define CANNA_LIGHT		1
-
-
+#undef CODED_MESSAGE
+#undef ENGINE_SWITCH
 #undef SYSTEM_DDHOME_NAME
+#define WINDOWS_STYLE_FILENAME
 
-//#define CANNALIBDIR 		"/boot/home/KanBe/"
-//#define DICHOME 			"/boot/KanBe/canna/dic"
-//#define DICHOME			"/boot/home/config/KanBe/canna/dic"
-//#define DICHOMEDIR		"/boot/home/config/KanBe/dic"
-//#define CANNALIBDIR		"/boot/home/config/KanBe/"
+#endif
 
-
-#define DP(a)	puts(a)

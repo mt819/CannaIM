@@ -20,45 +20,47 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="$Id: bits.c 10525 2004-12-23 21:23:50Z korli $";
+static char rcsid[]="$Id: bits.c,v 1.2 2003/09/17 08:50:52 aida_s Exp $";
 #endif
 /* LINTLIBRARY */
 
 #include "RKintern.h"
-// There is Exported Symbols !!
-/************************************************************
- * PackBits
-************************************************************/
+
 /*
-  ³Ø½¬¥Õ¥¡¥¤¥ëÍÑ¥Ó¥Ã¥ÈÁàºî½èÍý
+ * PackBits
+ */
+#define	BIT_UNIT	8
 
-  ³Ø½¬¥ª¥Õ¥»¥Ã¥È¤Î¾ðÊó¤ò¡¢¤Ç¤­¤ë¤À¤±¾®¤µ¤¤¥Ó¥Ã¥È¤ÎÇÛÎó¤È¤·¤ÆÊÝ»ý¤¹¤ë¡£
+/*
+  学習ファイル用ビット操作処理
 
-    ¸õÊä¿ô     1 2 3 4 5 6 7 8 9 ...    n
-    ¥Ó¥Ã¥ÈÉý   2 3 3 4 4 4 4 5 5     log(n) + 1
+  学習オフセットの情報を、できるだけ小さいビットの配列として保持する。
 
-  RkPackBits ¤Ï unsigned ¤ÎÇÛÎó¤Î¿ô¤ò dst_bits ¤Î dst_offset(¥Ó¥Ã¥È¤Ç
-  ¥«¥¦¥ó¥È)¤ÎÀè¤«¤é³ÊÇ¼¤¹¤ë¡£Ã¼¿ô¤¬½Ð¤¿¾ì¹ç¤Ï²¼°Ì¥Ó¥Ã¥È¤«¤é»È¤ï¤ì¤ë¡£
+    候補数     1 2 3 4 5 6 7 8 9 ...    n
+    ビット幅   2 3 3 4 4 4 4 5 5     log(n) + 1
 
-  °ú¿ô
-    dst_bits   -- ¥Ó¥Ã¥ÈÇÛÎó¤Ø¤Î¥Ý¥¤¥ó¥¿
-    dst_offset -- ¼ÂºÝ¤Ë¥¢¥¯¥»¥¹¤¹¤ë¤È¤³¤í¤Þ¤Ç¤Î¥ª¥Õ¥»¥Ã¥È(¥Ó¥Ã¥È¤Ç¥«¥¦¥ó¥È)
-    bit_size   -- ¥Ó¥Ã¥ÈÇÛÎó¤Î£±¤Ä¤ÎÍ×ÁÇ¤Î¥Ó¥Ã¥ÈÉý
-    src_ints   -- ³ÊÇ¼¤·¤¿¤¤¿ôÃÍ¤ÎÇÛÎó
-    count      -- ³ÊÇ¼¤·¤¿¤¤¿ô
+  RkPackBits は unsigned の配列の数を dst_bits の dst_offset(ビットで
+  カウント)の先から格納する。端数が出た場合は下位ビットから使われる。
 
-  Ìá¤êÃÍ
+  引数
+    dst_bits   -- ビット配列へのポインタ
+    dst_offset -- 実際にアクセスするところまでのオフセット(ビットでカウント)
+    bit_size   -- ビット配列の１つの要素のビット幅
+    src_ints   -- 格納したい数値の配列
+    count      -- 格納したい数
+
+  戻り値
 
  */
 
 long
-_RkPackBits(unsigned char *dst_bits, long dst_offset, int bit_size, unsigned *src_ints, int count)
+_RkPackBits(dst_bits, dst_offset, bit_size, src_ints, count)
+unsigned char	*dst_bits;
+long		dst_offset;
+int		bit_size;
+unsigned	*src_ints;
+int		count;
 {
   unsigned char	*dstB;
   unsigned		dstQ;
@@ -68,7 +70,7 @@ _RkPackBits(unsigned char *dst_bits, long dst_offset, int bit_size, unsigned *sr
   dstB = dst_bits + dst_offset / BIT_UNIT;
   dstCount = (dst_offset % BIT_UNIT);
 
-  /* ÅÓÃæ¤Ê¤Î¤Ç¡¢¼ê¤òÉÕ¤±¤Ê¤¤ÉôÊ¬¤¬¤¢¤ë¤³¤È¤ËÃí°Õ */
+  /* 途中なので、手を付けない部分があることに注意 */
   dstQ  = *dstB & ((1 << dstCount) - 1);
   bitMask = (1 << bit_size) - 1;
   while (count-- > 0) {
@@ -90,23 +92,28 @@ _RkPackBits(unsigned char *dst_bits, long dst_offset, int bit_size, unsigned *sr
 /*
   UnpackBits
 
-  RkUnpackBits ¤Ï dst_bits ¤Î dst_offset(¥Ó¥Ã¥È¤Ç¥«¥¦¥ó¥È)¤Ë³ÊÇ¼¤µ¤ì¤Æ
-  ¤¤¤ë¥Ó¥Ã¥È¤ÎÇÛÎó¤ò unsigned ¤ÎÇÛÎó¤Ë¼è¤ê½Ð¤¹¡£offset ¤ËÃ¼¿ô¤¬½Ð¤¿¾ì
-  ¹ç¤Ï²¼°Ì¥Ó¥Ã¥È¤«¤é»È¤ï¤ì¤ë¡£
+  RkUnpackBits は dst_bits の dst_offset(ビットでカウント)に格納されて
+  いるビットの配列を unsigned の配列に取り出す。offset に端数が出た場
+  合は下位ビットから使われる。
 
-  °ú¿ô
-    dst_ints   -- ¼è¤ê½Ð¤·¤¿¿ôÃÍ¤ò³ÊÇ¼¤¹¤ëÇÛÎó¤Ø¤Î¥Ý¥¤¥ó¥¿
-    src_bits   -- ¥Ó¥Ã¥ÈÇÛÎó¤Ø¤Î¥Ý¥¤¥ó¥¿
-    src_offset -- ¼ÂºÝ¤Ë³ÊÇ¼¤¹¤ë¤È¤³¤í¤Þ¤Ç¤Î¥ª¥Õ¥»¥Ã¥È(¥Ó¥Ã¥È¤Ç¥«¥¦¥ó¥È)
-    bit_size   -- ¥Ó¥Ã¥ÈÇÛÎó¤Î£±¤Ä¤ÎÍ×ÁÇ¤Î¥Ó¥Ã¥ÈÉý
-    count      -- ¼è¤ê½Ð¤·¤¿¤¤¿ô
+  引数
+    dst_ints   -- 取り出した数値を格納する配列へのポインタ
+    src_bits   -- ビット配列へのポインタ
+    src_offset -- 実際に格納するところまでのオフセット(ビットでカウント)
+    bit_size   -- ビット配列の１つの要素のビット幅
+    count      -- 取り出したい数
 
-  Ìá¤êÃÍ
+  戻り値
 
  */
 
 long
-_RkUnpackBits(unsigned *dst_ints, unsigned char *src_bits, long src_offset, int bit_size, int count)
+_RkUnpackBits(dst_ints, src_bits, src_offset, bit_size, count)
+unsigned	*dst_ints;
+unsigned char	*src_bits;
+long		src_offset;
+int		bit_size;
+int		count;
 {
   unsigned char	*srcB;
   unsigned		srcQ;
@@ -133,23 +140,29 @@ _RkUnpackBits(unsigned *dst_ints, unsigned char *src_bits, long src_offset, int 
 /*
   CopyBits
 
-  RkCopyBits ¤Ï src_bits ¤Î src_offset ¤Ë³ÊÇ¼¤µ¤ì¤Æ¤¤¤ë¥Ó¥Ã¥ÈÇÛÎó¤ò 
-  count ¸Ä¤À¤± dst_bits ¤Î dst_offset¤Ë°ÜÆ°¤µ¤»¤ë¡£
+  RkCopyBits は src_bits の src_offset に格納されているビット配列を 
+  count 個だけ dst_bits の dst_offsetに移動させる。
 
-  °ú¿ô
-    dst_bits   -- °ÜÆ°Àè¥Ó¥Ã¥ÈÇÛÎó¤Ø¤Î¥Ý¥¤¥ó¥¿
-    dst_offset -- ¼ÂºÝ¤Ë³ÊÇ¼¤¹¤ë¤È¤³¤í¤Þ¤Ç¤Î¥ª¥Õ¥»¥Ã¥È(¥Ó¥Ã¥È¤Ç¥«¥¦¥ó¥È)
-    bit_size   -- ¥Ó¥Ã¥ÈÇÛÎó¤Î£±¤Ä¤ÎÍ×ÁÇ¤Î¥Ó¥Ã¥ÈÉý
-    src_bits   -- °ÜÆ°¸µ¥Ó¥Ã¥ÈÇÛÎó¤Ø¤Î¥Ý¥¤¥ó¥¿
-    src_offset -- ¼è¤ê½Ð¤¹¤È¤³¤í¤Þ¤Ç¤Î¥ª¥Õ¥»¥Ã¥È(¥Ó¥Ã¥È¤Ç¥«¥¦¥ó¥È)
-    count      -- °ÜÆ°¤·¤¿¤¤¿ô
+  引数
+    dst_bits   -- 移動先ビット配列へのポインタ
+    dst_offset -- 実際に格納するところまでのオフセット(ビットでカウント)
+    bit_size   -- ビット配列の１つの要素のビット幅
+    src_bits   -- 移動元ビット配列へのポインタ
+    src_offset -- 取り出すところまでのオフセット(ビットでカウント)
+    count      -- 移動したい数
 
-  Ìá¤êÃÍ
+  戻り値
 
  */
 
 long
-_RkCopyBits(unsigned char *dst_bits, long dst_offset, int bit_size, unsigned char *src_bits, long src_offset, int count)
+_RkCopyBits(dst_bits, dst_offset, bit_size, src_bits, src_offset, count)
+unsigned char	*dst_bits;
+long		dst_offset;
+int		bit_size;
+unsigned char	*src_bits;
+long		src_offset;
+int		count;
 {
   unsigned char	*dstB;
   unsigned		dstQ;
@@ -196,22 +209,25 @@ _RkCopyBits(unsigned char *dst_bits, long dst_offset, int bit_size, unsigned cha
 /*
   _RkSetBitNum
 
-  _RkSetBitNum ¤Ï bit ÇÛÎó¤Î offset °ÌÃÖ¤«¤é n ÈÖÌÜ¤ÎÃÍ¤È¤·¤Æ val ¤ò³Ê
-  Ç¼¤¹¤ë´Ø¿ô¤Ç¤¢¤ë¡£
+  _RkSetBitNum は bit 配列の offset 位置から n 番目の値として val を格
+  納する関数である。
 
-  °ú¿ô
-    dst_bits   -- ¥Ó¥Ã¥ÈÇÛÎó¤Ø¤Î¥Ý¥¤¥ó¥¿
-    dst_offset -- ¼ÂºÝ¤Ë³ÊÇ¼¤¹¤ë¤È¤³¤í¤Þ¤Ç¤Î¥ª¥Õ¥»¥Ã¥È(¥Ó¥Ã¥È¤Ç¥«¥¦¥ó¥È)
-    bit_size   -- ¥Ó¥Ã¥ÈÇÛÎó¤Î£±¤Ä¤ÎÍ×ÁÇ¤Î¥Ó¥Ã¥ÈÉý
-    n          -- ÀèÆ¬¤«¤é²¿ÈÖÌÜ¤ÎÍ×ÁÇ¤«¤òÍ¿¤¨¤ë¡£
-    val        -- ³ÊÇ¼¤¹¤ëÃÍ¤òÍ¿¤¨¤ë¡£
+  引数
+    dst_bits   -- ビット配列へのポインタ
+    dst_offset -- 実際に格納するところまでのオフセット(ビットでカウント)
+    bit_size   -- ビット配列の１つの要素のビット幅
+    n          -- 先頭から何番目の要素かを与える。
+    val        -- 格納する値を与える。
 
-  Ìá¤êÃÍ
+  戻り値
 
  */
 
 int
-_RkSetBitNum(unsigned char *dst_bits, unsigned long dst_offset, int bit_size, int n, int val)
+_RkSetBitNum(dst_bits, dst_offset, bit_size, n, val)
+unsigned char	*dst_bits;
+unsigned long	dst_offset;
+int		bit_size, n, val;
 {
   unsigned char	*dstB;
   unsigned dstQ, dstCount, bitMask;
@@ -221,7 +237,7 @@ _RkSetBitNum(unsigned char *dst_bits, unsigned long dst_offset, int bit_size, in
   dstB = dst_bits + dst_offset / BIT_UNIT;
   dstCount = (dst_offset % BIT_UNIT);
 
-  /* ÅÓÃæ¤Ê¤Î¤Ç¡¢¼ê¤òÉÕ¤±¤Ê¤¤ÉôÊ¬¤¬¤¢¤ë¤³¤È¤ËÃí°Õ */
+  /* 途中なので、手を付けない部分があることに注意 */
   dstQ  = *dstB & ((1 << dstCount) - 1);
   bitMask = (1 << bit_size) - 1;
 
@@ -240,14 +256,19 @@ _RkSetBitNum(unsigned char *dst_bits, unsigned long dst_offset, int bit_size, in
 }
 
 int
-_RkCalcFqSize(int n)
+_RkCalcFqSize(n)
+int	n;
 {
   return n*(_RkCalcLog2(n) + 1);
 }
 
 #ifdef __BITS_DEBUG__
 #include <stdio.h>
-_RkPrintPackedBits(unsigned char *bits, int offset, int bit_size, int count)
+_RkPrintPackedBits(bits, offset, bit_size, count)
+unsigned char	*bits;
+int		offset;
+int		bit_size;
+int		count;
 {
     fprintf(stderr, "%d <", count);
     while ( count-- > 0 ) {
@@ -260,7 +281,8 @@ _RkPrintPackedBits(unsigned char *bits, int offset, int bit_size, int count)
 }
 
 int 
-_RkCalcLog2(int n)
+_RkCalcLog2(n)
+     int n;
 {
   int	lg2;
   
@@ -270,7 +292,7 @@ _RkCalcLog2(int n)
   return(lg2);
 }
 
-main(void)
+main()
 {
   int		 offset;
   int		 bit_size;

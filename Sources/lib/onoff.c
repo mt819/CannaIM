@@ -21,35 +21,38 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static	char	rcs_id[] = "@(#) 102.1 $Id: onoff.c 14875 2005-11-12 21:25:31Z bonefish $";
+static	char	rcs_id[] = "@(#) 102.1 $Id: onoff.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
 
 #include	<errno.h>
 #include	"canna.h"
 
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
+
 #ifndef NO_EXTEND_MENU
 #define ICHISIZE 9
 
-static void popOnOffMode(uiContext d);
-static int makeOnOffIchiran(uiContext d, int nelem, int bangomax, int currentkouho, unsigned char *status);
-static int OnOffSelect(uiContext d);
-static int OnOffKakutei(uiContext d);
-
 static int makeOnOffIchiran();
 
-static WCHAR_T *black;
-static WCHAR_T *white;
-static WCHAR_T *space;
+static wchar_t *black;
+static wchar_t *white;
+static wchar_t *space;
 
 int
-initOnoffTable(void)
+initOnoffTable()
 {
   black = WString("\241\375");
-                  /* ¡ý */
+                  /* ◎ */
   white = WString("\241\373");
-                  /* ¡û */
+                  /* ○ */
   space = WString("\241\241");
-                  /* ¡¡ */
+                  /* 　 */
 
   if (!black || !white || !space) {
     return NG;
@@ -58,7 +61,8 @@ initOnoffTable(void)
 }
 
 static void
-popOnOffMode(uiContext d)
+popOnOffMode(d)
+uiContext d;
 {
   ichiranContext oc = (ichiranContext)d->modec;
 
@@ -68,9 +72,18 @@ popOnOffMode(uiContext d)
 }
 
 /*
- * ¸õÊä°ìÍ÷¹Ô¤òºî¤ë
+ * 候補一覧行を作る
  */
-int selectOnOff(uiContext d, WCHAR_T **buf, int *ck, int nelem, int bangomax, int currentkouho, unsigned char *status, int (*everyTimeCallback )(...), int (*exitCallback )(...), int (*quitCallback )(...), int (*auxCallback )(...))
+selectOnOff(d, buf, ck, nelem, bangomax, currentkouho, status,
+	  everyTimeCallback, exitCallback, quitCallback, auxCallback)
+uiContext d;
+wchar_t **buf;
+int *ck;
+int nelem, bangomax;
+int currentkouho;
+unsigned char *status;
+int (*everyTimeCallback)(), (*exitCallback)();
+int (*quitCallback)(), (*auxCallback)();
 {
   extern KanjiModeRec onoff_mode;
   ichiranContext oc;
@@ -78,12 +91,9 @@ int selectOnOff(uiContext d, WCHAR_T **buf, int *ck, int nelem, int bangomax, in
   ichiranContext newIchiranContext();
 
   if(pushCallback(d, d->modec,
-	(int(*)(_uiContext*, int, _coreContextRec*))everyTimeCallback,
-	(int(*)(_uiContext*, int, _coreContextRec*))exitCallback,
-	(int(*)(_uiContext*, int, _coreContextRec*))quitCallback,
-	(int(*)(_uiContext*, int, _coreContextRec*))auxCallback) == 0) {
+	everyTimeCallback, exitCallback, quitCallback, auxCallback) == 0) {
     jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
-                                       /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+                                       /* できませんでした */
     return(NG);
   }
   
@@ -110,23 +120,27 @@ int selectOnOff(uiContext d, WCHAR_T **buf, int *ck, int nelem, int bangomax, in
 }
 
 /*
- * ¸õÊä°ìÍ÷¹Ô¤òÉ½¼¨ÍÑ¤Î¥Ç¡¼¥¿¤ò¥Æ¡¼¥Ö¥ë¤ËºîÀ®¤¹¤ë
+ * 候補一覧行を表示用のデータをテーブルに作成する
  *
- * ¡¦glineinfo ¤È kouhoinfo¤òºîÀ®¤¹¤ë
+ * ・glineinfo と kouhoinfoを作成する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0	°Û¾ï½ªÎ»»þ -1
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0	異常終了時 -1
  */
-static int
-makeOnOffIchiran(uiContext d, int nelem, int bangomax, int currentkouho, unsigned char *status)
+static
+makeOnOffIchiran(d, nelem, bangomax, currentkouho, status)
+uiContext d;
+int nelem, bangomax;
+int currentkouho;
+unsigned char *status;
 {
   ichiranContext oc = (ichiranContext)d->modec;
-  WCHAR_T **kkptr, *kptr, *gptr, *svgptr;
+  wchar_t **kkptr, *kptr, *gptr, *svgptr;
   int ko, lnko, cn = 0, svcn, line = 0, dn = 0, svdn;
 
-  oc->nIkouho = nelem;	/* ¸õÊä¤Î¿ô */
+  oc->nIkouho = nelem;	/* 候補の数 */
 
-  /* ¥«¥ì¥ó¥È¸õÊä¤ò¥»¥Ã¥È¤¹¤ë */
+  /* カレント候補をセットする */
   oc->svIkouho = *(oc->curIkouho);
   *(oc->curIkouho) += currentkouho;
   if(*(oc->curIkouho) >= oc->nIkouho)
@@ -140,40 +154,40 @@ makeOnOffIchiran(uiContext d, int nelem, int bangomax, int currentkouho, unsigne
     return(0);
   }
 
-  /* glineinfo¤Èkouhoinfo¤òºî¤ë */
+  /* glineinfoとkouhoinfoを作る */
   /* 
-   ¡öglineinfo¡ö
-      int glkosu   : int glhead     : int gllen  : WCHAR_T *gldata
-      £±¹Ô¤Î¸õÊä¿ô : ÀèÆ¬¸õÊä¤¬     : £±¹Ô¤ÎÄ¹¤µ : ¸õÊä°ìÍ÷¹Ô¤ÎÊ¸»úÎó
-                   : ²¿ÈÖÌÜ¤Î¸õÊä¤« :
+   ＊glineinfo＊
+      int glkosu   : int glhead     : int gllen  : wchar_t *gldata
+      １行の候補数 : 先頭候補が     : １行の長さ : 候補一覧行の文字列
+                   : 何番目の候補か :
    -------------------------------------------------------------------------
-   0 | 6           : 0              : 24         : £±¿·£²¿´£³¿Ê£´¿¿£µ¿À£¶¿®
-   1 | 4           : 6              : 16         : £±¿Ã£²¿²£³¿­£´¿Ä
+   0 | 6           : 0              : 24         : １新２心３進４真５神６信
+   1 | 4           : 6              : 16         : １臣２寝３伸４芯
 
-    ¡ökouhoinfo¡ö
-      int khretsu  : int khpoint  : WCHAR_T *khdata
-      ¤Ê¤óÎóÌÜ¤Ë   : ¹Ô¤ÎÀèÆ¬¤«¤é : ¸õÊä¤ÎÊ¸»úÎó
-      ¤¢¤ë¸õÊä¤«   : ²¿¥Ð¥¤¥ÈÌÜ¤« :
+    ＊kouhoinfo＊
+      int khretsu  : int khpoint  : wchar_t *khdata
+      なん列目に   : 行の先頭から : 候補の文字列
+      ある候補か   : 何バイト目か :
    -------------------------------------------------------------------------
-   0 | 0           : 0            : ¿·
-   1 | 0           : 4            : ¿´
+   0 | 0           : 0            : 新
+   1 | 0           : 4            : 心
              :                :             :
-   7 | 1           : 0            : ¿Ã
-   8 | 1           : 4            : ¿²
+   7 | 1           : 0            : 臣
+   8 | 1           : 4            : 寝
   */
 
   kkptr = oc->allkouho;
   kptr = *(oc->allkouho);
   gptr = oc->glinebufp;
 
-  /* line -- ²¿ÎóÌÜ¤«
-     ko   -- Á´ÂÎ¤ÎÀèÆ¬¤«¤é²¿ÈÖÌÜ¤Î¸õÊä¤«
-     lnko -- Îó¤ÎÀèÆ¬¤«¤é²¿ÈÖÌÜ¤Î¸õÊä¤«
-     cn   -- Îó¤ÎÀèÆ¬¤«¤é²¿¥Ð¥¤¥ÈÌÜ¤« */
+  /* line -- 何列目か
+     ko   -- 全体の先頭から何番目の候補か
+     lnko -- 列の先頭から何番目の候補か
+     cn   -- 列の先頭から何バイト目か */
 
   for(line=0, ko=0; ko<oc->nIkouho; line++) {
-    oc->glineifp[line].gldata = gptr; /* ¸õÊä¹Ô¤òÉ½¼¨¤¹¤ë¤¿¤á¤ÎÊ¸»úÎó */
-    oc->glineifp[line].glhead = ko;   /* ¤³¤Î¹Ô¤ÎÀèÆ¬¸õÊä¤Ï¡¢Á´ÂÎ¤Ç¤ÎkoÈÖÌÜ */
+    oc->glineifp[line].gldata = gptr; /* 候補行を表示するための文字列 */
+    oc->glineifp[line].glhead = ko;   /* この行の先頭候補は、全体でのko番目 */
 
     oc->tooSmall = 1;
     for(lnko = cn = dn = 0;
@@ -181,14 +195,14 @@ makeOnOffIchiran(uiContext d, int nelem, int bangomax, int currentkouho, unsigne
 	lnko<bangomax && ko<oc->nIkouho ; lnko++, ko++) {
       oc->tooSmall = 0;
       kptr = kkptr[ko];
-      oc->kouhoifp[ko].khretsu = line; /* ²¿¹ÔÌÜ¤ËÂ¸ºß¤¹¤ë¤«¤òµ­Ï¿ */
+      oc->kouhoifp[ko].khretsu = line; /* 何行目に存在するかを記録 */
       oc->kouhoifp[ko].khpoint = cn + (lnko ? 1 : 0);
-      oc->kouhoifp[ko].khdata = kptr;  /* ¤½¤ÎÊ¸»úÎó¤Ø¤Î¥Ý¥¤¥ó¥¿ */
+      oc->kouhoifp[ko].khdata = kptr;  /* その文字列へのポインタ */
       svgptr = gptr;
       svcn = cn;
       svdn = dn;
 
-      /* ¡ý¤«¡û¤ò¥³¥Ô¡¼¤¹¤ë */
+      /* ◎か○をコピーする */
       if(lnko) {
 	WStrncpy(gptr++, space, WStrlen(space));
 	cn++; dn += 2;
@@ -198,14 +212,14 @@ makeOnOffIchiran(uiContext d, int nelem, int bangomax, int currentkouho, unsigne
       else
 	WStrncpy(gptr, white, WStrlen(white));	 
       cn ++; gptr++; dn +=2;
-      /* ¸õÊä¤ò¥³¥Ô¡¼¤¹¤ë */
+      /* 候補をコピーする */
       for(; *kptr && dn<d->ncolumns - (cannaconf.kCount ? ICHISIZE + 1: 0);
 	  gptr++, kptr++, cn++) {
 	if (((*gptr = *kptr) & 0x8080) == 0x8080) dn++;
         dn++;
       }
 
-      /* ¥«¥é¥à¿ô¤è¤ê¤Ï¤ß¤À¤·¤Æ¤·¤Þ¤¤¤½¤¦¤Ë¤Ê¤Ã¤¿¤Î¤Ç£±¤ÄÌá¤¹ */
+      /* カラム数よりはみだしてしまいそうになったので１つ戻す */
       if ((dn >= d->ncolumns - (cannaconf.kCount ? ICHISIZE + 1: 0))
 	  && *kptr) {
 	if (lnko) {
@@ -227,21 +241,21 @@ makeOnOffIchiran(uiContext d, int nelem, int bangomax, int currentkouho, unsigne
 	*gptr++ = ' ';
       }
     }
-    /* £±¹Ô½ª¤ï¤ê */
-    *gptr++ = (WCHAR_T)0;
+    /* １行終わり */
+    *gptr++ = (wchar_t)0;
     oc->glineifp[line].glkosu = lnko;
     oc->glineifp[line].gllen = WStrlen(oc->glineifp[line].gldata);
   }
-  /* ºÇ¸å¤ËNULL¤òÆþ¤ì¤ë */
+  /* 最後にNULLを入れる */
   oc->kouhoifp[ko].khretsu = 0;
   oc->kouhoifp[ko].khpoint = 0;
-  oc->kouhoifp[ko].khdata  = (WCHAR_T *)NULL;
+  oc->kouhoifp[ko].khdata  = (wchar_t *)NULL;
   oc->glineifp[line].glkosu  = 0;
   oc->glineifp[line].glhead  = 0;
   oc->glineifp[line].gllen   = 0;
-  oc->glineifp[line].gldata  = (WCHAR_T *)NULL;
+  oc->glineifp[line].gldata  = (wchar_t *)NULL;
 
-#if defined(DEBUG) && !defined(WIN)
+#if defined(DEBUG)
   if (iroha_debug) {
     int i;
     for(i=0; oc->glineifp[i].glkosu; i++)
@@ -253,26 +267,27 @@ makeOnOffIchiran(uiContext d, int nelem, int bangomax, int currentkouho, unsigne
 }
 
 /*
- * ¥«¥ì¥ó¥È¸õÊä¤ò¸½ºß¤ÈÈ¿ÂÐ¤Ë¤¹¤ë(ON¢ªOFF, OFF¢ªON)
+ * カレント候補を現在と反対にする(ON→OFF, OFF→ON)
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0	°Û¾ï½ªÎ»»þ -1
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0	異常終了時 -1
  */
 static
-int OnOffSelect(uiContext d)
+OnOffSelect(d)
+uiContext d;
 {
   ichiranContext oc = (ichiranContext)d->modec;
   mountContext mc = (mountContext)oc->next;
   int point, retval = 0;
-  WCHAR_T *gline;
+  wchar_t *gline;
 
-  /* mountNewStatus ¤òÊÑ¹¹¤¹¤ë (1¢ª0, 0¢ª1) */
+  /* mountNewStatus を変更する (1→0, 0→1) */
   if(mc->mountNewStatus[*(oc->curIkouho)])
     mc->mountNewStatus[*(oc->curIkouho)] = 0;
   else
     mc->mountNewStatus[*(oc->curIkouho)] = 1;
 
-  /* glineÍÑ¤Î¥Ç¡¼¥¿¤ò½ñ¤­´¹¤¨¤ë (¡ý¢ª¡û, ¡û¢ª¡ý) */
+  /* gline用のデータを書き換える (◎→○, ○→◎) */
   gline = oc->glineifp[oc->kouhoifp[*(oc->curIkouho)].khretsu].gldata;
   point = oc->kouhoifp[*(oc->curIkouho)].khpoint;
 
@@ -284,29 +299,30 @@ int OnOffSelect(uiContext d)
 }
 
 /*
- * status ¤ò¤½¤Î¤Þ¤ÞÊÖ¤·¡¢OnOff¥â¡¼¥É¤òPOP¤¹¤ë (EXIT_CALLBACK)
+ * status をそのまま返し、OnOffモードをPOPする (EXIT_CALLBACK)
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0	°Û¾ï½ªÎ»»þ -1
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0	異常終了時 -1
  */
 static
-int OnOffKakutei(uiContext d)
+OnOffKakutei(d)
+uiContext d;
 {
   ichiranContext oc = (ichiranContext)d->modec;
   int retval = 0;
-/* ¤¤¤é¤Ê¤¤¤Î¤Ç¤Ï unsigned char *kakuteiStrings;*/
+/* いらないのでは unsigned char *kakuteiStrings;*/
 
-  /* ¸õÊä°ìÍ÷É½¼¨¹ÔÍÑ¤Î¥¨¥ê¥¢¤ò¥Õ¥ê¡¼¤¹¤ë */
+  /* 候補一覧表示行用のエリアをフリーする */
   freeIchiranBuf(oc);
 
   popOnOffMode(d);
 
-#if defined(DEBUG) && !defined(WIN)
+#if defined(DEBUG)
   if(iroha_debug) {
     mountContext mc = (mountContext)d->modec;
     int i;
 
-    printf("<¡úmount>\n");
+    printf("<★mount>\n");
     for(i= 0; mc->mountList[i]; i++)
       printf("[%s][%x][%x]\n", mc->mountList[i],
 	     mc->mountOldStatus[i], mc->mountNewStatus[i]);
@@ -314,7 +330,7 @@ int OnOffKakutei(uiContext d)
   }
 #endif
 
-  /* gline ¤ò¥¯¥ê¥¢¤¹¤ë */
+  /* gline をクリアする */
   GlineClear(d);
 
   d->status = EXIT_CALLBACK;
@@ -322,5 +338,13 @@ int OnOffKakutei(uiContext d)
   return(retval);
 }
 #endif /* NO_EXTEND_MENU */
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/
 
 #include	"onoffmap.h"

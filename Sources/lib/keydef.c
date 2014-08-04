@@ -20,12 +20,8 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: keydef.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: keydef.c,v 1.2 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
 
 #include "canna.h"
@@ -41,8 +37,13 @@ extern KanjiModeRec tourokureibun_mode;
 extern KanjiModeRec bunsetsu_mode;
 extern KanjiModeRec cy_mode, cb_mode;
 
-//extern multiSequenceFunc
-//  (struct _uiContext *, struct _kanjiMode *, int, int, int);
+extern multiSequenceFunc
+  pro((struct _uiContext *, struct _kanjiMode *, int, int, int));
+
+static void undefineKeyfunc pro((unsigned char *, unsigned));
+static regist_key_hash(), copyMultiSequence();
+static void freeMultiSequence();
+static void clearAllFuncSequence(), clearAllKeySequence();
 
 #define NONE 0
 #define ACTHASHTABLESIZE 64
@@ -51,24 +52,6 @@ extern KanjiModeRec cy_mode, cb_mode;
 #define SINGLE 0
 #define MULTI  1
 #define OTHER  2
-
-static unsigned char *duplicatekmap(unsigned char *kmap);
-static int changeKeyOnSomeCondition(KanjiMode mode, int key, int fnum, unsigned char *actbuff, unsigned char *keybuff);
-static void undefineKeyfunc(unsigned char *keytbl, unsigned fnum);
-//static unsigned int createHashKey(unsigned char *data1, unsigned char data2, int which_seq);
-static void regist_act_hash(unsigned char *tbl_ptr, unsigned char key, unsigned char *buff);
-static void remove_hash(unsigned char *tbl_ptr, unsigned char key, int which_seq);
-static void freeChain(struct seq_struct *p);
-static void clearAllFuncSequence(void);
-static void freeKeySeqMode(KanjiMode m);
-static void freeMap(struct map *m);
-static void clearAllKeySequence(void);
-static int specialen(unsigned char *block);
-static int to_write_act(int depth, int keysize, int actsize, unsigned singleAct);
-static struct map *regist_map(KanjiMode tbl, unsigned char *keybuff, unsigned char *actbuff, int depth);
-static int regist_key_hash(unsigned char *tbl_ptr, unsigned char *keybuff, unsigned char *actbuff);
-static int copyMultiSequence(unsigned char key, KanjiMode old_tbl, KanjiMode new_tbl);
-static void freeMultiSequence(unsigned char key, KanjiMode tbl);
 
 struct  seq_struct{
   unsigned char    *to_tbl;
@@ -89,23 +72,26 @@ struct map{
 static struct map *otherMap[KEYHASHTABLESIZE];
 
 static KanjiMode ModeTbl[CANNA_MODE_MAX_REAL_MODE] = {
-  &alpha_mode,        /* AlphaMode          ¥¢¥ë¥Õ¥¡¥Ù¥Ã¥È¥â¡¼¥É         */
-  &empty_mode,	      /* EmptyMode          ÆÉ¤ßÆþÎÏ¤¬¤Ê¤¤¾õÂÖ           */
-  &kigo_mode,	      /* KigoMode           ¸õÊä°ìÍ÷¤òÉ½¼¨¤·¤Æ¤¤¤ë¾õÂÖ   */
-  &yomi_mode,         /* YomiMode           ÆÉ¤ßÆþÎÏ¤·¤Æ¤¤¤ë¾õÂÖ         */
-  &jishu_mode,	      /* JishuMode          Ê¸»ú¼ïÊÑ´¹¤·¤Æ¤¤¤ë¾õÂÖ       */
-  &tankouho_mode,     /* TankouhoMode       Ã±°ì¤Î¸õÊä¤òÉ½¼¨¤·¤Æ¤¤¤ë¾õÂÖ */
-  &ichiran_mode,      /* IchiranMode        ¸õÊä°ìÍ÷¤òÉ½¼¨¤·¤Æ¤¤¤ë¾õÂÖ   */
-  &tourokureibun_mode, /* TourokuReibunMode Ã±¸ìÅÐÏ¿¤ÎÎãÊ¸É½¼¨¾õÂÖ       */
-  &onoff_mode,        /* OnOffMode          On/Off¤Î°ìÍ÷¤ÎÉ½¼¨¾õÂÖ       */
-  &bunsetsu_mode,     /* AdjustBunsetsuMode Ê¸Àá¿­½Ì¥â¡¼¥É               */
-  &cy_mode,	      /* ChikujiYomiMode    Ãà¼¡¤Î»þ¤ÎÆÉ¤ßÉôÊ¬           */
-  &cb_mode,           /* ChikujiHenkanMode  Ãà¼¡¤Î»þ¤ÎÊÑ´¹¤ÎÉôÊ¬         */
+  &alpha_mode,        /* AlphaMode          アルファベットモード         */
+  &empty_mode,	      /* EmptyMode          読み入力がない状態           */
+  &kigo_mode,	      /* KigoMode           候補一覧を表示している状態   */
+  &yomi_mode,         /* YomiMode           読み入力している状態         */
+  &jishu_mode,	      /* JishuMode          文字種変換している状態       */
+  &tankouho_mode,     /* TankouhoMode       単一の候補を表示している状態 */
+  &ichiran_mode,      /* IchiranMode        候補一覧を表示している状態   */
+  &tourokureibun_mode, /* TourokuReibunMode 単語登録の例文表示状態       */
+  &onoff_mode,        /* OnOffMode          On/Offの一覧の表示状態       */
+  &bunsetsu_mode,     /* AdjustBunsetsuMode 文節伸縮モード               */
+  &cy_mode,	      /* ChikujiYomiMode    逐次の時の読み部分           */
+  &cb_mode,           /* ChikujiHenkanMode  逐次の時の変換の部分         */
 };
 
+unsigned char *actFromHash();
+static void regist_act_hash();
 
 static unsigned char *
-duplicatekmap(unsigned char *kmap)
+duplicatekmap(kmap)
+unsigned char *kmap;
 {
   unsigned char *res;
   int i;
@@ -126,14 +112,14 @@ unsigned char *alphamap, *emptymap;
 
 /* cfuncdef
 
-  initKeyTables() -- ¥­¡¼¥Æ¡¼¥Ö¥ë¤ò½é´ü²½¤¹¤ë´Ø¿ô¡£
+  initKeyTables() -- キーテーブルを初期化する関数。
 
-  ¥Ç¥Õ¥©¥ë¥È¤Î¥­¡¼¥Æ¡¼¥Ö¥ë¤òµ­Ï¿¤·¤Æ¤ª¤­¡¢¼Â»ÈÍÑ¤Î¥Æ¡¼¥Ö¥ë¤ò ¥Ç¥Õ¥©¥ë
-  ¥È¥Æ¡¼¥Ö¥ë¤«¤é¥³¥Ô¡¼¤¹¤ë½èÍý¤ò¹Ô¤¦¡£
+  デフォルトのキーテーブルを記録しておき、実使用のテーブルを デフォル
+  トテーブルからコピーする処理を行う。
 
 */
 
-int initKeyTables(void)
+initKeyTables()
 {
   int i;
   unsigned char *tbl;
@@ -162,15 +148,15 @@ int initKeyTables(void)
         }
         return 0;
       }
-      free(alphamap);
+      free((char *)alphamap);
     }
-    free(defaultmap);
+    free((char *)defaultmap);
   }
   return NG;
 }
 
 void
-restoreDefaultKeymaps(void)
+restoreDefaultKeymaps()
 {
   int i;
 
@@ -192,26 +178,30 @@ restoreDefaultKeymaps(void)
 
 
 /* 
- * ¤¢¤ë¥â¡¼¥É¤Î¥­¡¼¤ËÂÐ¤·¤Æ´Ø¿ô¤ò³ä¤êÅö¤Æ¤ë½èÍý
+ * あるモードのキーに対して関数を割り当てる処理
  *
  */
 
 /* 
 
-  £±£¶¿Ê¤Î»þ¤Ï£´Ê¸»úÌÜ¤òÆþ¤ì¤¿»þ¤Î¥â¡¼¥É¤Ë¤âÀßÄê¤¹¤ë¡£
+  １６進の時は４文字目を入れた時のモードにも設定する。
 
  */
 
-extern int nothermodes;
+extern nothermodes;
 
-int changeKeyfunc(int modenum, int key, int fnum, unsigned char *actbuff, unsigned char *keybuff)
+changeKeyfunc(modenum, key, fnum, actbuff, keybuff)
+int modenum;
+int key;
+int fnum;
+unsigned char *actbuff, *keybuff;
 {
   int i, retval = 0;
   unsigned char *p, *q;
   KanjiMode mode;
   newmode *nmode;
 
-  /* ¤Á¤ç¤Ã¤È¾®ºÙ¹© */
+  /* ちょっと小細工 */
   if (modenum == CANNA_MODE_HenkanNyuryokuMode) {
     retval = changeKeyfunc(CANNA_MODE_EmptyMode, key, fnum, actbuff, keybuff);
     if (retval < 0) {
@@ -244,11 +234,11 @@ int changeKeyfunc(int modenum, int key, int fnum, unsigned char *actbuff, unsign
 
   if (mode && mode->func((uiContext)0/*dummy*/, mode,
                            KEY_CHECK, 0/*dummy*/, fnum)) { 
-    /* ¤½¤Îµ¡Ç½¤¬¤½¤Î¥â¡¼¥É¤Ë¤ª¤¤¤ÆÍ­¸ú¤Êµ¡Ç½¤Ç¤¢¤ì¤Ð */
-    if (mode->keytbl) { /* ¥­¡¼¥Æ¡¼¥Ö¥ë¤¬Â¸ºß¤¹¤ì¤Ð */
-      /* ¤³¤ì¤ÏÀäÂÐ¤ËÂ¸ºß¤¹¤ë¤Î¤Ç¤Ï¡© */
+    /* その機能がそのモードにおいて有効な機能であれば */
+    if (mode->keytbl) { /* キーテーブルが存在すれば */
+      /* これは絶対に存在するのでは？ */
       if (mode->flags & CANNA_KANJIMODE_TABLE_SHARED) {
-	/* ¥­¡¼¥Þ¥Ã¥×¤¬Â¾¤Î¥â¡¼¥É¤È¶¦Í­¤µ¤ì¤Æ¤¤¤ë¤Ê¤é */
+	/* キーマップが他のモードと共有されているなら */
 	p = (unsigned char *)calloc(256, sizeof(unsigned char));
         if (!p) {
           return -1;
@@ -257,7 +247,7 @@ int changeKeyfunc(int modenum, int key, int fnum, unsigned char *actbuff, unsign
         for (i = 0; i < 256; i++) {
           if (mode->keytbl[i] == CANNA_FN_FuncSequence) {
             q = actFromHash(mode->keytbl,i);
-            if (q) { /* ³ºÅö¤¹¤ë¥­¡¼¥·¡¼¥±¥ó¥¹¤¬¤¢¤Ã¤¿¤é */
+            if (q) { /* 該当するキーシーケンスがあったら */
               regist_act_hash(p, i, q);
             }
           }
@@ -265,7 +255,7 @@ int changeKeyfunc(int modenum, int key, int fnum, unsigned char *actbuff, unsign
 	    debug_message("changeKeyfunc:\245\306\241\274\245\326\245\353"
 		"\260\334\306\260\72\244\263\244\316\244\310\244\255\244\316"
 		"\245\255\241\274\244\317%d\n",i,0,0);
-                          /* ¥Æ¡¼¥Ö¥ë°ÜÆ°:¤³¤Î¤È¤­¤Î¥­¡¼¤Ï */
+                          /* テーブル移動:このときのキーは */
             (void)copyMultiSequence(i, (KanjiMode)mode->keytbl,
                                        (KanjiMode)p);
           }
@@ -307,17 +297,20 @@ int changeKeyfunc(int modenum, int key, int fnum, unsigned char *actbuff, unsign
 }
 
 static int
-changeKeyOnSomeCondition(KanjiMode mode, int key, int fnum, unsigned char *actbuff, unsigned char *keybuff)
+changeKeyOnSomeCondition(mode, key, fnum, actbuff, keybuff)
+KanjiMode mode;
+int key, fnum;
+unsigned char *actbuff, *keybuff;
 {
   int retval = 0;
 
-  if (mode && /* ¤½¤Î¥â¡¼¥É¤¬Â¸ºß¤¹¤ë¤Ê¤é */
+  if (mode && /* そのモードが存在するなら */
       mode->func((uiContext)0/*dummy*/, mode,
                    KEY_CHECK, 0/*dummy*/, fnum)) {
-    /* ´Ø¿ô¤¬¤½¤Î¥â¡¼¥É¤ÇÍ­¸ú¤Ê¤é */
+    /* 関数がそのモードで有効なら */
     if ( !(mode->flags & CANNA_KANJIMODE_TABLE_SHARED) ) {
-      /* ¥Æ¡¼¥Ö¥ë¤¬¶¦Í­¤µ¤ì¤Æ¤¤¤Ê¤¤¤Ê¤é */
-      if (mode->keytbl) { /* ¥­¡¼¥Æ¡¼¥Ö¥ë¤¬Â¸ºß¤¹¤ì¤Ð */
+      /* テーブルが共有されていないなら */
+      if (mode->keytbl) { /* キーテーブルが存在すれば */
 	if (mode->keytbl[key] == CANNA_FN_UseOtherKeymap &&
 	    fnum != CANNA_FN_UseOtherKeymap)
 	  freeMultiSequence(key,(KanjiMode)mode->keytbl);
@@ -335,11 +328,13 @@ changeKeyOnSomeCondition(KanjiMode mode, int key, int fnum, unsigned char *actbu
 }
 
 /*
- * Á´¤Æ¤Î¥â¡¼¥É¤Î¡¢¤¢¤ë¥­¡¼¤ËÂÐ¤·¤Æ´Ø¿ô¤ò³ä¤êÅö¤Æ¤ë½èÍý
+ * 全てのモードの、あるキーに対して関数を割り当てる処理
  *
  */
 
-int changeKeyfuncOfAll(int key, int fnum, unsigned char *actbuff, unsigned char *keybuff)
+changeKeyfuncOfAll(key, fnum, actbuff, keybuff)
+int key, fnum;
+unsigned char *actbuff, *keybuff;
 {
   extern extraFunc *extrafuncp;
   extraFunc *ep;
@@ -379,7 +374,7 @@ int changeKeyfuncOfAll(int key, int fnum, unsigned char *actbuff, unsigned char 
       }
     }
     for (ep = extrafuncp ; ep ; ep = ep->next) {
-      /* defmode ¤Ç¤ÎÁ´¤Æ¤Î¥â¡¼¥É¤ËÂÐ¤·¤Æ¤ä¤ë */
+      /* defmode での全てのモードに対してやる */
       if (ep->keyword == EXTRA_FUNC_DEFMODE) {
 	retval = changeKeyOnSomeCondition(ep->u.modeptr->emode, key, fnum,
                                             actbuff, keybuff);
@@ -395,13 +390,13 @@ int changeKeyfuncOfAll(int key, int fnum, unsigned char *actbuff, unsigned char 
     undefineKeyfunc(emptymap, (unsigned)fnum);
     for (i = 0 ; i < CANNA_MODE_MAX_REAL_MODE ; i++) {
       mode = ModeTbl[i];
-      if (mode && /* ¤½¤Î¥â¡¼¥É¤¬Â¸ºß¤¹¤ë¤Ê¤é */
+      if (mode && /* そのモードが存在するなら */
 	  mode->func((uiContext)0/*dummy*/, mode,
                        KEY_CHECK, 0/*dummy*/, fnum)) {
-	/* ´Ø¿ô¤¬¤½¤Î¥â¡¼¥É¤ÇÍ­¸ú¤Ê¤é */
+	/* 関数がそのモードで有効なら */
 	if ( !(mode->flags & CANNA_KANJIMODE_TABLE_SHARED) ) {
-	  /* ¥Æ¡¼¥Ö¥ë¤¬¶¦Í­¤µ¤ì¤Æ¤¤¤Ê¤¤¤Ê¤é */
-	  if (mode->keytbl) { /* ¥­¡¼¥Æ¡¼¥Ö¥ë¤¬Â¸ºß¤¹¤ì¤Ð */
+	  /* テーブルが共有されていないなら */
+	  if (mode->keytbl) { /* キーテーブルが存在すれば */
 	    undefineKeyfunc(mode->keytbl, (unsigned)fnum);
 	  }
 	}
@@ -412,7 +407,9 @@ int changeKeyfuncOfAll(int key, int fnum, unsigned char *actbuff, unsigned char 
 }
 
 static void
-undefineKeyfunc(unsigned char *keytbl, unsigned fnum)
+undefineKeyfunc(keytbl, fnum)
+unsigned char *keytbl;
+unsigned fnum;
 {
   int i;
 
@@ -443,19 +440,23 @@ undefineKeyfunc(unsigned char *keytbl, unsigned fnum)
   }
 }
 
-inline
-unsigned int
-createHashKey(unsigned char *data1, unsigned char data2, unsigned long which_seq)
+static unsigned int
+createHashKey(data1, data2, which_seq)
+unsigned char *data1;
+unsigned char data2;
+int which_seq;
 {
-  unsigned long hashKey;
+  unsigned int hashKey;
 
-  hashKey = (*data1 + data2) % which_seq;
+  hashKey = (int)(((POINTERINT)data1 + (POINTERINT)data2) % which_seq);
   return hashKey;
 }
 
-/* µ¡Ç½¥·¡¼¥±¥ó¥¹¤ò³ä¤ê½Ð¤¹ */
+/* 機能シーケンスを割り出す */
 unsigned char *
-actFromHash(unsigned char *tbl_ptr, unsigned char key)
+actFromHash(tbl_ptr, key)
+unsigned char *tbl_ptr;
+unsigned char key;
 {
   unsigned int hashKey;
   struct seq_struct *p;
@@ -466,19 +467,22 @@ actFromHash(unsigned char *tbl_ptr, unsigned char key)
       return p->kinou_seq;
     }
   }
-#ifndef WIN
-  debug_message("actFromHash:¥­¡¼¥·¥±¥ó¥¹¤ò¤ß¤Ä¤±¤é¤ì¤Þ¤»¤ó¤Ç¤·¤¿¡£\n",0,0,0);
+#ifdef CODED_MESSAGE
+  debug_message("actFromHash:キーシケンスをみつけられませんでした。\n",0,0,0);
 #else
   debug_message("actFromHash:\245\255\241\274\245\267\245\261\245\363\245\271"
 	"\244\362\244\337\244\304\244\261\244\351\244\354\244\336\244\273"
 	"\244\363\244\307\244\267\244\277\241\243\n",0,0,0);
 #endif
-  return (unsigned char *)NULL; /* ³ºÅö¤¹¤ë¥­¡¼¥·¡¼¥±¥ó¥¹¤ÏÂ¸ºß¤·¤Ê¤¤ */
+  return (unsigned char *)NULL; /* 該当するキーシーケンスは存在しない */
 }
 
-/* ¥Ï¥Ã¥·¥å¥Æ¡¼¥Ö¥ë¤ËÅÐÏ¿ */
+/* ハッシュテーブルに登録 */
 static void
-regist_act_hash(unsigned char *tbl_ptr, unsigned char key, unsigned char *buff)
+regist_act_hash(tbl_ptr, key, buff)
+unsigned char *tbl_ptr;
+unsigned char key;
+unsigned char *buff;
 {
   unsigned int hashKey;
   struct seq_struct *p, **pp;
@@ -506,9 +510,12 @@ regist_act_hash(unsigned char *tbl_ptr, unsigned char key, unsigned char *buff)
   }
 }  
 
-/* ¥Ï¥Ã¥·¥å¥Æ¡¼¥Ö¥ë¤«¤éºï½ü */
+/* ハッシュテーブルから削除 */
 static void
-remove_hash(unsigned char *tbl_ptr, unsigned char key, int which_seq)
+remove_hash(tbl_ptr, key, which_seq)
+unsigned char *tbl_ptr;
+unsigned char key;
+int which_seq;
 {
   unsigned int hashKey;
   struct seq_struct *p, **pp;
@@ -524,7 +531,8 @@ remove_hash(unsigned char *tbl_ptr, unsigned char key, int which_seq)
 }
 
 static void
-freeChain(struct seq_struct *p)
+freeChain(p)
+struct seq_struct *p;
 {
   struct seq_struct *nextp;
 
@@ -537,7 +545,7 @@ freeChain(struct seq_struct *p)
 }
 
 static void
-clearAllFuncSequence(void)
+clearAllFuncSequence()
 {
   int i;
 
@@ -548,7 +556,8 @@ clearAllFuncSequence(void)
 }
 
 static void
-freeKeySeqMode(KanjiMode m)
+freeKeySeqMode(m)
+KanjiMode m;
 {
   if (m) {
     if (m->keytbl) {
@@ -559,7 +568,8 @@ freeKeySeqMode(KanjiMode m)
 }
 
 static void
-freeMap(struct map *m)
+freeMap(m)
+struct map *m;
 {
   struct map *n;
 
@@ -572,7 +582,7 @@ freeMap(struct map *m)
 }
 
 static void
-clearAllKeySequence(void)
+clearAllKeySequence()
 {
   int i;
 
@@ -583,46 +593,55 @@ clearAllKeySequence(void)
 }
 
 static
-int specialen(unsigned char *block)
+specialen(block)
+unsigned char *block;
 {
   int i;
   for (i = 0 ; block[i] != 255 ;) {
     i++;
   }
   debug_message("specialen:\304\271\244\265\244\317%d\244\311\244\271\241\243\n",i,0,0);
-                /* specialen:Ä¹¤µ¤Ï%d¤É¤¹¡£ */
+                /* specialen:長さは%dどす。 */
   return i;
 }
 
 static
-int to_write_act(int depth, int keysize, int actsize, unsigned singleAct)
+to_write_act(depth,keysize,actsize,singleAct)
+int depth;
+int keysize;
+int actsize;
+unsigned singleAct;
 {
   if (depth == (keysize -2)) {
     if (actsize > 1){
       debug_message("to_write_act:CANNA_FN_FuncSequence\244\307\244\271\241\243\n",0,0,0);
-                                                     /* ¤Ç¤¹¡£ */
+                                                     /* です。 */
       return CANNA_FN_FuncSequence;
     }
     if (actsize == 1) {
       debug_message("to_write_act:singleAct%d\244\307\244\271\241\243\n",singleAct,0,0);
-                                              /* ¤Ç¤¹¡£ */
+                                              /* です。 */
       return (int)singleAct;
     }
-    else { /* Í­¤êÆÀ¤Ê¤¤¡© */
+    else { /* 有り得ない？ */
       return 0;
     }
   } else if (depth < (keysize -2)){
     debug_message("to_write_act:CANNA_FN_UseOtherKeymap\244\307\244\271\241\243\n",0,0,0);
-                                              /* ¤Ç¤¹¡£ */
+                                              /* です。 */
     return CANNA_FN_UseOtherKeymap;
   }
-  else { /* Í­¤êÆÀ¤Ê¤¤¡© */
+  else { /* 有り得ない？ */
     return 0;
   }
 }
 
 static struct map *
-regist_map(KanjiMode tbl, unsigned char *keybuff, unsigned char *actbuff, int depth)
+regist_map(tbl, keybuff, actbuff, depth)
+KanjiMode tbl;
+unsigned char *keybuff;
+unsigned char *actbuff;
+int      depth;
 {
   unsigned int hashKey;
   int sequencelen, keybuffsize, actbuffsize, offs;
@@ -634,14 +653,14 @@ regist_map(KanjiMode tbl, unsigned char *keybuff, unsigned char *actbuff, int de
   hashKey = 
     createHashKey((unsigned char *)tbl, keybuff[depth], KEYHASHTABLESIZE);
   debug_message("regist_map:hashKey = %d \244\307\244\271\241\243\n",hashKey,0,0);
-                                         /* ¤Ç¤¹¡£ */
+                                         /* です。 */
   for (pp = &otherMap[hashKey]; (p = *pp) != (struct map *)0 ;
        pp = &(p->next)) {
     if (p->key == keybuff[depth] && p->tbl == tbl) { 
       for (q = p->mode->keytbl; *q != 255; q += 2) {
-	if (*q == keybuff[depth+1]) {  /* ´û¤ËÆ±¤¸¥­¡¼¤¬Â¸ºß¤·¤¿¡£ */
+	if (*q == keybuff[depth+1]) {  /* 既に同じキーが存在した。 */
 	  ++q;
-	  prevfunc = *q; /* ¤½¤Î¥­¡¼¤Îº£¤Þ¤Ç¤Îµ¡Ç½¤ò¼è¤Ã¤Æ¤ª¤¯ */
+	  prevfunc = *q; /* そのキーの今までの機能を取っておく */
 	  *q = to_write_act(depth,keybuffsize,actbuffsize,actbuff[0]);
 	  if(prevfunc == CANNA_FN_UseOtherKeymap &&
 	     *q != CANNA_FN_UseOtherKeymap) {
@@ -652,11 +671,11 @@ regist_map(KanjiMode tbl, unsigned char *keybuff, unsigned char *actbuff, int de
 			    actbuff);
 	  }
 	  debug_message("regist_map:\264\373\244\313\306\261\244\270\245\255\241\274\244\254\302\270\272\337:q=%d\n",*q,0,0);
-                        /* ´û¤ËÆ±¤¸¥­¡¼¤¬Â¸ºß */
+                        /* 既に同じキーが存在 */
 	  return p;
 	}
       }
-      /* ¤½¤³¤Þ¤Ç¤Î¡¢¥­¡¼¤ÎÍúÎò¤Ï¤¢¤Ã¤¿¤¬¤³¤Î¥­¡¼:keybuff[depth +1]¤Ï½é¤á¤Æ */
+      /* そこまでの、キーの履歴はあったがこのキー:keybuff[depth +1]は初めて */
       sequencelen = specialen(p->mode->keytbl);
       offs = q - p->mode->keytbl;
       if (p->mode->keytbl) {
@@ -678,12 +697,12 @@ regist_map(KanjiMode tbl, unsigned char *keybuff, unsigned char *actbuff, int de
 	"\244\303\244\277\244\254\244\263\244\316\245\255\241\274%u\244\317"
 	"\275\351\244\341\244\306\n",
 		    p->mode->keytbl[sequencelen-3],0,0);
-                /* ¤½¤³¤Þ¤Ç¤Î¡¢¥­¡¼¤ÎÍúÎò¤Ï¤¢¤Ã¤¿¤¬¤³¤Î¥­¡¼%u¤Ï½é¤á¤Æ */
-      debug_message("regist_map:sequencelen¤Ï%d¤Ç¤¹¡£\n",sequencelen,0,0);
+                /* そこまでの、キーの履歴はあったがこのキー%uは初めて */
+      debug_message("regist_map:sequencelenは%dです。\n",sequencelen,0,0);
       return p;
     }
   }
-  /* ²áµî¤ÎÍúÎò¤ÏÁ´¤Æ¤Ê¤·¤Î¤Ï¤º¡¢¿·µ¬¤ËºîÀ® */
+  /* 過去の履歴は全てなしのはず、新規に作成 */
   p = *pp = (struct map *)malloc(sizeof(struct map));
   if (p) {
     p->tbl = tbl;
@@ -697,7 +716,7 @@ regist_map(KanjiMode tbl, unsigned char *keybuff, unsigned char *actbuff, int de
 	p->mode->keytbl[0] = keybuff[depth +1];
 	p->mode->keytbl[1] = to_write_act(depth,keybuffsize,actbuffsize,actbuff[0]);
 	debug_message("regist_map:p->mode->keytbl[1]\244\317%d\244\307\244\271\241\243\n",p->mode->keytbl[1],0,0);
-                                                  /* ¤Ï%d¤Ç¤¹¡£ */
+                                                  /* は%dです。 */
 	p->mode->keytbl[2] = (BYTE)-1;
 
         p->next = (struct map *)NULL;
@@ -706,35 +725,38 @@ regist_map(KanjiMode tbl, unsigned char *keybuff, unsigned char *actbuff, int de
         }
         return p;
       }
-      free(p->mode);
+      free((char *)p->mode);
     }
-    free(p);
+    free((char *)p);
   }
   return (struct map *)0;
 }
 
 struct map *
-mapFromHash(KanjiMode tbl, unsigned char key, struct map ***ppp)
+mapFromHash(tbl, key, ppp)
+KanjiMode tbl;
+unsigned char key;
+struct map ***ppp;
 {
   unsigned int hashKey;
   struct map *p, **pp;
 
   hashKey = createHashKey((unsigned char *)tbl, key, KEYHASHTABLESIZE);
-  debug_message("mapFromHash:hashKey¤Ï%d\n",hashKey,0,0);
+  debug_message("mapFromHash:hashKeyは%d\n",hashKey,0,0);
   for(pp = otherMap + hashKey ; (p = *pp) != (struct map *)0 ;
       pp = &(p->next)) {
     if (p->tbl == tbl && p->key == key) {
       debug_message("mapFromHash:map\244\254\244\337\244\304\244\253\244\352"
 	"\244\336\244\267\244\277\241\243\n",0,0,0);
-                            /* ¤¬¤ß¤Ä¤«¤ê¤Þ¤·¤¿¡£ */
+                            /* がみつかりました。 */
       if (ppp) {
 	*ppp = pp;
       }
       return p;
     }
   }
-#ifndef WIN
-  debug_message("mapFromHash:map¤¬¤ß¤Ä¤«¤ê¤Þ¤»¤ó¡£\n",0,0,0);
+#ifdef CODED_MESSAGE
+  debug_message("mapFromHash:mapがみつかりません。\n",0,0,0);
 #else
   debug_message("mapFromHash:map\244\254\244\337\244\304\244\253\244\352"
 	"\244\336\244\273\244\363\241\243\n",0,0,0);
@@ -743,7 +765,10 @@ mapFromHash(KanjiMode tbl, unsigned char key, struct map ***ppp)
 }
 
 static int
-regist_key_hash(unsigned char *tbl_ptr, unsigned char *keybuff, unsigned char *actbuff)
+regist_key_hash(tbl_ptr,keybuff, actbuff)
+unsigned char *tbl_ptr;
+unsigned char *keybuff;
+unsigned char *actbuff;
 {
   struct map *map_ptr;
   int keybuffsize, i;
@@ -759,16 +784,18 @@ regist_key_hash(unsigned char *tbl_ptr, unsigned char *keybuff, unsigned char *a
       return NG;
     }
   }
-  debug_message("regist_key_hash:keybuffsize\244\317%d¡¡actbuffsize"
-	"\244\317¤Ï%d¡¡i\244\317%d\244\307\244\271\241\243\n",
+  debug_message("regist_key_hash:keybuffsize\244\317%d　actbuffsize"
+	"\244\317は%d　i\244\317%d\244\307\244\271\241\243\n",
 		keybuffsize,strlen(actbuff),i);
-                                     /* ¤Ï */ /* ¤Ï */ /* ¤Ï */ /* ¤Ç¤¹¡£ */
+                                     /* は */ /* は */ /* は */ /* です。 */
   return 0;
 }
 
 static
 int
-copyMultiSequence(unsigned char key, KanjiMode old_tbl, KanjiMode new_tbl)
+copyMultiSequence(key, old_tbl, new_tbl)
+     unsigned char	key;
+     KanjiMode		old_tbl, new_tbl;
 {
   unsigned char hashKey;
   unsigned char *old_sequence, *new_sequence;
@@ -803,9 +830,9 @@ copyMultiSequence(unsigned char key, KanjiMode old_tbl, KanjiMode new_tbl)
 	    if (old_sequence[i] == CANNA_FN_UseOtherKeymap) {
 	      if (copyMultiSequence(old_sequence[i-1],
 				    old_map->mode, p->mode) < 0) {
-		free(p->mode->keytbl);
-		free(p->mode);
-		free(p);
+		free((char *)p->mode->keytbl);
+		free((char *)p->mode);
+		free((char *)p);
 		*pp = (struct map *)0;
 		return(-1);
 	      }		
@@ -817,13 +844,13 @@ copyMultiSequence(unsigned char key, KanjiMode old_tbl, KanjiMode new_tbl)
 	}
 	return 0;
       } else {
-	free(p->mode);
-	free(p);
+	free((char *)p->mode);
+	free((char *)p);
 	*pp = (struct map *)0;
 	return(-1);
       }
     } else {
-      free(p);
+      free((char *)p);
       *pp = (struct map *)0;
       return(-1);
     }
@@ -832,7 +859,9 @@ copyMultiSequence(unsigned char key, KanjiMode old_tbl, KanjiMode new_tbl)
 }
 
 static void
-freeMultiSequence(unsigned char key, KanjiMode tbl)
+freeMultiSequence(key, tbl)
+unsigned char key;
+KanjiMode tbl;
 {
   unsigned char *sequence;
   int i, sequencelen;
@@ -857,7 +886,7 @@ freeMultiSequence(unsigned char key, KanjiMode tbl)
   debug_message("\241\374\153\145\171\133\45\144\135\244\316\155\141\160\260"
 	"\312\262\274\244\362\245\325\245\352\241\274\244\267\244\306\244\244"
 	"\244\353\244\276\n",key,0,0);
-    /* ¡ükey[%d]¤Îmap°Ê²¼¤ò¥Õ¥ê¡¼¤·¤Æ¤¤¤ë¤¾ */
+    /* ●key[%d]のmap以下をフリーしているぞ */
   if (map->mode && sequence)
     free(sequence);
   if (map->mode)
@@ -865,10 +894,11 @@ freeMultiSequence(unsigned char key, KanjiMode tbl)
   free(map);
 }
 
-int askQuitKey(unsigned key)
+askQuitKey(key)
+unsigned key;
 {
   if (defaultmap[key] == CANNA_FN_Quit) {
-    return 1; /* ¼õ¤±¼è¤Ã¤¿key¤Ïquit¤À¤Ã¤¿¡£ */
+    return 1; /* 受け取ったkeyはquitだった。 */
   }
-  return 0; /* ¼õ¤±¼è¤Ã¤¿key¤Ïquit¤Ç¤Ê¤«¤Ã¤¿¡£ */
+  return 0; /* 受け取ったkeyはquitでなかった。 */
 }

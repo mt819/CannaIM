@@ -2,6 +2,8 @@ SubDir TOP Sources ;
 
 UsePrivateHeaders interface storage ;
 
+SubDirCcFlags -Wall -Wconversion-extra -O0 -g3 -fno-strict-aliasing -DCANNA_WCHAR16 -DCANNA_NEW_WCHAR_AWARE ;
+
 SubDirSysHdrs $(SUBDIR) ;
 SubDirHdrs [ FDirName $(SUBDIR) canna ] ;
 

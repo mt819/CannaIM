@@ -20,27 +20,25 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: ulmount.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: ulmount.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif
 
 #ifndef NO_EXTEND_MENU
 #include	<errno.h>
 #include 	"canna.h"
-#include "RK.h"
-#include "RKintern.h"
 
-static mountContext newMountContext(void);
-static void freeMountContext(mountContext mc);
-static struct dicname *findDic(char *s);
-static int uuMountExitCatch(uiContext d, int retval, mode_context env);
-static int uuMountQuitCatch(uiContext d, int retval, mode_context env);
-static int getDicList(uiContext d);
+#ifdef luna88k
+extern int errno;
+#endif
+
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
 
 /* cfunc mountContext
  *
@@ -48,14 +46,14 @@ static int getDicList(uiContext d);
  *
  */
 static mountContext
-newMountContext(void)
+newMountContext()
 {
   mountContext mcxt;
 
   if ((mcxt = (mountContext)calloc(1, sizeof(mountContextRec)))
                                            == (mountContext)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (newMountContext) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (newMountContext) できませんでした";
 #else
     jrKanjiError = "malloc (newMountContext) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
@@ -68,7 +66,8 @@ newMountContext(void)
 }
 
 static void
-freeMountContext(mountContext mc)
+freeMountContext(mc)
+mountContext mc;
 {
   if (mc) {
     if (mc->mountList) {
@@ -88,9 +87,10 @@ freeMountContext(mountContext mc)
 }
 
 /*
- * ¸õÊä°ìÍ÷¹Ô¤òºî¤ë
+ * 候補一覧行を作る
  */
-int getMountContext(uiContext d)
+getMountContext(d)
+uiContext d;
 {
   mountContext mc;
   int retval = 0;
@@ -98,8 +98,8 @@ int getMountContext(uiContext d)
   if (pushCallback(d, d->modec,
                    NO_CALLBACK, NO_CALLBACK,
                    NO_CALLBACK, NO_CALLBACK) == 0) {
-#ifndef WIN
-    jrKanjiError = "malloc (pushCallback) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (pushCallback) できませんでした";
 #else
     jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
@@ -121,7 +121,8 @@ int getMountContext(uiContext d)
 }
 
 void
-popMountMode(uiContext d)
+popMountMode(d)
+uiContext d;
 {
   mountContext mc = (mountContext)d->modec;
 
@@ -131,7 +132,8 @@ popMountMode(uiContext d)
 }
 
 static struct dicname *
-findDic(char *s)
+findDic(s)
+char *s;
 {
   extern struct dicname *kanjidicnames;
   struct dicname *dp;
@@ -145,32 +147,35 @@ findDic(char *s)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * ¼­½ñ¤Î¥Þ¥¦¥ó¥È¡¿¥¢¥ó¥Þ¥¦¥ó¥È                                              *
+ * 辞書のマウント／アンマウント                                              *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static
-int uuMountExitCatch(uiContext d, int retval, mode_context env)
+uuMountExitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
   mountContext mc;
   int i, nmount = 0;
-  extern int defaultContext;
+  extern defaultContext;
   struct dicname *dp;
 
   killmenu(d);
-  popCallback(d); /* OnOff ¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* OnOff をポップ */
 
   if(defaultContext == -1) {
     if((KanjiInit() != 0) || (defaultContext == -1)) {
 #ifdef STANDALONE
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
 #endif
 #else
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ÈÄÌ¿®¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換サーバと通信できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
 	"\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336"
@@ -187,7 +192,7 @@ int uuMountExitCatch(uiContext d, int retval, mode_context env)
   for(i=0; mc->mountList[i]; i++) {
     if(mc->mountOldStatus[i] != mc->mountNewStatus[i]) {
       if(mc->mountNewStatus[i]) {
-	/* ¥Þ¥¦¥ó¥È¤¹¤ë */
+	/* マウントする */
 	nmount++;
 	if((retval = RkwMountDic(defaultContext, (char *)mc->mountList[i],
 			    cannaconf.kojin ? PL_ALLOW : PL_INHIBIT)) == NG) {
@@ -197,7 +202,7 @@ int uuMountExitCatch(uiContext d, int retval, mode_context env)
 	  MBstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246"
 		"\245\363\245\310\244\313\274\272\307\324\244\267\244\336"
 		"\244\267\244\277", 512);
-                       /* ¼­½ñ¤Î¥Þ¥¦¥ó¥È¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+                       /* 辞書のマウントに失敗しました */
 	}
 	else if(d->contextCache != -1 &&
 	  (retval = RkwMountDic(d->contextCache, (char *)mc->mountList[i],
@@ -208,24 +213,24 @@ int uuMountExitCatch(uiContext d, int retval, mode_context env)
 	  MBstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246"
 		"\245\363\245\310\244\313\274\272\307\324\244\267\244\336"
 		"\244\267\244\277", 512);
-                              /* ¼­½ñ¤Î¥Þ¥¦¥ó¥È¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+                              /* 辞書のマウントに失敗しました */
 	}
-	else { /* À®¸ù */
+	else { /* 成功 */
 	  dp = findDic((char *)mc->mountList[i]);
 	  if (!dp) {
 	    dp = (struct dicname *)malloc(sizeof(struct dicname));
 	    if (dp) {
-	      dp->name = (char *)malloc(strlen((char *)mc->mountList[i]) + 1);
+	      dp->name = malloc(strlen((char *)mc->mountList[i]) + 1);
 	      if (dp->name) {
-		/* ¥Þ¥¦¥ó¥È¤·¤¿¤ä¤Ä¤Ï¥ê¥¹¥È¤Ë¤Ä¤Ê¤° */
+		/* マウントしたやつはリストにつなぐ */
 		strcpy(dp->name, (char *)mc->mountList[i]);
 		dp->dictype = DIC_PLAIN;
 		/* dp->dicflag = DIC_NOT_MOUNTED; will be rewritten below */
 		dp->next = kanjidicnames;
 		kanjidicnames = dp;
 	      }
-	      else { /* (char *)malloc failed */
-		free(dp);
+	      else { /* malloc failed */
+		free((char *)dp);
 		dp = (struct dicname *)0;
 	      }
 	    }
@@ -235,7 +240,7 @@ int uuMountExitCatch(uiContext d, int retval, mode_context env)
 	  }
 	}
       } else {
-	/* ¥¢¥ó¥Þ¥¦¥ó¥È¤¹¤ë */
+	/* アンマウントする */
 	nmount++;
 	if((retval = RkwUnmountDic(defaultContext, (char *)mc->mountList[i]))
 	   == NG) {
@@ -245,7 +250,7 @@ int uuMountExitCatch(uiContext d, int retval, mode_context env)
 	  MBstowcs(d->genbuf, "\274\255\275\361\244\316\245\242\245\363"
 		"\245\336\245\246\245\363\245\310\244\313\274\272\307\324"
 		"\244\267\244\336\244\267\244\277", 512);
-                             /* ¼­½ñ¤Î¥¢¥ó¥Þ¥¦¥ó¥È¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+                             /* 辞書のアンマウントに失敗しました */
 	}
 	else if(d->contextCache != -1 &&
 	  (retval = RkwUnmountDic(d->contextCache, (char *)mc->mountList[i]))
@@ -256,11 +261,11 @@ int uuMountExitCatch(uiContext d, int retval, mode_context env)
 	  MBstowcs(d->genbuf, "\274\255\275\361\244\316\245\242\245\363"
 		"\245\336\245\246\245\363\245\310\244\313\274\272\307\324"
 		"\244\267\244\336\244\267\244\277", 512);
-                             /* ¼­½ñ¤Î¥¢¥ó¥Þ¥¦¥ó¥È¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+                             /* 辞書のアンマウントに失敗しました */
 	}
 	else {
 	  dp = findDic((char *)mc->mountList[i]);
-	  if (dp) { /* ¤«¤Ê¤é¤º°Ê²¼¤òÄÌ¤ë¤Ï¤º */
+	  if (dp) { /* かならず以下を通るはず */
 	    dp->dicflag = DIC_NOT_MOUNTED;
 	  }
 	}
@@ -275,12 +280,12 @@ int uuMountExitCatch(uiContext d, int retval, mode_context env)
     MBstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246\245\363"
 	"\245\310\241\277\245\242\245\363\245\336\245\246\245\363\245\310"
 	"\244\362\271\324\244\244\244\336\244\267\244\277", 512);
-           /* ¼­½ñ¤Î¥Þ¥¦¥ó¥È¡¿¥¢¥ó¥Þ¥¦¥ó¥È¤ò¹Ô¤¤¤Þ¤·¤¿ */ 
+           /* 辞書のマウント／アンマウントを行いました */ 
   else
     MBstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246\245\363"
 	"\245\310\241\277\245\242\245\363\245\336\245\246\245\363\245\310"
 	"\244\313\274\272\307\324\244\267\244\336\244\267\244\277", 512);
-           /* ¼­½ñ¤Î¥Þ¥¦¥ó¥È¡¿¥¢¥ó¥Þ¥¦¥ó¥È¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+           /* 辞書のマウント／アンマウントに失敗しました */
   makeGLineMessage(d, d->genbuf, WStrlen(d->genbuf));
 
   popMountMode(d);
@@ -291,10 +296,13 @@ int uuMountExitCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int uuMountQuitCatch(uiContext d, int retval, mode_context env)
+uuMountQuitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 /* ARGSUSED */
 {
-  popCallback(d); /* OnOff ¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* OnOff をポップ */
 
   popMountMode(d);
   popCallback(d);
@@ -305,22 +313,23 @@ int uuMountQuitCatch(uiContext d, int retval, mode_context env)
 
 /*
  * dicLbuf                dicLp       soldp   snewp
- * ¨£¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¤ ¨£¨¡¨¡¨¡¨¤  ¨£¨¡¨¤  ¨£¨¡¨¤
- * ¨¢iroha\@fuzokugo\@k¨¢ ¨¢*iroha¨¢  ¨¢1 ¨¢  ¨¢1 ¨¢
- * ¨¢atakana\@satoko\@s¨¢ ¨¢*fuzo ¨¢  ¨¢1 ¨¢  ¨¢1 ¨¢
- * ¨¢oft\@\@...        ¨¢ ¨¢*kata ¨¢  ¨¢0 ¨¢  ¨¢0 ¨¢
- * ¨¢                  ¨¢ ¨¢  :   ¨¢  ¨¢: ¨¢  ¨¢: ¨¢
- * ¨¦¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¥ ¨¦¨¡¨¡¨¡¨¥  ¨¦¨¡¨¥  ¨¦¨¡¨¥
+ * ┌─────────┐ ┌───┐  ┌─┐  ┌─┐
+ * │iroha\@fuzokugo\@k│ │*iroha│  │1 │  │1 │
+ * │atakana\@satoko\@s│ │*fuzo │  │1 │  │1 │
+ * │oft\@\@...        │ │*kata │  │0 │  │0 │
+ * │                  │ │  :   │  │: │  │: │
+ * └─────────┘ └───┘  └─┘  └─┘
  * dicMbuf                dicMp
- * ¨£¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¤ ¨£¨¡¨¡¨¡¨¤
- * ¨¢iroha\@fuzokugo\@s¨¢ ¨¢*iroha¨¢
- * ¨¢atoko\@\@...      ¨¢ ¨¢*fuzo ¨¢
- * ¨¢                  ¨¢ ¨¢*sato ¨¢
- * ¨¢                  ¨¢ ¨¢  :   ¨¢
- * ¨¦¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¥ ¨¦¨¡¨¡¨¡¨¥
+ * ┌─────────┐ ┌───┐
+ * │iroha\@fuzokugo\@s│ │*iroha│
+ * │atoko\@\@...      │ │*fuzo │
+ * │                  │ │*sato │
+ * │                  │ │  :   │
+ * └─────────┘ └───┘
  */
 static
-int getDicList(uiContext d)
+getDicList(d)
+uiContext d;
 {
   mountContext mc = (mountContext)d->modec;
   char *dicLbuf, dicMbuf[ROMEBUFSIZE];
@@ -328,11 +337,11 @@ int getDicList(uiContext d)
   char *wptr, **Lp, **Mp;
   BYTE *sop, *snp, *soldp, *snewp;
   int dicLc, dicMc, i;
-  extern int defaultContext;
+  extern defaultContext;
 
-  if((dicLbuf = (char *)malloc(ROMEBUFSIZE)) == (char *)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (getDicList) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+  if((dicLbuf = malloc(ROMEBUFSIZE)) == (char *)NULL) {
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (getDicList) できませんでした";
 #else
     jrKanjiError = "malloc (getDicList) \244\307\244\255\244\336\244\273";
 #endif
@@ -341,14 +350,14 @@ int getDicList(uiContext d)
   if(defaultContext == -1) {
     if((KanjiInit() != 0) || (defaultContext == -1)) {
 #ifdef STANDALONE
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
 #endif
 #else
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ÈÄÌ¿®¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換サーバと通信できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271"
 	"\245\265\241\274\245\320\244\310\304\314\277\256\244\307\244\255"
@@ -366,7 +375,7 @@ int getDicList(uiContext d)
     jrKanjiError = "\245\336\245\246\245\363\245\310\262\304\307\275\244\312"
 	"\274\255\275\361\244\316\274\350\244\352\275\320\244\267\244\313"
 	"\274\272\307\324\244\267\244\336\244\267\244\277";
-                   /* ¥Þ¥¦¥ó¥È²ÄÇ½¤Ê¼­½ñ¤Î¼è¤ê½Ð¤·¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+                   /* マウント可能な辞書の取り出しに失敗しました */
     free(dicLbuf);
     return(NG);
   }
@@ -374,13 +383,13 @@ int getDicList(uiContext d)
     jrKanjiError = "\245\336\245\246\245\363\245\310\262\304\307\275\244\312"
 	"\274\255\275\361\244\254\302\270\272\337\244\267\244\336\244\273"
 	"\244\363";
-                   /* ¥Þ¥¦¥ó¥È²ÄÇ½¤Ê¼­½ñ¤¬Â¸ºß¤·¤Þ¤»¤ó */
+                   /* マウント可能な辞書が存在しません */
     free(dicLbuf);
     return NG;
   }
   if((dicLp = (char **)calloc(dicLc + 1, sizeof(char *))) == (char **)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (getDicList) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (getDicList) できませんでした";
 #else
     jrKanjiError = "malloc (getDicList) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
@@ -389,8 +398,8 @@ int getDicList(uiContext d)
     return(NG);
   }
   if((soldp = (BYTE *)malloc(dicLc + 1)) == (BYTE *)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (getDicList) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (getDicList) できませんでした";
 #else
     jrKanjiError = "malloc (getDicList) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
@@ -400,36 +409,36 @@ int getDicList(uiContext d)
     return(NG);
   }
   if((snewp = (BYTE *)malloc(dicLc + 1)) == (BYTE *)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (getDicList) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (getDicList) できませんでした";
 #else
     jrKanjiError = "malloc (getDicList) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
 #endif
     free(dicLbuf);
     free(dicLp);
-    free(soldp);
+    free((char *)soldp);
     return(NG);
   }
-  for(i = 0, wptr = dicLbuf; i < dicLc; i++) { /* buf ¤òºî¤ë */
+  for(i = 0, wptr = dicLbuf; i < dicLc; i++) { /* buf を作る */
     dicLp[i] = wptr;
     while(*wptr++)
       /* EMPTY */
-      ; /* NULL ¤Þ¤Ç¥¹¥­¥Ã¥×¤·¡¢NULL ¤Î¼¡¤Þ¤Ç¥Ý¥¤¥ó¥¿¤ò¿Ê¤á¤ë */
+      ; /* NULL までスキップし、NULL の次までポインタを進める */
   }
   dicLp[i] = (char *)NULL;
 
   if(defaultContext == -1) {
     if((KanjiInit() != 0) || (defaultContext == -1)) {
 #ifdef STANDALONE
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
 #endif
 #else
-#ifndef WIN
-      jrKanjiError = "¤«¤Ê´Á»úÊÑ´¹¥µ¡¼¥Ð¤ÈÄÌ¿®¤Ç¤­¤Þ¤»¤ó";
+#ifdef CODED_MESSAGE
+      jrKanjiError = "かな漢字変換サーバと通信できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271"
 	"\245\265\241\274\245\320\244\310\304\314\277\256\244\307\244\255"
@@ -438,7 +447,7 @@ int getDicList(uiContext d)
 #endif
       free(dicLbuf);
       free(dicLp);
-      free(soldp);
+      free((char *)soldp);
       return(NG);
     }
   }
@@ -449,19 +458,19 @@ int getDicList(uiContext d)
     jrKanjiError = "\245\336\245\246\245\363\245\310\244\267\244\306\244\244"
 	"\244\353\274\255\275\361\244\316\274\350\244\352\275\320\244\267"
 	"\244\313\274\272\307\324\244\267\244\336\244\267\244\277";
-                   /* ¥Þ¥¦¥ó¥È¤·¤Æ¤¤¤ë¼­½ñ¤Î¼è¤ê½Ð¤·¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+                   /* マウントしている辞書の取り出しに失敗しました */
     free(dicLbuf);
     free(dicLp);
-    free(soldp);
-    free(snewp);
+    free((char *)soldp);
+    free((char *)snewp);
     return(NG);
   }
 
-  for(i = 0, wptr = dicMbuf ; i < dicMc ; i++) { /* buf ¤òºî¤ë */
+  for(i = 0, wptr = dicMbuf ; i < dicMc ; i++) { /* buf を作る */
     dicMp[i] = wptr;
     while (*wptr++)
       /* EMPTY */
-      ; /* NULL ¤Þ¤Ç¥¹¥­¥Ã¥×¤·¡¢NULL ¤Î¼¡¤Þ¤Ç¥Ý¥¤¥ó¥¿¤ò¿Ê¤á¤ë */
+      ; /* NULL までスキップし、NULL の次までポインタを進める */
   }
   dicMp[i] = (char *)NULL;
 
@@ -484,12 +493,13 @@ int getDicList(uiContext d)
   return(dicLc);
 }
 
-int dicMount(uiContext d)
+dicMount(d)
+uiContext d;
 {
   ichiranContext oc;
   mountContext mc;
   int retval = 0, currentkouho = 0, nelem;
-  WCHAR_T *xxxx[100];
+  wchar_t *xxxx[100];
   yomiContext yc = (yomiContext)d->modec;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
@@ -502,7 +512,7 @@ int dicMount(uiContext d)
     return(GLineNGReturn(d));
   }
 
-  /* ¼­½ñ¥ê¥¹¥È¤È¥Þ¥¦¥ó¥È¡¿¥¢¥ó¥Þ¥¦¥ó¥È¤Î¾õÂÖ¤ò montContext ¤Ë¤È¤Ã¤Æ¤¯¤ë */
+  /* 辞書リストとマウント／アンマウントの状態を montContext にとってくる */
   if((nelem = getDicList(d)) == NG) {
     popMountMode(d);
     popCallback(d);
@@ -511,11 +521,11 @@ int dicMount(uiContext d)
   }
 
   mc = (mountContext)d->modec;
-#if defined(DEBUG) && !defined(WIN)
+#if defined(DEBUG)
   if(iroha_debug) {
     int i;
 
-    printf("<¡úmount>\n");
+    printf("<★mount>\n");
     for(i= 0; mc->mountList[i]; i++)
       printf("[%s][%x][%x]\n", mc->mountList[i],
 	     mc->mountOldStatus[i], mc->mountNewStatus[i]);
@@ -523,7 +533,7 @@ int dicMount(uiContext d)
   }
 #endif
 
-  /* selectOnOff ¤ò¸Æ¤Ö¤¿¤á¤Î½àÈ÷ */
+  /* selectOnOff を呼ぶための準備 */
   mc->curIkouho = currentkouho = 0;
 
   retval = setWStrings(xxxx, mc->mountList, 0);
@@ -535,8 +545,8 @@ int dicMount(uiContext d)
   }
   if((retval = selectOnOff(d, xxxx, &mc->curIkouho, nelem,
 		 BANGOMAX, currentkouho, mc->mountOldStatus,
-		 (int(*)(...))NO_CALLBACK, (int(*)(...))uuMountExitCatch,
-		 (int(*)(...))uuMountQuitCatch, (int(*)(...))uiUtilIchiranTooSmall)) == NG) {
+		 NO_CALLBACK, uuMountExitCatch,
+		 uuMountQuitCatch, uiUtilIchiranTooSmall)) == NG) {
     popMountMode(d);
     popCallback(d);
     killmenu(d);
@@ -548,16 +558,12 @@ int dicMount(uiContext d)
   oc->minorMode = CANNA_MODE_MountDicMode;
   currentModeInfo(d);
 
-  /* ¸õÊä°ìÍ÷¹Ô¤¬¶¹¤¯¤Æ¸õÊä°ìÍ÷¤¬½Ð¤»¤Ê¤¤ */
+  /* 候補一覧行が狭くて候補一覧が出せない */
   if(oc->tooSmall) {
-#ifndef WIN
-    WCHAR_T p[512];
-#else
-    WCHAR_T p[64];
-#endif
+    wchar_t p[512];
 
     ichiranFin(d);
-    popCallback(d); /* OnOff ¤ò¥Ý¥Ã¥× */
+    popCallback(d); /* OnOff をポップ */
     popMountMode(d);
     popCallback(d);
     currentModeInfo(d);
@@ -566,7 +572,7 @@ int dicMount(uiContext d)
 		"\245\336\245\246\245\363\245\310\241\277\245\242\245\363"
 		"\245\336\245\246\245\363\245\310\244\307\244\255\244\336"
 		"\244\273\244\363",64);
-         /* ¼­½ñ°ìÍ÷ÍÑ¤ÎÉý¤¬¶¹¤¤¤Î¤Ç¼­½ñ¥Þ¥¦¥ó¥È¡¿¥¢¥ó¥Þ¥¦¥ó¥È¤Ç¤­¤Þ¤»¤ó */
+         /* 辞書一覧用の幅が狭いので辞書マウント／アンマウントできません */
     makeGLineMessage(d, p, WStrlen(p));
     killmenu(d);
     return(0);
@@ -577,4 +583,13 @@ int dicMount(uiContext d)
 
   return(retval);
 }
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/
+
 #endif /* NO_EXTEND_MENU */

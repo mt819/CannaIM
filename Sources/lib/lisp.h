@@ -20,7 +20,7 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/* $Id: lisp.h 10525 2004-12-23 21:23:50Z korli $ */
+/* $Id: lisp.h,v 1.3 2003/09/17 10:15:09 aida_s Exp $ */
 
 #include "canna.h"
 
@@ -33,18 +33,11 @@
 #define VALGET  1
 #define VALSET  0
 
-#ifdef WIN
-#define CELLSIZE	5120	/* size of cell area (byte)		*/
-#else
 #define CELLSIZE	10240	/* size of cell area (byte)		*/
-#endif
 
 #define STKSIZE		1024	/* the depth of value & parameter stack	*/
 #define BUFSIZE	 	256	/* universal buffer size (byte)		*/
 
-#ifdef NIL
-#undef NIL
-#endif
 #define NIL	   0L		/* internal expression of NIL		*/
 #define UNBOUND	  -2L		/* unbound mark of variable		*/
 #define NON	  -1L		/* the mark of No. (unable to use NO)	*/
@@ -102,10 +95,12 @@ typedef POINTERINT	pointerint;
 
 #define mknum(x)	(NUMBER_TAG | ((x) & CELL_MASK))
 
-#ifdef BIGPOINTER
+#if SIZEOF_VOID_P == 8
 #define xnum(x)   ((((x) & 0x00800000)) ? (x | 0xffffffffff000000) : (x & 0x00ffffff))
-#else
+#elif SIZEOF_VOID_P == 4
 #define xnum(x)   ((((x) & 0x00800000)) ? (x | 0xff000000) : (x & 0x00ffffff))
+#else
+#error unsupported memory model
 #endif
 
 #define xstring(x) (((struct stringcell *)(celltop + celloffset(x)))->str)
@@ -125,8 +120,8 @@ struct atomcell {
   list	value;
   char	*pname;
   int	ftype;
-  list 	(*func)(...);
-  list  (*valfunc)(...);
+  list 	(*func)();
+  list  (*valfunc)();
   int	mid;
   int	fid;
   list	hlink;
@@ -144,7 +139,7 @@ struct gccell {
 struct atomdefs {
 	char	*symname;
 	int	symtype;
-	list	(*symfunc)(...);
+	list	(*symfunc)();
 };
 
 struct cannafndefs {
@@ -159,5 +154,5 @@ struct cannamodedefs {
 
 struct cannavardefs {
   char *varname;
-  list (*varfunc)(...);
+  list (*varfunc)();
 };

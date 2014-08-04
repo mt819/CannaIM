@@ -19,17 +19,15 @@
  * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
  * PERFORMANCE OF THIS SOFTWARE. 
  */
-// Modified by T.Murai
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char kigomap_id[] = "@(#) 102.1 $Id: kigomap.h 14875 2005-11-12 21:25:31Z bonefish $";
+static char kigomap_id[] = "@(#) 102.1 $Id: kigomap.h,v 1.1.1.1 2002/10/19 08:27:50 aida_s Exp $";
 #endif /* lint */
 
 #ifdef NO_EXTEND_MENU
 static struct funccfunc kigo_funcs[] = {{0, 0},};
 #else
-extern int DoFuncSequence();
-extern int UseOtherKeymap();
+extern DoFuncSequence(),UseOtherKeymap();
 
 static struct funccfunc kigo_funcs[] = {
   {CANNA_FN_KigouMode		,KigoQuit		},
@@ -51,8 +49,6 @@ static struct funccfunc kigo_funcs[] = {
   {0				,0			},
 };
 #endif /* NO_EXTEND_MENU */
-
-extern int searchfunc(...);
 
 KanjiModeRec kigo_mode = {
   searchfunc,

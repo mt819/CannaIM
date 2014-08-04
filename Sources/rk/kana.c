@@ -21,7 +21,7 @@
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="@(#) 102.1 $Id: kana.c 10525 2004-12-23 21:23:50Z korli $";
+static char rcsid[]="@(#) 102.1 $Id: kana.c,v 1.2 2003/09/17 08:50:52 aida_s Exp $";
 #endif
 
 /* LINTLIBRARY */
@@ -36,12 +36,11 @@ static char rcsid[]="@(#) 102.1 $Id: kana.c 10525 2004-12-23 21:23:50Z korli $";
 #define SUUJI_WITHKANJIUNIT	6
 #define SUUJI_WITHCOMMA		7
 
-#if 0
 /* RkCvtZen
  *	hankaku moji wo zenkaku moji ni suru 
  */
 static
-WCHAR_T
+Wchar
 hiragana[] = 
 {
 /* 0x00 */
@@ -95,7 +94,7 @@ hiragana[] =
 };
 
 static
-WCHAR_T	
+Wchar	
 hankaku[] = {
 /*0x00*/
 	0x0000, 0x0000, 0x0000, 0x0000,		0x0000, 0x0000, 0x0000, 0x0000,
@@ -147,8 +146,6 @@ hankaku[] = {
 	0x0000, 0x0000, 0x0000, 0x0000,		0x0000, 0x0000, 0x0000, 0x0000,
 };
 
-#endif
-
 #ifdef OBSOLETE_RKKANA
 
 #define	ADDCODE(dst, maxdst, count, code, length) {\
@@ -169,13 +166,11 @@ hankaku[] = {
 
 #else /* !OBSOLETE_RKKANA */
 
-#include "RKproto.h"
-static int _ADDCODE(unsigned char *dst, int maxdst, int count, unsigned long code, int length);
-static int euccharlen(unsigned char *s, int bytelen);
-static int Wcstosjis(char *dst, int dstlen, WCHAR_T *src, int srclen);
-
 static int
-_ADDCODE(unsigned char *dst, int maxdst, int count, unsigned long code, int length)
+_ADDCODE(dst, maxdst, count, code, length)
+unsigned char *dst;
+int maxdst, count, length;
+unsigned long code;
 {
   if ((unsigned long)length <= (unsigned long)maxdst) {
     maxdst -= length;
@@ -209,10 +204,10 @@ _ADDCODE(unsigned char *dst, int maxdst, int count, unsigned long code, int leng
     }\
 }
 
-#if 0
-
 static int
-euccharlen(unsigned char *s, int bytelen)
+euccharlen(s, bytelen)
+     unsigned char	*s;
+     int		bytelen;
 {
   unsigned char	ch;
   int		res = 0;
@@ -231,19 +226,24 @@ euccharlen(unsigned char *s, int bytelen)
   return res;
 }
 
+#ifndef __HAIKU__
 /* RkCvtZen
  *	hankaku moji(ASCII+katakana) wo taiou suru zenkaku moji ni suru
  *	dakuten,handakuten shori mo okonau.
  */
-int RkCvtZen (unsigned char *, int, unsigned char *, int);
+int RkCvtZen pro((unsigned char *, int, unsigned char *, int));
 
 int
-RkCvtZen(unsigned char *zen, int maxzen, unsigned char *han, int maxhan)
+RkCvtZen(zen, maxzen, han, maxhan)
+     unsigned char	*zen;
+     int		maxzen;
+     unsigned char	*han;
+     int		maxhan;
 {
   unsigned char	*z = zen;
   unsigned char	*h = han;
   unsigned char	*H = han + maxhan;
-  WCHAR_T		hi, lo;
+  Wchar		hi, lo;
   unsigned 	byte;
   int 		count = 0;
   unsigned long	code;
@@ -284,7 +284,7 @@ RkCvtZen(unsigned char *zen, int maxzen, unsigned char *han, int maxhan)
     }
     else if (hi == 0x8f) {
       ADDCODE(z, maxzen, count, hi, 1);
-      code = (((WCHAR_T) h[0]) << 8) | ((WCHAR_T) h[1]); h += 2;
+      code = (((Wchar) h[0]) << 8) | ((Wchar) h[1]); h += 2;
       byte = 2;
     } else if ( hi & 0x80 )
       code = (hi<<8)|*h++;
@@ -303,16 +303,20 @@ RkCvtZen(unsigned char *zen, int maxzen, unsigned char *han, int maxhan)
 /* RkCvtHan
  *	zenkaku kana moji wo hankaku moji ni suru 
  */
-int RkCvtHan (unsigned char *, int, unsigned char *, int);
+int RkCvtHan pro((unsigned char *, int, unsigned char *, int));
 
 int
-RkCvtHan(unsigned char *han, int maxhan, unsigned char *zen, int maxzen)
+RkCvtHan(han, maxhan, zen, maxzen)
+     unsigned char	*han;
+     int		maxhan;
+     unsigned char	*zen;
+     int		maxzen;
 {
   unsigned char	*h = han;
   unsigned char	*z = zen;
   unsigned char	*Z = zen + maxzen;
-  WCHAR_T		hi, lo;
-  WCHAR_T		byte;
+  Wchar		hi, lo;
+  Wchar		byte;
   int 		count = 0;
   unsigned long	code;
 
@@ -342,7 +346,7 @@ RkCvtHan(unsigned char *han, int maxhan, unsigned char *zen, int maxzen)
     case	0xa5:	/* katakana */
       lo = *z++;
       if ( (code = hankaku[lo]) &&
-	  (lo <= (WCHAR_T)(hi == 0xa4 ? 0xf3 : 0xf6)) ) {
+	  (lo <= (Wchar)(hi == 0xa4 ? 0xf3 : 0xf6)) ) {
 	if ( code>>8 ) {
 	  code = 0x8e000000|((code>>8)<<16)|0x00008e00|LOMASK(code);
 	  byte = 4;
@@ -358,7 +362,7 @@ RkCvtHan(unsigned char *han, int maxhan, unsigned char *zen, int maxzen)
     default:
       if (hi == 0x8f) {
 	ADDCODE(h, maxhan, count, hi, 1);
-	code = (((WCHAR_T) z[0]) << 8) | ((WCHAR_T) z[1]); z += 2;
+	code = (((Wchar) z[0]) << 8) | ((Wchar) z[1]); z += 2;
 	byte = 2;
       }
       else if ( hi & 0x80 ) { 	/* kanji */
@@ -386,16 +390,20 @@ RkCvtHan(unsigned char *han, int maxhan, unsigned char *zen, int maxzen)
 /* RkCvtKana/RkCvtHira
  *	zenkaku hiragana wo katakana ni suru 
  */
-int RkCvtKana (unsigned char *, int, unsigned char *, int);
+int RkCvtKana pro((unsigned char *, int, unsigned char *, int));
 
 int
-RkCvtKana(unsigned char *kana, int maxkana, unsigned char *hira, int maxhira)
+RkCvtKana(kana, maxkana, hira, maxhira)
+     unsigned char	*kana;
+     int		maxkana;
+     unsigned char	*hira;
+     int		maxhira;
 {
   unsigned char	*k = kana;
   unsigned char	*h = hira;
   unsigned char	*H = hira + maxhira;
-  WCHAR_T		hi;
-  WCHAR_T		byte;
+  Wchar		hi;
+  Wchar		byte;
   int 		count = 0;
   unsigned long	code;
 
@@ -405,7 +413,7 @@ RkCvtKana(unsigned char *kana, int maxkana, unsigned char *hira, int maxhira)
     hi = *h++;
     if (hi == 0x8f) {
       ADDCODE(k, maxkana, count, hi, 1);
-      code = (((WCHAR_T) h[0]) << 8) | ((WCHAR_T) h[1]); h += 2;
+      code = (((Wchar) h[0]) << 8) | ((Wchar) h[1]); h += 2;
       byte = 2;
     }
     else if ( hi & 0x80 ) {
@@ -414,7 +422,7 @@ RkCvtKana(unsigned char *kana, int maxkana, unsigned char *hira, int maxhira)
       code = (hi == 0xa4) ? (0xa500|(*h++)) : ((hi<<8)|(*h++));
       byte = 2;
       /* hiragana U + " */
-      dakuon = ( h + 1 < H && ((((WCHAR_T) h[0])<<8)| ((WCHAR_T) h[1])) == 0xa1ab );
+      dakuon = ( h + 1 < H && ((((Wchar) h[0])<<8)| ((Wchar) h[1])) == 0xa1ab );
       if ( hi == 0xa4 && code == 0xa5a6 && dakuon ) {
 	code = 0xa5f4;
 	h += 2;
@@ -428,16 +436,20 @@ RkCvtKana(unsigned char *kana, int maxkana, unsigned char *hira, int maxhira)
   return count;
 }
 
-int RkCvtHira (unsigned char *, int, unsigned char *, int);
+int RkCvtHira pro((unsigned char *, int, unsigned char *, int));
 
 int
-RkCvtHira(unsigned char *hira, int maxhira, unsigned char *kana, int maxkana)
+RkCvtHira(hira, maxhira, kana, maxkana)
+     unsigned char	*hira;
+     int		maxhira;
+     unsigned char	*kana;
+     int		maxkana;
 {
   unsigned char	*h = hira;
   unsigned char	*k = kana;
   unsigned char	*K = kana + maxkana;
-  WCHAR_T		hi;
-  WCHAR_T		byte;
+  Wchar		hi;
+  Wchar		byte;
   int 			count = 0;
   unsigned long		code;
   
@@ -447,7 +459,7 @@ RkCvtHira(unsigned char *hira, int maxhira, unsigned char *kana, int maxkana)
     hi = *k++;
     if (hi == 0x8f) {
       ADDCODE(h, maxhira, count, hi, 1);
-      code = (((WCHAR_T) k[0]) << 8) | ((WCHAR_T) k[1]); k += 2;
+      code = (((Wchar) k[0]) << 8) | ((Wchar) k[1]); k += 2;
       byte = 2;
     } else if ( hi & 0x80 ) {
       code = (hi == 0xa5) ? (0xa400|(*k++)) : ((hi<<8)|(*k++));
@@ -469,15 +481,21 @@ RkCvtHira(unsigned char *hira, int maxhira, unsigned char *kana, int maxkana)
   return count;
 }
 
-int RkCvtNone (unsigned char *, int, unsigned char *, int);
+#endif
+
+int RkCvtNone pro((unsigned char *, int, unsigned char *, int));
 
 int
-RkCvtNone(unsigned char *dst, int maxdst, unsigned char *src, int maxsrc)
+RkCvtNone(dst, maxdst, src, maxsrc)
+     unsigned char	*dst;
+     int		maxdst;
+     unsigned char	*src;
+     int		maxsrc;
 {
   unsigned char	*d = dst;
   unsigned char	*s = src;
   unsigned char	*S = src + maxsrc;
-  WCHAR_T		byte;
+  Wchar		byte;
   int 		count = 0;
   unsigned long	code;
   
@@ -488,7 +506,7 @@ RkCvtNone(unsigned char *dst, int maxdst, unsigned char *src, int maxsrc)
     byte = 1;
     if (code == 0x8f) {
       ADDCODE(d, maxdst, count, code, 1);
-      code = (((WCHAR_T) s[0]) << 8) | ((WCHAR_T) s[1]); s += 2;
+      code = (((Wchar) s[0]) << 8) | ((Wchar) s[1]); s += 2;
       byte = 2;
     } else if ( code & 0x80 ) 
       code = (code<<8)|(*s++), byte = 2;
@@ -500,9 +518,14 @@ RkCvtNone(unsigned char *dst, int maxdst, unsigned char *src, int maxsrc)
 }
 
 #ifdef USE_SJIS_TEXT_DIC
-exp(int maxwc)
+canna_export(int)
+SJistowcs(wc_return, maxwc, sj, maxsj)
+Wchar *wc_return;
+int maxwc;
+char *sj;
+int maxsj;
 {
-    WCHAR_T *e = wc_return, *ee = wc_return + maxwc;
+    Wchar *e = wc_return, *ee = wc_return + maxwc;
     unsigned char	*s = (unsigned char *)sj;
     unsigned char	*S = (unsigned char *)sj + maxsj;
     unsigned short	hi, lo;
@@ -548,7 +571,7 @@ exp(int maxwc)
 	    code = 0x8080|(hi<<8)|lo, byte = 2;
 	};
 	if (wc_return && e < ee) {
-	  *e++ = (WCHAR_T)code;
+	  *e++ = (Wchar)code;
 	}
     };
     if (wc_return && e && e < ee) {
@@ -562,12 +585,16 @@ exp(int maxwc)
  *
  */
 int
-RkCvtWide(WCHAR_T *dst, int maxdst, char *src, int maxsrc)
+RkCvtWide(dst, maxdst, src, maxsrc)
+     Wchar		*dst;
+     int		maxdst;
+     char		*src;
+     int		maxsrc;
 {
 #ifdef USE_SJIS_TEXT_DIC
   return SJistowcs(dst, maxdst, src, maxsrc);
 #else /* !USE_SJIS_TEXT_DIC, that is, EUC */
-  WCHAR_T		*d = dst;
+  Wchar		*d = dst;
   unsigned char	*s = (unsigned char *)src;
   unsigned char	*S = (unsigned char *)src + maxsrc;
   int 		count = 0;
@@ -595,7 +622,7 @@ RkCvtWide(WCHAR_T *dst, int maxdst, char *src, int maxsrc)
                 s += 1;
             };
         };
-	ADDWCODE(d, maxdst, count, (WCHAR_T)code);
+	ADDWCODE(d, maxdst, count, (Wchar)code);
     };
     if ( d )
 	*d = 0;
@@ -605,23 +632,23 @@ RkCvtWide(WCHAR_T *dst, int maxdst, char *src, int maxsrc)
 
 #ifdef USE_SJIS_TEXT_DIC
 /* 
-  Wcstosjis -- To convert WCHAR_T string to SJIS string.
+  Wcstosjis -- To convert Wchar string to SJIS string.
 
    This function should not copy after NULL character even if
    the srclen is too large
  */
 
 static int
-Wcstosjis(char *dst, int dstlen, WCHAR_T *src, int srclen)
+Wcstosjis(char *dst, int dstlen, Wchar *src, int srclen)
 {
   register int i, j;
   unsigned char *sjise_kanjip, sjise_area[2];
-  WCHAR_T codeset;
-  register WCHAR_T wc;
+  Wchar codeset;
+  register Wchar wc;
 
   sjise_kanjip = sjise_area;
 
-  for (i = 0, j = 0; src[i] != (WCHAR_T)0 && j < dstlen && i < srclen ; i++) {
+  for (i = 0, j = 0; src[i] != (Wchar)0 && j < dstlen && i < srclen ; i++) {
     wc = src[i];
     codeset = wc & 0x8080; /* to know what codeset is `wc' */
 
@@ -680,14 +707,18 @@ Wcstosjis(char *dst, int dstlen, WCHAR_T *src, int srclen)
  *
  */
 int
-RkCvtNarrow(char *dst, int maxdst, WCHAR_T *src, int maxsrc)
+RkCvtNarrow(dst, maxdst, src, maxsrc)
+     char		*dst;
+     int		maxdst;
+     Wchar		*src;
+     int		maxsrc;
 {
 #ifdef USE_SJIS_TEXT_DIC
   return Wcstosjis(dst, maxdst, src, maxsrc);
 #else /* !USE_SJIS_TEXT_DIC */
   unsigned char	*d = (unsigned char *)dst;
-  WCHAR_T		*s = src;
-  WCHAR_T		*S = src + maxsrc;
+  Wchar		*s = src;
+  Wchar		*S = src + maxsrc;
   int 		count = 0;
   long		code;
   int		byte;
@@ -731,13 +762,17 @@ RkCvtNarrow(char *dst, int maxdst, WCHAR_T *src, int maxsrc)
  * 	shift jis --> euc 
  */
 int	
-RkCvtEuc(unsigned char *euc, int maxeuc, unsigned char *sj, int maxsj)
+RkCvtEuc(euc, maxeuc, sj, maxsj)
+     unsigned char	*euc;
+     int		maxeuc;
+     unsigned char	*sj;
+     int		maxsj;
 {
   unsigned char	*e = euc;
   unsigned char	*s = sj;
   unsigned char	*S = sj + maxsj;
-  WCHAR_T		hi, lo;
-  WCHAR_T		byte;
+  Wchar		hi, lo;
+  Wchar		byte;
   int 		count = 0;
   unsigned long	code;
   
@@ -773,45 +808,50 @@ RkCvtEuc(unsigned char *euc, int maxeuc, unsigned char *sj, int maxsj)
 /* RkCvtSuuji
  * 	arabia suuji wo kansuuji ni kaeru
  */
-static WCHAR_T suujinew[] = {
+static Wchar suujinew[] = {
   0xa1bb, 0xb0ec, 0xc6f3, 0xbbb0, 0xbbcd, 
   0xb8de, 0xcfbb, 0xbcb7, 0xc8ac, 0xb6e5,
 };
-static WCHAR_T suujiold[] = {
+static Wchar suujiold[] = {
   0xa1bb, 0xb0ed, 0xc6f5, 0xbbb2, 0xbbcd, 
   0xb8e0, 0xcfbb, 0xbcb7, 0xc8ac, 0xb6e5,
 };
-static WCHAR_T kurai4[] = {
+static Wchar kurai4[] = {
   0, 0xcbfc, 0xb2af, 0xc3fb, 0xb5fe, 0,		
 };
 
-static WCHAR_T kurai3new[] = { 0, 0xbdbd, 0xc9b4, 0xc0e9, };
-static WCHAR_T kurai3old[] = { 0, 0xbdbd, 0xc9b4, 0xc0e9, };
+static Wchar kurai3new[] = { 0, 0xbdbd, 0xc9b4, 0xc0e9, };
+static Wchar kurai3old[] = { 0, 0xbdbd, 0xc9b4, 0xc0e9, };
 
 int
-RkwCvtSuuji(WCHAR_T *dst, int maxdst, WCHAR_T *src, int maxsrc, int format)
+RkwCvtSuuji(dst, maxdst, src, maxsrc, format)
+     Wchar	*dst;
+     int	maxdst;
+     Wchar	*src;
+     int	maxsrc;
+     int	format;
 {
   int	count;
   int	i, j, k;
   int	digit[4], pend;
-  WCHAR_T	code, tmp;
-  WCHAR_T	*d = dst;
-  WCHAR_T	*s = src + maxsrc - 1;
+  Wchar	code, tmp;
+  Wchar	*d = dst;
+  Wchar	*s = src + maxsrc - 1;
   
   if ( --maxdst <= 0 )
     return 0;
-  /* Í­¸ú¤Ê·å¿ô¤ò¿ô¤¨¤ë */
+  /* 有効な桁数を数える */
   pend = 0;
   for ( count = k = 0; s >= src; k++ ) {
     int	dec, thru = *s;
     
     if ( thru & 0x8080 ) {
-      if ( !((WCHAR_T)0xa3b0 <= *s && *s <= (WCHAR_T)0xa3b9) )
+      if ( !((Wchar)0xa3b0 <= *s && *s <= (Wchar)0xa3b9) )
 	break;
       dec = *s-- - 0xa3b0;
     }
     else {
-      if ( !((WCHAR_T)'0' <= *s && *s <= (WCHAR_T)'9') )
+      if ( !((Wchar)'0' <= *s && *s <= (Wchar)'9') )
 	break;
       dec = *s-- - '0';
     }
@@ -951,16 +991,19 @@ RkwCvtSuuji(WCHAR_T *dst, int maxdst, WCHAR_T *src, int maxsrc, int format)
   return count;
 }
 
-/* ¥ï¥¤¥É¥­¥ã¥é¥¯¥¿ÂÐ±þ´Ø¿ô */
+#ifndef __HAIKU__
+/* ワイドキャラクタ対応関数 */
 
 #define CBUFSIZE     512
 unsigned char	*ustoeuc();
-WCHAR_T		*euctous();
+Wchar		*euctous();
 
-int RkwCvtHan (WCHAR_T *, int, WCHAR_T *, int);
+int RkwCvtHan pro((Wchar *, int, Wchar *, int));
 
 int
-RkwCvtHan(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
+RkwCvtHan(dst, maxdst, src, srclen)
+     Wchar	*dst, *src;
+     int	maxdst, srclen;
 {
   int len;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -993,10 +1036,12 @@ RkwCvtHan(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
   return len;
 }
 
-int RkwCvtHira (WCHAR_T *, int, WCHAR_T *, int);
+int RkwCvtHira pro((Wchar *, int, Wchar *, int));
 
 int
-RkwCvtHira(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
+RkwCvtHira(dst, maxdst, src, srclen)
+     Wchar	*dst, *src;
+     int	maxdst, srclen;
 {
   int len;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -1029,10 +1074,12 @@ RkwCvtHira(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
   return len;
 }
 
-int RkwCvtKana (WCHAR_T *, int, WCHAR_T *, int);
+int RkwCvtKana pro((Wchar *, int, Wchar *, int));
 
 int  
-RkwCvtKana(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
+RkwCvtKana(dst, maxdst, src, srclen)
+     Wchar	*dst, *src;
+     int	maxdst, srclen;
 {
   unsigned int	len;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -1065,10 +1112,12 @@ RkwCvtKana(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
   return len;
 }
 
-int RkwCvtZen (WCHAR_T *, int, WCHAR_T *, int);
+int RkwCvtZen pro((Wchar *, int, Wchar *, int));
 
 int  
-RkwCvtZen(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
+RkwCvtZen(dst, maxdst, src, srclen)
+     Wchar	*dst, *src;
+     int	maxdst, srclen;
 {
   int len;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -1100,11 +1149,14 @@ RkwCvtZen(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
 #endif
   return len;
 }
+#endif /* __HAIKU__*/
 
-int RkwCvtNone (WCHAR_T *, int, WCHAR_T *, int);
+int RkwCvtNone pro((Wchar *, int, Wchar *, int));
 
 int
-RkwCvtNone(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
+RkwCvtNone(dst, maxdst, src, srclen)
+     Wchar	*dst, *src;
+     int	maxdst, srclen;
 {
   int i;
   int len = (maxdst < srclen) ? maxdst : srclen;
@@ -1117,4 +1169,3 @@ RkwCvtNone(WCHAR_T *dst, int maxdst, WCHAR_T *src, int srclen)
   }
   return len;
 }
-#endif

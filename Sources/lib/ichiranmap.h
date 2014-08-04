@@ -19,19 +19,14 @@
  * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
  * PERFORMANCE OF THIS SOFTWARE. 
  */
-// Modified by T.Murai
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char ichiranmap_id[] = "@(#) 102.1 $Id: ichiranmap.h 14875 2005-11-12 21:25:31Z bonefish $";
+static char ichiranmap_id[] = "@(#) 102.1 $Id: ichiranmap.h,v 1.2 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
 
-#include "canna.h"
+extern  DoFuncSequence(),UseOtherKeymap();
 
-#ifdef WIN
-struct funccfunc ichiran_funcs[] = {
-#else
 static struct funccfunc ichiran_funcs[] = {
-#endif
   {CANNA_FN_FunctionalInsert	,IchiranBangoKouho		},
   {CANNA_FN_Forward		,IchiranForwardKouho		},
   {CANNA_FN_Backward		,IchiranBackwardKouho		},
@@ -70,7 +65,6 @@ static struct funccfunc ichiran_funcs[] = {
   {0				,0				},
 };
 
-extern int searchfunc(...);
 KanjiModeRec ichiran_mode = {
   searchfunc,
   default_kmap,

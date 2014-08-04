@@ -1,4 +1,5 @@
-#CANNA dics.dir [Sun Sep 21 21:13:31 1997] canna
+# dics.dir -- automatically generated file.  DO NOT EDIT.
+# /etc/canna/dics.dir.d/00canna.dics.dir
 # Copyright 1994 NEC Corporation, Tokyo, Japan.
 #
 # Permission to use, copy, modify, distribute and sell this software
@@ -22,7 +23,7 @@
 #
 #	iroha.cbd
 #
-# $Id: dics.dir,v 4.4 1996/11/09 02:14:13 kon Exp $
+# $Id: dics.dir,v 1.5 2003/09/27 06:18:39 aida_s Exp $
 #
 fuzokugo.cbd(fuzokugo.swd)	-fuzokugo---
 iroha.cbd(iroha.mwd)		-iroha---
@@ -34,9 +35,9 @@ hojomwd.ctd(.mwd)		-hojomwd---
 number.ctd(.swd)		-number---
 katakana.ctd(.mwd)		-katakana---
 keishiki.ctd(.swd)		-keishiki---
+suffix.ctd(.swd)		-suffix---
 
 chimei.ctd(.mwd)		-chimei---
 kanasmpl.ctd(.mwd)		-kanasample---
 necgaiji.ctd(.mwd)		-necgaiji---
 software.ctd(.mwd)		-software---
-usr1.ctd(.mwd) -user--w-

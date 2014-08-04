@@ -20,21 +20,22 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char m_s_map_id[] = "@(#) 102.1 $Id: multi.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char m_s_map_id[] = "@(#) 102.1 $Id: multi.c,v 1.2 2003/01/10 13:08:45 aida_s Exp $";
 #endif /* lint */
 
 #include "canna.h"
 #include <canna/mfdef.h>
 
-#define NONE CANNA_FN_Undefined
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
 
-static unsigned char *showChar(int c);
-static int _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key);
+#define NONE CANNA_FN_Undefined
 
 extern int askQuitKey();
 extern int checkGLineLen();
@@ -52,7 +53,8 @@ struct map {
 extern struct map *mapFromHash();
 
 static unsigned char *
-showChar(int c)
+showChar(c)
+int c;
 {
   static unsigned char Gkey[9];
   static char *keyCharMap[] = {               
@@ -100,7 +102,8 @@ showChar(int c)
   return Gkey;
 }
 
-int UseOtherKeymap(uiContext d)
+UseOtherKeymap(d)
+uiContext d;
 {
   struct map *p;
   unsigned char showKey[10];
@@ -125,14 +128,17 @@ int UseOtherKeymap(uiContext d)
 }
 
 static
-int _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
+_DoFuncSequence(d, keytbl, key) /* 複数の機能の割り当て */
+uiContext d;
+BYTE *keytbl;
+BYTE key;
 {
   int res, total_res, ginfo = 0;
   int prevEchoLen = -1, prevRevPos, prevRevLen;
   int prevGEchoLen, prevGRevPos, prevGRevLen;
-  WCHAR_T *prevEcho, *prevGEcho;
-  BYTE *p;
-  WCHAR_T *malloc_echo = (WCHAR_T *)0, *malloc_gline = (WCHAR_T *)0;
+  wchar_t *prevEcho, *prevGEcho;
+  BYTE *p, *actFromHash();
+  wchar_t *malloc_echo = (wchar_t *)0, *malloc_gline = (wchar_t *)0;
 
   if (key == 0) {
     key = (BYTE)d->ch;
@@ -148,10 +154,10 @@ int _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
     
   total_res = 0;
   for(; *p ; p++) {
-    /* £²²óÌÜ°Ê¹ß¤Ë°Ê²¼¤Î¥Ç¡¼¥¿¤¬¼º¤ï¤ì¤Æ¤¤¤ë¾ì¹ç¤¬¤¢¤ë¤Î¤ÇÆþ¤ìÄ¾¤¹¡£ */
-    d->ch = (unsigned)(*(d->buffer_return) = (WCHAR_T)key);
+    /* ２回目以降に以下のデータが失われている場合があるので入れ直す。 */
+    d->ch = (unsigned)(*(d->buffer_return) = (wchar_t)key);
     d->nbytes = 1;
-    res = _doFunc(d, (int)*p); /* À¸¤Î doFunc ¤ò¸Æ¤Ö¡£ */
+    res = _doFunc(d, (int)*p); /* 生の doFunc を呼ぶ。 */
 
     if (d->kanji_status_return->length >= 0) {
       prevEcho    = d->kanji_status_return->echoStr;
@@ -159,16 +165,16 @@ int _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
       prevRevPos  = d->kanji_status_return->revPos;
       prevRevLen  = d->kanji_status_return->revLen;
       if (d->genbuf <= prevEcho && prevEcho < d->genbuf + ROMEBUFSIZE) {
-	/* ¥Ç¡¼¥¿¤Ï d->genbuf ¤Ë¤¢¤ë¤Í */
+	/* データは d->genbuf にあるね */
 	if (!malloc_echo &&
 	    !(malloc_echo =
-	      (WCHAR_T *)malloc(ROMEBUFSIZE * sizeof(WCHAR_T)))) {
-	  res = -1; /* ¥¨¥é¡¼¤¬¤â¤È¤â¤ÈÊÖ¤Ã¤ÆÍè¤¿¤È¤¤¤¦¤³¤È¤Ë¤¹¤ë */
+	      (wchar_t *)malloc(ROMEBUFSIZE * sizeof(wchar_t)))) {
+	  res = -1; /* エラーがもともと返って来たということにする */
 	}
 	else {
 	  prevEcho = malloc_echo;
 	  WStrncpy(prevEcho, d->kanji_status_return->echoStr, prevEchoLen);
-	  prevEcho[prevEchoLen] = (WCHAR_T)0;
+	  prevEcho[prevEchoLen] = (wchar_t)0;
 	  d->kanji_status_return->echoStr = prevEcho;
 	}
       }
@@ -180,17 +186,17 @@ int _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
       prevGRevPos  = d->kanji_status_return->gline.revPos;
       prevGRevLen  = d->kanji_status_return->gline.revLen;
       if (d->genbuf <= prevGEcho && prevGEcho < d->genbuf + ROMEBUFSIZE) {
-	/* ¥Ç¡¼¥¿¤Ï d->genbuf ¤Ë¤¢¤ë¤Í */
+	/* データは d->genbuf にあるね */
 	if (!malloc_gline &&
 	    !(malloc_gline =
-	      (WCHAR_T *)malloc(ROMEBUFSIZE * sizeof(WCHAR_T)))) {
-	  res = -1; /* ¥¨¥é¡¼¤¬¤â¤È¤â¤ÈÊÖ¤Ã¤ÆÍè¤¿¤È¤¤¤¦¤³¤È¤Ë¤¹¤ë */
+	      (wchar_t *)malloc(ROMEBUFSIZE * sizeof(wchar_t)))) {
+	  res = -1; /* エラーがもともと返って来たということにする */
 	}
 	else {
 	  prevGEcho = malloc_gline;
 	  WStrncpy(prevGEcho, d->kanji_status_return->gline.line,
 		   prevGEchoLen);
-	  prevGEcho[prevGEchoLen] = (WCHAR_T)0;
+	  prevGEcho[prevGEchoLen] = (wchar_t)0;
 	  d->kanji_status_return->gline.line = prevGEcho;
 	  d->kanji_status_return->info &= ~KanjiGLineInfo;
 	}
@@ -209,8 +215,8 @@ int _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
   d->flags |= MULTI_SEQUENCE_EXECUTED;
   if (malloc_echo) {
     WStrncpy(d->genbuf, prevEcho, prevEchoLen);
-    d->genbuf[prevEchoLen] = (WCHAR_T)0;
-    free(malloc_echo); /* Â¿Ê¬ malloc_echo ¤¬ prevEcho ¤«¤â */
+    d->genbuf[prevEchoLen] = (wchar_t)0;
+    free((char *)malloc_echo); /* 多分 malloc_echo が prevEcho かも */
     prevEcho = d->genbuf;
   }
   d->kanji_status_return->echoStr = prevEcho;
@@ -220,8 +226,8 @@ int _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
   if (ginfo) {
     if (malloc_gline) {
       WStrncpy(d->genbuf, prevGEcho, prevGEchoLen);
-      d->genbuf[prevGEchoLen] = (WCHAR_T)0;
-      free(malloc_gline); /* Â¿Ê¬ malloc_gline ¤¬ prevGEcho ¤«¤â */
+      d->genbuf[prevGEchoLen] = (wchar_t)0;
+      free((char *)malloc_gline); /* 多分 malloc_gline が prevGEcho かも */
       prevGEcho = d->genbuf;
     }
     d->kanji_status_return->gline.line    = prevGEcho;
@@ -233,13 +239,18 @@ int _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
   return total_res;
 }
 
-int DoFuncSequence(uiContext d)
+DoFuncSequence(d) /* 複数の機能の割り当て */
+uiContext d;
 {
   return _DoFuncSequence(d, (BYTE *)NULL, (BYTE)NULL);
 }
 
-int
-multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
+multiSequenceFunc(d, mode, whattodo, key, fnum)
+uiContext d;
+KanjiMode mode;
+int whattodo;
+unsigned key;
+int fnum;
 {
   int i;
   unsigned char *p;
@@ -249,22 +260,22 @@ multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
     return 0;
 
   if (fnum == CANNA_FN_Kakutei || fnum == CANNA_FN_Quit || askQuitKey(key)) {
-    /* Kakutei ¤Ï KC_KAKUTEI ¤Ø¤ÎÂÐ±þ */
+    /* Kakutei は KC_KAKUTEI への対応 */
     free(keyHistory);
     GlineClear(d);
     d->current_mode = (KanjiMode)(mode->ftbl);
     if (d->current_mode->flags & CANNA_KANJIMODE_EMPTY_MODE) {
       d->kanji_status_return->info |= KanjiEmptyInfo;
     }
-    /* Nop ¤ò¹Ô¤¦ */
+    /* Nop を行う */
     (void)doFunc(d, CANNA_FN_Nop);
     d->flags |= MULTI_SEQUENCE_EXECUTED;
     return 0;
   }
   for (i= 0, p = mode->keytbl; *p != 255; p += 2,i+=2) {
     debug_message("multiSequenceFunc:\263\254\301\330[%d]\n",i,0,0);
-                                   /* ³¬ÁØ */
-    if (*p == key) { /* ¤³¤Î¥­¡¼¤ÏÅÐÏ¿¤µ¤ì¤Æ¤¤¤¿¡£ */
+                                   /* 階層 */
+    if (*p == key) { /* このキーは登録されていた。 */
       keyHistory =
 	(unsigned char *)realloc(keyHistory, strlen((char *)keyHistory) + strlen((char *)showChar(key)) +2);
       if (keyHistory) {
@@ -272,7 +283,7 @@ multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
 	strcat((char *)keyHistory,(char *)showChar(key));
 
         makeGLineMessageFromString(d, (char *)keyHistory);
-        if (*++p == CANNA_FN_UseOtherKeymap) { /* ¤Þ¤À¥­¡¼¥·¥±¥ó¥¹¤ÎÂ³¤­¤¬Â¸ºß */
+        if (*++p == CANNA_FN_UseOtherKeymap) { /* まだキーシケンスの続きが存在 */
           m = mapFromHash(mode, key, (struct map ***)0);
           m->mode->ftbl = mode->ftbl;
           d->current_mode = m->mode;
@@ -281,12 +292,20 @@ multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
         free(keyHistory);
       }
       GlineClear(d);
-      d->current_mode = (KanjiMode)(mode->ftbl); /* µ¡Ç½¤ò¼Â¹Ô */
+      d->current_mode = (KanjiMode)(mode->ftbl); /* 機能を実行 */
       if (*p == CANNA_FN_FuncSequence) {
 	return _DoFuncSequence(d, (unsigned char *)mode, key);
       }
       return (*d->current_mode->func)(d, d->current_mode, KEY_CALL, 0, *p);
     }
   }
-  return NothingForGLineWithBeep(d);  /* ÅÐÏ¿¤·¤Æ¤¤¤Ê¤¤¥­¡¼¤ò²¡¤·¤¿ */
+  return NothingForGLineWithBeep(d);  /* 登録していないキーを押した */
 }
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/

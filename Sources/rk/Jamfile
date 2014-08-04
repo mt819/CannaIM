@@ -5,14 +5,15 @@ TARGET_WARNING_CCFLAGS_$(TARGET_PACKAGING_ARCH)
 	= [ FFilter $(TARGET_WARNING_CCFLAGS_$(TARGET_PACKAGING_ARCH))
 		: -Wmissing-prototypes ] ;
 
-SubDirCcFlags -x c++ -ansi -trigraphs -funsigned-char -funsigned-bitfields -w -Wno-multichar -Wno-ctor-dtor-privacy -pedantic -Wno-long-long -Woverloaded-virtual -D_BUILDING_CANNALIB -D_WCHAR_T ;
+#SubDirCcFlags -x c++ -ansi -trigraphs -funsigned-char -funsigned-bitfields -w -Wno-multichar -Wno-ctor-dtor-privacy -pedantic -Wno-long-long -Woverloaded-virtual -D_BUILDING_CANNALIB -D_WCHAR_T ;
+SubDirCcFlags  -g3 -Wall -O0 -fno-strict-aliasing ;
 
 SubDirHdrs [ FDirName $(SUBDIR) $(DOTDOT) canna ] ;
 SubDirHdrs [ FDirName $(SUBDIR) $(DOTDOT) lib ] ;
 SubDirSysHdrs [ FDirName $(SUBDIR) $(DOTDOT) ] ;
 
 StaticLibrary librk.a :
-	RKutil.c
+	util.c
 	bits.c
 	bun.c
 	context.c
@@ -20,7 +21,7 @@ StaticLibrary librk.a :
 	dic.c
 	dicsw.c
 	fq.c
-#	kana.c
+	kana.c
 	ngram.c
 	ncache.c
 	nword.c

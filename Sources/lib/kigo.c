@@ -20,57 +20,44 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static	char	rcs_id[] = "@(#) 102.1 $Id: kigo.c 14875 2005-11-12 21:25:31Z bonefish $";
+static	char	rcs_id[] = "@(#) 102.1 $Id: kigo.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
 
 #include	"canna.h"
 
-#define BYTE1		84	/* JIS¥³¡¼¥ÉÉ½¤ÎÂè°ì¥Ð¥¤¥È¤Î¿ô */
-#define BYTE2		94	/* JIS¥³¡¼¥ÉÉ½¤ÎÂèÆó¥Ð¥¤¥È¤Î¿ô */
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
+
+#define BYTE1		84	/* JISコード表の第一バイトの数 */
+#define BYTE2		94	/* JISコード表の第二バイトの数 */
 #define KIGOSU		(((BYTE1 - 1) * BYTE2) + 4)
-    				/* µ­¹æ¤ÎÁí¿ô */
+    				/* 記号の総数 */
 
-#define KIGOSIZE	1	/* µ­¹æ¸õÊä¤ÎÊ¸»ú¿ô */
-#define KIGOCOLS	2	/* µ­¹æ¸õÊä¤Î¥³¥é¥à¿ô */
-#define KIGOSPACE	2	/* µ­¹æ¤Î´Ö¤Î¶õÇòÊ¸»ú¤Î¥³¥é¥à¿ô */
+#define KIGOSIZE	1	/* 記号候補の文字数 */
+#define KIGOCOLS	2	/* 記号候補のコラム数 */
+#define KIGOSPACE	2	/* 記号の間の空白文字のコラム数 */
 #define KIGOWIDTH	(KIGOCOLS + KIGOSPACE)
-					/* bangomax¤ò·×»»¤¹¤ë¤¿¤á¤Î¿ô */
+					/* bangomaxを計算するための数 */
 
-#define NKAKKOCHARS	1	/* JIS¥³¡¼¥ÉÉ½¼¨ÍÑ³ç¸Ì¤ÎÊ¸»ú¿ô */
-#define KAKKOCOLS       2       /* Æ±¥³¥é¥à¿ô */
-#define NKCODECHARS	4	/* JIS¥³¡¼¥ÉÉ½¼¨¤½¤Î¤â¤Î¤ÎÊ¸»ú¿ô */
-#define KCODECOLS       4       /* Æ±¥³¥é¥à¿ô */
-/* JIS¥³¡¼¥ÉÉ½¼¨Á´ÂÎ¤ÎÊ¸»ú¿ô */
+#define NKAKKOCHARS	1	/* JISコード表示用括弧の文字数 */
+#define KAKKOCOLS       2       /* 同コラム数 */
+#define NKCODECHARS	4	/* JISコード表示そのものの文字数 */
+#define KCODECOLS       4       /* 同コラム数 */
+/* JISコード表示全体の文字数 */
 #define NKCODEALLCHARS	(NKAKKOCHARS + NKAKKOCHARS + NKCODECHARS)
-/* Æ±¥³¥é¥à¿ô */
+/* 同コラム数 */
 #define KCODEALLCOLS    (KAKKOCOLS + KAKKOCOLS + KCODECOLS)
-
-static void freeKigoContext(ichiranContext kc);
-static void makeKigoGlineStatus(uiContext d);
-static int makeKigoInfo(uiContext d, int headkouho);
-static int kigoIchiranExitCatch(uiContext d, int retval, mode_context env);
-static int kigoIchiranQuitCatch(uiContext d, int retval, mode_context env);
-static int KigoNop(uiContext d);
-static int KigoForwardKouho(uiContext d);
-static int KigoBackwardKouho(uiContext d);
-static int KigoPreviousKouhoretsu(uiContext d);
-static int KigoNextKouhoretsu(uiContext d);
-static int KigoBeginningOfKouho(uiContext d);
-static int KigoEndOfKouho(uiContext d);
-static int KigoKakutei(uiContext d);
-static int KigoBangoKouho(uiContext d);
-static int KigoQuit(uiContext d);
 
 static int kigo_curIkouho;
 
 void
-initKigoTable(void)
+initKigoTable()
 {
 }
 
@@ -79,8 +66,9 @@ initKigoTable(void)
  * ichiranContext
  *
  */
-inline void
-clearKigoContext(ichiranContext p)
+static void
+clearKigoContext(p)
+ichiranContext p;
 {
   p->id = ICHIRAN_CONTEXT;
   p->svIkouho = 0;
@@ -95,15 +83,15 @@ clearKigoContext(ichiranContext p)
   p->flags = (unsigned char)0;
 }
 
-inline ichiranContext
-newKigoContext(void)
+static ichiranContext
+newKigoContext()
 {
   ichiranContext kcxt;
 
   if((kcxt = (ichiranContext)malloc(sizeof(ichiranContextRec)))
                                          == (ichiranContext)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (newKigoContext) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (newKigoContext) できませんでした";
 #else
     jrKanjiError = "malloc (newKigoContext) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
@@ -118,17 +106,22 @@ newKigoContext(void)
 
 #ifdef	SOMEONE_USES_THIS
 static void
-freeKigoContext(ichiranContext kc)
+freeKigoContext(kc)
+ichiranContext kc;
 {
   free(kc);
 }
 #endif	/* SOMEONE_USES_THIS */
 
 /*
- * µ­¹æ°ìÍ÷¹Ô¤òºî¤ë
+ * 記号一覧行を作る
  */
-inline
-int getKigoContext(uiContext d, canna_callback_t everyTimeCallback, canna_callback_t exitCallback, canna_callback_t quitCallback, canna_callback_t auxCallback)
+static
+getKigoContext(d,
+	  everyTimeCallback, exitCallback, quitCallback, auxCallback)
+uiContext d;
+canna_callback_t everyTimeCallback, exitCallback;
+canna_callback_t quitCallback, auxCallback;
 {
   extern KanjiModeRec kigo_mode;
   ichiranContext kc;
@@ -138,7 +131,7 @@ int getKigoContext(uiContext d, canna_callback_t everyTimeCallback, canna_callba
 	everyTimeCallback, exitCallback, quitCallback, auxCallback) == 0) {
     jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
-                                         /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+                                         /* できませんでした */
     return(NG);
   }
   
@@ -156,8 +149,9 @@ int getKigoContext(uiContext d, canna_callback_t everyTimeCallback, canna_callba
 }
 
 #ifndef NO_EXTEND_MENU
-inline void
-popKigoMode(uiContext d)
+static void
+popKigoMode(d)
+uiContext d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
 
@@ -167,26 +161,27 @@ popKigoMode(uiContext d)
 }
 
 /*
- * µ­¹æ°ìÍ÷¹Ô¤Ë´Ø¤¹¤ë¹½Â¤ÂÎ¤ÎÆâÍÆ¤ò¹¹¿·¤¹¤ë
+ * 記号一覧行に関する構造体の内容を更新する
  *
- * ¡¦¥«¥ì¥ó¥È¸õÊä¤Ë¤è¤Ã¤Æ kouhoinfo ¤È glineinfo ¤«¤é¸õÊä°ìÍ÷¹Ô¤òºî¤ë
- * ¡¦¥«¥ì¥ó¥È¸õÊä¤Î¥³¡¼¥É¤ò¥­¥ã¥é¥¯¥¿¤ËÊÑ´¹¤¹¤ë
+ * ・カレント候補によって kouhoinfo と glineinfo から候補一覧行を作る
+ * ・カレント候補のコードをキャラクタに変換する
  *
- * °ú¤­¿ô	RomeStruct
- * Ìá¤êÃÍ	¤Ê¤·
+ * 引き数	RomeStruct
+ * 戻り値	なし
  */
-static void
-makeKigoGlineStatus(uiContext d)
+static
+makeKigoGlineStatus(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
-  WCHAR_T *gptr;
+  wchar_t *gptr;
   char xxx[3];
   char *yyy = xxx;
   int  i, b1, b2;
 
   gptr = kc->glineifp->gldata + NKAKKOCHARS;
   
-  /* ¥«¥ì¥ó¥Èµ­¹æ¤ÎJIS¥³¡¼¥É¤ò°ìÍ÷¹Ô¤ÎÃæ¤Î¥«¥Ã¥³Æâ¤ËÆþ¤ì¤ë */
+  /* カレント記号のJISコードを一覧行の中のカッコ内に入れる */
   WCstombs(xxx, kc->kouhoifp[*(kc->curIkouho)].khdata, 3);
 
   for(i=0; i<2; i++, yyy++) {
@@ -205,46 +200,48 @@ makeKigoGlineStatus(uiContext d)
 
 }
 
-/* µ­¹æ°ìÍ÷ÍÑ¤Îglineinfo¤Èkouhoinfo¤òºî¤ë
+/* 記号一覧用のglineinfoとkouhoinfoを作る
  *
- * ¡öglineinfo¡ö
- *    int glkosu   : int glhead     : int gllen  : WCHAR_T *gldata
- *    £±¹Ô¤Î¸õÊä¿ô : ÀèÆ¬µ­¹æ¤¬     : £±¹Ô¤ÎÄ¹¤µ : µ­¹æ°ìÍ÷¹Ô¤ÎÊ¸»úÎó
- *                 : ²¿ÈÖÌÜ¤Îµ­¹æ¤« :
+ * ＊glineinfo＊
+ *    int glkosu   : int glhead     : int gllen  : wchar_t *gldata
+ *    １行の候補数 : 先頭記号が     : １行の長さ : 記号一覧行の文字列
+ *                 : 何番目の記号か :
  * -------------------------------------------------------------------------
- * 0 | 6           : 0              : 24         : £±¡ù£²¡ú£³¡û£´¡ü£µ¡ý£¶¢¢
+ * 0 | 6           : 0              : 24         : １☆２★３○４●５◎６□
  *
- *  ¡ökouhoinfo¡ö
- *    int khretsu  : int khpoint  : WCHAR_T *khdata
- *    Ì¤»ÈÍÑ       : ¹Ô¤ÎÀèÆ¬¤«¤é : µ­¹æ¤ÎÊ¸»ú
- *                 : ²¿¥Ð¥¤¥ÈÌÜ¤« :
+ *  ＊kouhoinfo＊
+ *    int khretsu  : int khpoint  : wchar_t *khdata
+ *    未使用       : 行の先頭から : 記号の文字
+ *                 : 何バイト目か :
  * -------------------------------------------------------------------------
- * 0 | 0           : 0            : ¡ù
- * 1 | 0           : 4            : ¡ú
- * 2 | 0           : 8            : ¡û
+ * 0 | 0           : 0            : ☆
+ * 1 | 0           : 4            : ★
+ * 2 | 0           : 8            : ○
  *          :               :
  *
- * °ú¤­¿ô	headkouho	¥«¥ì¥ó¥Èµ­¹æ¸õÊä¹Ô¤ÎÀèÆ¬¸õÊä¤Î°ÌÃÖ
- *					(2121¤«¤é²¿¸ÄÌÜ¤«(2121¤Ï£°ÈÖÌÜ))
+ * 引き数	headkouho	カレント記号候補行の先頭候補の位置
+ *					(2121から何個目か(2121は０番目))
  *		uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 戻り値	正常終了時 0
  */
 static
-int makeKigoInfo(uiContext d, int headkouho)
+makeKigoInfo(d, headkouho)
+uiContext	d;
+int		headkouho;
 {
   ichiranContext kc = (ichiranContext)d->modec;
-  WCHAR_T *gptr;
+  wchar_t *gptr;
   int  i, b1, b2, lnko, cn;
   int  byte1hex = 0xa1;
   int  byte2hex = 0xa1;
   char xxx[3];
 
-  b2 = headkouho % BYTE2;	/* JIS¥³¡¼¥ÉÉ½Ãæ(£Ø¼´)¤Î°ÌÃÖ (ÅÀ-1) */
-  b1 = headkouho / BYTE2;	/* JIS¥³¡¼¥ÉÉ½Ãæ(£Ù¼´)¤Î°ÌÃÖ (¶è-1) */
+  b2 = headkouho % BYTE2;	/* JISコード表中(Ｘ軸)の位置 (点-1) */
+  b1 = headkouho / BYTE2;	/* JISコード表中(Ｙ軸)の位置 (区-1) */
 
   xxx[2] = '\0';
 
-#if defined(DEBUG) && !defined(WIN)
+#if defined(DEBUG)
   if (iroha_debug) {
     printf("kigoinfo = bangomax %d, b1 %d, b2 %d\n", kc->nIkouho, b1, b2);
     printf("kigoinfo = headkouho %d, curIkouho %d\n",
@@ -252,35 +249,35 @@ int makeKigoInfo(uiContext d, int headkouho)
   }
 #endif
 
-  /* µ­¹æ°ìÍ÷ÍÑ¤Îglineinfo¤Èkouhoinfo¤òºî¤ë */
+  /* 記号一覧用のglineinfoとkouhoinfoを作る */
   gptr = kc->glinebufp;
 
   kc->glineifp->glhead = headkouho;
   kc->glineifp->gldata = gptr;
 
-  /* JIS¥³¡¼¥É¤ÎÉ½¼¨ÎÎ°è¤ò°ìÍ÷¹ÔÃæ¤Ëºî¤ë */
+  /* JISコードの表示領域を一覧行中に作る */
   MBstowcs(gptr, "\241\316", 1);
-                 /* ¡Î */
+                 /* ［ */
   for(i=0, gptr++; i<NKCODECHARS; i++)
     *gptr++ = ' ';
   MBstowcs(gptr++, "\241\317", 1);
-                 /* ¡Ï */
+                 /* ］ */
 
   for(cn=NKCODEALLCHARS, lnko=0;
       b1<BYTE1 && lnko<kc->nIkouho && (headkouho+lnko)<KIGOSU ; b1++) {
     for(; b2<BYTE2 && lnko<kc->nIkouho && (headkouho+lnko)<KIGOSU; b2++, lnko++) {
       
-      /* ¶èÀÚ¤ê¤Ë¤Ê¤ë¶õÇò¤ò¥³¥Ô¡¼¤¹¤ë */
+      /* 区切りになる空白をコピーする */
       if(lnko != 0) {
 	MBstowcs(gptr++, "\241\241", 1);
-                         /* ¡¡ */ 
+                         /* 　 */ 
 	cn ++;
       }
 
       kc->kouhoifp[lnko].khpoint = cn;
       kc->kouhoifp[lnko].khdata = gptr;
       
-      /* ¸õÊä¤ò¥³¥Ô¡¼¤¹¤ë */
+      /* 候補をコピーする */
       *xxx = (char)byte1hex + b1;
       *(xxx + 1) = (char)byte2hex + b2;
       MBstowcs(gptr++, xxx, 1);
@@ -288,7 +285,7 @@ int makeKigoInfo(uiContext d, int headkouho)
     }
     b2 = 0;
   }
-  *gptr = (WCHAR_T)0;
+  *gptr = (wchar_t)0;
   kc->glineifp->glkosu = lnko;
   kc->glineifp->gllen = WStrlen(kc->glineifp->gldata);
 
@@ -296,11 +293,14 @@ int makeKigoInfo(uiContext d, int headkouho)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * µ­¹æ°ìÍ÷                                                                  *
+ * 記号一覧                                                                  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static
-int kigoIchiranExitCatch(uiContext d, int retval, mode_context env)
+kigoIchiranExitCatch(d, retval, env)
+     uiContext d;
+     int retval;
+     mode_context env;
      /* ARGSUSED */
 {
   popCallback(d);
@@ -313,7 +313,10 @@ int kigoIchiranExitCatch(uiContext d, int retval, mode_context env)
 }
 
 static
-int kigoIchiranQuitCatch(uiContext d, int retval, mode_context env)
+kigoIchiranQuitCatch(d, retval, env)
+     uiContext d;
+     int retval;
+     mode_context env;
      /* ARGSUSED */
 {
   popCallback(d);
@@ -323,7 +326,8 @@ int kigoIchiranQuitCatch(uiContext d, int retval, mode_context env)
 }
 #endif /* NO_EXTEND_MENU */
 
-int KigoIchiran(uiContext d)
+KigoIchiran(d)
+uiContext	d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -344,12 +348,14 @@ int KigoIchiran(uiContext d)
 
 #ifndef NO_EXTEND_MENU
 /*
- * µ­¹æ°ìÍ÷¹Ô¤òÉ½¼¨¤¹¤ë
+ * 記号一覧行を表示する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0	°Û¾ï½ªÎ»»þ -1
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0	異常終了時 -1
  */
-int makeKigoIchiran(uiContext d, int major_mode)
+makeKigoIchiran(d, major_mode)
+uiContext	d;
+int             major_mode;
 {
   ichiranContext kc;
   int            headkouho;
@@ -359,7 +365,7 @@ int makeKigoIchiran(uiContext d, int major_mode)
     jrKanjiError = "\270\365\312\344\260\354\315\367\315\321\244\316\311\375"
 	"\244\254\266\271\244\244\244\316\244\307\265\255\271\346\260\354"
 	"\315\367\244\307\244\255\244\336\244\273\244\363";
-                   /* ¸õÊä°ìÍ÷ÍÑ¤ÎÉý¤¬¶¹¤¤¤Î¤Çµ­¹æ°ìÍ÷¤Ç¤­¤Þ¤»¤ó */
+                   /* 候補一覧用の幅が狭いので記号一覧できません */
     return(NG);
   }
 
@@ -373,8 +379,8 @@ int makeKigoIchiran(uiContext d, int major_mode)
 
   currentModeInfo(d);
 
-  /* ºÇÂçµ­¹æÉ½¼¨¿ô¤Î¥»¥Ã¥È */
-  /* Áí¥«¥é¥à¿ô¤«¤é "¡ÎJIS ¡Ï" Ê¬¤òº¹¤·°ú¤¤¤Æ·×»»¤¹¤ë */
+  /* 最大記号表示数のセット */
+  /* 総カラム数から "［JIS ］" 分を差し引いて計算する */
   if((kc->nIkouho =
       (((d->ncolumns - KCODEALLCOLS - KIGOCOLS) / KIGOWIDTH) + 1))
                                                   > KIGOBANGOMAX) {
@@ -383,15 +389,15 @@ int makeKigoIchiran(uiContext d, int major_mode)
 
   kc->curIkouho = &kigo_curIkouho;
 
-  if(allocIchiranBuf(d) == NG) { /* µ­¹æ°ìÍ÷¥â¡¼¥É */
+  if(allocIchiranBuf(d) == NG) { /* 記号一覧モード */
     popKigoMode(d);
     popCallback(d);
     return(NG);
   }
 
-  /* ¥«¥ì¥ó¥È¸õÊä¤Î¤¢¤ëµ­¹æ°ìÍ÷¹Ô¤ÎÀèÆ¬¸õÊä¤È¡¢
-     °ìÍ÷¹ÔÃæ¤Î¥«¥ì¥ó¥È¸õÊä¤Î°ÌÃÖ¤òµá¤á¤ë */
-  if(d->curkigo) {		/* a1a1¤«¤é²¿ÈÖÌÜ¤Îµ­¹æ¤« */
+  /* カレント候補のある記号一覧行の先頭候補と、
+     一覧行中のカレント候補の位置を求める */
+  if(d->curkigo) {		/* a1a1から何番目の記号か */
     headkouho = (d->curkigo / kc->nIkouho) * kc->nIkouho;
     *(kc->curIkouho) = d->curkigo % kc->nIkouho;
   } else {
@@ -400,23 +406,24 @@ int makeKigoIchiran(uiContext d, int major_mode)
     *(kc->curIkouho) = 0;
   }
 
-  /* ¤³¤³¤Ë¤¯¤ëÄ¾Á°¤Ë C-t ¤È¤«¤¬ Gline ¤ËÉ½¼¨¤µ¤ì¤Æ¤¤¤ë¾ì¹ç²¼¤Î£±¹Ô¤ò
-     ¤ä¤ëÉ¬Í×¤¬½Ð¤Æ¤¯¤ë¡£ */
+  /* ここにくる直前に C-t とかが Gline に表示されている場合下の１行を
+     やる必要が出てくる。 */
   d->flags &= ~(PLEASE_CLEAR_GLINE | PCG_RECOGNIZED);
 
-  /* glineinfo¤Èkouhoinfo¤òºî¤ë */
+  /* glineinfoとkouhoinfoを作る */
   makeKigoInfo(d, headkouho);
 
-  /* kanji_status_return¤òºî¤ë */
+  /* kanji_status_returnを作る */
   makeKigoGlineStatus(d);
 
   return(0);
 }
 
 static
-int KigoNop(uiContext d)
+KigoNop(d)
+uiContext	d;
 {
-  /* currentModeInfo ¤Ç¥â¡¼¥É¾ðÊó¤¬É¬¤ºÊÖ¤ë¤è¤¦¤Ë¥À¥ß¡¼¤Î¥â¡¼¥É¤òÆþ¤ì¤Æ¤ª¤¯ */
+  /* currentModeInfo でモード情報が必ず返るようにダミーのモードを入れておく */
   d->majorMode = d->minorMode = CANNA_MODE_AlphaMode;
   currentModeInfo(d);
 
@@ -425,21 +432,22 @@ int KigoNop(uiContext d)
 }
 
 /*
- * µ­¹æ°ìÍ÷¹ÔÃæ¤Î¼¡¤Îµ­¹æ¤Ë°ÜÆ°¤¹¤ë
+ * 記号一覧行中の次の記号に移動する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-int KigoForwardKouho(uiContext d)
+KigoForwardKouho(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
   int  headkouho;
 
-  /* ¼¡¤Îµ­¹æ¤Ë¤¹¤ë */
+  /* 次の記号にする */
   ++*(kc->curIkouho);
   
-  /* °ìÍ÷É½¼¨¤ÎºÇ¸å¤Îµ­¹æ¤À¤Ã¤¿¤é¡¢¼¡¤Î°ìÍ÷¹Ô¤ÎÀèÆ¬µ­¹æ¤ò¥«¥ì¥ó¥Èµ­¹æ¤È¤¹¤ë */
+  /* 一覧表示の最後の記号だったら、次の一覧行の先頭記号をカレント記号とする */
   if((*(kc->curIkouho) >= kc->nIkouho) ||
      (kc->glineifp->glhead + *(kc->curIkouho) >= KIGOSU)) {
     headkouho  = kc->glineifp->glhead + kc->nIkouho;
@@ -449,7 +457,7 @@ int KigoForwardKouho(uiContext d)
     makeKigoInfo(d, headkouho);
   }
 
-  /* kanji_status_retusrn ¤òºî¤ë */
+  /* kanji_status_retusrn を作る */
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
@@ -457,21 +465,22 @@ int KigoForwardKouho(uiContext d)
 }
 
 /*
- * µ­¹æ°ìÍ÷¹ÔÃæ¤ÎÁ°¤Îµ­¹æ¤Ë°ÜÆ°¤¹¤ë
+ * 記号一覧行中の前の記号に移動する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-int KigoBackwardKouho(uiContext d)
+KigoBackwardKouho(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
   int  headkouho;
 
-  /* Á°¤Îµ­¹æ¤Ë¤¹¤ë */
+  /* 前の記号にする */
   --*(kc->curIkouho);
 
-  /* °ìÍ÷É½¼¨¤ÎÀèÆ¬¤Îµ­¹æ¤À¤Ã¤¿¤é¡¢Á°¤Î°ìÍ÷¹Ô¤ÎºÇ½ªµ­¹æ¤ò¥«¥ì¥ó¥Èµ­¹æ¤È¤¹¤ë */
+  /* 一覧表示の先頭の記号だったら、前の一覧行の最終記号をカレント記号とする */
   if(*(kc->curIkouho) < 0) {
     headkouho  = kc->glineifp->glhead - kc->nIkouho;
     if(headkouho < 0)
@@ -480,7 +489,7 @@ int KigoBackwardKouho(uiContext d)
     *(kc->curIkouho) = kc->glineifp->glkosu - 1;
   }
 
-  /* kanji_status_retusrn ¤òºî¤ë */
+  /* kanji_status_retusrn を作る */
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
@@ -488,29 +497,30 @@ int KigoBackwardKouho(uiContext d)
 }
 
 /*
- * Á°µ­¹æ°ìÍ÷Îó¤Ë°ÜÆ°¤¹¤ë
+ * 前記号一覧列に移動する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-int KigoPreviousKouhoretsu(uiContext d)
+KigoPreviousKouhoretsu(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
   int headkouho;
 
-  /** Á°¸õÊäÎó¤Ë¤¹¤ë **/
+  /** 前候補列にする **/
   headkouho  = kc->glineifp->glhead - kc->nIkouho;
   if(headkouho < 0)
     headkouho = ((KIGOSU -1) / kc->nIkouho) * kc->nIkouho;
   makeKigoInfo(d, headkouho);
 
-  /* *(kc->curIkouho) ¤¬¥«¥ì¥ó¥Èµ­¹æ°ìÍ÷¤Îµ­¹æ¿ô¤è¤êÂç¤­¤¯¤Ê¤Ã¤Æ¤·¤Þ¤Ã¤¿¤é
-     ºÇ±¦µ­¹æ¤ò¥«¥ì¥ó¥È¸õÊä¤È¤¹¤ë */
+  /* *(kc->curIkouho) がカレント記号一覧の記号数より大きくなってしまったら
+     最右記号をカレント候補とする */
   if(*(kc->curIkouho) >= kc->glineifp->glkosu)
     *(kc->curIkouho) = kc->glineifp->glkosu - 1;
 
-  /* kanji_status_retusrn ¤òºî¤ë */
+  /* kanji_status_retusrn を作る */
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
@@ -518,29 +528,30 @@ int KigoPreviousKouhoretsu(uiContext d)
 }
 
 /*
- * ¼¡µ­¹æ°ìÍ÷Îó¤Ë°ÜÆ°¤¹¤ë
+ * 次記号一覧列に移動する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-int KigoNextKouhoretsu(uiContext d)
+KigoNextKouhoretsu(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
   int headkouho;
 
-  /** ¼¡¸õÊäÎó¤Ë¤¹¤ë **/
+  /** 次候補列にする **/
   headkouho = kc->glineifp->glhead + kc->nIkouho;
   if(headkouho >= KIGOSU)
     headkouho = 0;
   makeKigoInfo(d, headkouho);
 
-  /* *(kc->curIkouho) ¤¬¥«¥ì¥ó¥Èµ­¹æ°ìÍ÷¤Îµ­¹æ¿ô¤è¤êÂç¤­¤¯¤Ê¤Ã¤Æ¤·¤Þ¤Ã¤¿¤é
-     ºÇ±¦µ­¹æ¤ò¥«¥ì¥ó¥È¸õÊä¤È¤¹¤ë */
+  /* *(kc->curIkouho) がカレント記号一覧の記号数より大きくなってしまったら
+     最右記号をカレント候補とする */
   if(*(kc->curIkouho) >= kc->glineifp->glkosu)
     *(kc->curIkouho) = kc->glineifp->glkosu - 1;
 
-  /* kanji_status_retusrn ¤òºî¤ë */
+  /* kanji_status_retusrn を作る */
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
@@ -548,20 +559,21 @@ int KigoNextKouhoretsu(uiContext d)
 }
 
 /*
- * µ­¹æ°ìÍ÷¹ÔÃæ¤ÎÀèÆ¬¤Îµ­¹æ¤Ë°ÜÆ°¤¹¤ë
+ * 記号一覧行中の先頭の記号に移動する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-int KigoBeginningOfKouho(uiContext d)
+KigoBeginningOfKouho(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
 
-  /* ¸õÊäÎó¤ÎÀèÆ¬¸õÊä¤ò¥«¥ì¥ó¥È¸õÊä¤Ë¤¹¤ë */
+  /* 候補列の先頭候補をカレント候補にする */
   *(kc->curIkouho) = 0;
 
-  /* kanji_status_retusrn ¤òºî¤ë */
+  /* kanji_status_retusrn を作る */
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
@@ -569,20 +581,21 @@ int KigoBeginningOfKouho(uiContext d)
 }
 
 /*
- * µ­¹æ°ìÍ÷¹ÔÃæ¤ÎºÇ±¦¤Îµ­¹æ¤Ë°ÜÆ°¤¹¤ë
+ * 記号一覧行中の最右の記号に移動する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-int KigoEndOfKouho(uiContext d)
+KigoEndOfKouho(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
 
-  /** ¸õÊäÎó¤ÎºÇ±¦¸õÊä¤ò¥«¥ì¥ó¥È¸õÊä¤Ë¤¹¤ë **/
+  /** 候補列の最右候補をカレント候補にする **/
   *(kc->curIkouho) = kc->glineifp->glkosu - 1;
 
-  /* kanji_status_retusrn ¤òºî¤ë */
+  /* kanji_status_retusrn を作る */
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
@@ -590,28 +603,29 @@ int KigoEndOfKouho(uiContext d)
 }
 
 /*
- * µ­¹æ°ìÍ÷¹ÔÃæ¤«¤éÁªÂò¤µ¤ì¤¿µ­¹æ¤ò³ÎÄê¤¹¤ë
+ * 記号一覧行中から選択された記号を確定する
  *
- * ¡¦¼¡¤Ëµ­¹æ°ìÍ÷¤·¤¿»þ¤ËÁ°²ó³ÎÄê¤·¤¿µ­¹æ¤¬¥«¥ì¥ó¥È¸õÊä¤È¤Ê¤ë¤è¤¦¤Ë¡¢
- *   ³ÎÄê¤·¤¿¸õÊä¤ò¥»¡¼¥Ö¤·¤Æ¤ª¤¯
+ * ・次に記号一覧した時に前回確定した記号がカレント候補となるように、
+ *   確定した候補をセーブしておく
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-int KigoKakutei(uiContext d)
+KigoKakutei(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
 
-  /* ¥«¥ì¥ó¥Èµ­¹æ¤ò¥»¡¼¥Ö¤¹¤ë */
+  /* カレント記号をセーブする */
   d->curkigo = kc->glineifp->glhead + *(kc->curIkouho);
 
-  /* ¥¨¥³¡¼¥¹¥È¥ê¥ó¥°¤ò³ÎÄêÊ¸»úÎó¤È¤¹¤ë */
+  /* エコーストリングを確定文字列とする */
   if (d->n_buffer >= KIGOSIZE) {
     d->nbytes = KIGOSIZE;
     WStrncpy(d->buffer_return, kc->kouhoifp[*(kc->curIkouho)].khdata, 
 	    d->nbytes);
-    d->buffer_return[KIGOSIZE] = (WCHAR_T)0;
+    d->buffer_return[KIGOSIZE] = (wchar_t)0;
   }
   else {
     d->nbytes = 0;
@@ -634,18 +648,19 @@ int KigoKakutei(uiContext d)
 
 #ifdef	SOMEONE_USES_THIS
 /*
- * µ­¹æ°ìÍ÷¹ÔÃæ¤ÎÆþÎÏ¤µ¤ì¤¿ÈÖ¹æ¤Îµ­¹æ¤Ë°ÜÆ°¤¹¤ë  ¡ÚÌ¤»ÈÍÑ¡Û
+ * 記号一覧行中の入力された番号の記号に移動する  【未使用】
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-KigoBangoKouho(uiContext d)
+KigoBangoKouho(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
   int num;
 
-  /* ÆþÎÏ¥Ç¡¼¥¿¤Ï £°¡Á£¹ £á¡Á£æ ¤«¡© */
+  /* 入力データは ０〜９ ａ〜ｆ か？ */
   if(((0x30 <= d->ch) && (d->ch <= 0x39))
      || ((0x61 <= d->ch) && (d->ch <= 0x66))) {
     if((0x30 <= d->ch) && (d->ch <= 0x39))
@@ -654,23 +669,23 @@ KigoBangoKouho(uiContext d)
       num = (int)(d->ch - 0x57);
   } 
   else {
-    /* ÆþÎÏ¤µ¤ì¤¿ÈÖ¹æ¤ÏÀµ¤·¤¯¤¢¤ê¤Þ¤»¤ó */
+    /* 入力された番号は正しくありません */
     return NothingChangedWithBeep(d);
   }
-  /* ÆþÎÏ¥Ç¡¼¥¿¤Ï ¸õÊä¹Ô¤ÎÃæ¤ËÂ¸ºß¤¹¤ë¿ô¤«¡© */
+  /* 入力データは 候補行の中に存在する数か？ */
   if(num >= kc->glineifp->glkosu) {
-    /* ÆþÎÏ¤µ¤ì¤¿ÈÖ¹æ¤ÏÀµ¤·¤¯¤¢¤ê¤Þ¤»¤ó */
+    /* 入力された番号は正しくありません */
     return NothingChangedWithBeep(d);
   }
 
-  /* ¸õÊäÎó¤ÎÀèÆ¬¸õÊä¤òÆÀ¤ë */
+  /* 候補列の先頭候補を得る */
   *(kc->curIkouho) = num;
 
-  /* SelectDirect ¤Î¥«¥¹¥¿¥Þ¥¤¥º¤Î½èÍý */
+  /* SelectDirect のカスタマイズの処理 */
   if (cannaconf.SelectDirect) /* ON */ {
     return(KigoKakutei(d));
   } else           /* OFF */ {
-    /* kanji_status_retusrn ¤òºî¤ë */
+    /* kanji_status_retusrn を作る */
     makeKigoGlineStatus(d);
 
     return(0);
@@ -679,24 +694,33 @@ KigoBangoKouho(uiContext d)
 #endif	/* SOMEONE_USES_THIS */
 
 /*
- * µ­¹æ°ìÍ÷¹Ô¤ò¾Ãµî¤¹¤ë
+ * 記号一覧行を消去する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0
  */
 static
-int KigoQuit(uiContext d)
+KigoQuit(d)
+uiContext	d;
 {
   ichiranContext kc = (ichiranContext)d->modec;
   BYTE fl = kc->flags;
 
   freeIchiranBuf(kc);
   popKigoMode(d);
-  /* gline ¤ò¥¯¥ê¥¢¤¹¤ë */
+  /* gline をクリアする */
   GlineClear(d);
   d->status = (fl & ICHIRAN_NEXT_EXIT) ? EXIT_CALLBACK : QUIT_CALLBACK;
   return 0;
 }
 #endif /* NO_EXTEND_MENU */
+
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/
 
 #include	"kigomap.h"

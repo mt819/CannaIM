@@ -20,86 +20,82 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: commondata.c 10525 2004-12-23 21:23:50Z korli $";
+static char rcs_id[] = "@(#) 102.1 $Id: commondata.c,v 1.4.2.1 2004/04/26 22:53:02 aida_s Exp $";
 #endif /* lint */
 
 #include "canna.h"
 #include <canna/mfdef.h>
 #include "patchlevel.h"
-#include <Beep.h>
 
 struct CannaConfig cannaconf;
      
-/* ¥Ç¥Õ¥©¥ë¥È¤Î¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹ÍÑ¤Î¥Ð¥Ã¥Õ¥¡ */
+/* デフォルトのローマ字かな変換用のバッファ */
 
 int defaultContext = -1;
 int defaultBushuContext = -1;
 
-/* ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ë */
+/* ローマ字かな変換テーブル */
 /*
- * ¥í¡¼¥Þ»ú¤«¤ÊÊÑ´¹¥Æ¡¼¥Ö¥ë¤Ï£±¸Ä¤¢¤ì¤ÐÎÉ¤¤¤Ç¤·¤ç¤¦¡£Ê£¿ô¸ÄÉ¬Í×¤Ê¤Î¤Ç
- * ¤¢¤ì¤Ð RomeStruct ¤Î¥á¥ó¥Ð¤È¤·¤ÆÆþ¤ì¤Æ¤ª¤¯É¬Í×¤â¤¢¤ê¤Þ¤·¤ç¤¦¤¬...¤½
- * ¤Î»þ¤Ï¤½¤Î»þ¤Ç¹Í¤¨¤Þ¤·¤ç¤¦¡£
+ * ローマ字かな変換テーブルは１個あれば良いでしょう。複数個必要なので
+ * あれば RomeStruct のメンバとして入れておく必要もありましょうが...そ
+ * の時はその時で考えましょう。
  */
      
-struct RkRxDic *romajidic, *englishdic;
+struct RkRxDic *romajidic, *englishdic, *RkwOpenRoma();
 
-/* Ì¤ÄêµÁ¥­¡¼ÂÇ¸°»þ¤Î½èÍý¤Î¤·¤«¤¿ */
+/* 未定義キー打鍵時の処理のしかた */
 
 int howToBehaveInCaseOfUndefKey = kc_normal;
 
 /*
- * ¼­½ñ¤ÎÌ¾Á°¤òÆþ¤ì¤Æ¤ª¤¯ÊÑ¿ô
+ * 辞書の名前を入れておく変数
  */
 
-char saveapname[CANNA_MAXAPPNAME]; /* ¥µ¡¼¥Ð¤È¤ÎÀÜÂ³¤òÀÚ¤ë¤È¤­¤ÎAPÌ¾ */
+char saveapname[CANNA_MAXAPPNAME]; /* サーバとの接続を切るときのAP名 */
 
 /*
- * irohacheck ¥³¥Þ¥ó¥É¤Ë¤è¤Ã¤Æ»È¤ï¤ì¤Æ¤¤¤ë¤«¤È¤«¡¢
- * irohacheck ¤Ê¤¤¤Ç¤Î verbose ¤òÉ½¤¹ÃÍ¡£
+ * irohacheck コマンドによって使われているかとか、
+ * irohacheck ないでの verbose を表す値。
  */
 
 int ckverbose = 0;
 
 /*
- * ¥¨¥é¡¼¤Î¥á¥Ã¥»¡¼¥¸¤òÆþ¤ì¤Æ¤ª¤¯ÊÑ¿ô
+ * エラーのメッセージを入れておく変数
  */
 
 char *jrKanjiError = "";
 
 /*
- * ¥Ç¥Ð¥°¥á¥Ã¥»¡¼¥¸¤ò½Ð¤¹¤«¤É¤¦¤«¤Î¥Õ¥é¥°
+ * デバグメッセージを出すかどうかのフラグ
  */
 
 int iroha_debug = 0;
 
 /*
- * »Ï¤á¤Æ¤Î»ÈÍÑ¤«¤É¤¦¤«¤ò¼¨¤¹¥Õ¥é¥°
+ * 始めての使用かどうかを示すフラグ
  */
 
 int FirstTime = 1;
 
+#ifdef __HAIKU__
 /*
 * dictonary base path
 */
 
 char basepath[256];
 
+#endif
+
 /*
- * ¥Ó¡¼¥×²»¤òÌÄ¤é¤¹´Ø¿ô¤ò³ÊÇ¼¤¹¤ë¤È¤³¤í
+ * ビープ音を鳴らす関数を格納するところ
  */
 
 int (*jrBeepFunc)() = (int (*)())NULL;
-//int (*jrBeepFunc)() = (int (*)())beep();
 
 /*
- * KC_INITIALIZE Ä¾¸å¤Ë¼Â¹Ô¤¹¤ëµ¡Ç½¤ÎÎó
+ * KC_INITIALIZE 直後に実行する機能の列
  */
 
 BYTE *initfunc = (BYTE *)0;
@@ -121,14 +117,14 @@ keySupplement keysup[MAX_KEY_SUP];
 int nkeysup = 0;
 
 /*
- * ½é´ü²½¤ÎºÝ»ÈÍÑ¤·¤¿½é´ü²½¥Õ¥¡¥¤¥ëÌ¾¤òÁ´¤Æ¤È¤Ã¤Æ¤ª¤¯¥Ð¥Ã¥Õ¥¡¡£
- * ¥Õ¥¡¥¤¥ëÌ¾¤Ï","¤Ç¶èÀÚ¤é¤ì¤ë¡£(³ÈÄ¥µ¡Ç½¤Ç»ÈÍÑ)
+ * 初期化の際使用した初期化ファイル名を全てとっておくバッファ。
+ * ファイル名は","で区切られる。(拡張機能で使用)
  */
 
 char *CANNA_initfilename = (char *)NULL;
 
 /*
- * ¥Ð¡¼¥¸¥ç¥ó
+ * バージョン
  */
 
 int protocol_version = -1;
@@ -138,27 +134,24 @@ char *server_name = (char *)NULL;
 int chikuji_debug = 0;
 int auto_define = 0;
 
-int locale_insufficient = 0;
-
-void (*keyconvCallback)(...) = (void (*)(...))0;
+void (*keyconvCallback)() = (void (*)())0;
 
 extraFunc *extrafuncp = (extraFunc *)NULL;
-struct dicname *kanjidicnames; /* .canna ¤Ç»ØÄê¤·¤Æ¤¤¤ë¼­½ñ¥ê¥¹¥È */
-char *kataautodic = (char *)NULL; /* ¥«¥¿¥«¥Ê¸ì¼«Æ°ÅÐÏ¿ÍÑ¼­½ñ */
+struct dicname *kanjidicnames; /* .canna で指定している辞書リスト */
+char *kataautodic = (char *)NULL; /* カタカナ語自動登録用辞書 */
 #ifdef HIRAGANAAUTO
-char *hiraautodic = (char *)NULL; /* ¤Ò¤é¤¬¤Ê¸ì¼«Æ°ÅÐÏ¿ÍÑ¼­½ñ */
+char *hiraautodic = (char *)NULL; /* ひらがな語自動登録用辞書 */
 #endif
 
-static void freeUInfo(void);
-
-/* ¥æ¡¼¥¶¾ðÊó */
+/* ユーザ情報 */
 jrUserInfoStruct *uinfo = (jrUserInfoStruct *)NULL;
 
-/* ¥¹¥¿¥ó¥É¥¢¥í¥ó¤«¤É¤¦¤«¤Î¥Õ¥é¥° */
-int standalone = 0;
+ /* マウント処理を行っているかどうか */
+int mountnottry = 1;
 
 void
-InitCannaConfig(struct CannaConfig *cf)
+InitCannaConfig(cf)
+struct CannaConfig *cf;
 {
   bzero(cf, sizeof(struct CannaConfig));
   cf->CannaVersion = CANNA_MAJOR_MINOR;
@@ -174,6 +167,7 @@ InitCannaConfig(struct CannaConfig *cf)
   cf->kCount = 1;
   cf->hexCharacterDefiningStyle = HEX_USUAL;
   cf->ChikujiContinue = 1;
+  cf->RenbunContinue = 1;
   cf->MojishuContinue = 1;
   cf->kojin = 1;
   cf->indexSeparator = DEFAULTINDEXSEPARATOR;
@@ -185,10 +179,10 @@ InitCannaConfig(struct CannaConfig *cf)
   cf->auto_sync = 1;
 }
 
-static void freeUInfo (void);
+static void freeUInfo pro((void));
 
 static void
-freeUInfo(void)
+freeUInfo()
 {
   if (uinfo) {
     if (uinfo->uname)
@@ -203,16 +197,16 @@ freeUInfo(void)
       free(uinfo->cannafile);
     if (uinfo->romkanatable)
       free(uinfo->romkanatable);
-    free(uinfo);
+    free((char *)uinfo);
     uinfo = (jrUserInfoStruct *)NULL;
   }
 }
 
 /*
-  ¥Ç¥Õ¥¡¡¼¥ë¥ÈÃÍ¤Ë¤â¤É¤¹¡£
+  デファールト値にもどす。
 */
 void
-restoreBindings(void)
+restoreBindings()
 {
   InitCannaConfig(&cannaconf);
 
@@ -236,7 +230,7 @@ restoreBindings(void)
   KatakanaGakushu = (struct dicname *)NULL;
   HiraganaGakushu = (struct dicname *)NULL;
   howToBehaveInCaseOfUndefKey = kc_normal;
-/*  kanjidicname[nkanjidics = 0] = (char *)NULL; Âå¤ï¤ê¤Î¤³¤È¤ò¤·¤Ê¤±¤ì¤Ð */
+/*  kanjidicname[nkanjidics = 0] = (char *)NULL; 代わりのことをしなければ */
   kanjidicnames = (struct dicname *)NULL;
   kataautodic = (char *)NULL;
 #ifdef HIRAGANAAUTO
@@ -251,8 +245,6 @@ restoreBindings(void)
   nKouhoBunsetsu = 16;
   nkeysup = 0;
   chikuji_debug = 0;
-  keyconvCallback = (void (*)(...))0;
-  locale_insufficient = 0;
+  keyconvCallback = (void (*)())0;
   freeUInfo();
-  standalone = 0;
 }

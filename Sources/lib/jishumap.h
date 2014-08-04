@@ -19,13 +19,15 @@
  * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
  * PERFORMANCE OF THIS SOFTWARE. 
  */
-// Modified by T.Murai
 
 #if !defined(lint) && !defined(__CODECENTER__)
-static char jishumap_id[] = "@(#) 102.1 $Id: jishumap.h 14875 2005-11-12 21:25:31Z bonefish $";
+static char jishumap_id[] = "@(#) 102.1 $Id: jishumap.h,v 1.1.1.1 2002/10/19 08:27:49 aida_s Exp $";
 #endif /* lint */
 
-#include "canna.h"
+extern DoFuncSequence pro((uiContext)),UseOtherKeymap pro((uiContext));
+extern TbForward pro((uiContext)), TbBackward pro((uiContext));
+extern TbBeginningOfLine pro((uiContext)), TbEndOfLine pro((uiContext));
+extern YomiKakutei pro((uiContext));
 
 static struct funccfunc jishu_funcs[] = {
   {CANNA_FN_FunctionalInsert	,JishuYomiInsert	},
@@ -60,7 +62,6 @@ static struct funccfunc jishu_funcs[] = {
   {CANNA_FN_UseOtherKeymap	,UseOtherKeymap		},
   {0				,0			},
 };
-extern int searchfunc(...);
 
 KanjiModeRec jishu_mode = {
   searchfunc,

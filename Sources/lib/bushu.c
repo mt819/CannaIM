@@ -20,21 +20,31 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/************************************************************************/
-/* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
-/************************************************************************/
-
 #if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: bushu.c 14875 2005-11-12 21:25:31Z bonefish $";
+static char rcs_id[] = "@(#) 102.1 $Id: bushu.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
 
 #include	<errno.h>
 #include "canna.h"
-#include "RK.h"
-#include "RKintern.h"
 
-extern WCHAR_T *WString();
+#ifdef luna88k
+extern int errno;
+#endif
 
+/*********************************************************************
+ *                      wchar_t replace begin                        *
+ *********************************************************************/
+#ifdef wchar_t
+# error "wchar_t is already defined"
+#endif
+#define wchar_t cannawc
+
+extern wchar_t *WString();
+
+extern int uuslQuitCatch();
+extern int uuslIchiranQuitCatch();
+static int bushuHenkan(), makeBushuIchiranQuit();
+static int vBushuExitCatch(), bushuQuitCatch();
 
 
 #define	BUSHU_SZ	150
@@ -42,181 +52,169 @@ extern WCHAR_T *WString();
 static
 char *bushu_schar[] = 
 { 
-  /* "°ì", "Ð¨", "Ñá", "½½", "ÒÇ", "Åá", */
+  /* "一", "丿", "凵", "十", "卩", "刀", */
   "\260\354", "\320\250", "\321\341", "\275\275", "\322\307", "\305\341",
   
-  /* "´¢¡Ê¤ê¤Ã¤È¤¦¡Ë", "ÎÏ", "ÒÌ", "Ò±", "ÑÄÒ¹Óø", "Ðµ", */
+  /* "刈（りっとう）", "力", "厂", "勹", "冂匚囗", "亠", */
   "\264\242\241\312\244\352\244\303\244\310\244\246\241\313", "\316\317", "\322\314", "\322\261", "\321\304\322\271\323\370", "\320\265",
   
-  /* "ÑÒ", "¿Í¡¿¿Î¡Ê¤Ë¤ó¤Ù¤ó¡Ë", "Ëô", "ÑÜ", "È¬", "Ñ¹", */
+  /* "冫", "人／仁（にんべん）", "又", "几", "八", "儿", */
   "\321\322", "\277\315\241\277\277\316\241\312\244\313\244\363\244\331\244\363\241\313", "\313\364", "\321\334", "\310\254", "\321\271",
   
-  /* "ÑÌ", "Õß", "×®", "°ê¡Ê¤ª¤ª¤¶¤È)", "¸Ê", "½÷", */
+  /* "冖", "宀", "廴", "郁（おおざと)", "己", "女", */
   "\321\314", "\325\337", "\327\256", "\260\352\241\312\244\252\244\252\244\266\244\310\51", "\270\312", "\275\367",
   
-  /* "×Æ", "¸ý", "Áð¡Ê¤¯¤µ¤«¤ó¤à¤ê)", "ÆÈ¡Ê¤±¤â¤Î¤Ø¤ó¡Ë", */
+  /* "彳", "口", "草（くさかんむり)", "独（けものへん）", */
   "\327\306", "\270\375", "\301\360\241\312\244\257\244\265\244\253\244\363\244\340\244\352\51", "\306\310\241\312\244\261\244\342\244\316\244\330\244\363\241\313",
 
-  /* "»Ò", "ïú¡Ê¤³¤¶¤È¡Ë", "»Î", "¹¾¡Ê¤µ¤ó¤º¤¤¡Ë", "×µ", */
+  /* "子", "陏（こざと）", "士", "江（さんずい）", "弋", */
   "\273\322", "\357\372\241\312\244\263\244\266\244\310\241\313", "\273\316", "\271\276\241\312\244\265\244\363\244\272\244\244\241\313", "\327\265",
   
-  /* "Õù", "¾®¡¿Ã±¡Ê¤Ä¡Ë", "íè¡Ê¤·¤ó¤Ë¤ç¤¦¡Ë", "À£", "Âç", */
+  /* "尸", "小／単（つ）", "辷（しんにょう）", "寸", "大", */
   "\325\371", "\276\256\241\277\303\261\241\312\244\304\241\313", "\355\350\241\312\244\267\244\363\244\313\244\347\244\246\241\313", "\300\243", "\302\347",
   
-  /* "ÅÚ", "¼ê¡Ê¤Æ¤Ø¤ó¡Ë", "¶Ò", "Öø", "»³", "Í¼", */
+  /* "土", "手（てへん）", "巾", "广", "山", "夕", */
   "\305\332", "\274\352\241\312\244\306\244\330\244\363\241\313", "\266\322", "\326\370", "\273\263", "\315\274",
   
-  /* "µÝ", "Ë»¡Ê¤ê¤Ã¤·¤ó¤Ù¤ó¡Ë", "·ç", "ÝÆ", "¸¤", */
+  /* "弓", "忙（りっしんべん）", "欠", "歹", "犬", */
   "\265\335", "\313\273\241\312\244\352\244\303\244\267\244\363\244\331\244\363\241\313", "\267\347", "\335\306", "\270\244",
   
-  /* "µí¡¿²´¡Ê¤¦¤·¤Ø¤ó¡Ë", "ÊÒ", "ÌÚ", "Ýã", "ÌÓ", "¿´", */
+  /* "牛／牡（うしへん）", "片", "木", "气", "毛", "心", */
   "\265\355\241\277\262\264\241\312\244\246\244\267\244\330\244\363\241\313", "\312\322", "\314\332", "\335\343", "\314\323", "\277\264",
   
-  /* "¿å", "·î", "ÄÞ", "Æü", "Ú¾", "²Ð", */
+  /* "水", "月", "爪", "日", "攵", "火", */
   "\277\345", "\267\356", "\304\336", "\306\374", "\332\276", "\262\320",
   
-  /* "Êý", "Øù", "ÅÀ¡Ê¤ì¤Ã¤«¡Ë", "ÝÕ", "·ê", "ÀÐ", */
+  /* "方", "戈", "点（れっか）", "殳", "穴", "石", */
   "\312\375", "\330\371", "\305\300\241\312\244\354\244\303\244\253\241\313", "\335\325", "\267\352", "\300\320",
 
-  /* "¶Ì", "Èé", "´¤", "»®", "¼¨", "¿À¡Ê¤·¤á¤¹¤Ø¤ó¡Ë", "Çò", */
+  /* "玉", "皮", "瓦", "皿", "示", "神（しめすへん）", "白", */
   "\266\314", "\310\351", "\264\244", "\273\256", "\274\250", "\277\300\241\312\244\267\244\341\244\271\244\330\244\363\241\313", "\307\362",
   
-  /* "ÅÄ", "Î©", "²Ó", "ÌÜ", "â¢", "Ìð", */
+  /* "田", "立", "禾", "目", "癶", "矢", */
   "\305\304", "\316\251", "\262\323", "\314\334", "\342\242", "\314\360",
   
-  /* "áË¡Ê¤ä¤Þ¤¤¤À¤ì¡Ë", "»Í", "»å", "±±", "±»", "Ï·", */
+  /* "疔（やまいだれ）", "四", "糸", "臼", "瓜", "老", */
   "\341\313\241\312\244\344\244\336\244\244\244\300\244\354\241\313", "\273\315", "\273\345", "\261\261", "\261\273", "\317\267",
   
-  /* "´Ì", "°á", "½é¡Ê¤³¤í¤â¤Ø¤ó¡Ë", "ÊÆ", "Àå", "æÐ", */
+  /* "缶", "衣", "初（ころもへん）", "米", "舌", "耒", */
   "\264\314", "\260\341", "\275\351\241\312\244\263\244\355\244\342\244\330\244\363\241\313", "\312\306", "\300\345", "\346\320",
   
-  /* "ÃÝ¡Ê¤¿¤±¤«¤ó¤à¤ê¡Ë", "·ì", "¸×¡Ê¤È¤é¤«¤ó¤à¤ê¡Ë", "Æù", */
+  /* "竹（たけかんむり）", "血", "虎（とらかんむり）", "肉", */
   "\303\335\241\312\244\277\244\261\244\253\244\363\244\340\244\352\241\313", "\267\354", "\270\327\241\312\244\310\244\351\244\253\244\363\244\340\244\352\241\313", "\306\371",
   
-  /* "À¾", "±©", "ÍÓ", "ææ", "½®", "¼ª", */
+  /* "西", "羽", "羊", "聿", "舟", "耳", */
   "\300\276", "\261\251", "\315\323", "\346\346", "\275\256", "\274\252",
   
-  /* "Ãî", "ÀÖ", "Â­¡¿É¥", "ìµ", "¿Ã", */
+  /* "虫", "赤", "足／疋", "豕", "臣", */
   "\303\356", "\300\326", "\302\255\241\277\311\245", "\354\265", "\277\303",
   
-  /* "³­", "¿É", "¼Ö", "¸«", "¸À", "ÆÓ", "Áö", "Ã«", */
+  /* "貝", "辛", "車", "見", "言", "酉", "走", "谷", */
   "\263\255", "\277\311", "\274\326", "\270\253", "\270\300", "\306\323", "\301\366", "\303\253",
   
-  /* "³Ñ", "ÈÐ", "Çþ", "Æ¦", "¿È", "ì¸", "±«", "Èó", */
+  /* "角", "釆", "麦", "豆", "身", "豸", "雨", "非", */
   "\263\321", "\310\320", "\307\376", "\306\246", "\277\310", "\354\270", "\261\253", "\310\363",
   
-  /* "¶â", "Ìç", "ð²", "ÊÇ", "²»", "¹á", "³×", "É÷", */
+  /* "金", "門", "隹", "頁", "音", "香", "革", "風", */
   "\266\342", "\314\347", "\360\262", "\312\307", "\262\273", "\271\341", "\263\327", "\311\367",
   
-  /* "¼ó", "¿©", "ðê", "ÌÌ", "ÇÏ", "µ´", "ñõ", "¹â", */
+  /* "首", "食", "韋", "面", "馬", "鬼", "髟", "高", */
   "\274\363", "\277\251", "\360\352", "\314\314", "\307\317", "\265\264", "\361\365", "\271\342",
   
-  /* "ò¨", "¹ü", "µû", "µµ", "Ä»", "¹õ", "¼¯", "É¡", */
+  /* "鬥", "骨", "魚", "亀", "鳥", "黒", "鹿", "鼻", */
   "\362\250", "\271\374", "\265\373", "\265\265", "\304\273", "\271\365", "\274\257", "\311\241",
 
-  /* "óï", "µ­¹æ", "¤½¤ÎÂ¾" */
+  /* "齒", "記号", "その他" */
   "\363\357", "\265\255\271\346", "\244\275\244\316\302\276"
 };
 
 static
 char *bushu_skey[] =  
 { 
-/* "¤¤¤Á", "¤Î", "¤¦¤±¤Ð¤³", "¤¸¤å¤¦", "¤Õ¤·", "¤«¤¿¤Ê", */
+/* "いち", "の", "うけばこ", "じゅう", "ふし", "かたな", */
 "\244\244\244\301", "\244\316", "\244\246\244\261\244\320\244\263", "\244\270\244\345\244\246", "\244\325\244\267", "\244\253\244\277\244\312",
 
-/* "¤ê¤Ã¤È¤¦", "¤«", "¤¬¤ó", "¤¯", "¤«¤Þ¤¨", "¤Ê¤Ù", "¤Ë", */
+/* "りっとう", "か", "がん", "く", "かまえ", "なべ", "に", */
 "\244\352\244\303\244\310\244\246", "\244\253", "\244\254\244\363", "\244\257", "\244\253\244\336\244\250", "\244\312\244\331", "\244\313",
 
-/* "¤Ò¤È", "¤Ì", "¤Ä¤¯¤¨", "¤Ï¤Á", "¤ë", "¤ï", */
+/* "ひと", "ぬ", "つくえ", "はち", "る", "わ", */
 "\244\322\244\310", "\244\314", "\244\304\244\257\244\250", "\244\317\244\301", "\244\353", "\244\357",
 
-/* "¤¦", "¤¨¤ó", "¤ª¤ª¤¶¤È", "¤ª¤Î¤ì", "¤ª¤ó¤Ê", "¤®¤ç¤¦", */
+/* "う", "えん", "おおざと", "おのれ", "おんな", "ぎょう", */
 "\244\246", "\244\250\244\363", "\244\252\244\252\244\266\244\310", "\244\252\244\316\244\354", "\244\252\244\363\244\312", "\244\256\244\347\244\246",
 
-/* "¤í", "¤¯¤µ", "¤±¤â¤Î", "¤³", "¤³¤¶¤È", "¤µ¤à¤é¤¤", */
+/* "ろ", "くさ", "けもの", "こ", "こざと", "さむらい", */
 "\244\355", "\244\257\244\265", "\244\261\244\342\244\316", "\244\263", "\244\263\244\266\244\310", "\244\265\244\340\244\351\244\244",
 
-/* "¤·", "¤·¤­", "¤·¤ã¤¯", "¤Ä", "¤·¤ó", "¤¹¤ó", */
+/* "し", "しき", "しゃく", "つ", "しん", "すん", */
 "\244\267", "\244\267\244\255", "\244\267\244\343\244\257", "\244\304", "\244\267\244\363", "\244\271\244\363",
 
-/* "¤À¤¤", "¤É", "¤Æ", "¤Ï¤Ð", "¤Þ", "¤ä¤Þ", */
+/* "だい", "ど", "て", "はば", "ま", "やま", */
 "\244\300\244\244", "\244\311", "\244\306", "\244\317\244\320", "\244\336", "\244\344\244\336",
 
-/* "¤æ¤¦", "¤æ¤ß", "¤ê¤Ã¤·¤ó", "¤±¤Ä", "¤¤¤Á¤¿", "¤¤¤Ì", */
+/* "ゆう", "ゆみ", "りっしん", "けつ", "いちた", "いぬ", */
 "\244\346\244\246", "\244\346\244\337", "\244\352\244\303\244\267\244\363", "\244\261\244\304", "\244\244\244\301\244\277", "\244\244\244\314",
 
-/* "¤¦¤·", "¤«¤¿", "¤­", "¤­¤¬¤Þ¤¨", "¤±", "¤³¤³¤í", */
+/* "うし", "かた", "き", "きがまえ", "け", "こころ", */
 "\244\246\244\267", "\244\253\244\277", "\244\255", "\244\255\244\254\244\336\244\250", "\244\261", "\244\263\244\263\244\355",
 
-/* "¤¹¤¤", "¤Ä¤­", "¤Ä¤á", "¤Ë¤Á", "¤Î¤Ö¤ó", "¤Ò", */
+/* "すい", "つき", "つめ", "にち", "のぶん", "ひ", */
 "\244\271\244\244", "\244\304\244\255", "\244\304\244\341", "\244\313\244\301", "\244\316\244\326\244\363", "\244\322",
 
-/* "¤Û¤¦", "¤Û¤³", "¤è¤Ä¤Æ¤ó", "¤ë¤Þ¤¿", "¤¢¤Ê", "¤¤¤·", */
+/* "ほう", "ほこ", "よつてん", "るまた", "あな", "いし", */
 "\244\333\244\246", "\244\333\244\263", "\244\350\244\304\244\306\244\363", "\244\353\244\336\244\277", "\244\242\244\312", "\244\244\244\267",
 
-/* "¤ª¤¦", "¤«¤ï", "¤«¤ï¤é", "¤µ¤é", "¤·¤á¤¹", "¤Í", */
+/* "おう", "かわ", "かわら", "さら", "しめす", "ね", */
 "\244\252\244\246", "\244\253\244\357", "\244\253\244\357\244\351", "\244\265\244\351", "\244\267\244\341\244\271", "\244\315",
 
-/* "¤·¤í", "¤¿", "¤¿¤Ä", "¤Î¤®", "¤á", "¤Ï¤Ä", "¤ä", */
+/* "しろ", "た", "たつ", "のぎ", "め", "はつ", "や", */
 "\244\267\244\355", "\244\277", "\244\277\244\304", "\244\316\244\256", "\244\341", "\244\317\244\304", "\244\344",
 
-/* "¤ä¤Þ¤¤", "¤è¤ó", "¤¤¤È", "¤¦¤¹", "¤¦¤ê", "¤ª¤¤", */
+/* "やまい", "よん", "いと", "うす", "うり", "おい", */
 "\244\344\244\336\244\244", "\244\350\244\363", "\244\244\244\310", "\244\246\244\271", "\244\246\244\352", "\244\252\244\244",
 
-/* "¤«¤ó", "¤­¤Ì", "¤³¤í¤â", "¤³¤á", "¤·¤¿", "¤¹¤­", */
+/* "かん", "きぬ", "ころも", "こめ", "した", "すき", */
 "\244\253\244\363", "\244\255\244\314", "\244\263\244\355\244\342", "\244\263\244\341", "\244\267\244\277", "\244\271\244\255",
 
-/* "¤¿¤±", "¤Á", "¤È¤é", "¤Ë¤¯", "¤Ë¤·", "¤Ï¤Í", "¤Ò¤Ä¤¸", */
+/* "たけ", "ち", "とら", "にく", "にし", "はね", "ひつじ", */
 "\244\277\244\261", "\244\301", "\244\310\244\351", "\244\313\244\257", "\244\313\244\267", "\244\317\244\315", "\244\322\244\304\244\270",
 
-/* "¤Õ¤Ç", "¤Õ¤Í", "¤ß¤ß", "¤à¤·", "¤¢¤«", "¤¢¤·", */
+/* "ふで", "ふね", "みみ", "むし", "あか", "あし", */
 "\244\325\244\307", "\244\325\244\315", "\244\337\244\337", "\244\340\244\267", "\244\242\244\253", "\244\242\244\267",
 
-/* "¤¤¤Î¤³", "¤ª¤ß", "¤«¤¤", "¤«¤é¤¤", "¤¯¤ë¤Þ", "¤±¤ó", */
+/* "いのこ", "おみ", "かい", "からい", "くるま", "けん", */
 "\244\244\244\316\244\263", "\244\252\244\337", "\244\253\244\244", "\244\253\244\351\244\244", "\244\257\244\353\244\336", "\244\261\244\363",
 
-/* "¤´¤ó", "¤µ¤±", "¤½¤¦", "¤¿¤Ë", "¤Ä¤Î", "¤Î¤´¤á", */
+/* "ごん", "さけ", "そう", "たに", "つの", "のごめ", */
 "\244\264\244\363", "\244\265\244\261", "\244\275\244\246", "\244\277\244\313", "\244\304\244\316", "\244\316\244\264\244\341",
 
-/* "¤Ð¤¯", "¤Þ¤á", "¤ß", "¤à¤¸¤Ê", "¤¢¤á", "¤¢¤é¤º", */
+/* "ばく", "まめ", "み", "むじな", "あめ", "あらず", */
 "\244\320\244\257", "\244\336\244\341", "\244\337", "\244\340\244\270\244\312", "\244\242\244\341", "\244\242\244\351\244\272",
 
-/* "¤«¤Í", "¤â¤ó", "¤Õ¤ë¤È¤ê", "¤Ú¡¼¤¸", "¤ª¤È", "¤³¤¦", */
+/* "かね", "もん", "ふるとり", "ぺーじ", "おと", "こう", */
 "\244\253\244\315", "\244\342\244\363", "\244\325\244\353\244\310\244\352", "\244\332\241\274\244\270", "\244\252\244\310", "\244\263\244\246",
 
-/* "¤«¤¯", "¤«¤¼", "¤¯¤Ó", "¤·¤ç¤¯", "¤Ê¤á¤·", "¤á¤ó", */
+/* "かく", "かぜ", "くび", "しょく", "なめし", "めん", */
 "\244\253\244\257", "\244\253\244\274", "\244\257\244\323", "\244\267\244\347\244\257", "\244\312\244\341\244\267", "\244\341\244\363",
 
-/* "¤¦¤Þ", "¤ª¤Ë", "¤«¤ß", "¤¿¤«¤¤", "¤È¤¦", "¤Û¤Í", */
+/* "うま", "おに", "かみ", "たかい", "とう", "ほね", */
 "\244\246\244\336", "\244\252\244\313", "\244\253\244\337", "\244\277\244\253\244\244", "\244\310\244\246", "\244\333\244\315",
 
-/* "¤¦¤ª", "¤«¤á", "¤È¤ê", "¤¯¤í", "¤·¤«", "¤Ï¤Ê", */
+/* "うお", "かめ", "とり", "くろ", "しか", "はな", */
 "\244\246\244\252", "\244\253\244\341", "\244\310\244\352", "\244\257\244\355", "\244\267\244\253", "\244\317\244\312",
 
-/* "¤Ï", "¤­¤´¤¦", "¤½¤Î¤¿" */
+/* "は", "きごう", "そのた" */
 "\244\317", "\244\255\244\264\244\246", "\244\275\244\316\244\277"
 };
 
 
 #define	BUSHU_CNT	(sizeof(bushu_schar)/sizeof(char *))
 
-
-static forichiranContext newForIchiranContext(void);
-static int vBushuMode(uiContext d, int major_mode);
-static int vBushuIchiranQuitCatch(uiContext d, int retval, mode_context env);
-static int vBushuExitCatch(uiContext d, int retval, mode_context env);
-static int bushuEveryTimeCatch(uiContext d, int retval, mode_context env);
-static int bushuExitCatch(uiContext d, int retval, mode_context env);
-static int bushuQuitCatch(uiContext d, int retval, mode_context env);
-static int convBushuQuitCatch(uiContext d, int retval, mode_context env);
-static int bushuHenkan(uiContext d, int flag, int ext, int cur, int (*quitfunc )(uiContext, int, mode_context ));
-static int makeBushuIchiranQuit(uiContext d, int flag);
-
-static WCHAR_T *bushu_char[BUSHU_CNT];
-static WCHAR_T *bushu_key[BUSHU_CNT];
+static wchar_t *bushu_char[BUSHU_CNT];
+static wchar_t *bushu_key[BUSHU_CNT];
 
 int
-initBushuTable(void)
+initBushuTable()
 {
   int retval = 0;
 
@@ -229,13 +227,14 @@ initBushuTable(void)
 
 
 /*
- * Éô¼ó¸õÊä¤Î¥¨¥³¡¼ÍÑ¤ÎÊ¸»úÎó¤òºî¤ë
+ * 部首候補のエコー用の文字列を作る
  *
- * °ú¤­¿ô	RomeStruct
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0
+ * 引き数	RomeStruct
+ * 戻り値	正常終了時 0
  */
-inline int
-makeBushuEchoStr(uiContext d)
+static int
+makeBushuEchoStr(d)
+uiContext d;
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
@@ -248,14 +247,15 @@ makeBushuEchoStr(uiContext d)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * forichiranContextÍÑ´Ø¿ô                                                   *
+ * forichiranContext用関数                                                   *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
- * forichiranContext ¤Î½é´ü²½
+ * forichiranContext の初期化
  */
-inline int
-clearForIchiranContext(forichiranContext p)
+static
+clearForIchiranContext(p)
+forichiranContext p;
 {
   p->id = FORICHIRAN_CONTEXT;
   p->curIkouho = 0;
@@ -265,16 +265,16 @@ clearForIchiranContext(forichiranContext p)
 }
   
 static forichiranContext
-newForIchiranContext(void)
+newForIchiranContext()
 {
   forichiranContext fcxt;
 
   if ((fcxt = (forichiranContext)malloc(sizeof(forichiranContextRec)))
                                              == (forichiranContext)NULL) {
-#ifndef WIN
-    jrKanjiError = "malloc (newForIchiranContext) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (newForIchiranContext) できませんでした";
 #else
-    jrKanjiError = "malloc (newForIchiranContext) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";  /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+    jrKanjiError = "malloc (newForIchiranContext) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";  /* できませんでした */
 #endif
     return (forichiranContext)NULL;
   }
@@ -283,18 +283,18 @@ newForIchiranContext(void)
   return fcxt;
 }
 
-int
-getForIchiranContext(uiContext d)
+getForIchiranContext(d)
+uiContext d;
 {
   forichiranContext fc;
   int retval = 0;
 
   if (pushCallback(d, d->modec, NO_CALLBACK, NO_CALLBACK,
                                   NO_CALLBACK, NO_CALLBACK) == 0) {
-#ifndef WIN
-    jrKanjiError = "malloc (pushCallback) ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿";
+#ifdef CODED_MESSAGE
+    jrKanjiError = "malloc (pushCallback) できませんでした";
 #else
-    jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277"; /* ¤Ç¤­¤Þ¤»¤ó¤Ç¤·¤¿ */
+    jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277"; /* できませんでした */
 #endif
     return(NG);
   }
@@ -313,7 +313,8 @@ getForIchiranContext(uiContext d)
 }
 
 void
-popForIchiranMode(uiContext d)
+popForIchiranMode(d)
+uiContext d;
 {
   forichiranContext fc = (forichiranContext)d->modec;
 
@@ -324,11 +325,13 @@ popForIchiranMode(uiContext d)
 
 #ifndef NO_EXTEND_MENU
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Éô¼ó¥â¡¼¥ÉÆþÎÏ                                                            *
+ * 部首モード入力                                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static int
-vBushuMode(uiContext d, int major_mode)
+static
+vBushuMode(d, major_mode)
+uiContext d;
+int major_mode;
 {
   forichiranContext fc;
   ichiranContext ic;
@@ -344,7 +347,7 @@ vBushuMode(uiContext d, int major_mode)
 
   fc = (forichiranContext)d->modec;
 
-  /* selectOne ¤ò¸Æ¤Ö¤¿¤á¤Î½àÈ÷ */
+  /* selectOne を呼ぶための準備 */
   fc->allkouho = bushu_char;
   fc->curIkouho = 0;
   if (!cannaconf.HexkeySelect)
@@ -367,7 +370,7 @@ vBushuMode(uiContext d, int major_mode)
 
   *(ic->curIkouho) = d->curbushu;
 
-  /* ¸õÊä°ìÍ÷¹Ô¤¬¶¹¤¯¤Æ¸õÊä°ìÍ÷¤¬½Ð¤»¤Ê¤¤ */
+  /* 候補一覧行が狭くて候補一覧が出せない */
   if(ic->tooSmall) {
     d->status = AUX_CALLBACK;
     killmenu(d);
@@ -382,15 +385,18 @@ vBushuMode(uiContext d, int major_mode)
   return(retval);
 }
 
-static int
-vBushuIchiranQuitCatch(uiContext d, int retval, mode_context env)
+static
+vBushuIchiranQuitCatch(d, retval, env)
+     uiContext d;
+     int retval;
+     mode_context env;
      /* ARGSUSED */
 {
-  popCallback(d); /* °ìÍ÷¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* 一覧をポップ */
 
-  if (((forichiranContext)env)->allkouho != (WCHAR_T **)bushu_char) {
-    /* bushu_char ¤Ï static ¤ÎÇÛÎó¤À¤«¤é free ¤·¤Æ¤Ï¤¤¤±¤Ê¤¤¡£
-       ¤³¤¦¸À¤¦¤Î¤Ã¤Æ¤Ê¤ó¤«±ø¤¤¤Ê¤¢ */
+  if (((forichiranContext)env)->allkouho != (wchar_t **)bushu_char) {
+    /* bushu_char は static の配列だから free してはいけない。
+       こう言うのってなんか汚いなあ */
     freeGetIchiranList(((forichiranContext)env)->allkouho);
   }
   popForIchiranMode(d);
@@ -399,14 +405,17 @@ vBushuIchiranQuitCatch(uiContext d, int retval, mode_context env)
   return(vBushuMode(d, CANNA_MODE_BushuMode));
 }
 
-static int
-vBushuExitCatch(uiContext d, int retval, mode_context env)
+static
+vBushuExitCatch(d, retval, env)
+     uiContext d;
+     int retval;
+     mode_context env;
      /* ARGSUSED */
 {
   forichiranContext fc;
   int cur, res;
 
-  popCallback(d); /* °ìÍ÷¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* 一覧をポップ */
 
   fc = (forichiranContext)d->modec;
   cur = fc->curIkouho;
@@ -422,8 +431,8 @@ vBushuExitCatch(uiContext d, int retval, mode_context env)
   return res;
 }
 
-int
-BushuMode(uiContext d)
+BushuMode(d)
+uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -437,13 +446,16 @@ BushuMode(uiContext d)
 #endif /* not NO_EXTEND_MENU */
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Éô¼ó¥â¡¼¥ÉÆþÎÏ¤Î°ìÍ÷É½¼¨                                                  *
+ * 部首モード入力の一覧表示                                                  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static int bushuEveryTimeCatch (uiContext, int, mode_context);
+static bushuEveryTimeCatch pro((uiContext, int, mode_context));
 
-static int
-bushuEveryTimeCatch(uiContext d, int retval, mode_context env)
+static
+bushuEveryTimeCatch(d, retval, env)
+     uiContext d;
+     int retval;
+     mode_context env;
      /* ARGSUSED */
 {
   makeBushuEchoStr(d);
@@ -451,18 +463,21 @@ bushuEveryTimeCatch(uiContext d, int retval, mode_context env)
   return(retval);
 }
 
-static int bushuExitCatch (uiContext, int, mode_context);
+static bushuExitCatch pro((uiContext, int, mode_context));
 
-static int
-bushuExitCatch(uiContext d, int retval, mode_context env)
+static
+bushuExitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 {
   yomiContext yc;
 
-  popCallback(d); /* °ìÍ÷¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* 一覧をポップ */
 
   if (((forichiranContext)env)->allkouho != bushu_char) {
-    /* bushu_char ¤Ï static ¤ÎÇÛÎó¤À¤«¤é free ¤·¤Æ¤Ï¤¤¤±¤Ê¤¤¡£
-       ¤³¤¦¸À¤¦¤Î¤Ã¤Æ¤Ê¤ó¤«±ø¤¤¤Ê¤¢ */
+    /* bushu_char は static の配列だから free してはいけない。
+       こう言うのってなんか汚いなあ */
     freeGetIchiranList(((forichiranContext)env)->allkouho);
   }
   popForIchiranMode(d);
@@ -479,15 +494,18 @@ bushuExitCatch(uiContext d, int retval, mode_context env)
 }
 
 #ifndef NO_EXTEND_MENU
-static int
-bushuQuitCatch(uiContext d, int retval, mode_context env)
+static
+bushuQuitCatch(d, retval, env)
+     uiContext d;
+     int retval;
+     mode_context env;
      /* ARGSUSED */
 {
-  popCallback(d); /* °ìÍ÷¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* 一覧をポップ */
 
-  if (((forichiranContext)env)->allkouho != (WCHAR_T **)bushu_char) {
-    /* bushu_char ¤Ï static ¤ÎÇÛÎó¤À¤«¤é free ¤·¤Æ¤Ï¤¤¤±¤Ê¤¤¡£
-       ¤³¤¦¸À¤¦¤Î¤Ã¤Æ¤Ê¤ó¤«±ø¤¤¤Ê¤¢ */
+  if (((forichiranContext)env)->allkouho != (wchar_t **)bushu_char) {
+    /* bushu_char は static の配列だから free してはいけない。
+       こう言うのってなんか汚いなあ */
     freeGetIchiranList(((forichiranContext)env)->allkouho);
   }
   popForIchiranMode(d);
@@ -500,17 +518,20 @@ bushuQuitCatch(uiContext d, int retval, mode_context env)
 #endif /* not NO_EXTEND_MENU */
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Éô¼ó¤È¤·¤Æ¤ÎÊÑ´¹¤Î°ìÍ÷É½¼¨                                                *
+ * 部首としての変換の一覧表示                                                *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static int
-convBushuQuitCatch(uiContext d, int retval, mode_context env)
+static
+convBushuQuitCatch(d, retval, env)
+uiContext d;
+int retval;
+mode_context env;
 {
-  popCallback(d); /* °ìÍ÷¤ò¥Ý¥Ã¥× */
+  popCallback(d); /* 一覧をポップ */
 
-  if (((forichiranContext)env)->allkouho != (WCHAR_T **)bushu_char) {
-    /* bushu_char ¤Ï static ¤ÎÇÛÎó¤À¤«¤é free ¤·¤Æ¤Ï¤¤¤±¤Ê¤¤¡£
-       ¤³¤¦¸À¤¦¤Î¤Ã¤Æ¤Ê¤ó¤«±ø¤¤¤Ê¤¢ */
+  if (((forichiranContext)env)->allkouho != (wchar_t **)bushu_char) {
+    /* bushu_char は static の配列だから free してはいけない。
+       こう言うのってなんか汚いなあ */
     freeGetIchiranList(((forichiranContext)env)->allkouho);
   }
   popForIchiranMode(d);
@@ -523,15 +544,15 @@ convBushuQuitCatch(uiContext d, int retval, mode_context env)
 }
 
 /*
- * ÆÉ¤ß¤òÉô¼ó¤È¤·¤ÆÊÑ´¹¤¹¤ë
+ * 読みを部首として変換する
  *
- * °ú¤­¿ô	uiContext
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0	°Û¾ï½ªÎ»»þ -1
+ * 引き数	uiContext
+ * 戻り値	正常終了時 0	異常終了時 -1
  */
-int ConvertAsBushu (uiContext);
+int ConvertAsBushu pro((uiContext));
 
-int
-ConvertAsBushu(uiContext d)
+ConvertAsBushu(d)
+uiContext	d;
 {
   yomiContext yc = (yomiContext)d->modec;
   int res;
@@ -556,7 +577,7 @@ ConvertAsBushu(uiContext d)
   d->nbytes = yc->kEndp;
   WStrncpy(d->buffer_return, yc->kana_buffer, d->nbytes);
 
-  /* 0 ¤Ï¡¢ConvertAsBushu ¤«¤é¸Æ¤Ð¤ì¤¿¤³¤È¤ò¼¨¤¹ */
+  /* 0 は、ConvertAsBushu から呼ばれたことを示す */
   res = bushuHenkan(d, 0, 1, 0, convBushuQuitCatch);
   if (res < 0) {
     makeYomiReturnStruct(d);
@@ -566,19 +587,22 @@ ConvertAsBushu(uiContext d)
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * ¶¦ÄÌÉô                                                                    *
+ * 共通部                                                                    *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
- * ÆÉ¤ß¤òÉô¼ó¼­½ñ¤«¤éÉô¼óÊÑ´¹¤¹¤ë
+ * 読みを部首辞書から部首変換する
  */
-inline int
-bushuBgnBun(RkStat *st, WCHAR_T *yomi, int length)
+static
+bushuBgnBun(st, yomi, length)
+RkStat *st;
+wchar_t *yomi;
+int length;
 {
   int nbunsetsu;
-  extern int defaultBushuContext;
+  extern defaultBushuContext;
 
-  /* Ï¢Ê¸ÀáÊÑ´¹¤ò³«»Ï¤¹¤ë *//* ¼­½ñ¤Ë¤¢¤ë¸õÊä¤Î¤ß¼è¤ê½Ð¤¹ */
+  /* 連文節変換を開始する *//* 辞書にある候補のみ取り出す */
   if ((defaultBushuContext == -1)) {
     if (KanjiInit() == -1 || defaultBushuContext == -1) {
       jrKanjiError = KanjiInitError();
@@ -591,7 +615,7 @@ bushuBgnBun(RkStat *st, WCHAR_T *yomi, int length)
     if(errno == EPIPE)
       jrKanjiPipeError();
     jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\313\274\272\307\324\244\267\244\336\244\267\244\277"; 
-	    /* ¤«¤Ê´Á»úÊÑ´¹¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+	    /* かな漢字変換に失敗しました */
     return(NG);
   }
   
@@ -599,7 +623,7 @@ bushuBgnBun(RkStat *st, WCHAR_T *yomi, int length)
     if(errno == EPIPE)
       jrKanjiPipeError();
     jrKanjiError = "\245\271\245\306\245\244\245\277\245\271\244\362\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307\244\267\244\277";
-                  /* ¥¹¥Æ¥¤¥¿¥¹¤ò¼è¤ê½Ð¤»¤Þ¤»¤ó¤Ç¤·¤¿ */
+                  /* ステイタスを取り出せませんでした */
     return(NG);
   }
 
@@ -607,31 +631,35 @@ bushuBgnBun(RkStat *st, WCHAR_T *yomi, int length)
 }
 
 /*
- * ÆÉ¤ß¤ËÈ¾ÂùÅÀ¤òÉÕ²Ã¤·¤Æ¸õÊä°ìÍ÷¹Ô¤òÉ½¼¨¤¹¤ë
+ * 読みに半濁点を付加して候補一覧行を表示する
  *
- * °ú¤­¿ô	uiContext
- *		flag	ConvertAsBushu¤«¤é¸Æ¤Ð¤ì¤¿ 0
- *			BushuYomiHenkan¤«¤é¸Æ¤Ð¤ì¤¿ 1
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0	°Û¾ï½ªÎ»»þ -1
+ * 引き数	uiContext
+ *		flag	ConvertAsBushuから呼ばれた 0
+ *			BushuYomiHenkanから呼ばれた 1
+ * 戻り値	正常終了時 0	異常終了時 -1
  *
  *
- * ¤³¤³¤ËÍè¤ë»þ¤Ï¤Þ¤À getForIchiranContext ¤¬¸Æ¤Ð¤ì¤Æ¤¤¤Ê¤¤¤â¤Î¤È¤¹¤ë
+ * ここに来る時はまだ getForIchiranContext が呼ばれていないものとする
  */
 
-static int
-bushuHenkan(uiContext d, int flag, int ext, int cur, int (*quitfunc )(uiContext, int, mode_context ))
+static
+bushuHenkan(d, flag, ext, cur, quitfunc)
+uiContext	d;
+int             flag, cur;
+int             (*quitfunc) pro((uiContext, int, mode_context));
 {
   forichiranContext fc;
   ichiranContext ic;
   unsigned inhibit = 0;
-  WCHAR_T *yomi, **allBushuCands;
+  wchar_t *yomi, **allBushuCands;
   RkStat	st;
   int nelem, currentkouho, nbunsetsu, length, retval = 0;
-  extern int defaultBushuContext;
+  extern defaultBushuContext;
   
+  wchar_t **getIchiranList();
 
   if(flag) {
-    yomi = (WCHAR_T *)bushu_key[cur];
+    yomi = (wchar_t *)bushu_key[cur];
     length = WStrlen(yomi);
     d->curbushu = (short)cur;
   } else {
@@ -647,7 +675,7 @@ bushuHenkan(uiContext d, int flag, int ext, int cur, int (*quitfunc )(uiContext,
   }
 
   if((nbunsetsu != 1) || (st.klen > 1) || (st.maxcand == 0)) {
-    /* Éô¼ó¤È¤·¤Æ¤Î¸õÊä¤¬¤Ê¤¤ */
+    /* 部首としての候補がない */
 
     d->kanji_status_return->length = -1;
 
@@ -657,15 +685,15 @@ bushuHenkan(uiContext d, int flag, int ext, int cur, int (*quitfunc )(uiContext,
     killmenu(d);
     if(flag) {
       makeGLineMessageFromString(d, "\244\263\244\316\311\364\274\363\244\316\270\365\312\344\244\317\244\242\244\352\244\336\244\273\244\363");
-                                  /* ¤³¤ÎÉô¼ó¤Î¸õÊä¤Ï¤¢¤ê¤Þ¤»¤ó */
+                                  /* この部首の候補はありません */
     } else {
       return(NothingChangedWithBeep(d));
     }
     return(0);
   }
 
-  /* ¸õÊä°ìÍ÷¹Ô¤òÉ½¼¨¤¹¤ë */
-  /* 0 ¤Ï¡¢¥«¥ì¥ó¥È¸õÊä + 0 ¤ò¥«¥ì¥ó¥È¸õÊä¤Ë¤¹¤ë¤³¤È¤ò¼¨¤¹ */
+  /* 候補一覧行を表示する */
+  /* 0 は、カレント候補 + 0 をカレント候補にすることを示す */
 
   if((allBushuCands
       = getIchiranList(defaultBushuContext, &nelem, &currentkouho)) == 0) {
@@ -674,12 +702,12 @@ bushuHenkan(uiContext d, int flag, int ext, int cur, int (*quitfunc )(uiContext,
     return -1;
   }
 
-  /* Éô¼óÊÑ´¹¤Ï³Ø½¬¤·¤Ê¤¤¡£ */
-  if(RkwEndBun(defaultBushuContext, 0) == -1) { /* 0:³Ø½¬¤·¤Ê¤¤ */
+  /* 部首変換は学習しない。 */
+  if(RkwEndBun(defaultBushuContext, 0) == -1) { /* 0:学習しない */
     if(errno == EPIPE)
       jrKanjiPipeError();
     jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\316\275\252\316\273\244\313\274\272\307\324\244\267\244\336\244\267\244\277";
-                   /* ¤«¤Ê´Á»úÊÑ´¹¤Î½ªÎ»¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+                   /* かな漢字変換の終了に失敗しました */
     freeGetIchiranList(allBushuCands);
     killmenu(d);
     (void)GLineNGReturn(d);
@@ -698,8 +726,8 @@ bushuHenkan(uiContext d, int flag, int ext, int cur, int (*quitfunc )(uiContext,
 
   if (!cannaconf.HexkeySelect)
     inhibit |= (unsigned char)NUMBERING;
-  fc->curIkouho = currentkouho;	/* ¸½ºß¤Î¥«¥ì¥ó¥È¸õÊäÈÖ¹æ¤òÊÝÂ¸¤¹¤ë */
-  currentkouho = 0;	/* ¥«¥ì¥ó¥È¸õÊä¤«¤é²¿ÈÖÌÜ¤ò¥«¥ì¥ó¥È¸õÊä¤È¤¹¤ë¤« */
+  fc->curIkouho = currentkouho;	/* 現在のカレント候補番号を保存する */
+  currentkouho = 0;	/* カレント候補から何番目をカレント候補とするか */
 
   if((retval = selectOne(d, fc->allkouho, &fc->curIkouho, nelem, BANGOMAX,
 			 inhibit, currentkouho, WITH_LIST_CALLBACK,
@@ -725,7 +753,7 @@ bushuHenkan(uiContext d, int flag, int ext, int cur, int (*quitfunc )(uiContext,
   }
   currentModeInfo(d);
 
-  /* ¸õÊä°ìÍ÷¹Ô¤¬¶¹¤¯¤Æ¸õÊä°ìÍ÷¤¬½Ð¤»¤Ê¤¤ */
+  /* 候補一覧行が狭くて候補一覧が出せない */
   if(ic->tooSmall) {
     d->status = AUX_CALLBACK;
     killmenu(d);
@@ -741,29 +769,31 @@ bushuHenkan(uiContext d, int flag, int ext, int cur, int (*quitfunc )(uiContext,
 }
 
 /*
- * ¸õÊä¹Ô¤ò¾Ãµî¤·¡¢Éô¼ó¥â¡¼¥É¤«¤éÈ´¤±¡¢ÆÉ¤ß¤¬¤Ê¤¤¥â¡¼¥É¤Ë°Ü¹Ô¤¹¤ë
+ * 候補行を消去し、部首モードから抜け、読みがないモードに移行する
  *
- * °ú¤­¿ô	uiContext
- *		flag	ConvertAsBushu¤«¤é¸Æ¤Ð¤ì¤¿ 0
- *			BushuYomiHenkan¤«¤é¸Æ¤Ð¤ì¤¿ 1
- * Ìá¤êÃÍ	Àµ¾ï½ªÎ»»þ 0	°Û¾ï½ªÎ»»þ -1
+ * 引き数	uiContext
+ *		flag	ConvertAsBushuから呼ばれた 0
+ *			BushuYomiHenkanから呼ばれた 1
+ * 戻り値	正常終了時 0	異常終了時 -1
  */
-static int
-makeBushuIchiranQuit(uiContext d, int flag)
+static
+makeBushuIchiranQuit(d, flag)
+uiContext	d;
+int              flag;
 {
-  extern int defaultBushuContext;
+  extern defaultBushuContext;
 
-  /* Éô¼óÊÑ´¹¤Ï³Ø½¬¤·¤Ê¤¤¡£ */
-  if(RkwEndBun(defaultBushuContext, 0) == -1) { /* 0:³Ø½¬¤·¤Ê¤¤ */
+  /* 部首変換は学習しない。 */
+  if(RkwEndBun(defaultBushuContext, 0) == -1) { /* 0:学習しない */
     if(errno == EPIPE)
       jrKanjiPipeError();
     jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\316\275\252\316\273\244\313\274\272\307\324\244\267\244\336\244\267\244\277";
-                   /* ¤«¤Ê´Á»úÊÑ´¹¤Î½ªÎ»¤Ë¼ºÇÔ¤·¤Þ¤·¤¿ */
+                   /* かな漢字変換の終了に失敗しました */
     return(NG);
   }
 
   if(flag) {
-    /* kanji_status_return ¤ò¥¯¥ê¥¢¤¹¤ë */
+    /* kanji_status_return をクリアする */
     d->kanji_status_return->length  = 0;
     d->kanji_status_return->revLen  = 0;
     
@@ -779,3 +809,10 @@ makeBushuIchiranQuit(uiContext d, int flag)
 }
 
 
+#ifndef wchar_t
+# error "wchar_t is already undefined"
+#endif
+#undef wchar_t
+/*********************************************************************
+ *                       wchar_t replace end                         *
+ *********************************************************************/
