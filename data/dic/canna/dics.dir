@@ -36,8 +36,11 @@ number.ctd(.swd)		-number---
 katakana.ctd(.mwd)		-katakana---
 keishiki.ctd(.swd)		-keishiki---
 suffix.ctd(.swd)		-suffix---
+chimei.cbd(chimei.mwd)		-chimei---
+jinmei.cbd(jinmei.mwd)		-jinmei---
+chimei.cld(chimei.mwd)		-chimei---
+jinmei.cld(jinmei.mwd)		-jinmei---
 
-chimei.ctd(.mwd)		-chimei---
 kanasmpl.ctd(.mwd)		-kanasample---
 necgaiji.ctd(.mwd)		-necgaiji---
 software.ctd(.mwd)		-software---
