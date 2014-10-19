@@ -42,6 +42,8 @@
  "fuzokugo"
  "hojomwd"
  "hojoswd"
+ "jinmei"
+ "chimei"
  :bushu "bushu"
  :user  "user"
 )
