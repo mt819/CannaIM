@@ -525,6 +525,12 @@ _RkReadDD(name)
   }
 #endif
    
+  /* prevent buffer overflow, and make sure attackers don't
+   * mess with .. in path names. 		--okir */
+  if (strlen(sx->ddhome) + strlen(name) + 2 >= RK_PATH_BMAX
+   || strchr(name, '.'))
+    goto return_dd;
+
   /* create dd even if there is no directory or dics.dir file */
   (void)strcpy(path, sx->ddhome);
   (void)strcat(path, "/");
