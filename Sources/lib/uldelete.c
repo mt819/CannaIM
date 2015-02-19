@@ -383,7 +383,7 @@ uiContext d;
  * 単語削除の単語の入力                                                      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static void
 CloseDeleteContext(tc)
 tourokuContext tc;
 {

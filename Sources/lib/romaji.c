@@ -3206,6 +3206,7 @@ yomiquotedfunc(d, mode, whattodo, key, fnum)
     return 0;
   }
   /* NOTREACHED */
+  return 0; /* suppress warning: control reaches end of non-void function */
 }
 
 static KanjiModeRec yomi_quoted_insert_mode = {

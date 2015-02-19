@@ -169,7 +169,7 @@ uiContext d;
  * 引き数	RomeStruct
  * 戻り値	なし
  */
-static
+static void
 makeKigoGlineStatus(d)
 uiContext	d;
 {

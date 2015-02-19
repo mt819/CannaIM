@@ -166,6 +166,7 @@ int fnum;
     break;
   }
   /* NOTREACHED */
+  return 0; /* suppress warning: control reaches end of non-void function */
 }
 
 /* 逐次読みモード用 */

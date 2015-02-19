@@ -1093,6 +1093,7 @@ wchar_t wc;
     return 3;
   }
   /* NOTREACHED */
+  return 0; /* suppress warning: control reaches end of non-void function */
 #else /* !CANNA_WCHAR16 */
   return plain[(((unsigned long)wc) >> 28) & 3];
 #endif /* !CANNA_WCHAR16 */
@@ -1633,6 +1634,7 @@ int fnum;
     return 0;
   }
   /* NOTREACHED */
+  return 0; /* suppress warning: control reaches end of non-void function */
 }
 
 static KanjiModeRec canna_message_mode = {

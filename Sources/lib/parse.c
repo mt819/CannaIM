@@ -43,7 +43,7 @@ extern char *CANNA_initfilename;
 
 static char CANNA_rcfilename[BUF_LEN] = "";
 
-static int DISPLAY_to_hostname();
+static void DISPLAY_to_hostname();
 
 /* cfuncdef
 
@@ -354,7 +354,7 @@ parse()
 }
 
 
-static
+static void
 DISPLAY_to_hostname(name, buf, bufsize)
 char *name, *buf;
 int bufsize;

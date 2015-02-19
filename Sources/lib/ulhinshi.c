@@ -857,7 +857,6 @@ uiContext	d;
   return(0);
 }
 
-static
 makeDoushi(d)
 uiContext	d;
 {
@@ -892,6 +891,7 @@ uiContext	d;
       EWStrcpy( tc->hcode, "#W5" );     /* 言う */
       break;
     }
+    return 0;
 }    
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

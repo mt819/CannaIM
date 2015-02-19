@@ -101,7 +101,7 @@ initHinshiTable()
   return retval;
 }
 
-static
+static void
 clearTango(d)
 uiContext d;
 {
@@ -111,6 +111,7 @@ uiContext d;
   tc->tango_len = 0;
 }
 
+void
 clearYomi(d)
 uiContext d;
 {

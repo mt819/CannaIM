@@ -3305,6 +3305,7 @@ Ldefmode()
     error("defmode: illegal subfunction ", edata);
   }
   /* NOTREACHED */
+  return NIL; /* suppress warning: control reaches end of non-void function */
 }
 
 static list
@@ -3873,6 +3874,7 @@ Ldefmenu()
   }
   error("Insufficient memory", NON);
   /* NOTREACHED */
+  return NIL; /* suppress warning: control reaches end of non-void function */
 }
 #endif /* NO_EXTEND_MENU */
 
