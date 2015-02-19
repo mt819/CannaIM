@@ -1003,7 +1003,7 @@ extern void generalReplace
   pro((wchar_t *, BYTE *, int *, int *, int *, int, wchar_t *, int, int));
 extern ChikujiSubstYomi pro((uiContext));
 extern TanMuhenkan pro((uiContext));
-extern CANNA_mbstowcs pro((wchar_t *, char *, int));
+extern size_t CANNA_mbstowcs pro((wchar_t *, char *, size_t));
 extern CANNA_wcstombs pro((char *, wchar_t *, int));
 extern makeRkError pro((uiContext, char *));
 extern void moveStrings pro((wchar_t *, BYTE *, int, int, int));

@@ -82,6 +82,14 @@ uiContext d;
     }
 }
 
+int getFunction(KanjiMode mode, int key)
+{
+    if (key <= 0xff)
+        return mode->keytbl[key];
+    else
+        return CANNA_FN_FunctionalInsert;
+}
+
 searchfunc(d, mode, whattodo, key, fnum)
 uiContext d;
 KanjiMode mode;
@@ -92,7 +100,7 @@ int fnum;
   int (*func)();
 
   if (fnum == 0) {
-    fnum = mode->keytbl[key];
+      fnum = getFunction(mode, key);
   }
   switch (whattodo) {
   case KEY_CALL:

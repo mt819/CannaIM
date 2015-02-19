@@ -1142,11 +1142,11 @@ wchar_t wc;
   return (WWhatGPlain(wc) == 3);
 }
 
-int
+size_t
 CANNA_mbstowcs(dest, src, destlen)
 wchar_t *dest;
 char *src;
-int destlen;
+size_t destlen;
 {
   register int i, j;
   register unsigned ec;
@@ -1529,24 +1529,7 @@ int key;
 int *check;
 {
   *check = 1; /* Success as default */
-  if (161 <= key && key <= 223) { /* カタカナの範囲だったら */
-    char xxxx[4];
-    wchar_t yyyy[4];
-    int nchars;
-
-    xxxx[0] = (char)0x8e; /* SS2 */
-    xxxx[1] = (char)key;
-    xxxx[2] = '\0';
-    nchars = MBstowcs(yyyy, xxxx, 4);
-    if (nchars != 1) {
-      *check = 0;
-      return 0; /* エラー */
-    }
-    return yyyy[0];
-  }
-  else {
-    return (wchar_t)key;
-  }
+    return (wchar_t) key;  /* keyとしてワイド文字を渡せるようにする */
 }
 
 int

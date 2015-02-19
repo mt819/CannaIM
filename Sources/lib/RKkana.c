@@ -193,6 +193,12 @@ unsigned long code;
 
 #endif /* !OBSOLETE_RKKANA */
 
+struct NormalizePair {
+    const unsigned char* s1;
+    const unsigned char* s2;
+};
+extern const struct NormalizePair norm_pair[];
+
 /* RkCvtZen
  *	hankaku moji(ASCII+katakana) wo taiou suru zenkaku moji ni suru
  *	dakuten,handakuten shori mo okonau.
@@ -252,8 +258,30 @@ int		maxhan;
                    | ((unsigned long)h[1]); h += 2;
 	  byte = 2;
 	}
-	else if ( hi & 0x80 )
-	  code = (hi<<8)|*h++;
+        else if (hi >= 0xa1 && hi <= 0xfe) {
+            // JIS X 0208
+            const struct NormalizePair* np;
+            for (np = norm_pair; np->s1; np++) {
+                if (hi == np->s1[0]) {
+                    const unsigned char* p = np->s1 + 1;
+                    const unsigned char* q = h;
+                    while (q < H && *p && *p == *q) {
+                        p++; q++;
+                    }
+                    if (!*p) {
+                        // match
+                        code = (np->s2[0] << 8) | np->s2[1];
+                        byte = 2;
+                        h = q;
+                        goto l1;
+                    }
+                }
+            }
+            // unmatch
+            code = (hi << 8) | *h++;
+            byte = 2;
+        l1: ;
+        }
 	else  {
 	  if ( !(code = hiragana[hi]) ) 
 	    code = hi;

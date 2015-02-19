@@ -1033,7 +1033,7 @@ uiContext d;
 
   fitmarks(yc);
 
-  if (0xa0 < d->ch && d->ch < 0xe0) {
+    if (d->ch >= 0xa1 && d->ch <= 0xdf || d->ch >= 0xa1a1) {
 #ifdef USE_ROMKANATABLE_FOR_KANAKEY
     key = d->buffer_return[0];
 #else
@@ -1482,10 +1482,10 @@ wchar_t ch;
     hv = buf[0];
   }
 
-  if (ch == hv) {
+    if (ch == hv || ch == 0xa1ac) {
     return DAKUON_HV;
   }
-  else if (ch == fv) {
+    else if (ch == fv || ch == 0xa1ab) {
     return DAKUON_FV;
   }
   else {
@@ -1549,6 +1549,39 @@ wchar_t ch;
   }
 }
 
+struct NormalizePair {
+    const unsigned char* s1;
+    const unsigned char* s2;
+};
+ 
+const struct NormalizePair norm_pair[] = {
+    { "か゛", "が" }, { "き゛", "ぎ" }, { "く゛", "ぐ" }, { "け゛", "げ" }, { "こ゛", "ご" },
+    { "さ゛", "ざ" }, { "し゛", "じ" }, { "す゛", "ず" }, { "せ゛", "ぜ" }, { "そ゛", "ぞ" },
+    { "た゛", "だ" }, { "ち゛", "ぢ" }, { "つ゛", "づ" }, { "て゛", "で" }, { "と゛", "ど" },
+    { "は゛", "ば" }, { "ひ゛", "び" }, { "ふ゛", "ぶ" }, { "へ゛", "べ" }, { "ほ゛", "ぼ" },
+    { "カ゛", "ガ" }, { "キ゛", "ギ" }, { "ク゛", "グ" }, { "ケ゛", "ゲ" }, { "コ゛", "ゴ" },
+    { "サ゛", "ザ" }, { "シ゛", "ジ" }, { "ス゛", "ズ" }, { "セ゛", "ゼ" }, { "ソ゛", "ゾ" },
+    { "タ゛", "ダ" }, { "チ゛", "ヂ" }, { "ツ゛", "ヅ" }, { "テ゛", "デ" }, { "ト゛", "ド" },
+    { "ハ゛", "バ" }, { "ヒ゛", "ビ" }, { "フ゛", "ブ" }, { "ヘ゛", "ベ" }, { "ホ゛", "ボ" },
+    { "は゜", "ぱ" }, { "ひ゜", "ぴ" }, { "ふ゜", "ぷ" }, { "へ゜", "ぺ" }, { "ほ゜", "ぽ" },
+    { "ハ゜", "パ" }, { "ヒ゜", "ピ" }, { "フ゜", "プ" }, { "ヘ゜", "ペ" }, { "ホ゜", "ポ" },
+    { "ウ゛", "ヴ" },
+    { NULL, NULL }
+};
+ 
+static int isDakuon(const wchar_t* s)
+{
+    const struct NormalizePair* p;
+    for (p = norm_pair; p->s1; p++) {
+        wchar_t c1, c2;
+        MBstowcs(&c1, p->s1, 1);
+        MBstowcs(&c2, p->s1 + 2, 1);
+        if (s[0] == c1 && s[1] == c2)
+            return 1;
+    }
+    return 0;
+}
+
 static
 KanaYomiInsert(d)
 uiContext d;
@@ -1559,7 +1592,6 @@ uiContext d;
   wchar_t *bufp, *nextbufp;
   int len, replacelen, spos;
   yomiContext yc = (yomiContext)d->modec;
-  int dakuon, grow_dakuon;
 
   yc->generalFlags &= ~CANNA_YOMI_BREAK_ROMAN;
   kana[0] = (wchar_t)0;
@@ -1569,11 +1601,10 @@ uiContext d;
   replacelen = 0; len = 1;
   romajiReplace(0, kanap, 1, SENTOU);
   yc->rStartp = yc->rCurs;
-  if ((dakuon = dakuonP(kanap[0])) != 0) { /* 濁点の処理 */
+    if (dakuonP(*kanap) != 0) { /* 濁点の処理 */
     if (yc->rCurs > 1) {
       kana[0] = yc->romaji_buffer[yc->rCurs - 2];
-      if ((grow_dakuon = growDakuonP(kana[0])) == GROW_HV ||
-	  (grow_dakuon && dakuon == DAKUON_FV)) {
+        if (isDakuon(kana) != 0) {
 	kanap = kana; len = 2; replacelen = -1;
 	yc->rAttr[yc->rCurs - 1] &= ~SENTOU;
       }
@@ -4600,6 +4631,8 @@ uiContext d;
   return 0;
 }
 
+extern int getFunction(KanjiMode mode, int key);
+
 Yomisearchfunc(d, mode, whattodo, key, fnum)
 uiContext d;
 KanjiMode mode;
@@ -4624,7 +4657,7 @@ int fnum;
   if (cannaconf.romaji_yuusen && yc) { /* もし、優先なら */
     len = yc->kCurs - yc->kRStartp;
     if (fnum == 0) {
-      fnum = mode->keytbl[key];
+        fnum = getFunction(mode, key);
     }
     if (fnum != CANNA_FN_FunctionalInsert && len > 0) {
       int n, m, t, flag, prevrule;
