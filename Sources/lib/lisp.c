@@ -96,7 +96,7 @@ static char *readptr;		/* read pointer	*/
 
 /* error functions	*/
 
-static void	argnerr(), numerr(), error();
+static void	argnerr(), numerr(), error() __attribute__((noreturn));
 
 /* multiple values */
 
@@ -3534,10 +3534,9 @@ int tku, tten, num, kodata;
     *dptr++ = '\0';
     return tdptr;
   }
-  else {
-    error("Insufficient memory", NON);
-    /* NOTREACHED */
-  }
+  error("Insufficient memory", NON);
+  /* NOTREACHED */
+  return NULL;
 }
 
 /* 

@@ -134,9 +134,9 @@ BYTE *keytbl;
 BYTE key;
 {
   int res, total_res, ginfo = 0;
-  int prevEchoLen = -1, prevRevPos, prevRevLen;
-  int prevGEchoLen, prevGRevPos, prevGRevLen;
-  wchar_t *prevEcho, *prevGEcho;
+  int prevEchoLen = -1, prevRevPos = -1, prevRevLen = -1;
+  int prevGEchoLen = -1, prevGRevPos = -1, prevGRevLen = -1;
+  wchar_t *prevEcho = NULL, *prevGEcho = NULL;
   BYTE *p, *actFromHash();
   wchar_t *malloc_echo = (wchar_t *)0, *malloc_gline = (wchar_t *)0;
 
