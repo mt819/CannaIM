@@ -777,7 +777,7 @@ char *dicname;
 int mode;
 {
   struct RkContext	*cx = RkGetContext(cx_num);
-  struct DD		*dd, *userDDP[2];
+  struct DD		*dd=NULL, *userDDP[2];
   struct DM		*dm;
   int res;
   unsigned dirmode;

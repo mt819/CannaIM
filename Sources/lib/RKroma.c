@@ -26,6 +26,10 @@ static char rcsid[]="@(#) 102.1 $Id: RKroma.c,v 1.4.2.1 2004/04/26 22:49:21 aida
 
 /* LINTLIBRARY */
 #include "canna.h"
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
 
 #include <fcntl.h>
 

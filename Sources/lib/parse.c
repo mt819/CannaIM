@@ -28,6 +28,9 @@ static char rcs_id[] = "@(#) 102.1 $Id: parse.c,v 1.4 2003/09/17 08:50:53 aida_s
 
 #include <stdio.h>
 #include <fcntl.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
 
 /*********************************************************************
  *                      wchar_t replace begin                        *

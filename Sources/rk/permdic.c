@@ -710,7 +710,7 @@ _Rkpctl(dm, qm, what, arg, gram)
 	  offset = thisRead->offset;
 	  if (fnum >= 0 && fnum < nk && 0 < thisRead->nk && 
 	      thisRead->nk <= ylen && thisRead->nk <= RK_KEY_WMAX)  {
-	    int	   ecount, cval, i, dn = -1, ndel = 0;
+	    int	   ecount=0, cval=0, i, dn = -1, ndel = 0;
 	  
 	    bitSize = _RkCalcLog2(nk + 1) + 1;
 	    _RkUnpackBits(permutation, qm->dm_qbits, offset, bitSize, nk);
