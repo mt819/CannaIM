@@ -712,7 +712,7 @@ char  *msg;
 {
   int len;
 
-  len = MBstowcs(d->genbuf, msg, ROMEBUFSIZE);
+  len = CANNA_mbstowcs(d->genbuf, msg, ROMEBUFSIZE);
   makeGLineMessage(d, d->genbuf, len);
 }
 
@@ -871,7 +871,7 @@ GLineNGReturn(d)
 uiContext d;
 {
   int len;
-  len = MBstowcs(d->genbuf, jrKanjiError, ROMEBUFSIZE);
+  len = CANNA_mbstowcs(d->genbuf, jrKanjiError, ROMEBUFSIZE);
   makeGLineMessage(d, d->genbuf, len);
   currentModeInfo(d);
 
@@ -1355,7 +1355,7 @@ char *s;
   len = strlen(s);
   if (!(temp = (wchar_t *)malloc((len + 1) * WCHARSIZE)))
     return((wchar_t *)0);
-  len = MBstowcs(temp, s, len + 1);
+  len = CANNA_mbstowcs(temp, s, len + 1);
   if (!(wsmemories[i] = (wchar_t *)malloc((len + 1) * WCHARSIZE))) {
     free(temp);
     return((wchar_t *) 0);

@@ -179,7 +179,7 @@ uiContext d;
   if (cannaconf.kCount && d->kanji_status_return->gline.length) {
     register int a = ic->nIkouho, b = DEC_COLUMNS(cur) + DEC_COLUMNS(a) + 2;
     sprintf(str, " %d/%d", cur, a);
-    MBstowcs(d->kanji_status_return->gline.line + 
+    CANNA_mbstowcs(d->kanji_status_return->gline.line + 
 	     d->kanji_status_return->gline.length - b, str, b + 1);
     /* 以下はいらないのでは？ */
     d->kanji_status_return->gline.length

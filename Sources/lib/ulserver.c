@@ -88,7 +88,7 @@ mode_context env;
 
   if (!wmachinename) {
     wchar_t xxx[30]; /* 30 ってのは "マシン名?[" よりは長いべということ */
-    lmachinename = MBstowcs(xxx, "\245\336\245\267\245\363\314\276?[", 30);
+    lmachinename = CANNA_mbstowcs(xxx, "\245\336\245\267\245\363\314\276?[", 30);
                               /* マシン名 */
     wmachinename = (wchar_t *)malloc((lmachinename + 1)* sizeof(wchar_t));
     if (!wmachinename) {
@@ -230,7 +230,7 @@ int len;
 #endif
 
   jrKanjiPipeError();
-  WCstombs(tmpServName, newServerName, 256);
+  CANNA_wcstombs(tmpServName, newServerName, 256);
   if (RkSetServerName(tmpServName) && (p = index((char *)tmpServName, '@'))) {
     char xxxx[1024];
     *p = '\0';
@@ -258,11 +258,11 @@ int len;
   p = RkwGetServerName();
   if (p) { /* 絶対成功するんだけどね */
     if ((int)strlen(p) < 256) {
-      MBstowcs(newServerName, p, 256);
+      CANNA_mbstowcs(newServerName, p, 256);
     }
   }
 
-  MBstowcs(w1, " \244\316\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\313\300\334\302\263\244\267\244\336\244\267\244\277", 512);
+  CANNA_mbstowcs(w1, " \244\316\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\313\300\334\302\263\244\267\244\336\244\267\244\277", 512);
               /* のかな漢字変換サーバに接続しました */
   WStrcpy((wchar_t *)d->genbuf, (wchar_t *)newServerName);
   WStrcat((wchar_t *)d->genbuf, (wchar_t *)w1);

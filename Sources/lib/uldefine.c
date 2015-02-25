@@ -438,18 +438,18 @@ mode_context env;
   /* 辞書を作る */
   if (RkwCreateDic(defaultContext, tc->newDic->name, 0x80) < 0) {
     err++; if (errno == EPIPE) perr++;
-    MBstowcs(d->genbuf, "\274\255\275\361\244\316\300\270\300\256\244\313"
+    CANNA_mbstowcs(d->genbuf, "\274\255\275\361\244\316\300\270\300\256\244\313"
 	"\274\272\307\324\244\267\244\336\244\267\244\277", 256);
                           /* 辞書の生成に失敗しました */
   } else if(RkwMountDic(defaultContext, tc->newDic->name, 0) < 0) {
     err++; if (errno == EPIPE) perr++;
-    MBstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246\245\363"
+    CANNA_mbstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246\245\363"
 	"\245\310\244\313\274\272\307\324\244\267\244\336\244\267\244\277", 256);
                           /* 辞書のマウントに失敗しました */ 
   } else if(d->contextCache != -1 && 
     RkwMountDic(d->contextCache, tc->newDic->name, 0) < 0) {
     err++; if (errno == EPIPE) perr++;
-    MBstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246\245\363"
+    CANNA_mbstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246\245\363"
 	"\245\310\244\313\274\272\307\324\244\267\244\336\244\267\244\277", 256);
                           /* 辞書のマウントに失敗しました */
   }
@@ -695,7 +695,7 @@ uiContext d;
   /* カスタマイズファイルで、単語登録用辞書が指定されていないか、
      指定はされているがマウントされていないとき                  */
   if (!u || u->dicflag == DIC_NOT_MOUNTED) {
-    MBstowcs(xxxx, "\303\261\270\354\305\320\317\277\315\321\274\255\275\361"
+    CANNA_mbstowcs(xxxx, "\303\261\270\354\305\320\317\277\315\321\274\255\275\361"
 	"\244\254\273\330\304\352\244\265\244\354\244\306\244\244\244\336"
 	"\244\273\244\363", 512);
                  /* 単語登録用辞書が指定されていません */
@@ -800,11 +800,11 @@ mode_context env;
   WStrncpy(tmpbuf, d->kanji_status_return->echoStr, echoLen);
 
   d->kanji_status_return->info &= ~(KanjiThroughInfo | KanjiEmptyInfo);
-  revPos = MBstowcs(d->genbuf, "\303\261\270\354[", ROMEBUFSIZE);
+  revPos = CANNA_mbstowcs(d->genbuf, "\303\261\270\354[", ROMEBUFSIZE);
                                /* 単語 */
   WStrcpy(d->genbuf + revPos, tc->tango_buffer);
   revPos += WStrlen(tc->tango_buffer);
-  revPos += MBstowcs(d->genbuf + revPos, "] \306\311\244\337?[", ROMEBUFSIZE - revPos);
+  revPos += CANNA_mbstowcs(d->genbuf + revPos, "] \306\311\244\337?[", ROMEBUFSIZE - revPos);
                                            /* 読み */
   WStrncpy(d->genbuf + revPos, tmpbuf, echoLen);
   len = echoLen + revPos;

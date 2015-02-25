@@ -182,7 +182,7 @@ uiContext	d;
   gptr = kc->glineifp->gldata + NKAKKOCHARS;
   
   /* カレント記号のJISコードを一覧行の中のカッコ内に入れる */
-  WCstombs(xxx, kc->kouhoifp[*(kc->curIkouho)].khdata, 3);
+  CANNA_wcstombs(xxx, kc->kouhoifp[*(kc->curIkouho)].khdata, 3);
 
   for(i=0; i<2; i++, yyy++) {
     b1 = (((unsigned long)*yyy & 0x7f) >> 4);
@@ -256,11 +256,11 @@ int		headkouho;
   kc->glineifp->gldata = gptr;
 
   /* JISコードの表示領域を一覧行中に作る */
-  MBstowcs(gptr, "\241\316", 1);
+  CANNA_mbstowcs(gptr, "\241\316", 1);
                  /* ［ */
   for(i=0, gptr++; i<NKCODECHARS; i++)
     *gptr++ = ' ';
-  MBstowcs(gptr++, "\241\317", 1);
+  CANNA_mbstowcs(gptr++, "\241\317", 1);
                  /* ］ */
 
   for(cn=NKCODEALLCHARS, lnko=0;
@@ -269,7 +269,7 @@ int		headkouho;
       
       /* 区切りになる空白をコピーする */
       if(lnko != 0) {
-	MBstowcs(gptr++, "\241\241", 1);
+	CANNA_mbstowcs(gptr++, "\241\241", 1);
                          /* 　 */ 
 	cn ++;
       }
@@ -280,7 +280,7 @@ int		headkouho;
       /* 候補をコピーする */
       *xxx = (char)byte1hex + b1;
       *(xxx + 1) = (char)byte2hex + b2;
-      MBstowcs(gptr++, xxx, 1);
+      CANNA_mbstowcs(gptr++, xxx, 1);
       cn ++;
     }
     b2 = 0;

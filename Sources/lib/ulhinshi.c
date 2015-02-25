@@ -209,7 +209,7 @@ char *xxxx;
 {
   wchar_t x[1024];
 
-  MBstowcs(x, xxxx, 1024);
+  CANNA_mbstowcs(x, xxxx, 1024);
   WStrcat(buf, x);
 }
 
@@ -222,7 +222,7 @@ char *xxxx;
   wchar_t x[1024];
   int len;
 
-  len = MBstowcs(x, xxxx, 1024);
+  len = CANNA_mbstowcs(x, xxxx, 1024);
   WStrncpy(buf, x, len);
   buf[len] = (wchar_t)0;
 }
@@ -234,7 +234,7 @@ char *xxxx;
 {
   wchar_t x[1024];
 
-  MBstowcs(x, xxxx, 1024);
+  CANNA_mbstowcs(x, xxxx, 1024);
   return(WStrncmp(buf, x, WStrlen(x)));
 }
 
@@ -247,7 +247,7 @@ int len;
 {
   wchar_t x[1024];
 
-  MBstowcs(x, xxxx, 1024);
+  CANNA_mbstowcs(x, xxxx, 1024);
   return(WStrncmp(buf, x, WStrlen(x)));
 }
 
@@ -1052,7 +1052,7 @@ uiContext	d;
     }
   }
   /* 辞書に登録する */
-  WCstombs(dicname, tc->udic[tc->workDic], sizeof(dicname));
+  CANNA_wcstombs(dicname, tc->udic[tc->workDic], sizeof(dicname));
 
   if (RkwDefineDic(defaultContext, dicname, line) != 0) {
     /* 品詞が #JCN のときは、登録に失敗したら、#JN と #CN で登録する */

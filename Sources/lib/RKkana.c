@@ -782,7 +782,7 @@ int maxdst, srclen;
   len = RkCvtHan((unsigned char *)cbuf2, CBUFSIZE, (unsigned char *)cbuf, len);
   if (len > 0) {
     cbuf2[len] = '\0';
-    len = MBstowcs(dst, cbuf2, maxdst);
+    len = CANNA_mbstowcs(dst, cbuf2, maxdst);
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(cbuf2);
@@ -819,7 +819,7 @@ int maxdst, srclen;
 		  (unsigned char *)cbuf, len);
   if (len > 0) {
     cbuf2[len] = (unsigned char)0;
-    len = MBstowcs(dst, cbuf2, maxdst);
+    len = CANNA_mbstowcs(dst, cbuf2, maxdst);
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(cbuf2);
@@ -856,7 +856,7 @@ int maxdst, srclen;
 		  (unsigned char *)cbuf, len);
   if (len > 0) {
     cbuf2[len] = '\0';
-    len = MBstowcs(dst, cbuf2, maxdst);
+    len = CANNA_mbstowcs(dst, cbuf2, maxdst);
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(cbuf2);
@@ -893,7 +893,7 @@ int maxdst, srclen;
 		 (unsigned char *)cbuf, len);
   if (len > 0) {
     cbuf2[len] = '\0';
-    len = MBstowcs(dst, cbuf2, maxdst);
+    len = CANNA_mbstowcs(dst, cbuf2, maxdst);
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(cbuf2);
@@ -946,7 +946,7 @@ int maxdst, srclen, flags, *status;
   len = RkMapRoma(romaji, (unsigned char *)cbuf2, CBUFSIZE,
 		  (unsigned char *)cbuf1, len, flags, status);
   cbuf2[(*status > 0) ? *status : -*status] = (unsigned char)0;
-  ret = MBstowcs(dst, cbuf2, maxdst);
+  ret = CANNA_mbstowcs(dst, cbuf2, maxdst);
   if (*status > 0) {
     *status = ret;
   }
@@ -1006,19 +1006,19 @@ int maxdst, srclen, flags, *ulen, *dlen, *tlen, *rule;
 			  &fulen, &fdlen, &ftlen, rule);
   tmpch = cbuf2[fdlen];
   cbuf2[fdlen] = '\0';
-  ret = MBstowcs(dst, cbuf2, maxdst);
+  ret = CANNA_mbstowcs(dst, cbuf2, maxdst);
   cbuf2[fdlen] = tmpch;
   if (dlen) {
     *dlen = ret;
   }
   cbuf2[fdlen + ftlen] = (unsigned char)0;
-  ret = MBstowcs(dst + ret, cbuf2 + fdlen, maxdst - ret);
+  ret = CANNA_mbstowcs(dst + ret, cbuf2 + fdlen, maxdst - ret);
   if (tlen) {
     *tlen = ret;
   }
   if (ulen) {
     cbuf1[fulen] = '\0';
-    *ulen = MBstowcs(wbuf, cbuf1, CBUFSIZE);
+    *ulen = CANNA_mbstowcs(wbuf, cbuf1, CBUFSIZE);
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(cbuf2);
@@ -1056,7 +1056,7 @@ int maxdst, srclen, flags;
     len = RkCvtRoma(romaji, (unsigned char *)cbuf2, CBUFSIZE,
 		    (unsigned char *)cbuf1, len, flags);
     cbuf2[len] = (unsigned char)0;
-    ret = MBstowcs(dst, cbuf2, maxdst);
+    ret = CANNA_mbstowcs(dst, cbuf2, maxdst);
     dst[ret] = (wchar_t)0;
   } else {
     ret = 0;

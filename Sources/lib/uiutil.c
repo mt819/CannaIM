@@ -233,7 +233,7 @@ struct _e_menu *eucmenu;
 
   /* タイトルの文字数をカウント */
   for (i = 0, nc = 0 ; i < n ; i++) {
-    len = MBstowcs(buf, euctable[i].title, MBUFSIZE);
+    len = CANNA_mbstowcs(buf, euctable[i].title, MBUFSIZE);
     nc += len + 1;
   }
 
@@ -242,7 +242,7 @@ struct _e_menu *eucmenu;
     menubody = res->body;
     /* タイトル文字をデータバッファにコピー */
     for (i = 0, wp = res->titledata, wpp = res->titles ; i < n ; i++) {
-      len = MBstowcs(wp, euctable[i].title, MBUFSIZE);
+      len = CANNA_mbstowcs(wp, euctable[i].title, MBUFSIZE);
       *wpp++ = wp;
       wp += len + 1;
 

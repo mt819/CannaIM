@@ -858,11 +858,11 @@ yomiContext yc;
 #if defined(DEBUG)
 		      {
 			char yyy[ROMEBUFSIZE];
-			WCstombs(yyy, tan->kanji, ROMEBUFSIZE);
+			CANNA_wcstombs(yyy, tan->kanji, ROMEBUFSIZE);
 			printf("%s/", yyy);
-			WCstombs(yyy, tan->yomi, ROMEBUFSIZE);
+			CANNA_wcstombs(yyy, tan->yomi, ROMEBUFSIZE);
 			printf("%s/", yyy);
-			WCstombs(yyy, tan->roma, ROMEBUFSIZE);
+			CANNA_wcstombs(yyy, tan->roma, ROMEBUFSIZE);
 			printf("%s\n", yyy);
 		      }
 #endif
@@ -2135,7 +2135,7 @@ uiContext d;
 	  WStrcpy(w, yomi[previous]);
 	  printf(xxxx, " #%d#%d ", lex[mighter][0].rownum,
 		 lex[mighter][0].colnum);
-	  MBstowcs(w + WStrlen(w), xxxx, wlen - WStrlen(w));
+	  CANNA_mbstowcs(w + WStrlen(w), xxxx, wlen - WStrlen(w));
 	  WStrcat(w, kanji[previous]);
 	  wlen -= (WStrlen(w) + 1); w += WStrlen(w) + 1; *w = (wchar_t) '\0';
 	}
@@ -2462,7 +2462,7 @@ uiContext	d;
 	   (yc->proctime) * 50 / 3,
 	   (yc->proctime - yc->rktime) * 50 / 3);
                /* 変換時間 %d [ms]、うち UI 部は %d [ms] */
-  MBstowcs(buf, tmpbuf, 1024);
+  CANNA_mbstowcs(buf, tmpbuf, 1024);
   d->kanji_status_return->info |= KanjiGLineInfo;
   d->kanji_status_return->gline.line = buf;
   d->kanji_status_return->gline.length = WStrlen(buf);

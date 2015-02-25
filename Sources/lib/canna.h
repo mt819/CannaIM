@@ -44,8 +44,6 @@
 
 #define	WCHARSIZE	(sizeof(cannawc))
 
-#define MBstowcs CANNA_mbstowcs
-#define WCstombs CANNA_wcstombs
 
 #include "sglobal.h"
 

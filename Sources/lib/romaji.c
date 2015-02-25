@@ -174,7 +174,7 @@ yomiContext x;
   int len, i;
 
   if (iroha_debug) {
-    len = WCstombs(foo, x->romaji_buffer, 1024);
+    len = CANNA_wcstombs(foo, x->romaji_buffer, 1024);
     foo[len] = '\0';
     printf("    %s\n先: ", foo);
     for (i = 0 ; i <= x->rEndp ; i++) {
@@ -186,7 +186,7 @@ yomiContext x;
     }
     printf("^\n");
 
-    len = WCstombs(foo, x->kana_buffer, 1024);
+    len = CANNA_wcstombs(foo, x->kana_buffer, 1024);
     foo[len] = '\0';
     printf("    %s\n先: ", foo);
     for (i = 0 ; i <= x->kEndp ; i++) {
@@ -1476,9 +1476,9 @@ wchar_t ch;
 
     dakuon_first_time = 0;
 
-    MBstowcs(buf, "\216\336"/* 濁音 */, 2);
+    CANNA_mbstowcs(buf, "\216\336"/* 濁音 */, 2);
     fv = buf[0];
-    MBstowcs(buf, "\216\337"/* 半濁音 */, 2);
+    CANNA_mbstowcs(buf, "\216\337"/* 半濁音 */, 2);
     hv = buf[0];
   }
 
@@ -1523,15 +1523,15 @@ wchar_t ch;
 
     dakuon_first_time = 0;
 
-    MBstowcs(buf, "\216\263"/* ウ */, 2);
+    CANNA_mbstowcs(buf, "\216\263"/* ウ */, 2);
     wu = buf[0];
-    MBstowcs(buf, "\216\266"/* カ */, 2);
+    CANNA_mbstowcs(buf, "\216\266"/* カ */, 2);
     wka = buf[0];
-    MBstowcs(buf, "\216\304"/* ト */, 2);
+    CANNA_mbstowcs(buf, "\216\304"/* ト */, 2);
     wto = buf[0];
-    MBstowcs(buf, "\216\312"/* ハ */, 2);
+    CANNA_mbstowcs(buf, "\216\312"/* ハ */, 2);
     wha = buf[0];
-    MBstowcs(buf, "\216\316"/* ホ */, 2);
+    CANNA_mbstowcs(buf, "\216\316"/* ホ */, 2);
     who = buf[0];
   }
 
@@ -1614,8 +1614,8 @@ static int isDakuon(const wchar_t* s)
     const struct NormalizePair* p;
     for (p = norm_pair; p->s1; p++) {
         wchar_t c1, c2;
-        MBstowcs(&c1, p->s1, 1);
-        MBstowcs(&c2, p->s1 + 2, 1);
+        CANNA_mbstowcs(&c1, p->s1, 1);
+        CANNA_mbstowcs(&c2, p->s1 + 2, 1);
         if (s[0] == c1 && s[1] == c2)
             return 1;
     }
@@ -3382,10 +3382,10 @@ mapAsKuten(d)
     len++;
   }
   if (tmpbuf[0]) {
-    clen = MBstowcs(buf, tmpbuf, 2);
+    clen = CANNA_mbstowcs(buf, tmpbuf, 2);
   }
   else {
-    clen = MBstowcs(buf, tmpbuf + 1, 2);
+    clen = CANNA_mbstowcs(buf, tmpbuf + 1, 2);
   }
   for (i = 0, kanalen = 0 ; i < len ; i++) {
     if (yc->rAttr[yc->rCurs - len + i] & SENTOU) {
@@ -3481,7 +3481,7 @@ mapAsHex(d)
     }
     RkCvtEuc((unsigned char *)eucbuf, sizeof(eucbuf),
                         (unsigned char *)tmpbuf + 1, 2);
-    clen = MBstowcs(buf, eucbuf, 2);
+    clen = CANNA_mbstowcs(buf, eucbuf, 2);
   }
   else {
     tmpbuf[1] = 0x80 | (tmpbuf[1] * 16 + tmpbuf[2]);
@@ -3505,10 +3505,10 @@ mapAsHex(d)
         && len > 2 && (hexbuf[-1] == 'x' || hexbuf[-1] == 'X')) {
       tmpbuf[0] = (char)0x8f;/*SS3*/
       len++;
-      clen = MBstowcs(buf, tmpbuf, 2);
+      clen = CANNA_mbstowcs(buf, tmpbuf, 2);
     }
     else {
-      clen = MBstowcs(buf, tmpbuf + 1, 2);
+      clen = CANNA_mbstowcs(buf, tmpbuf + 1, 2);
     }
   }
   for (i = 0, kanalen = 0 ; i < len ; i++) {
@@ -3632,7 +3632,7 @@ int hexlen;
       0xfe < (unsigned char)*a) {
     return 0;
   } else {
-    MBstowcs(buf, tmpbuf, 2);
+    CANNA_mbstowcs(buf, tmpbuf, 2);
     return 1;
   }
 }

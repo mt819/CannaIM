@@ -3376,7 +3376,7 @@ Ldefsym()
       if (!stringp(e)) {
 	break;
       }
-      len = MBstowcs(p, xstring(e), 1024 - (p - cand));
+      len = CANNA_mbstowcs(p, xstring(e), 1024 - (p - cand));
       p += len;
       *p++ = (wchar_t)0;
     }
@@ -3702,7 +3702,7 @@ Ldefselection()
       while (ww < eww) {
         bak = ww[cs];
         ww[cs] = '\0';
-        len = MBstowcs(p, ww, kigolen - (p - kigo_str));
+        len = CANNA_mbstowcs(p, ww, kigolen - (p - kigo_str));
         p += len;
         *p++ = (wchar_t)0;
         ww += cs;
@@ -3723,7 +3723,7 @@ Ldefselection()
       else {
         xxp = xstring(e);
       }
-      len = MBstowcs(p, xxp, kigolen - (p - kigo_str));
+      len = CANNA_mbstowcs(p, xxp, kigolen - (p - kigo_str));
       p += len;
       *p++ = (wchar_t)0;
       kigo_list = cdr(kigo_list);
@@ -3831,7 +3831,7 @@ Ldefmenu()
     if (!stringp(d) || !symbolp(fn)) {
       error("Bad form ", form);
     }
-    len = MBstowcs(foo, xstring(d), 512);
+    len = CANNA_mbstowcs(foo, xstring(d), 512);
     if (len >= 0) {
       clen += len + 1;
     }
@@ -3845,7 +3845,7 @@ Ldefmenu()
       /* タイトル文字をデータバッファにコピー */
       for (i = 0, wp = men->titledata, wpp = men->titles, e = cdr(form) ;
 	   i < n ; i++, e = cdr(e)) {
-	len = MBstowcs(wp, xstring(car(car(e))), 512);
+	len = CANNA_mbstowcs(wp, xstring(car(car(e))), 512);
 	*wpp++ = wp;
 	wp += len + 1;
 

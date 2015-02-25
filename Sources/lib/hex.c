@@ -62,7 +62,7 @@ hexEveryTimeCatch(d, retval, env)
   d->kanji_status_return->info &= ~(KanjiThroughInfo | KanjiEmptyInfo);
 
   if (codelen >= 0) {
-    MBstowcs(buf, HEXPROMPT, 256);
+    CANNA_mbstowcs(buf, HEXPROMPT, 256);
     WStrncpy(buf + HEXPROMPTLEN, d->kanji_status_return->echoStr, codelen);
     d->kanji_status_return->gline.line = buf;
     d->kanji_status_return->gline.length = codelen + HEXPROMPTLEN;

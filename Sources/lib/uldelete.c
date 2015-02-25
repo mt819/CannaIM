@@ -121,7 +121,7 @@ mode_context env;
   /* 取りあえず echoStr が d->genbuf かもしれないので copy しておく */
   WStrncpy(tmpbuf, d->kanji_status_return->echoStr, echoLen);
 
-  revPos = MBstowcs(d->genbuf, "\306\311\244\337?[", ROMEBUFSIZE);
+  revPos = CANNA_mbstowcs(d->genbuf, "\306\311\244\337?[", ROMEBUFSIZE);
 				/* 読み */
   WStrncpy(d->genbuf + revPos, tmpbuf, echoLen);
   *(d->genbuf + revPos + echoLen) = (wchar_t) ']';
@@ -453,7 +453,7 @@ tourokuContext tc;
 #endif /* STANDALONE */
 
   for (mdic = tc->udic; *mdic; mdic++) {
-    WCstombs(dicname, *mdic, sizeof(dicname));
+    CANNA_wcstombs(dicname, *mdic, sizeof(dicname));
     if (RkwMountDic(workContext, dicname, 0) == NG) {
       if (errno == EPIPE) {
         jrKanjiPipeError();
@@ -501,7 +501,7 @@ tourokuContext tc;
               return NG;
             }
             sprintf((char *)tmpbuf, "#%d#%d", lex[0].rownum, lex[0].colnum);
-            MBstowcs(dic->hcode, tmpbuf, 16);
+            CANNA_mbstowcs(dic->hcode, tmpbuf, 16);
             dic++;
             break;
           }
@@ -657,7 +657,7 @@ RkStat *st;
 #endif /* STANDALONE */
 
   for (mdic = tc->udic; *mdic; mdic++) {
-    WCstombs(dicname, *mdic, sizeof(dicname));
+    CANNA_wcstombs(dicname, *mdic, sizeof(dicname));
     if (RkwMountDic(tc->delContext, dicname, 0) == NG) {
       if (errno == EPIPE) {
         jrKanjiPipeError();
@@ -961,7 +961,7 @@ uiContext d;
                                                != (char **)NULL) {
       wptr = dicLbuf;
       for (work = tc->workDic2; work->name; work++) {
-        i = WCstombs(wptr, work->name, ROMEBUFSIZE);
+        i = CANNA_wcstombs(wptr, work->name, ROMEBUFSIZE);
         wptr += i;
         *wptr++ = '\0';
       }
@@ -1112,11 +1112,11 @@ mode_context env;
     WStraddbcpy(d->genbuf + bufcnt, tc->tango_buffer, 
                                                  ROMEBUFSIZE - bufcnt);
 
-    WCstombs(dicname, dic->name, sizeof(dicname));
+    CANNA_wcstombs(dicname, dic->name, sizeof(dicname));
     if (RkwDeleteDic(defaultContext, dicname, d->genbuf) == NG) {
       if (errno == EPIPE)
         jrKanjiPipeError();
-      MBstowcs(d->genbuf, "\303\261\270\354\272\357\275\374\244\307\244\255"
+      CANNA_mbstowcs(d->genbuf, "\303\261\270\354\272\357\275\374\244\307\244\255"
 	"\244\336\244\273\244\363\244\307\244\267\244\277", 512);
 		/* 単語削除できませんでした */
       goto close;
@@ -1127,26 +1127,26 @@ mode_context env;
   }
 
   /* 削除の完了を表示する */
-  l = MBstowcs(d->genbuf, "\241\330", ROMEBUFSIZE);
+  l = CANNA_mbstowcs(d->genbuf, "\241\330", ROMEBUFSIZE);
 			/* 『 */
   WStrcpy(d->genbuf + l, tc->tango_buffer);
   l += WStrlen(tc->tango_buffer);
-  l += MBstowcs(d->genbuf + l, "\241\331(", ROMEBUFSIZE - l);
+  l += CANNA_mbstowcs(d->genbuf + l, "\241\331(", ROMEBUFSIZE - l);
 				/* 』 */
   WStrcpy(d->genbuf + l, tc->yomi_buffer);
   l += WStrlen(tc->yomi_buffer);
-  l += MBstowcs(d->genbuf + l, ")\244\362\274\255\275\361 ", ROMEBUFSIZE - l);
+  l += CANNA_mbstowcs(d->genbuf + l, ")\244\362\274\255\275\361 ", ROMEBUFSIZE - l);
 			/* を辞書 */
   dic = tc->workDic3;
   WStrcpy(d->genbuf + l, dic->name);
   l += WStrlen(dic->name);
   for (dic++; dic->name; dic++) {
-    l += MBstowcs(d->genbuf + l, " \244\310 ", ROMEBUFSIZE - l);
+    l += CANNA_mbstowcs(d->genbuf + l, " \244\310 ", ROMEBUFSIZE - l);
 				/* と */
     WStrcpy(d->genbuf + l, dic->name);
     l += WStrlen(dic->name);
   }
-  l += MBstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
+  l += CANNA_mbstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
 	"\244\336\244\267\244\277", ROMEBUFSIZE - l);
 			/* から削除しました */
 
@@ -1205,26 +1205,26 @@ uiContext d;
   int l;
   deldicinfo *dic;
 
-  l = MBstowcs(d->genbuf, "\241\330", ROMEBUFSIZE);
+  l = CANNA_mbstowcs(d->genbuf, "\241\330", ROMEBUFSIZE);
 			/* 『 */
   WStrcpy(d->genbuf + l, tc->tango_buffer);
   l += WStrlen(tc->tango_buffer);
-  l += MBstowcs(d->genbuf + l, "\241\331(", ROMEBUFSIZE - l);
+  l += CANNA_mbstowcs(d->genbuf + l, "\241\331(", ROMEBUFSIZE - l);
 				/* 』 */
   WStrcpy(d->genbuf + l, tc->yomi_buffer);
   l += WStrlen(tc->yomi_buffer);
-  l += MBstowcs(d->genbuf + l, ")\244\362\274\255\275\361 ", ROMEBUFSIZE - l);
+  l += CANNA_mbstowcs(d->genbuf + l, ")\244\362\274\255\275\361 ", ROMEBUFSIZE - l);
 			/* を辞書 */
   dic = tc->workDic3;
   WStrcpy(d->genbuf + l, dic->name);
   l += WStrlen(dic->name);
   for (dic++; dic->name; dic++) {
-    l += MBstowcs(d->genbuf + l, " \244\310と ", ROMEBUFSIZE - l);
+    l += CANNA_mbstowcs(d->genbuf + l, " \244\310と ", ROMEBUFSIZE - l);
 				/* と */
     WStrcpy(d->genbuf + l, dic->name);
     l += WStrlen(dic->name);
   }
-  l += MBstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
+  l += CANNA_mbstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
 	"\244\336\244\271\244\253?(y/n)", ROMEBUFSIZE - l);
 		/* から削除しますか */
   if (getYesNoContext(d,

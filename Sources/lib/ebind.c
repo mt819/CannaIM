@@ -68,14 +68,14 @@ int nbytes;
     ret = nbytes;
   }
   else {
-    ret = (wbuflen > 0) ? WCstombs(ebuf, wbuf, maxebuf) : 0;
+    ret = (wbuflen > 0) ? CANNA_wcstombs(ebuf, wbuf, maxebuf) : 0;
     if (ks->info & KanjiYomiInfo) {
       wchar_t *ep;
-      len = WCstombs(ebuf + ret + 1, wbuf + wbuflen + 1,
+      len = CANNA_wcstombs(ebuf + ret + 1, wbuf + wbuflen + 1,
 		     maxebuf - ret - 1);
       ep = wbuf + wbuflen + 1;
       while (*ep) ep++;
-      WCstombs(ebuf + ret + 1 + len + 1, ep + 1,
+      CANNA_wcstombs(ebuf + ret + 1 + len + 1, ep + 1,
 	       maxebuf - ret - 1 - len - 1);
     }
   }
@@ -142,7 +142,7 @@ int nbytes;
   /* モード表示 */
 
   if (wks->info & KanjiModeInfo) {
-    len = WCstombs(p, wks->mode, rest);
+    len = CANNA_wcstombs(p, wks->mode, rest);
     ks->mode = (unsigned char *)p;
     p[len] = '\0';
     p += len + 1;
@@ -258,7 +258,7 @@ int nitems, *cur_item;
     goto last;	/* XXX: 単に-1を返していいのか？ */
   ep = ebuf;
   for (i = 0; i < nitems; i++) {
-    size_t len = WCstombs(ep, items[i], ebuf + buflen - ep);
+    size_t len = CANNA_wcstombs(ep, items[i], ebuf + buflen - ep);
     eitems[i] = ep;
     ep += len + 1;  /* バッファは常に足りていてヌル終端がある */
   }
@@ -321,7 +321,7 @@ BYTE *arg;
   case KC_STOREYOMI: /* echoStr と length と mode を与えるタイプ */
     /* まず mode をワイドにしてみよう */
     if (((jrKanjiStatusWithValue *)arg)->ks->mode) {
-      len2 = MBstowcs(wbuf2, (char *)((jrKanjiStatusWithValue *)arg)->ks->mode,
+      len2 = CANNA_mbstowcs(wbuf2, (char *)((jrKanjiStatusWithValue *)arg)->ks->mode,
 		      320);
       wbuf2[len2] = (wchar_t)0;
       wks.mode = wbuf2;
@@ -332,7 +332,7 @@ BYTE *arg;
     /* 下へ続く */
   case KC_DEFINEKANJI: /* echoStr と length を与えるタイプ */
     /* echoStr をワイドにして与えてみよう */
-    len1 = MBstowcs(wbuf1,
+    len1 = CANNA_mbstowcs(wbuf1,
 		    (char *)((jrKanjiStatusWithValue *)arg)->ks->echoStr, 320);
     wbuf1[len1] = (wchar_t)0;
     wks.echoStr = wbuf1;
@@ -348,7 +348,7 @@ BYTE *arg;
     if (!ret) {
       switch (howToReturnModeInfo) {
       case ModeInfoStyleIsString:
-	WCstombs((char *)arg, arg2, 256);
+	CANNA_wcstombs((char *)arg, arg2, 256);
 	break;
       case ModeInfoStyleIsBaseNumeric:
         arg[2] = (unsigned char)arg2[2];
