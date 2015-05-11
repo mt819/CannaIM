@@ -26,33 +26,33 @@
 /* @(#) 102.1 $Id: mfdef.h,v 1.1.1.1 2002/10/19 08:27:28 aida_s Exp $ */
 
 /*
-  ¤³¤Î¥Ø¥Ã¥À¥Õ¥¡¥¤¥ë¤Ç¤Ï¥â¡¼¥É¤Ë³ä¤ê¿¶¤é¤ì¤¿ÈÖ¹æ¤ä¡¢´Ø¿ô¤Ë³ä¤ê¿¶¤é¤ì¤¿
-  ÈÖ¹æ¤ò´ÉÍı¤¹¤ë¡£
+  ã“ã®ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«ã§ã¯ãƒ¢ãƒ¼ãƒ‰ã«å‰²ã‚ŠæŒ¯ã‚‰ã‚ŒãŸç•ªå·ã‚„ã€é–¢æ•°ã«å‰²ã‚ŠæŒ¯ã‚‰ã‚ŒãŸ
+  ç•ªå·ã‚’ç®¡ç†ã™ã‚‹ã€‚
 
   */
 
-/* ¥â¡¼¥É */
+/* ãƒ¢ãƒ¼ãƒ‰ */
 
 /* real modes */
-/* ¼Â¥â¡¼¥É(real mode)¤Ï¥­¡¼¥Ş¥Ã¥×¤Î¼ÂÂÎ¤ò»ı¤Ã¤Æ¤¤¤ë¥â¡¼¥É */
+/* å®Ÿãƒ¢ãƒ¼ãƒ‰(real mode)ã¯ã‚­ãƒ¼ãƒãƒƒãƒ—ã®å®Ÿä½“ã‚’æŒã£ã¦ã„ã‚‹ãƒ¢ãƒ¼ãƒ‰ */
 
-#define CANNA_MODE_AlphaMode		0	/* ¥¢¥ë¥Õ¥¡¥Ù¥Ã¥È¥â¡¼¥É */
-#define CANNA_MODE_EmptyMode		1	/* ÆÉ¤ßÆşÎÏ¤¬¤Ê¤¤¾õÂÖ */
-#define CANNA_MODE_KigoMode		2	/* µ­¹æ°ìÍ÷É½¼¨¾õÂÖ */
-#define CANNA_MODE_YomiMode		3	/* ÆÉ¤ßÆşÎÏ¤·¤Æ¤¤¤ë¾õÂÖ */
-#define CANNA_MODE_JishuMode		4	/* Ê¸»ú¼ïÊÑ´¹¤·¤Æ¤¤¤ë¾õÂÖ */
-#define CANNA_MODE_TankouhoMode		5	/* Ã±°ì¸õÊäÉ½¼¨¾õÂÖ */
-#define CANNA_MODE_IchiranMode		6	/* ¸õÊä°ìÍ÷É½¼¨¾õÂÖ */
-#define CANNA_MODE_YesNoMode		7	/* Ã±¸ìÅĞÏ¿¤ÎÎãÊ¸É½¼¨¾õÂÖ */
-#define CANNA_MODE_OnOffMode		8	/* Ã±¸ìÅĞÏ¿¤ÎÎãÊ¸É½¼¨¾õÂÖ */
-#define CANNA_MODE_AdjustBunsetsuMode   9	/* Ê¸Àá¿­½Ì¥â¡¼¥É */
-#define CANNA_MODE_ChikujiYomiMode	10	/* Ãà¼¡ÊÑ´¹¥â¡¼¥É¤ÎÆÉ¤ßÉôÊ¬ */
-#define CANNA_MODE_ChikujiTanMode	11	/* Ãà¼¡ÊÑ´¹¥â¡¼¥É¤Î¸õÊäÉôÊ¬ */
+#define CANNA_MODE_AlphaMode		0	/* ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_MODE_EmptyMode		1	/* èª­ã¿å…¥åŠ›ãŒãªã„çŠ¶æ…‹ */
+#define CANNA_MODE_KigoMode		2	/* è¨˜å·ä¸€è¦§è¡¨ç¤ºçŠ¶æ…‹ */
+#define CANNA_MODE_YomiMode		3	/* èª­ã¿å…¥åŠ›ã—ã¦ã„ã‚‹çŠ¶æ…‹ */
+#define CANNA_MODE_JishuMode		4	/* æ–‡å­—ç¨®å¤‰æ›ã—ã¦ã„ã‚‹çŠ¶æ…‹ */
+#define CANNA_MODE_TankouhoMode		5	/* å˜ä¸€å€™è£œè¡¨ç¤ºçŠ¶æ…‹ */
+#define CANNA_MODE_IchiranMode		6	/* å€™è£œä¸€è¦§è¡¨ç¤ºçŠ¶æ…‹ */
+#define CANNA_MODE_YesNoMode		7	/* å˜èªç™»éŒ²ã®ä¾‹æ–‡è¡¨ç¤ºçŠ¶æ…‹ */
+#define CANNA_MODE_OnOffMode		8	/* å˜èªç™»éŒ²ã®ä¾‹æ–‡è¡¨ç¤ºçŠ¶æ…‹ */
+#define CANNA_MODE_AdjustBunsetsuMode   9	/* æ–‡ç¯€ä¼¸ç¸®ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_MODE_ChikujiYomiMode	10	/* é€æ¬¡å¤‰æ›ãƒ¢ãƒ¼ãƒ‰ã®èª­ã¿éƒ¨åˆ† */
+#define CANNA_MODE_ChikujiTanMode	11	/* é€æ¬¡å¤‰æ›ãƒ¢ãƒ¼ãƒ‰ã®å€™è£œéƒ¨åˆ† */
 
 #define CANNA_MODE_MAX_REAL_MODE	(CANNA_MODE_ChikujiTanMode + 1)
 
 /* imaginary modes */
-/* µõ¥â¡¼¥É(imaginary mode)¤Ï¥­¡¼¥Ş¥Ã¥×¤Î¼ÂÂÎ¤ò»ı¤Ã¤Æ¤¤¤Ê¤¤¥â¡¼¥É */
+/* è™šãƒ¢ãƒ¼ãƒ‰(imaginary mode)ã¯ã‚­ãƒ¼ãƒãƒƒãƒ—ã®å®Ÿä½“ã‚’æŒã£ã¦ã„ãªã„ãƒ¢ãƒ¼ãƒ‰ */
 
 #define CANNA_MODE_HenkanMode		CANNA_MODE_EmptyMode
 #define CANNA_MODE_HenkanNyuryokuMode	12
@@ -71,28 +71,28 @@
 #define CANNA_MODE_ZenAlphaKakuteiMode	23
 #define CANNA_MODE_HanAlphaKakuteiMode	24
 
-#define CANNA_MODE_HexMode		25	/* £±£¶¿Ê¥³¡¼¥ÉÆşÎÏ¥â¡¼¥É */
-#define CANNA_MODE_BushuMode		26	/* Éô¼ó¤ÎÆÉ¤ß¤ÎÆşÎÏ¾õÂÖ */
-#define CANNA_MODE_ExtendMode		27	/* ³ÈÄ¥µ¡Ç½ÁªÂò */
-#define CANNA_MODE_RussianMode		28	/* ¥í¥·¥¢Ê¸»úÁªÂò */
-#define CANNA_MODE_GreekMode		29	/* ¥®¥ê¥·¥¢Ê¸»úÁªÂò */
-#define CANNA_MODE_LineMode		30	/* ·ÓÀşÁªÂò */
-#define CANNA_MODE_ChangingServerMode	31	/* ¥µ¡¼¥ĞÊÑ¹¹ */
-#define CANNA_MODE_HenkanMethodMode	32	/* ÊÑ´¹Êı¼°ÁªÂò */
-#define CANNA_MODE_DeleteDicMode	33	/* Ã±¸ìºï½ü */
-#define CANNA_MODE_TourokuMode		34	/* Ã±¸ìÅĞÏ¿¥â¡¼¥É */
+#define CANNA_MODE_HexMode		25	/* ï¼‘ï¼–é€²ã‚³ãƒ¼ãƒ‰å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_MODE_BushuMode		26	/* éƒ¨é¦–ã®èª­ã¿ã®å…¥åŠ›çŠ¶æ…‹ */
+#define CANNA_MODE_ExtendMode		27	/* æ‹¡å¼µæ©Ÿèƒ½é¸æŠ */
+#define CANNA_MODE_RussianMode		28	/* ãƒ­ã‚·ã‚¢æ–‡å­—é¸æŠ */
+#define CANNA_MODE_GreekMode		29	/* ã‚®ãƒªã‚·ã‚¢æ–‡å­—é¸æŠ */
+#define CANNA_MODE_LineMode		30	/* ç½«ç·šé¸æŠ */
+#define CANNA_MODE_ChangingServerMode	31	/* ã‚µãƒ¼ãƒå¤‰æ›´ */
+#define CANNA_MODE_HenkanMethodMode	32	/* å¤‰æ›æ–¹å¼é¸æŠ */
+#define CANNA_MODE_DeleteDicMode	33	/* å˜èªå‰Šé™¤ */
+#define CANNA_MODE_TourokuMode		34	/* å˜èªç™»éŒ²ãƒ¢ãƒ¼ãƒ‰ */
 #define CANNA_MODE_TourokuEmptyMode	CANNA_MODE_TourokuMode
-#define CANNA_MODE_TourokuHinshiMode	35	/* Ã±¸ìÅĞÏ¿¤ÎÉÊ»ìÁªÂò¾õÂÖ */
-#define CANNA_MODE_TourokuDicMode	36	/* Ã±¸ìÅĞÏ¿¤Î¼­½ñÁªÂò¾õÂÖ */
-#define CANNA_MODE_QuotedInsertMode	37	/* °úÍÑÆşÎÏ¥â¡¼¥É */
-#define CANNA_MODE_BubunMuhenkanMode	38	/* ÉôÊ¬ÌµÊÑ´¹¾õÂÖ */
-#define CANNA_MODE_MountDicMode   	39	/* ¼­½ñ¤Îmount,unmount¾õÂÖ */
+#define CANNA_MODE_TourokuHinshiMode	35	/* å˜èªç™»éŒ²ã®å“è©é¸æŠçŠ¶æ…‹ */
+#define CANNA_MODE_TourokuDicMode	36	/* å˜èªç™»éŒ²ã®è¾æ›¸é¸æŠçŠ¶æ…‹ */
+#define CANNA_MODE_QuotedInsertMode	37	/* å¼•ç”¨å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_MODE_BubunMuhenkanMode	38	/* éƒ¨åˆ†ç„¡å¤‰æ›çŠ¶æ…‹ */
+#define CANNA_MODE_MountDicMode   	39	/* è¾æ›¸ã®mount,unmountçŠ¶æ…‹ */
 
 #define CANNA_MODE_MAX_IMAGINARY_MODE	(CANNA_MODE_MountDicMode + 1)
 
 #ifdef IROHA_BC
 /* real modes */
-/* ¼Â¥â¡¼¥É(real mode)¤Ï¥­¡¼¥Ş¥Ã¥×¤Î¼ÂÂÎ¤ò»ı¤Ã¤Æ¤¤¤ë¥â¡¼¥É */
+/* å®Ÿãƒ¢ãƒ¼ãƒ‰(real mode)ã¯ã‚­ãƒ¼ãƒãƒƒãƒ—ã®å®Ÿä½“ã‚’æŒã£ã¦ã„ã‚‹ãƒ¢ãƒ¼ãƒ‰ */
 
 #define IROHA_MODE_AlphaMode		CANNA_MODE_AlphaMode
 #define IROHA_MODE_EmptyMode		CANNA_MODE_EmptyMode
@@ -108,7 +108,7 @@
 #define IROHA_MODE_MAX_REAL_MODE	CANNA_MODE_MAX_REAL_MODE
 
 /* imaginary modes */
-/* µõ¥â¡¼¥É(imaginary mode)¤Ï¥­¡¼¥Ş¥Ã¥×¤Î¼ÂÂÎ¤ò»ı¤Ã¤Æ¤¤¤Ê¤¤¥â¡¼¥É */
+/* è™šãƒ¢ãƒ¼ãƒ‰(imaginary mode)ã¯ã‚­ãƒ¼ãƒãƒƒãƒ—ã®å®Ÿä½“ã‚’æŒã£ã¦ã„ãªã„ãƒ¢ãƒ¼ãƒ‰ */
 
 #define IROHA_MODE_HenkanMode		CANNA_MODE_HenkanMode
 #define IROHA_MODE_HenkanNyuryokuMode	CANNA_MODE_HenkanNyuryokuMode
@@ -147,139 +147,139 @@
 
 #endif /* IROHA_BC */
 
-/* ¥­¡¼´Ø¿ô */
+/* ã‚­ãƒ¼é–¢æ•° */
 
-/* Ì¤ÄêµÁ¤Ë¤¹¤ë */
+/* æœªå®šç¾©ã«ã™ã‚‹ */
 
 #define DEFAULTBEHAVIOR 0
-#define CANNA_FN_Undefined		0 /* Ì¤ÄêµÁ */
+#define CANNA_FN_Undefined		0 /* æœªå®šç¾© */
 
-/* Ê¸»úÁŞÆş */
+/* æ–‡å­—æŒ¿å…¥ */
 
-#define CANNA_FN_SelfInsert		1 /* ²¡¤µ¤ì¤¿¥­¡¼¤ò¤½¤Î¤Ş¤ŞÁŞÆş */
-#define CANNA_FN_FunctionalInsert	2 /* ²¡¤µ¤ì¤¿¥­¡¼¤ÎÁŞÆş */
-#define CANNA_FN_QuotedInsert		3 /* ¼¡¤ÎÊ¸»ú¤ò¤½¤Î¤Ş¤ŞÁŞÆş */
+#define CANNA_FN_SelfInsert		1 /* æŠ¼ã•ã‚ŒãŸã‚­ãƒ¼ã‚’ãã®ã¾ã¾æŒ¿å…¥ */
+#define CANNA_FN_FunctionalInsert	2 /* æŠ¼ã•ã‚ŒãŸã‚­ãƒ¼ã®æŒ¿å…¥ */
+#define CANNA_FN_QuotedInsert		3 /* æ¬¡ã®æ–‡å­—ã‚’ãã®ã¾ã¾æŒ¿å…¥ */
 
-/* ´ğËÜÅª¥â¡¼¥ÉÀÚ¤ê´¹¤¨ */
+/* åŸºæœ¬çš„ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›ãˆ */
 
-#define CANNA_FN_JapaneseMode		4 /* ÆüËÜ¸ìÆşÎÏ¥â¡¼¥É¤Ø°Ü¹Ô */
-#define CANNA_FN_AlphaMode		5 /* ¥¢¥ë¥Õ¥¡¥Ù¥Ã¥ÈÆşÎÏ¥â¡¼¥É¤Ø°Ü¹Ô */
-#define CANNA_FN_HenkanNyuryokuMode	6 /* ÊÑ´¹ÆşÎÏ¥â¡¼¥É¤Ø°Ü¹Ô */
+#define CANNA_FN_JapaneseMode		4 /* æ—¥æœ¬èªå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã¸ç§»è¡Œ */
+#define CANNA_FN_AlphaMode		5 /* ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã¸ç§»è¡Œ */
+#define CANNA_FN_HenkanNyuryokuMode	6 /* å¤‰æ›å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã¸ç§»è¡Œ */
 
-/* ÊÔ½¸ */
+/* ç·¨é›† */
 
-#define CANNA_FN_Forward		7 /* ±¦ */
-#define CANNA_FN_Backward		8 /* º¸ */
-#define CANNA_FN_Next			9 /* ¼¡¤Î¹Ô */
-#define CANNA_FN_Prev			10 /* Á°¤Î¹Ô */
-#define CANNA_FN_BeginningOfLine	11 /* ¹ÔÆ¬ */
-#define CANNA_FN_EndOfLine		12 /* ¹ÔËö */
-#define CANNA_FN_DeleteNext		13 /* ±¦ºï½ü */
-#define CANNA_FN_DeletePrevious		14 /* º¸ºï½ü */
-#define CANNA_FN_KillToEndOfLine	15 /* ¹ÔËö¤Ş¤Çºï½ü */
+#define CANNA_FN_Forward		7 /* å³ */
+#define CANNA_FN_Backward		8 /* å·¦ */
+#define CANNA_FN_Next			9 /* æ¬¡ã®è¡Œ */
+#define CANNA_FN_Prev			10 /* å‰ã®è¡Œ */
+#define CANNA_FN_BeginningOfLine	11 /* è¡Œé ­ */
+#define CANNA_FN_EndOfLine		12 /* è¡Œæœ« */
+#define CANNA_FN_DeleteNext		13 /* å³å‰Šé™¤ */
+#define CANNA_FN_DeletePrevious		14 /* å·¦å‰Šé™¤ */
+#define CANNA_FN_KillToEndOfLine	15 /* è¡Œæœ«ã¾ã§å‰Šé™¤ */
 
-/* ¥«¥Ê´Á»úÊÑ´¹µ¡Ç½ */
+/* ã‚«ãƒŠæ¼¢å­—å¤‰æ›æ©Ÿèƒ½ */
 
-#define CANNA_FN_Henkan			16 /* ÊÑ´¹ */
-#define CANNA_FN_Kakutei		17 /* ³ÎÄê */
-#define CANNA_FN_Extend			18 /* ¿­¤Ğ¤· */
-#define CANNA_FN_Shrink			19 /* ½Ì¤á */
-#define CANNA_FN_AdjustBunsetsu		20 /* Ê¸Àá¿­½Ì¥â¡¼¥É¤ËÆş¤ë */
-#define CANNA_FN_Quit			21 /* ¼è¤ê¤ä¤á */
-#define CANNA_FN_ConvertAsHex		22 /* £±£¶¿Ê¥³¡¼¥É¤È¤·¤ÆÊÑ´¹ */
-#define CANNA_FN_ConvertAsBushu		23 /* Éô¼óÌ¾¤È¤·¤ÆÊÑ´¹ */
-#define CANNA_FN_KouhoIchiran		24 /* ¸õÊä°ìÍ÷ */
-#define CANNA_FN_BubunMuhenkan		25 /* ÉôÊ¬ÌµÊÑ´¹ */
+#define CANNA_FN_Henkan			16 /* å¤‰æ› */
+#define CANNA_FN_Kakutei		17 /* ç¢ºå®š */
+#define CANNA_FN_Extend			18 /* ä¼¸ã°ã— */
+#define CANNA_FN_Shrink			19 /* ç¸®ã‚ */
+#define CANNA_FN_AdjustBunsetsu		20 /* æ–‡ç¯€ä¼¸ç¸®ãƒ¢ãƒ¼ãƒ‰ã«å…¥ã‚‹ */
+#define CANNA_FN_Quit			21 /* å–ã‚Šã‚„ã‚ */
+#define CANNA_FN_ConvertAsHex		22 /* ï¼‘ï¼–é€²ã‚³ãƒ¼ãƒ‰ã¨ã—ã¦å¤‰æ› */
+#define CANNA_FN_ConvertAsBushu		23 /* éƒ¨é¦–åã¨ã—ã¦å¤‰æ› */
+#define CANNA_FN_KouhoIchiran		24 /* å€™è£œä¸€è¦§ */
+#define CANNA_FN_BubunMuhenkan		25 /* éƒ¨åˆ†ç„¡å¤‰æ› */
 
-/* Ê¸»ú¼ïÊÑ´¹¤À¤±¤Ë»È¤ï¤ì¤ëµ¡Ç½ */
+/* æ–‡å­—ç¨®å¤‰æ›ã ã‘ã«ä½¿ã‚ã‚Œã‚‹æ©Ÿèƒ½ */
 
-#define CANNA_FN_Zenkaku		26 /* Á´³Ñ */
-#define CANNA_FN_Hankaku		27 /* È¾³Ñ */
-#define CANNA_FN_ToUpper		28 /* ÂçÊ¸»ú */
-#define CANNA_FN_Capitalize		29 /* ÀèÆ¬¤À¤±ÂçÊ¸»ú¤Ë */
-#define CANNA_FN_ToLower		30 /* ¾®Ê¸»ú */
-#define CANNA_FN_Hiragana		31 /* ¤Ò¤é¤¬¤Ê */
-#define CANNA_FN_Katakana		32 /* ¥«¥¿¥«¥Ê */
-#define CANNA_FN_Romaji			33 /* ¥í¡¼¥Ş»ú */
+#define CANNA_FN_Zenkaku		26 /* å…¨è§’ */
+#define CANNA_FN_Hankaku		27 /* åŠè§’ */
+#define CANNA_FN_ToUpper		28 /* å¤§æ–‡å­— */
+#define CANNA_FN_Capitalize		29 /* å…ˆé ­ã ã‘å¤§æ–‡å­—ã« */
+#define CANNA_FN_ToLower		30 /* å°æ–‡å­— */
+#define CANNA_FN_Hiragana		31 /* ã²ã‚‰ãŒãª */
+#define CANNA_FN_Katakana		32 /* ã‚«ã‚¿ã‚«ãƒŠ */
+#define CANNA_FN_Romaji			33 /* ãƒ­ãƒ¼ãƒå­— */
 
-/* ÆÉ¤ß¥â¡¼¥É¤Ç¤Î¥Ù¡¼¥¹Ê¸»ú¤ÎÀÚ¤êÂØ¤¨ */
+/* èª­ã¿ãƒ¢ãƒ¼ãƒ‰ã§ã®ãƒ™ãƒ¼ã‚¹æ–‡å­—ã®åˆ‡ã‚Šæ›¿ãˆ */
 
-#define CANNA_FN_BaseHiragana		34 /* ¤Ò¤é¤¬¤Ê¥â¡¼¥É */
-#define CANNA_FN_BaseKatakana		35 /* ¥«¥¿¥«¥Ê¥â¡¼¥É */
-#define CANNA_FN_BaseEisu		36 /* ±Ñ¿ô¥â¡¼¥É */
-#define CANNA_FN_BaseZenkaku		37 /* Á´³Ñ¥â¡¼¥É */
-#define CANNA_FN_BaseHankaku		38 /* È¾³Ñ¥â¡¼¥É */
-#define CANNA_FN_BaseKana		39 /* ¤«¤Ê¥â¡¼¥É */
-#define CANNA_FN_BaseKakutei		40 /* ³ÎÄêÆşÎÏ¥â¡¼¥É */
-#define CANNA_FN_BaseHenkan		41 /* ÊÑ´¹ÆşÎÏ¥â¡¼¥É */
-#define CANNA_FN_BaseHiraKataToggle	42 /* ¤Ò¤é¤¬¤Ê¥â¡¼¥É/¥«¥¿¥«¥Ê¥â¡¼¥É */
-#define CANNA_FN_BaseZenHanToggle	43 /* Á´³Ñ¥â¡¼¥É/È¾³Ñ¥â¡¼¥É */
-#define CANNA_FN_BaseKanaEisuToggle	44 /* ¤«¤Ê¥â¡¼¥É/±Ñ¿ô¥â¡¼¥É */
-#define CANNA_FN_BaseKakuteiHenkanToggle 45 /* ³ÎÄêÆşÎÏ¥â¡¼¥É/ÊÑ´¹ÆşÎÏ¥â¡¼¥É */
-#define CANNA_FN_BaseRotateForward	46 /* ¥â¡¼¥É¤ò½ç·«¤ê¤ËÀÚ¤êÂØ¤¨¤ë */
-#define CANNA_FN_BaseRotateBackward	47 /* ¥â¡¼¥É¤òµÕ·«¤ê¤ËÀÚ¤êÂØ¤¨¤ë */
+#define CANNA_FN_BaseHiragana		34 /* ã²ã‚‰ãŒãªãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseKatakana		35 /* ã‚«ã‚¿ã‚«ãƒŠãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseEisu		36 /* è‹±æ•°ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseZenkaku		37 /* å…¨è§’ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseHankaku		38 /* åŠè§’ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseKana		39 /* ã‹ãªãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseKakutei		40 /* ç¢ºå®šå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseHenkan		41 /* å¤‰æ›å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseHiraKataToggle	42 /* ã²ã‚‰ãŒãªãƒ¢ãƒ¼ãƒ‰/ã‚«ã‚¿ã‚«ãƒŠãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseZenHanToggle	43 /* å…¨è§’ãƒ¢ãƒ¼ãƒ‰/åŠè§’ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseKanaEisuToggle	44 /* ã‹ãªãƒ¢ãƒ¼ãƒ‰/è‹±æ•°ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseKakuteiHenkanToggle 45 /* ç¢ºå®šå…¥åŠ›ãƒ¢ãƒ¼ãƒ‰/å¤‰æ›å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BaseRotateForward	46 /* ãƒ¢ãƒ¼ãƒ‰ã‚’é †ç¹°ã‚Šã«åˆ‡ã‚Šæ›¿ãˆã‚‹ */
+#define CANNA_FN_BaseRotateBackward	47 /* ãƒ¢ãƒ¼ãƒ‰ã‚’é€†ç¹°ã‚Šã«åˆ‡ã‚Šæ›¿ãˆã‚‹ */
 
-/* ¤½¤ÎÂ¾¤Î¥â¡¼¥ÉÀÚ¤êÂØ¤¨ */
+/* ãã®ä»–ã®ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆ */
 
-#define CANNA_FN_ExtendMode		48 /* ³ÈÄ¥¥â¡¼¥É */
-#define CANNA_FN_Touroku                CANNA_FN_ExtendMode /* µì¸ß´¹ */
+#define CANNA_FN_ExtendMode		48 /* æ‹¡å¼µãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_Touroku                CANNA_FN_ExtendMode /* æ—§äº’æ› */
 
-#define CANNA_FN_HexMode		49 /* £±£¶¿ÊÆşÎÏ¥â¡¼¥É */
-#define CANNA_FN_BushuMode		50 /* Éô¼óÆşÎÏ¥â¡¼¥É */
-#define CANNA_FN_KigouMode		51 /* µ­¹æÆşÎÏ¥â¡¼¥É */
+#define CANNA_FN_HexMode		49 /* ï¼‘ï¼–é€²å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_BushuMode		50 /* éƒ¨é¦–å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_KigouMode		51 /* è¨˜å·å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ */
 
-#define CANNA_FN_Mark			52 /* ¥Ş¡¼¥¯ */
-#define CANNA_FN_TemporalMode		53 /* ¥â¡¼¥É¤Î°ì»şÅª¥»¡¼¥Ö */
-#define CANNA_FN_UserMode		54 /* ¥æ¡¼¥¶ÄêµÁ¥â¡¼¥É */
+#define CANNA_FN_Mark			52 /* ãƒãƒ¼ã‚¯ */
+#define CANNA_FN_TemporalMode		53 /* ãƒ¢ãƒ¼ãƒ‰ã®ä¸€æ™‚çš„ã‚»ãƒ¼ãƒ– */
+#define CANNA_FN_UserMode		54 /* ãƒ¦ãƒ¼ã‚¶å®šç¾©ãƒ¢ãƒ¼ãƒ‰ */
 
-/* ¸½ºß¤ÎÉ½¼¨¤òÊÖ¤·¤ÆÍß¤·¤¤¤È¤­¤Ë»È¤¦µ¡Ç½ */
+/* ç¾åœ¨ã®è¡¨ç¤ºã‚’è¿”ã—ã¦æ¬²ã—ã„ã¨ãã«ä½¿ã†æ©Ÿèƒ½ */
 
-#define CANNA_FN_Nop			55 /* ²¿¤â¤·¤Ê¤¤ */
+#define CANNA_FN_Nop			55 /* ä½•ã‚‚ã—ãªã„ */
 
-/* Version 2.1 ¤Ë¤ÏÆş¤Ã¤Æ¤¤¤Ê¤¤µ¡Ç½ */
+/* Version 2.1 ã«ã¯å…¥ã£ã¦ã„ãªã„æ©Ÿèƒ½ */
 
-#define CANNA_FN_HenkanOrInsert		56 /* ÊÑ´¹¤â¤·¤¯¤Ï¤½¤Î¤Ş¤ŞÆşÎÏ */
+#define CANNA_FN_HenkanOrInsert		56 /* å¤‰æ›ã‚‚ã—ãã¯ãã®ã¾ã¾å…¥åŠ› */
 #define CANNA_FN_HenkanNaive		CANNA_FN_HenkanOrInsert
 
-/* Version 2.2 ¤Ë¤ÏÆş¤Ã¤Æ¤¤¤Ê¤¤µ¡Ç½ */
+/* Version 2.2 ã«ã¯å…¥ã£ã¦ã„ãªã„æ©Ÿèƒ½ */
 
-#define CANNA_FN_HenkanOrNothing	57 /* ÊÑ´¹¤â¤·¤¯¤Ï¤Ê¤Ë¤â¤·¤Ê¤¤ */
-#define CANNA_FN_RussianMode		58 /* ¥í¥·¥¢Ê¸»ú¥â¡¼¥É */
-#define CANNA_FN_GreekMode		59 /* ¥®¥ê¥·¥ãÊ¸»ú¥â¡¼¥É */
-#define CANNA_FN_LineMode		60 /* ·ÓÀş¥â¡¼¥É */
-#define CANNA_FN_DicMountMode		61 /* ¼­½ñÁªÂò¥â¡¼¥É */
-#define CANNA_FN_ChangeServerMode	62 /* ¥µ¡¼¥ĞÁªÂò¥â¡¼¥É */
-#define CANNA_FN_DisconnectServer	63 /* ¥µ¡¼¥ĞÀÚ¤êÎ¥¤· */
-#define CANNA_FN_ShowServer		64 /* ¥µ¡¼¥ĞÉ½¼¨ */
-#define CANNA_FN_ShowGakushu		65 /* ³Ø½¬¾õ¶·É½¼¨ */
-#define CANNA_FN_ShowVersion		66 /* ¥Ğ¡¼¥¸¥ç¥óÉ½¼¨ */
-#define CANNA_FN_ShowPhonogramFile	67 /* ¥í¡¼¥Ş»ú¥Õ¥¡¥¤¥ëÉ½¼¨ */
-#define CANNA_FN_ShowCannaFile		68 /* ¥«¥¹¥¿¥Ş¥¤¥º¥Õ¥¡¥¤¥ëÉ½¼¨ */
-#define CANNA_FN_DefineDicMode		69 /* Ã±¸ìÅĞÏ¿ */
-#define CANNA_FN_DeleteDicMode		70 /* Ã±¸ìºï½ü */
-#define CANNA_FN_SyncDic		71 /* ¼­½ñ½ñ¤­¹ş¤ß */
-#define CANNA_FN_EnterChikujiMode	72 /* Ãà¼¡¼«Æ°ÊÑ´¹¥â¡¼¥É */
-#define CANNA_FN_EnterRenbunMode	73 /* Ï¢Ê¸ÀáÊÑ´¹¥â¡¼¥É */
+#define CANNA_FN_HenkanOrNothing	57 /* å¤‰æ›ã‚‚ã—ãã¯ãªã«ã‚‚ã—ãªã„ */
+#define CANNA_FN_RussianMode		58 /* ãƒ­ã‚·ã‚¢æ–‡å­—ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_GreekMode		59 /* ã‚®ãƒªã‚·ãƒ£æ–‡å­—ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_LineMode		60 /* ç½«ç·šãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_DicMountMode		61 /* è¾æ›¸é¸æŠãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_ChangeServerMode	62 /* ã‚µãƒ¼ãƒé¸æŠãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_DisconnectServer	63 /* ã‚µãƒ¼ãƒåˆ‡ã‚Šé›¢ã— */
+#define CANNA_FN_ShowServer		64 /* ã‚µãƒ¼ãƒè¡¨ç¤º */
+#define CANNA_FN_ShowGakushu		65 /* å­¦ç¿’çŠ¶æ³è¡¨ç¤º */
+#define CANNA_FN_ShowVersion		66 /* ãƒãƒ¼ã‚¸ãƒ§ãƒ³è¡¨ç¤º */
+#define CANNA_FN_ShowPhonogramFile	67 /* ãƒ­ãƒ¼ãƒå­—ãƒ•ã‚¡ã‚¤ãƒ«è¡¨ç¤º */
+#define CANNA_FN_ShowCannaFile		68 /* ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºãƒ•ã‚¡ã‚¤ãƒ«è¡¨ç¤º */
+#define CANNA_FN_DefineDicMode		69 /* å˜èªç™»éŒ² */
+#define CANNA_FN_DeleteDicMode		70 /* å˜èªå‰Šé™¤ */
+#define CANNA_FN_SyncDic		71 /* è¾æ›¸æ›¸ãè¾¼ã¿ */
+#define CANNA_FN_EnterChikujiMode	72 /* é€æ¬¡è‡ªå‹•å¤‰æ›ãƒ¢ãƒ¼ãƒ‰ */
+#define CANNA_FN_EnterRenbunMode	73 /* é€£æ–‡ç¯€å¤‰æ›ãƒ¢ãƒ¼ãƒ‰ */
 
-/* Version 3.5 ¤ÇÄÉ²Ã¤µ¤ì¤¿¤â¤Î */
-#define CANNA_FN_PageUp                 74 /* ¥Ú¡¼¥¸¥¢¥Ã¥× */
-#define CANNA_FN_PageDown               75 /* ¥Ú¡¼¥¸¥À¥¦¥ó */
-#define CANNA_FN_Edit			76 /* ÊÔ½¸ */
-#define CANNA_FN_BubunKakutei		77 /* ¥«¡¼¥½¥ë°ÊÁ°³ÎÄê */
+/* Version 3.5 ã§è¿½åŠ ã•ã‚ŒãŸã‚‚ã® */
+#define CANNA_FN_PageUp                 74 /* ãƒšãƒ¼ã‚¸ã‚¢ãƒƒãƒ— */
+#define CANNA_FN_PageDown               75 /* ãƒšãƒ¼ã‚¸ãƒ€ã‚¦ãƒ³ */
+#define CANNA_FN_Edit			76 /* ç·¨é›† */
+#define CANNA_FN_BubunKakutei		77 /* ã‚«ãƒ¼ã‚½ãƒ«ä»¥å‰ç¢ºå®š */
 
-#define CANNA_FN_HenkanRegion		78 /* ÁªÂòÎÎ°è¤ÎÊÑ´¹ */
-#define CANNA_FN_PhonoEdit		79 /* ¥í¡¼¥Ş»ú¥¨¥Ç¥£¥¿ */
-#define CANNA_FN_DicEdit		80 /* ¼­½ñ¥¨¥Ç¥£¥¿ */
-#define CANNA_FN_Configure		81 /* Canna ¤ÎÀßÄê */
+#define CANNA_FN_HenkanRegion		78 /* é¸æŠé ˜åŸŸã®å¤‰æ› */
+#define CANNA_FN_PhonoEdit		79 /* ãƒ­ãƒ¼ãƒå­—ã‚¨ãƒ‡ã‚£ã‚¿ */
+#define CANNA_FN_DicEdit		80 /* è¾æ›¸ã‚¨ãƒ‡ã‚£ã‚¿ */
+#define CANNA_FN_Configure		81 /* Canna ã®è¨­å®š */
 
-#define CANNA_FN_KanaRotate		82 /* ¥«¥Ê»ú¼ïÊÑ´¹ */
-#define CANNA_FN_RomajiRotate		83 /* ±Ñ¿ô»ú¼ïÊÑ´¹ */
-#define CANNA_FN_CaseRotate		84 /* ÂçÊ¸»ú¾®Ê¸»úÊÑ´¹ */
+#define CANNA_FN_KanaRotate		82 /* ã‚«ãƒŠå­—ç¨®å¤‰æ› */
+#define CANNA_FN_RomajiRotate		83 /* è‹±æ•°å­—ç¨®å¤‰æ› */
+#define CANNA_FN_CaseRotate		84 /* å¤§æ–‡å­—å°æ–‡å­—å¤‰æ› */
 
-/* °Ê²¼¤Î£²¤Ä¤ÏÉ¬¤ººÇ¸å¤ËÃÖ¤¯¤³¤È¡£ccustom ¤¬¤é¤ß¤ÎÍıÍ³¤«¤é */
+/* ä»¥ä¸‹ã®ï¼’ã¤ã¯å¿…ãšæœ€å¾Œã«ç½®ãã“ã¨ã€‚ccustom ãŒã‚‰ã¿ã®ç†ç”±ã‹ã‚‰ */
 
-#define CANNA_FN_FuncSequence		85 /* Ê£¿ô¤Îµ¡Ç½¤Î³ä¤êÅö¤Æ */
-#define CANNA_FN_UseOtherKeymap		86 /* ¥­¡¼¥·¡¼¥±¥ó¥¹¤ÎÂĞ±ş */
+#define CANNA_FN_FuncSequence		85 /* è¤‡æ•°ã®æ©Ÿèƒ½ã®å‰²ã‚Šå½“ã¦ */
+#define CANNA_FN_UseOtherKeymap		86 /* ã‚­ãƒ¼ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã®å¯¾å¿œ */
 
 #define CANNA_FN_MAX_FUNC		(CANNA_FN_UseOtherKeymap + 1)
 
@@ -287,20 +287,20 @@
 
 #define IROHA_FN_Undefined		CANNA_FN_Undefined
 
-/* Ê¸»úÁŞÆş */
+/* æ–‡å­—æŒ¿å…¥ */
 
 #define IROHA_FN_SelfInsert		CANNA_FN_SelfInsert
 #define IROHA_FN_FunctionalInsert	CANNA_FN_FunctionalInsert
 #define IROHA_FN_QuotedInsert		CANNA_FN_QuotedInsert
 
-/* ´ğËÜÅª¥â¡¼¥ÉÀÚ¤ê´¹¤¨ */
+/* åŸºæœ¬çš„ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›ãˆ */
 
 #define IROHA_FN_JapaneseMode		CANNA_FN_JapaneseMode
 #define IROHA_FN_AlphaMode		CANNA_FN_AlphaMode
 #define IROHA_FN_HenkanNyuryokuMode	CANNA_FN_HenkanNyuryokuMode
 
 
-/* ÊÔ½¸ */
+/* ç·¨é›† */
 
 #define IROHA_FN_Forward		CANNA_FN_Forward
 #define IROHA_FN_Backward		CANNA_FN_Backward
@@ -312,7 +312,7 @@
 #define IROHA_FN_DeletePrevious		CANNA_FN_DeletePrevious
 #define IROHA_FN_KillToEndOfLine	CANNA_FN_KillToEndOfLine
 
-/* ¥«¥Ê´Á»úÊÑ´¹µ¡Ç½ */
+/* ã‚«ãƒŠæ¼¢å­—å¤‰æ›æ©Ÿèƒ½ */
 
 #define IROHA_FN_Henkan			CANNA_FN_Henkan
 #define IROHA_FN_Kakutei		CANNA_FN_Kakutei
@@ -325,7 +325,7 @@
 #define IROHA_FN_KouhoIchiran		CANNA_FN_KouhoIchiran
 #define IROHA_FN_BubunMuhenkan		CANNA_FN_BubunMuhenkan
 
-/* Ê¸»ú¼ïÊÑ´¹¤À¤±¤Ë»È¤ï¤ì¤ëµ¡Ç½ */
+/* æ–‡å­—ç¨®å¤‰æ›ã ã‘ã«ä½¿ã‚ã‚Œã‚‹æ©Ÿèƒ½ */
 
 #define IROHA_FN_Zenkaku		CANNA_FN_Zenkaku
 #define IROHA_FN_Hankaku		CANNA_FN_Hankaku
@@ -336,7 +336,7 @@
 #define IROHA_FN_Katakana		CANNA_FN_Katakana
 #define IROHA_FN_Romaji			CANNA_FN_Romaji
 
-/* ¤½¤ÎÂ¾¤Î¥â¡¼¥ÉÀÚ¤êÂØ¤¨ */
+/* ãã®ä»–ã®ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆ */
 
 #define IROHA_FN_ExtendMode		CANNA_FN_ExtendMode
 #define IROHA_FN_Touroku                CANNA_FN_Touroku
@@ -347,7 +347,7 @@
 
 #define IROHA_FN_UserMode		CANNA_FN_UserMode
 
-/* Ê£»¨¤Êµ¡Ç½ */
+/* è¤‡é›‘ãªæ©Ÿèƒ½ */
 
 #define IROHA_FN_FuncSequence		CANNA_FN_FuncSequence
 #define IROHA_FN_UseOtherKeymap		CANNA_FN_UseOtherKeymap
