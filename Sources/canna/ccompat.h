@@ -74,9 +74,7 @@ extern int  errno;
 # define memmove(dst, src, size) bcopy((char *)(src), (char *)(dst), (size))
 #endif
 
-#ifdef __HAIKU__
-#include "cfuncs.h"
-#else
+#ifndef __HAIKU__
 #include "RKindep/cfuncs.h"
 #endif
 
