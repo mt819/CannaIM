@@ -805,7 +805,7 @@ typedef struct _extra_func {
 #define canna_version(majv, minv) ((majv) * 1024 + (minv))
 
 /* よくスペルミスするのでコンパイル時にひっかかるように入れる */
-extern RkwGoto pro((char *, int));
+extern int RkwGoto pro((char *, int));
 
 /* storing customize configuration to the following structure. */
 struct CannaConfig { /* 以下のコメントはダイアログなどに記述するときなどに
@@ -996,13 +996,13 @@ extern int RkCvtRoma
 extern int RkwCvtRoma
   pro((struct RkRxDic *, wchar_t *, int, wchar_t *, int, int));
 extern int exitJishu pro((uiContext));
-extern RomajiFlushYomi pro((uiContext, wchar_t *, int));
+extern int RomajiFlushYomi pro((uiContext, wchar_t *, int));
 extern void generalReplace
   pro((wchar_t *, BYTE *, int *, int *, int *, int, wchar_t *, int, int));
 extern int ChikujiSubstYomi pro((uiContext));
 extern int TanMuhenkan pro((uiContext));
 extern size_t CANNA_mbstowcs pro((wchar_t *, char *, size_t));
-extern CANNA_wcstombs pro((char *, wchar_t *, int));
+extern int CANNA_wcstombs pro((char *, wchar_t *, int));
 extern int makeRkError pro((uiContext, char *));
 extern void moveStrings pro((wchar_t *, BYTE *, int, int, int));
 extern int TanBackwardBunsetsu pro((uiContext));
