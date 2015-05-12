@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 /*
@@ -140,7 +140,7 @@ typedef struct _deldicinfo {
   wchar_t *name;
   wchar_t hcode[INDPHLENGTH];
 } deldicinfo;
-  
+
 /*
  * glineinfo -- 候補一覧表示のための内部情報を格納しておくための構造体。
  * それぞれのメンバは以下の意味を持つ。
@@ -260,7 +260,7 @@ typedef struct  _yomiContextRec {
   wchar_t   romaji_buffer[ROMEBUFSIZE];
   /* ローマ字バッファは rStartp, rEndp の２つのインデックスによって管理され
    * る。rStartp はカナに変換できなかったローマ字の最初の文字へのインデッ
-   * クスであり、rEndp は新たにローマ字を入力する時に、格納すべき 
+   * クスであり、rEndp は新たにローマ字を入力する時に、格納すべき
    * romaji_buffer 内のインデックスである。新たに入力されるローマ字は、
    * romaji_buffer + rEndp より先に格納され、そのローマ字をカナに変換す
    * る時は、romaji_buffer + rStartp から rEndp - rStartp バイトの文字が
@@ -522,16 +522,16 @@ typedef struct {
   char *sp, *ep;
 } wcKanjiAttributeInternal;
 
-/* 
+/*
 
   uiContext はローマ字かな変換、カナ漢字変換に使われる構造体である。
   XLookupKanjiString などによる変換は、ウィンドウに分離された複数の入
   力ポートに対応しているので、入力中のローマ字の情報や、カナ漢字変換
   の様子などをそれぞれのウィンドウ毎に分離して保持しておかなければな
   らない。この構造体はそのために使われる構造体である。
- 
+
   構造体のメンバがどのようなものがあるかは、定義を参照すること
- 
+
  */
 
 typedef struct _uiContext {
@@ -607,8 +607,8 @@ typedef struct _uiContext {
 #define QUIT_CALLBACK		2
 #define AUX_CALLBACK		3
 
-/* 
- * カナ漢字変換のための様々なキーマップテーブル 
+/*
+ * カナ漢字変換のための様々なキーマップテーブル
  * キーマップテーブルは処理関数へのポインタの配列となっている。
  */
 
@@ -631,7 +631,7 @@ struct callback {
 };
 
 /* ローマ字かな変換テーブル */
-     
+
 extern struct RkRxDic *romajidic;
 extern struct RkRxDic *RkwOpenRoma pro((char *));
 
@@ -672,7 +672,7 @@ extern char *jrKanjiError;
  * デバグ文を表示するかどうかのフラグ
  */
 
-extern iroha_debug;
+extern int iroha_debug;
 
 /*
  * キーシーケンスを発生するようなキー
@@ -841,7 +841,7 @@ struct CannaConfig { /* 以下のコメントはダイアログなどに記述�
   BYTE indexHankaku;  /* (互換用) 一覧時のインデックスを半角にする */
   BYTE allowNextInput; /* 候補一覧表示時、次の入力が可能にする */
   BYTE doKatakanaGakushu; /* Isn't this used? */
-  BYTE doHiraganaGakushu; /* Isn't this used? */ 
+  BYTE doHiraganaGakushu; /* Isn't this used? */
   BYTE ChikujiContinue; /* 逐次自動変換時次の入力で既変換部分を確定しない */
   BYTE RenbunContinue;  /* 連文節変換時次の入力で既変換部分を確定しない */
   BYTE MojishuContinue; /* 字種変換時次の入力で既変換部分を確定しない */
@@ -868,16 +868,16 @@ typedef int (* canna_callback_t) pro((uiContext, int, mode_context));
 extern void makeGLineMessage pro((uiContext, wchar_t *, int));
 extern void makeGLineMessageFromStrings pro((uiContext, char *));
 extern newmode *findExtraKanjiMode pro((int));
-extern setWStrings pro((wchar_t **, char **, int));
-extern WStrlen pro((wchar_t *));
+extern int setWStrings pro((wchar_t **, char **, int));
+extern int WStrlen pro((wchar_t *));
 extern wchar_t *WStrcat pro((wchar_t *, wchar_t *));
 extern wchar_t *WStrcpy pro((wchar_t *, wchar_t *));
 extern wchar_t *WStrncpy pro((wchar_t *, wchar_t *, int));
-extern WStrncmp pro((wchar_t *, wchar_t *, int));
+extern int WStrncmp pro((wchar_t *, wchar_t *, int));
 extern wchar_t *WString pro((char *));
 #ifndef NO_EXTEND_MENU
-extern prevMenuIfExist pro((uiContext));
-extern showmenu pro((uiContext, menustruct *));
+extern int prevMenuIfExist pro((uiContext));
+extern int showmenu pro((uiContext, menustruct *));
 #endif
 extern yomiContext
   newYomiContext pro((wchar_t *, int, int, int, int, int)),
@@ -987,7 +987,7 @@ extern int RkMapPhonogram
   pro((struct RkRxDic *, unsigned char *, int, unsigned char *, int,
        unsigned, int,
        int *, int *, int *, int *));
-extern RkMapRoma
+extern int RkMapRoma
   pro((struct RkRxDic *, unsigned char *, int, unsigned char *, int,
        int, int *));
 extern int RkCvtRoma
@@ -999,114 +999,114 @@ extern int exitJishu pro((uiContext));
 extern RomajiFlushYomi pro((uiContext, wchar_t *, int));
 extern void generalReplace
   pro((wchar_t *, BYTE *, int *, int *, int *, int, wchar_t *, int, int));
-extern ChikujiSubstYomi pro((uiContext));
-extern TanMuhenkan pro((uiContext));
+extern int ChikujiSubstYomi pro((uiContext));
+extern int TanMuhenkan pro((uiContext));
 extern size_t CANNA_mbstowcs pro((wchar_t *, char *, size_t));
 extern CANNA_wcstombs pro((char *, wchar_t *, int));
-extern makeRkError pro((uiContext, char *));
+extern int makeRkError pro((uiContext, char *));
 extern void moveStrings pro((wchar_t *, BYTE *, int, int, int));
-extern TanBackwardBunsetsu pro((uiContext));
-extern TbBackward pro((uiContext));
-extern NothingChanged pro((uiContext));
-extern TbEndOfLine pro((uiContext));
-extern TanForwardBunsetsu pro((uiContext));
-extern TbForward pro((uiContext));
-extern TbBeginningOfLine pro((uiContext));
-extern tanMuhenkan pro((uiContext, int));
-extern extractTanString pro((tanContext, wchar_t *, wchar_t *));
-extern extractTanYomi pro((tanContext, wchar_t *, wchar_t *));
-extern extractTanRomaji pro((tanContext, wchar_t *, wchar_t *));
-extern leaveAdjustMode pro((uiContext, yomiContext));
+extern int TanBackwardBunsetsu pro((uiContext));
+extern int TbBackward pro((uiContext));
+extern int NothingChanged pro((uiContext));
+extern int TbEndOfLine pro((uiContext));
+extern int TanForwardBunsetsu pro((uiContext));
+extern int TbForward pro((uiContext));
+extern int TbBeginningOfLine pro((uiContext));
+extern int tanMuhenkan pro((uiContext, int));
+extern int extractTanString pro((tanContext, wchar_t *, wchar_t *));
+extern int extractTanYomi pro((tanContext, wchar_t *, wchar_t *));
+extern int extractTanRomaji pro((tanContext, wchar_t *, wchar_t *));
+extern int leaveAdjustMode pro((uiContext, yomiContext));
 extern wchar_t *WStraddbcpy pro((wchar_t *, wchar_t *, int));
-extern YomiExit pro((uiContext, int));
+extern int YomiExit pro((uiContext, int));
 extern void clearYomiContext pro((yomiContext));
-extern abandonContext pro((uiContext, yomiContext));
+extern int abandonContext pro((uiContext, yomiContext));
 extern void RomajiClearYomi pro((uiContext));
-extern RkCvtEuc pro((unsigned char *, int, unsigned char *, int));
-extern RkCvtNone pro((unsigned char *, int, unsigned char *, int));
-extern selectOne
+extern int RkCvtEuc pro((unsigned char *, int, unsigned char *, int));
+extern int RkCvtNone pro((unsigned char *, int, unsigned char *, int));
+extern int selectOne
   pro((uiContext, wchar_t **, int *, int, int, unsigned, int, int,
        canna_callback_t, canna_callback_t, canna_callback_t,canna_callback_t));
 extern void makeGlineStatus pro((uiContext));
-extern YomiMark pro((uiContext));
-extern doHenkan pro((uiContext, int, wchar_t *));
-extern tanKouhoIchiran pro((uiContext, int));
-extern EmptyBaseKana pro((uiContext));
-extern EmptyBaseKakutei pro((uiContext));
-extern EmptyBaseHenkan pro((uiContext));
-extern WToupper pro((wchar_t));
-extern WTolower pro((wchar_t));
-extern TanKakutei pro((uiContext));
-extern Yomisearchfunc pro((uiContext, KanjiMode, int, int, int));
-extern CNvW2E pro((wchar_t *, int, char *, int));
+extern int YomiMark pro((uiContext));
+extern int doHenkan pro((uiContext, int, wchar_t *));
+extern int tanKouhoIchiran pro((uiContext, int));
+extern int EmptyBaseKana pro((uiContext));
+extern int EmptyBaseKakutei pro((uiContext));
+extern int EmptyBaseHenkan pro((uiContext));
+extern int WToupper pro((wchar_t));
+extern int WTolower pro((wchar_t));
+extern int TanKakutei pro((uiContext));
+extern int Yomisearchfunc pro((uiContext, KanjiMode, int, int, int));
+extern int CNvW2E pro((wchar_t *, int, char *, int));
 extern void initKigoTable pro((void));
-extern NothingForGLine pro((uiContext));
-extern NothingForGLineWithBeep pro((uiContext));
+extern int NothingForGLine pro((uiContext));
+extern int NothingForGLineWithBeep pro((uiContext));
 extern void echostrClear pro((uiContext));
 extern void freeGetIchiranList pro((wchar_t **));
-extern TanKouhoIchiran pro((uiContext));
-extern GLineNGReturn pro((uiContext));
-extern GLineNGReturnFI pro((uiContext));
-extern appendTan2Yomi pro((tanContext, yomiContext));
-extern confirmContext pro((uiContext, yomiContext));
-extern ChikujiTanDeletePrevious pro((uiContext));
-extern YomiKakutei pro((uiContext));
-extern YomiInsert pro((uiContext));
-extern cutOffLeftSide pro((uiContext, yomiContext, int));
-extern enterAdjustMode pro((uiContext, yomiContext));
-extern TanNextKouho pro((uiContext));
-extern TanPreviousKouho pro((uiContext));
-extern TanBeginningOfBunsetsu pro((uiContext));
-extern TanEndOfBunsetsu pro((uiContext));
-extern TanDeletePrevious pro((uiContext));
-extern TanBubunMuhenkan pro((uiContext));
-extern xString pro((wchar_t *, int, wchar_t *, wchar_t *));
-extern KanaDeletePrevious pro((uiContext));
-extern findSup pro((wchar_t));
-extern selectKeysup pro((uiContext, yomiContext, int));
-extern containUnconvertedKey pro((yomiContext));
-extern CYsearchfunc pro((uiContext, KanjiMode, int, int, int));
-extern TanBubunKakutei pro((uiContext));
-extern TanZenkaku pro((uiContext));
-extern TanHankaku pro((uiContext));
-extern TanHiragana pro((uiContext));
-extern TanKatakana pro((uiContext));
-extern TanRomaji pro((uiContext));
-extern TanUpper pro((uiContext));
-extern TanCapitalize pro((uiContext));
-extern TanPrintBunpou pro((uiContext));
-extern TanNop pro((uiContext));
-extern YomiQuotedInsert pro((uiContext));
-extern AlphaMode pro((uiContext));
-extern HenkanNyuryokuMode pro((uiContext));
-extern KigoIchiran pro((uiContext));
-extern UiUtilMode pro((uiContext));
-extern EmptyBaseHira pro((uiContext));
-extern EmptyBaseKata pro((uiContext));
-extern EmptyBaseEisu pro((uiContext));
-extern EmptyBaseZen pro((uiContext));
-extern EmptyBaseHan pro((uiContext));
-extern YomiBaseHiraKataToggle pro((uiContext));
-extern YomiBaseZenHanToggle pro((uiContext));
-extern YomiBaseKanaEisuToggle pro((uiContext));
-extern YomiBaseKakuteiHenkanToggle pro((uiContext));
-extern YomiBaseRotateForw pro((uiContext));
-extern YomiBaseRotateBack pro((uiContext));
-extern DoFuncSequence pro((uiContext));
-extern YomiModeBackup pro((uiContext));
-extern UseOtherKeymap pro((uiContext));
-extern JapaneseMode pro((uiContext));
+extern int TanKouhoIchiran pro((uiContext));
+extern int GLineNGReturn pro((uiContext));
+extern int GLineNGReturnFI pro((uiContext));
+extern int appendTan2Yomi pro((tanContext, yomiContext));
+extern int confirmContext pro((uiContext, yomiContext));
+extern int ChikujiTanDeletePrevious pro((uiContext));
+extern int YomiKakutei pro((uiContext));
+extern int YomiInsert pro((uiContext));
+extern int cutOffLeftSide pro((uiContext, yomiContext, int));
+extern int enterAdjustMode pro((uiContext, yomiContext));
+extern int TanNextKouho pro((uiContext));
+extern int TanPreviousKouho pro((uiContext));
+extern int TanBeginningOfBunsetsu pro((uiContext));
+extern int TanEndOfBunsetsu pro((uiContext));
+extern int TanDeletePrevious pro((uiContext));
+extern int TanBubunMuhenkan pro((uiContext));
+extern int xString pro((wchar_t *, int, wchar_t *, wchar_t *));
+extern int KanaDeletePrevious pro((uiContext));
+extern int findSup pro((wchar_t));
+extern int selectKeysup pro((uiContext, yomiContext, int));
+extern int containUnconvertedKey pro((yomiContext));
+extern int CYsearchfunc pro((uiContext, KanjiMode, int, int, int));
+extern int TanBubunKakutei pro((uiContext));
+extern int TanZenkaku pro((uiContext));
+extern int TanHankaku pro((uiContext));
+extern int TanHiragana pro((uiContext));
+extern int TanKatakana pro((uiContext));
+extern int TanRomaji pro((uiContext));
+extern int TanUpper pro((uiContext));
+extern int TanCapitalize pro((uiContext));
+extern int TanPrintBunpou pro((uiContext));
+extern int TanNop pro((uiContext));
+extern int YomiQuotedInsert pro((uiContext));
+extern int AlphaMode pro((uiContext));
+extern int HenkanNyuryokuMode pro((uiContext));
+extern int KigoIchiran pro((uiContext));
+extern int UiUtilMode pro((uiContext));
+extern int EmptyBaseHira pro((uiContext));
+extern int EmptyBaseKata pro((uiContext));
+extern int EmptyBaseEisu pro((uiContext));
+extern int EmptyBaseZen pro((uiContext));
+extern int EmptyBaseHan pro((uiContext));
+extern int YomiBaseHiraKataToggle pro((uiContext));
+extern int YomiBaseZenHanToggle pro((uiContext));
+extern int YomiBaseKanaEisuToggle pro((uiContext));
+extern int YomiBaseKakuteiHenkanToggle pro((uiContext));
+extern int YomiBaseRotateForw pro((uiContext));
+extern int YomiBaseRotateBack pro((uiContext));
+extern int DoFuncSequence pro((uiContext));
+extern int YomiModeBackup pro((uiContext));
+extern int UseOtherKeymap pro((uiContext));
+extern int JapaneseMode pro((uiContext));
 extern void ichiranFin pro((uiContext));
-extern IchiranForwardKouho pro((uiContext));
-extern IchiranBackwardKouho pro((uiContext));
-extern IchiranNextKouhoretsu pro((uiContext));
-extern IchiranPreviousKouhoretsu pro((uiContext));
-extern IchiranBeginningOfKouho pro((uiContext));
-extern IchiranEndOfKouho pro((uiContext));
-extern IchiranQuit pro((uiContext));
-extern IchiranNop pro((uiContext));
-extern RkwCvtNone pro((wchar_t *, int, wchar_t *, int));
-extern RkwSetAppName pro((int, char *));
+extern int IchiranForwardKouho pro((uiContext));
+extern int IchiranBackwardKouho pro((uiContext));
+extern int IchiranNextKouhoretsu pro((uiContext));
+extern int IchiranPreviousKouhoretsu pro((uiContext));
+extern int IchiranBeginningOfKouho pro((uiContext));
+extern int IchiranEndOfKouho pro((uiContext));
+extern int IchiranQuit pro((uiContext));
+extern int IchiranNop pro((uiContext));
+extern int RkwCvtNone pro((wchar_t *, int, wchar_t *, int));
+extern int RkwSetAppName pro((int, char *));
 extern void close_engine pro((void));
 extern char *KanjiInitError pro((void));
 extern void prepare_autodic pro((void));

@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 /* filedef
@@ -70,7 +70,7 @@
   key2wchar          キーボード入力をワイドキャラクタにする。
   US2WS              Ushort を wchar_t に変換する。
   WS2US              wchar_t を Ushort に変換する。
-  confirmContext     yc->context が使えるものか確認する 
+  confirmContext     yc->context が使えるものか確認する
   makeRkError        Rk の関数でエラーがでたときの処理をする。
   canna_alert        メッセージを Gline に書いて key を待つ。
 
@@ -148,7 +148,7 @@ uiContext d;
     d->kanji_status_return->revPos = d->kanji_status_return->revLen = 0;
 }
 
-/* 
+/*
  * 文字列からコラム幅を取っ手来る関数
  */
 
@@ -207,7 +207,7 @@ NothingChanged(d)
 uiContext d;
 {
   d->kanji_status_return->length = -1; /* 変わらない。 */
-  d->kanji_status_return->revPos 
+  d->kanji_status_return->revPos
     = d->kanji_status_return->revLen = 0;
   d->kanji_status_return->info = 0;
   return 0;
@@ -217,7 +217,7 @@ NothingForGLine(d)
 uiContext d;
 {
   d->kanji_status_return->length = -1; /* 変わらない。 */
-  d->kanji_status_return->revPos 
+  d->kanji_status_return->revPos
     = d->kanji_status_return->revLen = 0;
   return 0;
 }
@@ -659,7 +659,7 @@ yomiContext yc;
       }
     }
   }
-  
+
   if (s < e) {
     *s = (wchar_t)'\0';
   }
@@ -716,6 +716,7 @@ char  *msg;
   makeGLineMessage(d, d->genbuf, len);
 }
 
+int
 setWStrings(ws, s, sz)
 wchar_t **ws;
 char **s;
@@ -767,7 +768,7 @@ uiContext d;
   if (depth != cbDepth) {
     fprintf(stderr, "■■■■■！！！深さが違うぞ！！！■■■■■\n");
   }
-  debug_message("\242\243\40\277\274\244\265: d->modec:%d d->cb:%d callbacks:0x%08x ", 
+  debug_message("\242\243\40\277\274\244\265: d->modec:%d d->cb:%d callbacks:0x%08x ",
 		depth, cbDepth, callbacks);
                 /* ■ 深さ */
   debug_message("EXIT_CALLBACK = 0x%x\n", d->cb->func[EXIT_CALLBACK],0,0);
@@ -792,7 +793,7 @@ unsigned int dpy, win;
   static int n = 0;
   int i;
   char buf[1024];
-  
+
   n++;
   fprintf(stderr, "\n【デバグメッセージ(%d)】\n", n);
   d = keyToContext((unsigned int)dpy, (unsigned int)win);
@@ -1306,7 +1307,7 @@ int destlen;
   ユーザインタフェースライブラリではシステムが自動的に読んでくれるの
   でその必要はない。
 
- */ 
+ */
 
 static wchar_t **wsmemories = (wchar_t **)NULL;
 static int nwsmemories = 0;
@@ -1339,7 +1340,7 @@ char *s;
 
   if (i == nwsmemories) { /* 使い切ったので増やす */
     if (!(wm = (wchar_t **)realloc(wsmemories,
-				 (nwsmemories + WSBLOCKSIZE) 
+				 (nwsmemories + WSBLOCKSIZE)
 				 * sizeof(wchar_t *))))
       return((wchar_t *)0);
     wsmemories = wm;
@@ -1396,7 +1397,7 @@ WSfree(s)
   return(0);
 }
 
-/* 
+/*
  generalReplace -- カナバッファにもローマ字バッファにも使える置換ルーチン
 
   この置換ルーチンは文字列のメモリ上の置換を行うためのライブラリルーチ
@@ -1419,7 +1420,7 @@ WSfree(s)
   未変換文字等へのインデックスよりも小さくなった場合には、未変換文字等
   へのインデックスの値をカーソルの値に合わせて小さくする。
 
-  この関数の最終引数には新たに挿入する文字列の属性に関するヒントが記述 
+  この関数の最終引数には新たに挿入する文字列の属性に関するヒントが記述
   できる。新たに挿入される文字列の各文字に対して、ヒントで与えられた値
   自身が属性値として格納される。
 
@@ -1447,9 +1448,9 @@ void
 generalReplace(buf, attr, startp, cursor, endp, bytes, rplastr, len, attrmask)
 wchar_t *buf, *rplastr;
 BYTE *attr;
-int *startp, *cursor, *endp,  bytes, len, attrmask; 
-{ 
-  int idou, begin, end, i; 
+int *startp, *cursor, *endp,  bytes, len, attrmask;
+{
+  int idou, begin, end, i;
   int cursorMove;
 
   if (bytes > 0) {
@@ -1681,7 +1682,7 @@ canna_callback_t cnt;
     message  メッセージ
     cnt      次の処理を行う関数
 
-  cnt では popCallback(d) をやらなければならないことに注意！ 
+  cnt では popCallback(d) をやらなければならないことに注意！
 
  */
 
@@ -1702,7 +1703,7 @@ KanjiInitError()
 {
   return "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
     "\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336"
-      "\244\273\244\363";              
+      "\244\273\244\363";
   /* "かな漢字変換サーバと通信できません" */
 }
 
