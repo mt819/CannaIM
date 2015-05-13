@@ -12,34 +12,34 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
 static char emptymap_id[] = "@(#) 102.1 $Id: emptymap.h,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 #endif /* lint */
 
-extern AlphaMode(), HenkanNyuryokuMode(), ZenHiraKakuteiMode();
-extern ZenKataKakuteiMode(), HanKataKakuteiMode(), ZenAlphaKakuteiMode();
-extern HanAlphaKakuteiMode(), KigoIchiran();
+extern int AlphaMode(), HenkanNyuryokuMode(), ZenHiraKakuteiMode();
+extern int ZenKataKakuteiMode(), HanKataKakuteiMode(), ZenAlphaKakuteiMode();
+extern int HanAlphaKakuteiMode(), KigoIchiran();
 #ifndef NO_EXTEND_MENU
-extern HexMode(), BushuMode();
+extern int HexMode(), BushuMode();
 #endif
-extern KigoIchiran(), UiUtilMode();
-extern YomiBaseHiraKataToggle(), YomiBaseZenHanToggle();
-extern YomiBaseKanaEisuToggle(), YomiBaseKakuteiHenkanToggle();
-extern YomiBaseRotateForw(), YomiBaseRotateBack();
-extern DoFuncSequence(),UseOtherKeymap(), YomiModeBackup();
-extern dicTouroku pro((uiContext)), dicSakujo pro((uiContext));
+extern int KigoIchiran(), UiUtilMode();
+extern int YomiBaseHiraKataToggle(), YomiBaseZenHanToggle();
+extern int YomiBaseKanaEisuToggle(), YomiBaseKakuteiHenkanToggle();
+extern int YomiBaseRotateForw(), YomiBaseRotateBack();
+extern int DoFuncSequence(),UseOtherKeymap(), YomiModeBackup();
+extern int dicTouroku pro((uiContext)), dicSakujo pro((uiContext));
 #ifndef NO_EXTEND_MENU
-extern kigoRussia(), kigoGreek(), kigoKeisen();
-extern dicMount(), serverChange(), serverFin();
-extern chikujiInit();
+extern int kigoRussia(), kigoGreek(), kigoKeisen();
+extern int dicMount(), serverChange(), serverFin();
+extern int chikujiInit();
 #endif
 
 #define NONE CANNA_FN_Undefined
@@ -102,7 +102,7 @@ static struct funccfunc empty_funcs[] = {
 };
 
 BYTE empty_kmap[256] =
-{               
+{
 /* C-@ */       CANNA_FN_SelfInsert,
 /* C-a */       CANNA_FN_SelfInsert,
 /* C-b */       CANNA_FN_SelfInsert,

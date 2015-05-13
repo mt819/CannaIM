@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -95,9 +95,9 @@ yomiContext yc;
   return 0;
 }
 
-static BunFullExtend pro((uiContext));
+static int BunFullExtend pro((uiContext));
 
-static
+static int
 BunFullExtend(d)
 uiContext d;
 {
@@ -108,9 +108,9 @@ uiContext d;
   return 0;
 }
 
-static BunFullShrink pro((uiContext));
+static int BunFullShrink pro((uiContext));
 
-static
+static int
 BunFullShrink(d)
 uiContext d;
 {
@@ -121,9 +121,9 @@ uiContext d;
   return 0;
 }
 
-static BunExtend pro((uiContext));
+static int BunExtend pro((uiContext));
 
-static
+static int
 BunExtend(d)
 uiContext d;
 {
@@ -143,9 +143,9 @@ uiContext d;
   return 0;
 }
 
-static BunShrink pro((uiContext));
+static int BunShrink pro((uiContext));
 
-static
+static int
 BunShrink(d)
 uiContext d;
 {
@@ -169,9 +169,9 @@ uiContext d;
   return 0;
 }
 
-static BunHenkan pro((uiContext));
+static int BunHenkan pro((uiContext));
 
-static
+static int
 BunHenkan(d)
 uiContext d;
 {
@@ -189,9 +189,9 @@ uiContext d;
   return 0;
 }
 
-static BunQuit pro((uiContext));
+static int BunQuit pro((uiContext));
 
-static
+static int
 BunQuit(d)
 uiContext d;
 {
@@ -203,9 +203,9 @@ uiContext d;
   return 0;
 }
 
-static BunSelfInsert pro((uiContext));
+static int BunSelfInsert pro((uiContext));
 
-static
+static int
 BunSelfInsert(d)
 uiContext d;
 {
@@ -216,9 +216,9 @@ uiContext d;
   return d->nbytes;
 }
 
-static BunQuotedInsert pro((uiContext));
+static int BunQuotedInsert pro((uiContext));
 
-static
+static int
 BunQuotedInsert(d)
 uiContext d;
 {
@@ -229,9 +229,9 @@ uiContext d;
   return d->nbytes;
 }
 
-static BunKillToEOL pro((uiContext));
+static int BunKillToEOL pro((uiContext));
 
-static
+static int
 BunKillToEOL(d)
 uiContext d;
 {

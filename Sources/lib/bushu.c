@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -50,77 +50,77 @@ static int vBushuExitCatch(), bushuQuitCatch();
 #define	BUSHU_SZ	150
 
 static
-char *bushu_schar[] = 
-{ 
+char *bushu_schar[] =
+{
   /* "一", "丿", "凵", "十", "卩", "刀", */
   "\260\354", "\320\250", "\321\341", "\275\275", "\322\307", "\305\341",
-  
+
   /* "刈（りっとう）", "力", "厂", "勹", "冂匚囗", "亠", */
   "\264\242\241\312\244\352\244\303\244\310\244\246\241\313", "\316\317", "\322\314", "\322\261", "\321\304\322\271\323\370", "\320\265",
-  
+
   /* "冫", "人／仁（にんべん）", "又", "几", "八", "儿", */
   "\321\322", "\277\315\241\277\277\316\241\312\244\313\244\363\244\331\244\363\241\313", "\313\364", "\321\334", "\310\254", "\321\271",
-  
+
   /* "冖", "宀", "廴", "郁（おおざと)", "己", "女", */
   "\321\314", "\325\337", "\327\256", "\260\352\241\312\244\252\244\252\244\266\244\310\51", "\270\312", "\275\367",
-  
+
   /* "彳", "口", "草（くさかんむり)", "独（けものへん）", */
   "\327\306", "\270\375", "\301\360\241\312\244\257\244\265\244\253\244\363\244\340\244\352\51", "\306\310\241\312\244\261\244\342\244\316\244\330\244\363\241\313",
 
   /* "子", "陏（こざと）", "士", "江（さんずい）", "弋", */
   "\273\322", "\357\372\241\312\244\263\244\266\244\310\241\313", "\273\316", "\271\276\241\312\244\265\244\363\244\272\244\244\241\313", "\327\265",
-  
+
   /* "尸", "小／単（つ）", "辷（しんにょう）", "寸", "大", */
   "\325\371", "\276\256\241\277\303\261\241\312\244\304\241\313", "\355\350\241\312\244\267\244\363\244\313\244\347\244\246\241\313", "\300\243", "\302\347",
-  
+
   /* "土", "手（てへん）", "巾", "广", "山", "夕", */
   "\305\332", "\274\352\241\312\244\306\244\330\244\363\241\313", "\266\322", "\326\370", "\273\263", "\315\274",
-  
+
   /* "弓", "忙（りっしんべん）", "欠", "歹", "犬", */
   "\265\335", "\313\273\241\312\244\352\244\303\244\267\244\363\244\331\244\363\241\313", "\267\347", "\335\306", "\270\244",
-  
+
   /* "牛／牡（うしへん）", "片", "木", "气", "毛", "心", */
   "\265\355\241\277\262\264\241\312\244\246\244\267\244\330\244\363\241\313", "\312\322", "\314\332", "\335\343", "\314\323", "\277\264",
-  
+
   /* "水", "月", "爪", "日", "攵", "火", */
   "\277\345", "\267\356", "\304\336", "\306\374", "\332\276", "\262\320",
-  
+
   /* "方", "戈", "点（れっか）", "殳", "穴", "石", */
   "\312\375", "\330\371", "\305\300\241\312\244\354\244\303\244\253\241\313", "\335\325", "\267\352", "\300\320",
 
   /* "玉", "皮", "瓦", "皿", "示", "神（しめすへん）", "白", */
   "\266\314", "\310\351", "\264\244", "\273\256", "\274\250", "\277\300\241\312\244\267\244\341\244\271\244\330\244\363\241\313", "\307\362",
-  
+
   /* "田", "立", "禾", "目", "癶", "矢", */
   "\305\304", "\316\251", "\262\323", "\314\334", "\342\242", "\314\360",
-  
+
   /* "疔（やまいだれ）", "四", "糸", "臼", "瓜", "老", */
   "\341\313\241\312\244\344\244\336\244\244\244\300\244\354\241\313", "\273\315", "\273\345", "\261\261", "\261\273", "\317\267",
-  
+
   /* "缶", "衣", "初（ころもへん）", "米", "舌", "耒", */
   "\264\314", "\260\341", "\275\351\241\312\244\263\244\355\244\342\244\330\244\363\241\313", "\312\306", "\300\345", "\346\320",
-  
+
   /* "竹（たけかんむり）", "血", "虎（とらかんむり）", "肉", */
   "\303\335\241\312\244\277\244\261\244\253\244\363\244\340\244\352\241\313", "\267\354", "\270\327\241\312\244\310\244\351\244\253\244\363\244\340\244\352\241\313", "\306\371",
-  
+
   /* "西", "羽", "羊", "聿", "舟", "耳", */
   "\300\276", "\261\251", "\315\323", "\346\346", "\275\256", "\274\252",
-  
+
   /* "虫", "赤", "足／疋", "豕", "臣", */
   "\303\356", "\300\326", "\302\255\241\277\311\245", "\354\265", "\277\303",
-  
+
   /* "貝", "辛", "車", "見", "言", "酉", "走", "谷", */
   "\263\255", "\277\311", "\274\326", "\270\253", "\270\300", "\306\323", "\301\366", "\303\253",
-  
+
   /* "角", "釆", "麦", "豆", "身", "豸", "雨", "非", */
   "\263\321", "\310\320", "\307\376", "\306\246", "\277\310", "\354\270", "\261\253", "\310\363",
-  
+
   /* "金", "門", "隹", "頁", "音", "香", "革", "風", */
   "\266\342", "\314\347", "\360\262", "\312\307", "\262\273", "\271\341", "\263\327", "\311\367",
-  
+
   /* "首", "食", "韋", "面", "馬", "鬼", "髟", "高", */
   "\274\363", "\277\251", "\360\352", "\314\314", "\307\317", "\265\264", "\361\365", "\271\342",
-  
+
   /* "鬥", "骨", "魚", "亀", "鳥", "黒", "鹿", "鼻", */
   "\362\250", "\271\374", "\265\373", "\265\265", "\304\273", "\271\365", "\274\257", "\311\241",
 
@@ -129,8 +129,8 @@ char *bushu_schar[] =
 };
 
 static
-char *bushu_skey[] =  
-{ 
+char *bushu_skey[] =
+{
 /* "いち", "の", "うけばこ", "じゅう", "ふし", "かたな", */
 "\244\244\244\301", "\244\316", "\244\246\244\261\244\320\244\263", "\244\270\244\345\244\246", "\244\325\244\267", "\244\253\244\277\244\312",
 
@@ -263,7 +263,7 @@ forichiranContext p;
 
   return(0);
 }
-  
+
 static forichiranContext
 newForIchiranContext()
 {
@@ -298,7 +298,7 @@ uiContext d;
 #endif
     return(NG);
   }
-  
+
   if((fc = newForIchiranContext()) == NULL) {
     popCallback(d);
     return(NG);
@@ -439,7 +439,7 @@ uiContext d;
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     killmenu(d);
     return NothingChangedWithBeep(d);
-  }    
+  }
 
   return(vBushuMode(d, CANNA_MODE_BushuMode));
 }
@@ -449,9 +449,9 @@ uiContext d;
  * 部首モード入力の一覧表示                                                  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static bushuEveryTimeCatch pro((uiContext, int, mode_context));
+static int bushuEveryTimeCatch pro((uiContext, int, mode_context));
 
-static
+static int
 bushuEveryTimeCatch(d, retval, env)
      uiContext d;
      int retval;
@@ -463,9 +463,9 @@ bushuEveryTimeCatch(d, retval, env)
   return(retval);
 }
 
-static bushuExitCatch pro((uiContext, int, mode_context));
+static int bushuExitCatch pro((uiContext, int, mode_context));
 
-static
+static int
 bushuExitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -494,7 +494,7 @@ mode_context env;
 }
 
 #ifndef NO_EXTEND_MENU
-static
+static int
 bushuQuitCatch(d, retval, env)
      uiContext d;
      int retval;
@@ -521,7 +521,7 @@ bushuQuitCatch(d, retval, env)
  * 部首としての変換の一覧表示                                                *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 convBushuQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -551,6 +551,7 @@ mode_context env;
  */
 int ConvertAsBushu pro((uiContext));
 
+int
 ConvertAsBushu(d)
 uiContext	d;
 {
@@ -558,7 +559,7 @@ uiContext	d;
   int res;
 
   d->status = 0; /* clear status */
-  
+
   if (yc->henkanInhibition & CANNA_YOMI_INHIBIT_ASBUSHU ||
       yc->right || yc->left) {
     return NothingChangedWithBeep(d);
@@ -593,14 +594,14 @@ uiContext	d;
 /*
  * 読みを部首辞書から部首変換する
  */
-static
+static int
 bushuBgnBun(st, yomi, length)
 RkStat *st;
 wchar_t *yomi;
 int length;
 {
   int nbunsetsu;
-  extern defaultBushuContext;
+  extern int defaultBushuContext;
 
   /* 連文節変換を開始する *//* 辞書にある候補のみ取り出す */
   if ((defaultBushuContext == -1)) {
@@ -614,11 +615,11 @@ int length;
   if(nbunsetsu == -1) {
     if(errno == EPIPE)
       jrKanjiPipeError();
-    jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\313\274\272\307\324\244\267\244\336\244\267\244\277"; 
+    jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\313\274\272\307\324\244\267\244\336\244\267\244\277";
 	    /* かな漢字変換に失敗しました */
     return(NG);
   }
-  
+
   if(RkwGetStat(defaultBushuContext, st) == -1) {
     if(errno == EPIPE)
       jrKanjiPipeError();
@@ -642,7 +643,7 @@ int length;
  * ここに来る時はまだ getForIchiranContext が呼ばれていないものとする
  */
 
-static
+static int
 bushuHenkan(d, flag, ext, cur, quitfunc)
 uiContext	d;
 int             flag, cur;
@@ -654,8 +655,8 @@ int             (*quitfunc) pro((uiContext, int, mode_context));
   wchar_t *yomi, **allBushuCands;
   RkStat	st;
   int nelem, currentkouho, nbunsetsu, length, retval = 0;
-  extern defaultBushuContext;
-  
+  extern int defaultBushuContext;
+
   wchar_t **getIchiranList();
 
   if(flag) {
@@ -776,12 +777,12 @@ int             (*quitfunc) pro((uiContext, int, mode_context));
  *			BushuYomiHenkanから呼ばれた 1
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static
+static int
 makeBushuIchiranQuit(d, flag)
 uiContext	d;
 int              flag;
 {
-  extern defaultBushuContext;
+  extern int defaultBushuContext;
 
   /* 部首変換は学習しない。 */
   if(RkwEndBun(defaultBushuContext, 0) == -1) { /* 0:学習しない */
@@ -796,7 +797,7 @@ int              flag;
     /* kanji_status_return をクリアする */
     d->kanji_status_return->length  = 0;
     d->kanji_status_return->revLen  = 0;
-    
+
 /*
     d->status = QUIT_CALLBACK;
 */
@@ -804,7 +805,7 @@ int              flag;
     makeYomiReturnStruct(d);
   }
   GlineClear(d);
-  
+
   return(0);
 }
 

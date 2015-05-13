@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -84,11 +84,11 @@ initRomeStruct(d, flg)
      uiContext	d;
      int	flg;
 {
-  extern KanjiModeRec alpha_mode, empty_mode;
-  extern KanjiModeRec kzhr_mode, kzkt_mode, kzal_mode;
-  extern KanjiModeRec khkt_mode, khal_mode;
+  extern  KanjiModeRec alpha_mode, empty_mode;
+  extern  KanjiModeRec kzhr_mode, kzkt_mode, kzal_mode;
+  extern  KanjiModeRec khkt_mode, khal_mode;
   yomiContext yc;
-  extern defaultContext, defaultBushuContext;
+  extern int defaultContext, defaultBushuContext;
 
   bzero(d, sizeof(uiContextRec));
 
@@ -249,7 +249,7 @@ uiContext d;
   return 0;
 }
 
-/* 
+/*
 
   display と window の組や コンテクストID を実際のコンテクストに対応付
   けるためのハッシュテーブル
@@ -306,7 +306,7 @@ unsigned int data1, data2;
   return key;
 }
 
-/* 
+/*
 
   keyToContext -- Display と Window の組などからコンテクストを割り出す処理
 
@@ -317,7 +317,7 @@ unsigned int data1, data2;
 
   */
 
-uiContext 
+uiContext
 keyToContext(data1, data2)
 unsigned int data1, data2;
 {
@@ -335,7 +335,7 @@ unsigned int data1, data2;
 }
 
 
-/* internContext -- ハッシュテーブルに登録する 
+/* internContext -- ハッシュテーブルに登録する
 
   このとき、既に、display と window の組が存在するのであれば、
   その先につながっているコンテクストをフリーするので注意！！
@@ -498,7 +498,7 @@ KC_initialize(d, arg)
      char *arg;
      /* ARGSUSED */
 {
-  extern FirstTime;
+  extern int FirstTime;
 
   if (FirstTime) {
 #ifdef ENGINE_SWITCH
@@ -593,7 +593,7 @@ KC_initialize(d, arg)
                     /* デフォルト以外のモード用メモリの開放 */
                     freeExtra();
 
-                    
+
                     /* キーマップテーブルのクリア */
                     restoreDefaultKeymaps();
                   }
@@ -701,9 +701,9 @@ KC_finalize(d, arg)
      char *arg;
      /* ARGSUSED */
 {
-  extern FirstTime;
+  extern int FirstTime;
   int res;
-  
+
   /* ウォーニングメッセージの初期化 */
   initWarningMesg();
   if (arg) {
@@ -973,7 +973,7 @@ KC_setUFunc(d, arg)
      caddr_t arg;
      /* ARGSUSED */
 {
-  extern howToBehaveInCaseOfUndefKey;
+  extern int howToBehaveInCaseOfUndefKey;
 
   howToBehaveInCaseOfUndefKey = (int)(POINTERINT)arg;
   return 0;
@@ -986,7 +986,7 @@ KC_setModeInfoStyle(d, arg)
      /* ARGSUSED */
 {
   int	tmpval;
-  extern howToReturnModeInfo;
+  extern int howToReturnModeInfo;
 
   if ((tmpval = (int)(POINTERINT)arg) < 0 || tmpval > MaxModeInfoStyle)
     return(-1);
@@ -1057,7 +1057,7 @@ wcKanjiStatusWithValue *arg;
 
     WStrncpy(xxxx, arg->ks->echoStr, arg->ks->length);
     xxxx[arg->ks->length] = (wchar_t)0;
-    
+
     bzero(d->kanji_status_return, sizeof(wcKanjiStatus));
 
     d->nbytes = escapeToBasicStat(d, CANNA_FN_Quit);
@@ -1234,7 +1234,7 @@ KC_queryConnection(d, arg)
      unsigned char *arg;
      /* ARGSUSED */
 {
-  extern defaultContext;
+  extern int defaultContext;
 
   if (defaultContext != -1) {
     return 1;
@@ -1626,7 +1626,7 @@ KC_getContext(d, arg)
      int arg;
      /* ARGSUSED */
 {
-  extern defaultContext, defaultBushuContext;
+  extern int defaultContext, defaultBushuContext;
 
   switch (arg)
     {
@@ -1711,7 +1711,7 @@ int arg;
   }
   else {
     return -1;
-  }  
+  }
 }
 
 static
@@ -1996,7 +1996,7 @@ yomiContext yc;
     if (i < yc->kEndp) {
       k = i + 1;
       columns = 0;
-      tmp = 
+      tmp =
 	(WIsG0(yc->kana_buffer[i]) || WIsG2(yc->kana_buffer[i])) ? 1 : 2;
       if (i == yc->kRStartp && i != yc->kCurs) {
 	*kanap++ = '\'';
@@ -2047,14 +2047,14 @@ yomiContext yc;
 
     if (j < yc->rEndp) {
       k = j + 1;
-      columns = 
+      columns =
 	(WIsG0(yc->romaji_buffer[j]) || WIsG2(yc->romaji_buffer[j])) ? 1 : 2;
       if (j == yc->rStartp && j != yc->rCurs) {
 	*romap++ = '\'';
 	columns++;
       }
       while (!(yc->rAttr[k] & SENTOU)) {
-	columns += 
+	columns +=
 	  (WIsG0(yc->romaji_buffer[k]) || WIsG2(yc->romaji_buffer[k])) ? 1 : 2;
 	k++;
       }
@@ -2115,7 +2115,7 @@ uiContext d;
 char *arg;
 /* ARGSUSED */
 {
-  extern defaultContext;
+  extern int defaultContext;
   char *p;
 
   if (!arg) {

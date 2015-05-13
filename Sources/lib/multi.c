@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -57,7 +57,7 @@ showChar(c)
 int c;
 {
   static unsigned char Gkey[9];
-  static char *keyCharMap[] = {               
+  static char *keyCharMap[] = {
     "space",    "DEL",      "Nfer",     "Xfer",     "Up",
     "Left",     "Right",    "Down",     "Insert",   "Rollup",
     "Rolldown", "Home",     "HELP",     "KeyPad",   "S-nfer",
@@ -102,16 +102,17 @@ int c;
   return Gkey;
 }
 
+int
 UseOtherKeymap(d)
 uiContext d;
 {
   struct map *p;
   unsigned char showKey[10];
-  
+
   strcpy((char *)showKey, (char *)showChar(d->ch));
   p = mapFromHash((KanjiMode)d->current_mode->keytbl,
 		  d->ch, (struct map ***)0);
-  if (p == (struct map *)NULL) 
+  if (p == (struct map *)NULL)
     return NothingChangedWithBeep(d);
   p->mode->ftbl = (struct funccfunc *)d->current_mode;
   keyHistory = (unsigned char *)malloc(strlen((char *)showKey) + 1);
@@ -127,7 +128,7 @@ uiContext d;
   return NothingForGLine(d);
 }
 
-static
+static int
 _DoFuncSequence(d, keytbl, key) /* 複数の機能の割り当て */
 uiContext d;
 BYTE *keytbl;
@@ -151,7 +152,7 @@ BYTE key;
   if (p == (BYTE *)NULL) {
     return 0;
   }
-    
+
   total_res = 0;
   for(; *p ; p++) {
     /* ２回目以降に以下のデータが失われている場合があるので入れ直す。 */
@@ -239,12 +240,14 @@ BYTE key;
   return total_res;
 }
 
+int
 DoFuncSequence(d) /* 複数の機能の割り当て */
 uiContext d;
 {
   return _DoFuncSequence(d, (BYTE *)NULL, (BYTE)NULL);
 }
 
+int
 multiSequenceFunc(d, mode, whattodo, key, fnum)
 uiContext d;
 KanjiMode mode;
@@ -256,7 +259,7 @@ int fnum;
   unsigned char *p;
   struct map *m;
 
-  if (whattodo != KEY_CALL) 
+  if (whattodo != KEY_CALL)
     return 0;
 
   if (fnum == CANNA_FN_Kakutei || fnum == CANNA_FN_Quit || askQuitKey(key)) {

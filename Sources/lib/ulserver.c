@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -55,12 +55,12 @@ uiContext d;
 #ifndef STANDALONE
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
   killmenu(d);
 
   jrKanjiPipeError();
-  
+
   makeGLineMessageFromString(d, "\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\310\244\316\300\334\302\263\244\362\300\332\244\352\244\336\244\267\244\277");
             /* かな漢字変換サーバとの接続を切りました */
   currentModeInfo(d);
@@ -165,13 +165,13 @@ uiContext d;
   int retval = 0;
   wchar_t *w;
   extern KanjiModeRec yomi_mode;
-  extern defaultContext;
+  extern int defaultContext;
   yomiContext yc = (yomiContext)d->modec;
 
 #ifndef STANDALONE
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
 
   if ((yc = GetKanjiString(d, (wchar_t *)NULL, 0,
@@ -203,7 +203,7 @@ uiContext d;
 
   return(retval);
 }
-		 
+
 #ifndef STANDALONE
 static
 serverChangeDo(d, len)
@@ -214,7 +214,7 @@ int len;
   wchar_t newServerName[256];
   wchar_t w1[512];
   char tmpServName[256];
-  extern defaultContext;
+  extern int defaultContext;
   char *p;
 
   d->status = 0;

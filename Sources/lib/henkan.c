@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -108,7 +108,7 @@ mountError(dic)
 char *dic;
 {
   int mnterrlen;
-  if (DICERRORMESGLEN < 
+  if (DICERRORMESGLEN <
       (unsigned)(strlen(dic) + (mnterrlen = strlen(mountErrorMessage)) + 1)) {
     (void)strncpy(dictmp, dic, DICERRORMESGLEN - mnterrlen - 3/* ... */ - 1);
     (void)strcpy(dictmp + DICERRORMESGLEN - mnterrlen - 3 - 1, "...");
@@ -162,7 +162,7 @@ KanjiInit()
   int con;
   struct dicname *stp;
   extern struct dicname *kanjidicnames;
-  extern FirstTime;
+  extern int FirstTime;
   extern jrUserInfoStruct *uinfo;
   extern char *RkGetServerHost pro((void));
   int ret = -1;
@@ -333,7 +333,7 @@ defaultContext = RkwInitialize(ptr);
                       /* "システム辞書"; */
           }
           else if (stp->dictype == DIC_USER) {
-            /* ユーザ辞書のマウント */    
+            /* ユーザ辞書のマウント */
            kodmesg = "\303\261\270\354\305\320\317\277\315\321\274\255\275\361";
                      /* "単語登録用辞書"; */
           }
@@ -485,7 +485,7 @@ KanjiFin()
     dp = np;
   }
   kanjidicnames = (struct dicname *)0;
-	  
+
   defaultContext = -1;
   defaultBushuContext = -1;
   mountnottry = 1;
@@ -649,7 +649,7 @@ yomiContext yc;
 /*  jrKanjiError = "メモリが足りません"; */
   jrKanjiError = "malloc (doTanBubunMuhenkan) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277\241\243";
-                 /* malloc (doTanBubunMuhenkan) できませんでした */ 
+                 /* malloc (doTanBubunMuhenkan) できませんでした */
   for (i = 0 ; i < yc->nbunsetsu ; i++) {
     tan = newTanContext(yc->majorMode, CANNA_MODE_TankouhoMode);
     if (tan) {
@@ -806,7 +806,7 @@ yomiContext yc;
 /*  jrKanjiError = "メモリが足りません"; */
   jrKanjiError = "malloc (doTanBubunMuhenkan) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277\241\243";
-                 /* malloc (doTanBubunMuhenkan) できませんでした */ 
+                 /* malloc (doTanBubunMuhenkan) できませんでした */
   for (i = 0 ; i < yc->nbunsetsu ; i++) {
     tan = (tanContext)0;
     if (i == cur ||
@@ -1064,7 +1064,7 @@ uiContext d;
   /* 本来ここの処理をいれた方が効率が良いと思われるが、読みの一部を確
   定させて、しかもローマ字情報などもいれるのは面倒なのであとまわしとする */
   else {
-    
+
     /* 確定させる。
        次に trim する*/
   }
@@ -1226,7 +1226,7 @@ yomiContext yc;
   yc = mergeYomiContext(yc);
 #endif
   if (d && d->modec == (mode_context)tan) {
-    d->current_mode = yc->curMode; 
+    d->current_mode = yc->curMode;
     d->modec = (mode_context)yc;
   }
   freeTanContext(tan);
@@ -1331,7 +1331,7 @@ wchar_t *kanji;
 yomiContext yc;
 {
   unsigned int mode;
-  extern defaultContext;
+  extern int defaultContext;
 
 #if defined(DEBUG)
   if (iroha_debug) {
@@ -1349,7 +1349,7 @@ yomiContext yc;
 			  RK_MAKE_EISUUJI |
 			  RK_MAKE_KANSUUJI) << (2 * RK_XFERBITS);
   }
-  
+
   if (confirmContext(d, yc) < 0) {
     return NG;
   }
@@ -1367,7 +1367,7 @@ yomiContext yc;
       yc->nbunsetsu = 0;
       return kanakanError(d);
     }
-    
+
     if (len > 0 && (yc->nbunsetsu = RkwResize(yc->context, len)) == -1) {
       RkwEndBun(yc->context, 0);
       yc->nbunsetsu = 0;
@@ -1472,7 +1472,7 @@ uiContext	d;
   }
   else if (cannaconf.kakuteiIfEndOfBunsetsu) {
     d->nbytes = TanKakutei(d);
-    d->kanji_status_return->length 
+    d->kanji_status_return->length
      = d->kanji_status_return->revPos
        = d->kanji_status_return->revLen = 0;
     return d->nbytes;
@@ -1653,7 +1653,7 @@ uiContext d;
   TanHenkan -- 回数をチェックする以外は TanNextKouho とほぼ同じ
 
  */
-static TanHenkan pro((uiContext));
+static int TanHenkan pro((uiContext));
 
 static int
 TanHenkan(d)
@@ -1969,7 +1969,7 @@ uiContext	d;
     return 0;
   }
 
-  if (yc->generalFlags & 
+  if (yc->generalFlags &
       (CANNA_YOMI_CHIKUJI_MODE | CANNA_YOMI_BASE_CHIKUJI)) {
     /* 「心は逐次だった」のであれば、逐次モードに戻す */
     yc->generalFlags |= CANNA_YOMI_CHIKUJI_MODE;
@@ -2163,7 +2163,7 @@ uiContext d;
     yc->ys = yc->ye = yc->cStartp = yc->cRStartp = 0;
     clearHenkanContext(yc);
     yc->kEndp = yc->rEndp = yc->kCurs = yc->rCurs =
-      yc->cStartp = yc->cRStartp = 
+      yc->cStartp = yc->cRStartp =
 	yc->rStartp = yc->kRStartp = 0;
     yc->kAttr[0] = yc->rAttr[0] = SENTOU;
     yc->kana_buffer[0] = yc->romaji_buffer[0] = 0;
@@ -2171,7 +2171,7 @@ uiContext d;
     d->current_mode = yc->curMode = yc->myEmptyMode;
   }
   yc->minorMode = getBaseMode(yc);
-  
+
   /* 単候補状態から読みに戻るときには無条件にmarkを先頭に戻す */
   yc->nbunsetsu = 0;
   yc->cmark = yc->pmark = 0;
@@ -2199,7 +2199,7 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static TanKakuteiYomiInsert pro((uiContext));
+static int TanKakuteiYomiInsert pro((uiContext));
 
 static int
 TanKakuteiYomiInsert(d)
@@ -2234,8 +2234,8 @@ uiContext d;
 	return YomiInsert(d);
       }
       else { /* 逐次じゃない場合 */
-	extern nKouhoBunsetsu;
-    
+	extern int nKouhoBunsetsu;
+
 	yc->curbun = yc->nbunsetsu;
 	if (doTanBubunMuhenkan(d, yc) < 0) {
 	  makeGLineMessageFromString(d, jrKanjiError);
@@ -2318,7 +2318,7 @@ int n;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static TanExtendBunsetsu pro((uiContext));
+static int TanExtendBunsetsu pro((uiContext));
 
 static int
 TanExtendBunsetsu(d)
@@ -2351,7 +2351,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static TanShrinkBunsetsu pro((uiContext));
+static int TanShrinkBunsetsu pro((uiContext));
 
 static int
 TanShrinkBunsetsu(d)
@@ -2378,7 +2378,7 @@ uiContext	d;
     return TanMuhenkan(d);
   }
   makeKanjiStatusReturn(d, yc);
-  
+
   return(d->nbytes);
 }
 
@@ -2478,7 +2478,7 @@ uiContext	d;
 void
 jrKanjiPipeError()
 {
-  extern defaultContext, defaultBushuContext;
+  extern int defaultContext, defaultBushuContext;
 
   defaultContext = -1;
   defaultBushuContext = -1;
@@ -2500,9 +2500,9 @@ jrKanjiPipeError()
 
  */
 
-static TanBunsetsuMode pro((uiContext));
+static int TanBunsetsuMode pro((uiContext));
 
-static
+static int
 TanBunsetsuMode(d)
 uiContext	d;
 {
@@ -2666,9 +2666,9 @@ uiContext d;
   return 0;
 }
 
-static TbChooseChar pro((uiContext, int));
+static int TbChooseChar pro((uiContext, int));
 
-static
+static int
 TbChooseChar(d, head)
 uiContext d;
 int head;
@@ -2744,17 +2744,17 @@ int head;
   return retval;
 }
 
-static TanChooseHeadChar pro((uiContext));
-static TanChooseTailChar pro((uiContext));
+static int TanChooseHeadChar pro((uiContext));
+static int TanChooseTailChar pro((uiContext));
 
-static
+static int
 TanChooseHeadChar(d)
 uiContext d;
 {
   return TanChooseChar(d, 1);
 }
 
-static
+static int
 TanChooseTailChar(d)
 uiContext d;
 {

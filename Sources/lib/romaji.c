@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -247,7 +247,7 @@ wchar_t *insert;
   WStrncpy(buf, insert, insertlen);
   buf[insertlen] = '\0';
 
-  generalReplace(yc->kana_buffer, yc->kAttr, &yc->kRStartp, 
+  generalReplace(yc->kana_buffer, yc->kAttr, &yc->kRStartp,
 		 &yc->kCurs, &yc->kEndp,
 		 where, insert, insertlen, mask);
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
@@ -326,7 +326,7 @@ uiContext d;
   makeKanjiStatusReturn(d, yc);
 }
 
-extern ckverbose;
+extern int ckverbose;
 
 static struct RkRxDic *
 OpenRoma(table)
@@ -414,7 +414,7 @@ char *table;
 
       if (retval == (struct RkRxDic *)NULL) { /* added for Debian by ISHIKAWA Mutsumi <ishikawa@linux.or.jp> */
         extern jrUserInfoStruct *uinfo;
-	
+
         rdic[0] = '\0';
         if (uinfo && uinfo->topdir) {
 	  strcpy(rdic, uinfo->topdir);
@@ -425,7 +425,7 @@ char *table;
 	strcat(rdic, "/");
 	strcat(rdic, table);
 	retval = RkwOpenRoma(rdic);
-	
+
 	if (ckverbose) {
 	  if (retval != (struct RkRxDic *)NULL) {
 	    if (ckverbose == CANNA_FULL_VERBOSE) {
@@ -434,11 +434,11 @@ char *table;
 	  }
 	}
       }
-      
+
 #if 0 /* currently CANNASHAREDDIR is not defined */
       if (retval == (struct RkRxDic *)NULL) { /* added for Debian by ISHIKAWA Mutsumi <ishikawa@linux.or.jp> */
         extern jrUserInfoStruct *uinfo;
-	
+
         rdic[0] = '\0';
         if (uinfo && uinfo->topdir) {
 	  strcpy(rdic, uinfo->topdir);
@@ -449,7 +449,7 @@ char *table;
 	strcat(rdic, "/");
 	strcat(rdic, table);
 	retval = RkwOpenRoma(rdic);
-	
+
 	if (ckverbose) {
 	  if (retval != (struct RkRxDic *)NULL) {
 	    if (ckverbose == CANNA_FULL_VERBOSE) {
@@ -459,9 +459,9 @@ char *table;
 	}
       }
 #endif
-      
+
       if (retval == (struct RkRxDic *)NULL) { /* 全部オープンできない */
-	sprintf(rdic, 
+	sprintf(rdic,
 #ifdef CODED_MESSAGE
 		"ローマ字かな変換テーブル(%s)がオープンできません。",
 #else
@@ -499,7 +499,7 @@ RomkanaInit()
     if (uinfo->romkanatable) {
       if (RomkanaTable) {
         free(RomkanaTable);
-      }      
+      }
       RomkanaTable = malloc(strlen(uinfo->romkanatable) + 1);
       if (RomkanaTable) {
         strcpy(RomkanaTable, uinfo->romkanatable);
@@ -572,14 +572,14 @@ RomkanaInit()
     /* ローマ字かな変換テーブルのオープン */
     if (extrafunc1->keyword == EXTRA_FUNC_DEFMODE) {
       if (extrafunc1->u.modeptr->romaji_table) {
-        if (RomkanaTable && 
+        if (RomkanaTable &&
             !strcmp(RomkanaTable,
 		    (char *)extrafunc1->u.modeptr->romaji_table)) {
 	  extrafunc1->u.modeptr->romdic = romajidic;
 	  extrafunc1->u.modeptr->romdic_owner = 0;
         }
 #ifndef NOT_ENGLISH_TABLE
-        else if (EnglishTable && 
+        else if (EnglishTable &&
 	         !strcmp(EnglishTable,
 			 (char *)extrafunc1->u.modeptr->romaji_table)) {
 	  extrafunc1->u.modeptr->romdic = englishdic;
@@ -600,7 +600,7 @@ RomkanaInit()
 	    }
 	  }
 	  if (extrafunc2 == extrafunc1) {
-	    extrafunc1->u.modeptr->romdic = 
+	    extrafunc1->u.modeptr->romdic =
               OpenRoma(extrafunc1->u.modeptr->romaji_table);
 	    extrafunc1->u.modeptr->romdic_owner = 1;
 	  }
@@ -625,7 +625,7 @@ void
 RomkanaFin()
 {
   extern char *RomkanaTable, *EnglishTable;
-  extern nkeysup;
+  extern int nkeysup;
   int i;
 
   /* ローマ字かな変換テーブルのクローズ */
@@ -712,7 +712,7 @@ newYomiContext(buf, bufsize, allowedc, chmodinhibit,
 
 /*
 
-  GetKanjiString は漢字かな混じり文を取ってくる関数である。実際には 
+  GetKanjiString は漢字かな混じり文を取ってくる関数である。実際には
   empty モードを設定するだけでリターンする。最終的な結果が buf で指定
   されたバッファに格納され exitCallback が呼び出されることによって呼び
   出し側は漢字かな混じり文字を得ることができる。
@@ -887,10 +887,10 @@ yomiContext yc;
 {
   int r = yc->rStartp, k = yc->kRStartp, i;
 
-  do { 
+  do {
     yc->kRStartp--;
     yc->rStartp--;
-  } while ( yc->kRStartp >= 0 
+  } while ( yc->kRStartp >= 0
 	   && !(yc->kAttr[yc->kRStartp] & HENKANSUMI)
 	   );
   yc->kRStartp++;
@@ -978,7 +978,7 @@ static BYTE charKind[] = {
 
   */
 
-static makePhonoOnBuffer();
+static int makePhonoOnBuffer();
 
 void
 restoreChikujiIfBaseChikuji(yc)
@@ -1170,7 +1170,7 @@ wchar_t key;
 #endif
 {
   int i;
-  extern nkeysup;
+  extern int nkeysup;
 
   for (i = 0 ; i < nkeysup ; i++) {
     if (key == keysup[i].key) {
@@ -1192,7 +1192,7 @@ wchar_t key;
 
  */
 
-static
+static int
 makePhonoOnBuffer(d, yc, key, flag, english)
 uiContext d;
 yomiContext yc;
@@ -1254,7 +1254,7 @@ int flag, english;
     else {
       if (cond) { /* && keysup[sup - 1].ncand == 0 */
       /* defsymbol の新しい機能に対応した処理。入力文字自身を置き換える */
-	yc->kana_buffer[yc->kRStartp] = 
+	yc->kana_buffer[yc->kRStartp] =
 	  yc->romaji_buffer[yc->rStartp] = keysup[sup - 1].xkey;
       }
       if (yc->romdic != (struct RkRxDic *)NULL
@@ -1282,7 +1282,7 @@ int flag, english;
 	}
 	else {
 	  engflag = 0;
-	  if (RkwMapPhonogram(yc->romdic, kana_char, 1024, 
+	  if (RkwMapPhonogram(yc->romdic, kana_char, 1024,
 			      yc->kana_buffer + yc->kRStartp,
 			      yc->kCurs - yc->kRStartp,
 			      (wchar_t) key,
@@ -1468,7 +1468,7 @@ static
 dakuonP(ch)
 wchar_t ch;
 {
-  static dakuon_first_time = 1;
+  static int dakuon_first_time = 1;
   static wchar_t hv, fv;
 
   if (dakuon_first_time) { /* 日本語固有の処理 */
@@ -1515,7 +1515,7 @@ growDakuonP(ch)
 wchar_t ch;
 {
   /* 濁点が続く可能性がある文字の処理 (う、か〜と、は〜ほ) */
-  static dakuon_first_time = 1;
+  static int dakuon_first_time = 1;
   static wchar_t wu, wka, wto, wha, who;
 
   if (dakuon_first_time) { /* 日本語固有の処理 */
@@ -1553,7 +1553,7 @@ struct NormalizePair {
     const unsigned char* s1;
     const unsigned char* s2;
 };
- 
+
 const struct NormalizePair norm_pair[] = {
     { "\xa4\xab\xa1\xab", "\xa4\xac" }, /*{"か゛", "が"}*/
     { "\xa4\xad\xa1\xab", "\xa4\xae" }, /*{"き゛", "ぎ"}*/
@@ -1608,7 +1608,7 @@ const struct NormalizePair norm_pair[] = {
     { "\xa5\xb6\xa1\xab", "\xa5\xf4" }, /*{"ウ゛", "ヴ"}*/
     { NULL, NULL }
 };
- 
+
 static int isDakuon(const wchar_t* s)
 {
     const struct NormalizePair* p;
@@ -1760,7 +1760,7 @@ moveStrings(str, attr, start, end, distance)
 wchar_t *str;
 BYTE *attr;
 int  start, end, distance;
-{     
+{
   int i;
 
   if (distance > 0) { /* 後ろにずれれば */
@@ -1789,7 +1789,7 @@ yomiContext yc;
     BYTE *st = yc->kAttr;
     BYTE *cur = yc->kAttr + yc->kCurs;
     BYTE *p = cur;
-    
+
     for (--p ; p > st && !(*p & SENTOU) ;) {
       --p;
     }
@@ -1890,9 +1890,9 @@ uiContext d;
   return 0;
 }
 
-static YomiNop pro((uiContext));
+static int YomiNop pro((uiContext));
 
-static
+static int
 YomiNop(d)
 uiContext d;
 {
@@ -1903,9 +1903,9 @@ uiContext d;
   return 0;
 }
 
-static YomiForward pro((uiContext));
+static int YomiForward pro((uiContext));
 
-static
+static int
 YomiForward(d) /* カーソルの右移動 */
 uiContext d;
 {
@@ -1964,9 +1964,9 @@ uiContext d;
   return 0;
 }
 
-static YomiBeginningOfLine pro((uiContext));
+static int YomiBeginningOfLine pro((uiContext));
 
-static
+static int
 YomiBeginningOfLine(d) /* カーソルの左端移動 */
 uiContext d;
 {
@@ -1998,9 +1998,9 @@ uiContext d;
   return(0);
 }
 
-static YomiEndOfLine pro((uiContext));
+static int YomiEndOfLine pro((uiContext));
 
-static
+static int
 YomiEndOfLine(d) /* カーソルの右端移動 */
 uiContext d;
 {
@@ -2043,14 +2043,14 @@ uiContext d;
 
 /* RomajiFlushYomi(d, buffer, bufsize) ユーティリティ関数
  *
- * この関数は、(uiContext)d に蓄えられている読みの情報 
+ * この関数は、(uiContext)d に蓄えられている読みの情報
  * (yc->romaji_buffer と yc->kana_buffer)を用いて、buffer にその読みをフ
  * ラッシュした結果を返す関数である。フラッシュした結果の文字列の長さ
  * はこの関数の返り値として返される。
  *
  * buffer として NULL が指定された時は、バッファに対する格納は行わない
  *
- * 【作用】   
+ * 【作用】
  *
  *    読みを確定する
  *
@@ -2388,13 +2388,13 @@ typedef struct _autoDefRec {
     st から et の直前までの tanContext/yomiContext を確定させる
     s から e の範囲に確定結果が格納される。
     yc_return は yomiContext を一つ残して欲しい場合に、残った yomiContext
-    を格納して返すためのアドレス。yc_return がヌルなら、何も残さず free 
+    を格納して返すためのアドレス。yc_return がヌルなら、何も残さず free
     する。
     et->left は呼び出したところで 0 にすること。
 
     確定した文字の長さが返される。
 
-    この関数を呼んだら d->modec が壊れているので入れ直さなければならない 
+    この関数を呼んだら d->modec が壊れているので入れ直さなければならない
 
  */
 
@@ -2492,7 +2492,7 @@ yomiContext *yc_return;
     if (s < e) {
       *s++ = (wchar_t)'\0';
     }
-    
+
     if (yomiInfoLevel > 1) {
       for (tan = st ; tan != et ; tan = tan->right) {
 	if (tan->id == TAN_CONTEXT) {
@@ -2732,10 +2732,10 @@ clearChikujiContext(yc)
 
 /* RomajiClearYomi(d) ユーティリティ関数
  *
- * この関数は、(uiContext)d に蓄えられている読みの情報 
+ * この関数は、(uiContext)d に蓄えられている読みの情報
  * をクリアする。
  *
- * 【作用】   
+ * 【作用】
  *
  *    読みをクリアする。
  *
@@ -2791,7 +2791,7 @@ int retval;
  *
  * この関数は、(uiContext)d に読みの情報をストアする。
  *
- * 【作用】   
+ * 【作用】
  *
  *    読みを格納する。
  *
@@ -2889,7 +2889,7 @@ uiContext d;
       yc->kRStartp--;
     /* これ必ず真では? */
     prevflag = (yc->kAttr[yc->kRStartp] & SENTOU);
-    kanaReplace(yc->kRStartp - yc->kCurs, 
+    kanaReplace(yc->kRStartp - yc->kCurs,
 		yc->romaji_buffer + yc->rStartp,
 		yc->rCurs - yc->rStartp,
 		0);
@@ -2905,13 +2905,13 @@ uiContext d;
   else {
     yc->generalFlags &= ~CANNA_YOMI_BREAK_ROMAN;
     if ( yc->kAttr[yc->kCurs - howManyDelete] & HENKANSUMI ) {
-      if (yc->kAttr[yc->kCurs - howManyDelete] & SENTOU) { 
+      if (yc->kAttr[yc->kCurs - howManyDelete] & SENTOU) {
 	/* ローマ字かな変換の先頭だったら */
 	if (yc->kAttr[yc->kCurs] & SENTOU) {
 	  int n;
-	
+
 	  /* 先頭だったらローマ字も先頭マークが立っているところまで戻す */
-	
+
 	  for (n = 1 ; yc->rCurs > 0 && !(yc->rAttr[--yc->rCurs] & SENTOU) ;) {
 	    n++;
 	  }
@@ -2948,7 +2948,7 @@ uiContext d;
   return(0);
 }
 
-static YomiDeletePrevious pro((uiContext));
+static int YomiDeletePrevious pro((uiContext));
 
 static int
 YomiDeletePrevious(d)
@@ -2987,7 +2987,7 @@ uiContext d;
   return 0;
 }
 
-static YomiDeleteNext pro((uiContext));
+static int YomiDeleteNext pro((uiContext));
 
 static int
 YomiDeleteNext(d)/* カーソル上の文字の削除 */
@@ -3062,7 +3062,7 @@ uiContext d;
   return 0;
 }
 
-static YomiKillToEndOfLine pro((uiContext));
+static int YomiKillToEndOfLine pro((uiContext));
 
 static int
 YomiKillToEndOfLine(d)  /* カーソルから右のすべての文字の削除 */
@@ -3094,7 +3094,7 @@ uiContext d;
   return 0;
 }
 
-static YomiQuit pro((uiContext));
+static int YomiQuit pro((uiContext));
 
 static int
 YomiQuit(d)/* 読みの取り消し */
@@ -3131,7 +3131,7 @@ newCoreContext()
   return cc;
 }
 
-static simplePopCallback pro((uiContext, int, mode_context));
+static int simplePopCallback pro((uiContext, int, mode_context));
 
 static
 simplePopCallback(d, retval, env)
@@ -3181,9 +3181,9 @@ uiContext d;
 
  */
 
-static exitYomiQuotedInsert pro((uiContext, int, mode_context));
+static int exitYomiQuotedInsert pro((uiContext, int, mode_context));
 
-static
+static int
 exitYomiQuotedInsert(d, retval, env)
 uiContext d;
 int retval;
@@ -3194,7 +3194,7 @@ mode_context env;
   return retval;
 }
 
-static
+static int
 YomiInsertQuoted(d)
 uiContext d;
 {
@@ -3226,9 +3226,9 @@ uiContext d;
   }
 }
 
-static yomiquotedfunc pro((uiContext, KanjiMode, int, int, int));
+static int yomiquotedfunc pro((uiContext, KanjiMode, int, int, int));
 
-static
+static int
 yomiquotedfunc(d, mode, whattodo, key, fnum)
      uiContext d;
      KanjiMode mode;
@@ -3322,7 +3322,7 @@ mapAsKuten(d)
   char tmpbuf[4];
   wchar_t *hexbuf;
   wchar_t buf[2];
-  static allowTwoByte = 1;
+  static int allowTwoByte = 1;
 
   tmpbuf[0] = tmpbuf[1] = tmpbuf[2] = tmpbuf[3] = '\0';
 
@@ -3415,7 +3415,7 @@ mapAsHex(d)
   char tmpbuf[8], *a;
   wchar_t *hexbuf;
   wchar_t buf[2];
-  static allowTwoByte = 1;
+  static int allowTwoByte = 1;
   extern struct CannaConfig cannaconf;
 
   if (yc->kCurs < yc->cmark) {
@@ -3530,7 +3530,7 @@ mapAsHex(d)
   return 1;
 }
 
-/* ConvertAsHex -- １６進とみなしての変換 
+/* ConvertAsHex -- １６進とみなしての変換
 
   ローマ字入力されて反転表示されている文字列を１６進で表示されているコードと
   みなして変換する。
@@ -3539,9 +3539,9 @@ mapAsHex(d)
 
   */
 
-static ConvertAsHex pro((uiContext));
+static int ConvertAsHex pro((uiContext));
 
-static
+static int
 ConvertAsHex(d)
 uiContext d;
 {
@@ -3577,7 +3577,7 @@ uiContext d;
 
   これは内部的に使用するためのルーチンである。d->romaji_buffer に含ま
   れる文字列を１６進で表された漢字コードであるとみなして、そのコードに
-  よって表現される漢字文字に変換する。変換した文字列は buffer_return 
+  よって表現される漢字文字に変換する。変換した文字列は buffer_return
   に格納する。リターン値はエラーがなければ buffer_return に格納した文
   字列の長さである(通常は２である)。エラーが発生している時は−１が格納
   される。
@@ -3592,14 +3592,14 @@ uiContext d;
 
 int
 cvtAsHex(d, buf, hexbuf, hexlen)
-uiContext d;     
+uiContext d;
 wchar_t *buf, *hexbuf;
 int hexlen;
 {
   int i;
   char tmpbuf[5], *a, *b;
   wchar_t rch;
-  
+
   if (hexlen != 4) { /* 入力された文字列の長さが４文字でないのであれば変換
 			してあげない */
     d->kanji_status_return->length = -1;
@@ -3671,7 +3671,7 @@ replaceSup(ind, n)
 int ind, n;
 {
   int i, group;
-  extern nkeysup;
+  extern int nkeysup;
 
   group = keysup[ind].groupid;
   for (i = 0 ; i < nkeysup ; i++) {
@@ -3681,9 +3681,9 @@ int ind, n;
   }
 }
 
-static everySupkey pro((uiContext, int, mode_context));
+static int everySupkey pro((uiContext, int, mode_context));
 
-static
+static int
 everySupkey(d, retval, env)
 uiContext d;
 int retval;
@@ -3702,9 +3702,9 @@ mode_context env;
   return retval;
 }
 
-static exitSupkey pro((uiContext, int, mode_context));
+static int exitSupkey pro((uiContext, int, mode_context));
 
-static
+static int
 exitSupkey(d, retval, env)
 uiContext d;
 int retval;
@@ -3746,9 +3746,9 @@ mode_context env;
 #endif
 }
 
-static quitSupkey pro((uiContext, int, mode_context));
+static int quitSupkey pro((uiContext, int, mode_context));
 
-static
+static int
 quitSupkey(d, retval, env)
 uiContext d;
 int retval;
@@ -3768,7 +3768,7 @@ int ind;
 {
   int retval;
   ichiranContext ic;
-  extern nkeysup;
+  extern int nkeysup;
 
   yc->cursup = 0;
   retval = selectOne(d, keysup[ind].cand, &(yc->cursup), keysup[ind].ncand,
@@ -3873,7 +3873,7 @@ yomiContext yc;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static YomiHenkan pro((uiContext));
+static int YomiHenkan pro((uiContext));
 
 static int
 YomiHenkan(d)
@@ -3943,7 +3943,7 @@ uiContext	d;
   return 0;
 }
 
-static YomiHenkanNaive pro((uiContext));
+static int YomiHenkanNaive pro((uiContext));
 
 static int
 YomiHenkanNaive(d)
@@ -3960,7 +3960,7 @@ uiContext	d;
   }
 }
 
-static YomiHenkanOrNothing pro((uiContext));
+static int YomiHenkanOrNothing pro((uiContext));
 
 static int
 YomiHenkanOrNothing(d)
@@ -3979,13 +3979,13 @@ uiContext	d;
 
 /* ベース文字の切り替え */
 
-extern EmptyBaseHira pro((uiContext)), EmptyBaseKata pro((uiContext)); 
-extern EmptyBaseEisu pro((uiContext));
-extern EmptyBaseZen pro((uiContext)), EmptyBaseHan pro((uiContext));
+extern int EmptyBaseHira pro((uiContext)), EmptyBaseKata pro((uiContext));
+extern int EmptyBaseEisu pro((uiContext));
+extern int EmptyBaseZen pro((uiContext)), EmptyBaseHan pro((uiContext));
 
-static YomiBaseHira pro((uiContext));
+static int YomiBaseHira pro((uiContext));
 
-static
+static int
 YomiBaseHira(d)
 uiContext d;
 {
@@ -3995,9 +3995,9 @@ uiContext d;
   return 0;
 }
 
-static YomiBaseKata pro((uiContext));
+static int YomiBaseKata pro((uiContext));
 
-static
+static int
 YomiBaseKata(d)
 uiContext d;
 {
@@ -4007,9 +4007,9 @@ uiContext d;
   return 0;
 }
 
-static YomiBaseEisu pro((uiContext));
+static int YomiBaseEisu pro((uiContext));
 
-static
+static int
 YomiBaseEisu(d)
 uiContext d;
 {
@@ -4019,9 +4019,9 @@ uiContext d;
   return 0;
 }
 
-static YomiBaseZen pro((uiContext));
+static int YomiBaseZen pro((uiContext));
 
-static
+static int
 YomiBaseZen(d)
 uiContext d;
 {
@@ -4031,9 +4031,9 @@ uiContext d;
   return 0;
 }
 
-static YomiBaseHan pro((uiContext));
+static int YomiBaseHan pro((uiContext));
 
-static
+static int
 YomiBaseHan(d)
 uiContext d;
 {
@@ -4043,9 +4043,9 @@ uiContext d;
   return 0;
 }
 
-static YomiBaseKana pro((uiContext));
+static int YomiBaseKana pro((uiContext));
 
-static
+static int
 YomiBaseKana(d)
 uiContext d;
 {
@@ -4055,9 +4055,9 @@ uiContext d;
   return 0;
 }
 
-static YomiBaseKakutei pro((uiContext));
+static int YomiBaseKakutei pro((uiContext));
 
-static
+static int
 YomiBaseKakutei(d)
 uiContext d;
 {
@@ -4067,9 +4067,9 @@ uiContext d;
   return 0;
 }
 
-static YomiBaseHenkan pro((uiContext));
+static int YomiBaseHenkan pro((uiContext));
 
-static
+static int
 YomiBaseHenkan(d)
 uiContext d;
 {
@@ -4081,6 +4081,7 @@ uiContext d;
 
 int YomiBaseHiraKataToggle pro((uiContext));
 
+int
 YomiBaseHiraKataToggle(d)
 uiContext d;
 {
@@ -4100,6 +4101,7 @@ uiContext d;
 
 int YomiBaseZenHanToggle pro((uiContext));
 
+int
 YomiBaseZenHanToggle(d)
 uiContext d;
 {
@@ -4119,6 +4121,7 @@ uiContext d;
 
 int YomiBaseRotateForw pro((uiContext));
 
+int
 YomiBaseRotateForw(d)
 uiContext d;
 {
@@ -4150,6 +4153,7 @@ uiContext d;
 
 int YomiBaseRotateBack pro((uiContext));
 
+int
 YomiBaseRotateBack(d)
 uiContext d;
 {
@@ -4180,6 +4184,7 @@ uiContext d;
 
 int YomiBaseKanaEisuToggle pro((uiContext));
 
+int
 YomiBaseKanaEisuToggle(d)
 uiContext d;
 {
@@ -4199,6 +4204,7 @@ uiContext d;
 
 int YomiBaseKakuteiHenkanToggle pro((uiContext));
 
+int
 YomiBaseKakuteiHenkanToggle(d)
 uiContext d;
 {
@@ -4218,6 +4224,7 @@ uiContext d;
 
 int YomiModeBackup pro((uiContext));
 
+int
 YomiModeBackup(d)
 uiContext d;
 {
@@ -4525,7 +4532,7 @@ chikujiEndBun(d)
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
     (void)free((char *)ycsv);
   }
-#endif 
+#endif
   return(ret);
 }
 
@@ -4577,7 +4584,7 @@ uiContext d;
   int rc, rp, i;
 #endif
   yomiContext yc = (yomiContext)d->modec;
-  
+
 #if defined(DEBUG)
   if (iroha_debug) {
     fprintf(stderr,"yc->kCurs=%d yc->cmark=%d\n", yc->kCurs,yc->cmark);
@@ -4723,7 +4730,7 @@ int fnum;
 
       WStrncpy(roma, yc->kana_buffer + yc->kRStartp, len);
       roma[len++] = (wchar_t)key;
-    
+
       prevrule = yc->last_rule;
       if ((RkwMapPhonogram(yc->romdic, kana, 128, roma, len, (wchar_t)key,
 			   flag | RK_SOKON, &n, &m, &t, &prevrule) &&
@@ -4986,63 +4993,63 @@ int k, r;
   yc->rStartp = yc->rCurs;
 }
 
-static YomiNextJishu pro((uiContext));
+static int YomiNextJishu pro((uiContext));
 
-static
+static int
 YomiNextJishu(d) /* 読みモードからの順回り文字種変換 */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_Next);
 }
 
-static YomiPreviousJishu pro((uiContext));
+static int YomiPreviousJishu pro((uiContext));
 
-static
+static int
 YomiPreviousJishu(d) /* 読みモードからの逆回り文字種変換 */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_Prev);
 }
 
-static YomiKanaRotate pro((uiContext));
+static int YomiKanaRotate pro((uiContext));
 
-static
+static int
 YomiKanaRotate(d) /* 読みモードからの順回りかな文字種変換 */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_KanaRotate);
 }
 
-static YomiRomajiRotate pro((uiContext));
+static int YomiRomajiRotate pro((uiContext));
 
-static
+static int
 YomiRomajiRotate(d) /* 読みモードからの順回り英数文字種変換 */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_RomajiRotate);
 }
 
-static YomiCaseRotateForward pro((uiContext));
+static int YomiCaseRotateForward pro((uiContext));
 
-static
+static int
 YomiCaseRotateForward(d) /* 読みモードからの順回り英数文字種変換 */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_CaseRotate);
 }
 
-static YomiZenkaku pro((uiContext));
+static int YomiZenkaku pro((uiContext));
 
-static
+static int
 YomiZenkaku(d) /* 読みモードからの全角変換 */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_Zenkaku);
 }
 
-static YomiHankaku pro((uiContext));
+static int YomiHankaku pro((uiContext));
 
-static
+static int
 YomiHankaku(d) /* 読みモードからの半角変換 */
 uiContext d;
 {
@@ -5052,53 +5059,53 @@ uiContext d;
     return YomiJishu(d, CANNA_FN_Hankaku);
 }
 
-static YomiHiraganaJishu pro((uiContext));
+static int YomiHiraganaJishu pro((uiContext));
 
-static
+static int
 YomiHiraganaJishu(d) /* 読みモードから字種モードのひらがなへ */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_Hiragana);
 }
 
-static YomiKatakanaJishu pro((uiContext));
+static int YomiKatakanaJishu pro((uiContext));
 
-static
+static int
 YomiKatakanaJishu(d) /* 読みモードから字種モードのカタカナへ */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_Katakana);
 }
 
-static YomiRomajiJishu pro((uiContext));
+static int YomiRomajiJishu pro((uiContext));
 
-static
+static int
 YomiRomajiJishu(d) /* 読みモードから字種モードのローマ字へ */
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_Romaji);
 }
 
-static YomiToLower pro((uiContext));
-static
+static int YomiToLower pro((uiContext));
+static int
 YomiToLower(d)
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_ToLower);
 }
 
-static YomiToUpper pro((uiContext));
+static int YomiToUpper pro((uiContext));
 
-static
+static int
 YomiToUpper(d)
 uiContext d;
 {
   return YomiJishu(d, CANNA_FN_ToUpper);
 }
 
-static YomiCapitalize pro((uiContext));
+static int YomiCapitalize pro((uiContext));
 
-static
+static int
 YomiCapitalize(d)
 uiContext d;
 {

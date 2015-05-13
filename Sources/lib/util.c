@@ -152,7 +152,7 @@ uiContext d;
  * 文字列からコラム幅を取っ手来る関数
  */
 
-static
+static int
 colwidth(s, len)
 wchar_t *s;
 int     len;
@@ -184,6 +184,7 @@ int     len;
 
  */
 
+int
 checkGLineLen(d)
 uiContext d;
 {
@@ -203,6 +204,7 @@ uiContext d;
 
  */
 
+int
 NothingChanged(d)
 uiContext d;
 {
@@ -213,6 +215,7 @@ uiContext d;
   return 0;
 }
 
+int
 NothingForGLine(d)
 uiContext d;
 {
@@ -260,7 +263,7 @@ unsigned char ch;
 }
 #endif /* SOMEONE_USE_THIS */
 
-extern extractJishuString pro((yomiContext, wchar_t *,  wchar_t *,
+extern int extractJishuString pro((yomiContext, wchar_t *,  wchar_t *,
                                wchar_t **,  wchar_t **));
 
 /*
@@ -789,7 +792,7 @@ showRomeStruct(dpy, win)
 unsigned int dpy, win;
 {
   uiContext d, keyToContext();
-  extern defaultContext;
+  extern int defaultContext;
   static int n = 0;
   int i;
   char buf[1024];
@@ -1539,7 +1542,7 @@ confirmContext(d, yc)
 uiContext d;
 yomiContext yc;
 {
-  extern defaultContext;
+  extern int defaultContext;
 
   if (yc->context < 0) {
     if (d->contextCache >= 0) {
@@ -1572,7 +1575,7 @@ abandonContext(d, yc)
 uiContext d;
 yomiContext yc;
 {
-  extern defaultContext;
+  extern int defaultContext;
 
   if (yc->context >= 0) {
     if (d->contextCache >= 0) {
@@ -1615,9 +1618,9 @@ uiContext d;
   return 0;
 }
 
-static wait_anykey_func pro((uiContext, KanjiMode, int, int, int));
+static int wait_anykey_func pro((uiContext, KanjiMode, int, int, int));
 
-static
+static int
 wait_anykey_func(d, mode, whattodo, key, fnum)
 uiContext d;
 KanjiMode mode;

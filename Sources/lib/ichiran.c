@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -48,7 +48,7 @@ static void getIchiranNextKouhoretsu();
 
 
 #define ICHISIZE 9
-static char *sbango = 
+static char *sbango =
   "\243\261\241\241\243\262\241\241\243\263\241\241\243\264\241\241\243\265"
   "\241\241\243\266\241\241\243\267\241\241\243\270\241\241\243\271\241\241"
   "\243\341\241\241\243\342\241\241\243\343\241\241\243\344\241\241\243\345"
@@ -65,7 +65,7 @@ static char  *sbango2[] = {
 
 static wchar_t *bango2[ICHISIZE];
 
-static char *skuuhaku = "\241\241"; 
+static char *skuuhaku = "\241\241";
 			/* 　 */
 static wchar_t *kuuhaku;
 
@@ -85,7 +85,7 @@ initIchiran()
         sprintf(buf, "%s%c", sbango2[i], (char)cannaconf.indexSeparator);
       else
         sprintf(buf, "%s%c", sbango2[i], (char)DEFAULTINDEXSEPARATOR);
-      
+
       bango2[i] = WString(buf);
     }
 
@@ -159,9 +159,9 @@ uiContext d;
   d->kanji_status_return->info |= KanjiGLineInfo;
   d->kanji_status_return->gline.line =
     ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].gldata;
-  d->kanji_status_return->gline.length = 
+  d->kanji_status_return->gline.length =
     ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].gllen;
-  d->kanji_status_return->gline.revPos = 
+  d->kanji_status_return->gline.revPos =
     ic->kouhoifp[*(ic->curIkouho)].khpoint;
   if (cannaconf.ReverseWord && ic->inhibit & NUMBERING) {
     p = ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].gldata +
@@ -179,7 +179,7 @@ uiContext d;
   if (cannaconf.kCount && d->kanji_status_return->gline.length) {
     register int a = ic->nIkouho, b = DEC_COLUMNS(cur) + DEC_COLUMNS(a) + 2;
     sprintf(str, " %d/%d", cur, a);
-    CANNA_mbstowcs(d->kanji_status_return->gline.line + 
+    CANNA_mbstowcs(d->kanji_status_return->gline.line +
 	     d->kanji_status_return->gline.length - b, str, b + 1);
     /* 以下はいらないのでは？ */
     d->kanji_status_return->gline.length
@@ -187,9 +187,9 @@ uiContext d;
   }
 }
 
-static ichiranEveryTimeCatch pro((uiContext, int, mode_context));
+static int ichiranEveryTimeCatch pro((uiContext, int, mode_context));
 
-static
+static int
 ichiranEveryTimeCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -205,9 +205,9 @@ mode_context env;
   return(retval);
 }
 
-static ichiranExitCatch pro((uiContext, int, mode_context));
+static int ichiranExitCatch pro((uiContext, int, mode_context));
 
-static
+static int
 ichiranExitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -224,7 +224,7 @@ mode_context env;
     }
     jrKanjiError = "\245\253\245\354\245\363\245\310\270\365\312\344\244\362"
 	"\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307"
-	"\244\267\244\277";             
+	"\244\267\244\277";
       /* カレント候補を取り出せませんでした */
     /* カレント候補が取り出せないくらいでは何ともないぞ */
   }
@@ -236,7 +236,7 @@ mode_context env;
   makeIchiranKanjiStatusReturn(d, env, yc);
 
   freeGetIchiranList(yc->allkouho);
-  
+
   popCallback(d);
 
   if (!cannaconf.stayAfterValidate && !d->more.todo) {
@@ -249,9 +249,9 @@ mode_context env;
   return(retval);
 }
 
-static ichiranQuitCatch pro((uiContext, int, mode_context));
+static int ichiranQuitCatch pro((uiContext, int, mode_context));
 
-static
+static int
 ichiranQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -268,7 +268,7 @@ mode_context env;
     }
     jrKanjiError = "\245\253\245\354\245\363\245\310\270\365\312\344\244\362"
 	"\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307"
-	"\244\267\244\277";               
+	"\244\267\244\277";
            /* カレント候補を取り出せませんでした */
     /* カレント候補が取り出せないくらいでは何ともないぞ */
   }
@@ -469,7 +469,7 @@ canna_callback_t everyTimeCallback, exitCallback, quitCallback, auxCallback;
                                           /* できませんでした */
     return(NG);
   }
-  
+
   if((ic = newIchiranContext()) == (ichiranContext)NULL) {
     popCallback(d);
     return(NG);
@@ -533,7 +533,7 @@ ichiranContext p;
   p->glineifp = (glineinfo *)0;
   p->flags = (unsigned char)0;
 }
-  
+
 /*
  * 候補一覧のデータ構造体を作るための領域を確保する
  */
@@ -615,7 +615,7 @@ int currentkouho;
   }
 
   /* glineinfoとkouhoinfoを作る */
-  /* 
+  /*
    ＊glineinfo＊
       int glkosu   : int glhead     : int gllen  : wchar_t *gldata
       １行の候補数 : 先頭候補が     : １行の長さ : 候補一覧行の文字列
@@ -835,14 +835,14 @@ uiContext d;
                      CANNA_LIST_Quit, (wchar_t **)0, 0, (int *)0);
     }
   }
-  
+
   if (ic->flags & ICHIRAN_NEXT_EXIT) {
-    ichiranFin(d); 
+    ichiranFin(d);
     d->status = EXIT_CALLBACK;
   }
   else {
     *(ic->curIkouho) = ic->nIkouho - 1; /* ひらがな候補にする */
-    ichiranFin(d); 
+    ichiranFin(d);
     d->status = QUIT_CALLBACK;
   }
   return(retval);
@@ -935,7 +935,7 @@ uiContext d;
   if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
       d->list_func) {
     int res;
-    
+
     res = (*d->list_func)
       (d->client_data, CANNA_LIST_Forward, (wchar_t **)0, 0, (int *)0);
     if (res) {
@@ -1033,9 +1033,9 @@ uiContext d;
    IchiranConvert() will be called when `convert' key is pressed
  */
 
-static IchiranConvert pro((uiContext));
+static int IchiranConvert pro((uiContext));
 
-static
+static int
 IchiranConvert(d)
 uiContext d;
 {
@@ -1108,7 +1108,7 @@ uiContext d;
   int curretsu, nretsu;
 
   /* カレント候補行のなかで何番目の候補かなのかを得る */
-  kindex = *(ic->curIkouho) - 
+  kindex = *(ic->curIkouho) -
     ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead;
   /* 前候補列を得る */
   curretsu = ic->kouhoifp[*(ic->curIkouho)].khretsu;
@@ -1124,7 +1124,7 @@ uiContext d;
   curretsu -= 1;
   /* kindex がカレント候補列の候補数より大きくなってしまったら
      最右候補をカレント候補とする */
-  if(ic->glineifp[curretsu].glkosu <= kindex) 
+  if(ic->glineifp[curretsu].glkosu <= kindex)
     kindex = ic->glineifp[curretsu].glkosu - 1;
   /* 前候補列の同じ番号に移動する */
   *(ic->curIkouho) = kindex + ic->glineifp[curretsu].glhead;
@@ -1175,9 +1175,9 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static IchiranNextPage pro((uiContext));
+static int IchiranNextPage pro((uiContext));
 
-static
+static int
 IchiranNextPage(d)
 uiContext d;
 {
@@ -1206,9 +1206,9 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static IchiranPreviousPage pro((uiContext));
+static int IchiranPreviousPage pro((uiContext));
 
-static
+static int
 IchiranPreviousPage(d)
 uiContext d;
 {
@@ -1248,7 +1248,7 @@ uiContext d;
   int curretsu, nretsu;
 
   /* カレント候補行のなかで何番目の候補かなのかを得る */
-  kindex = *(ic->curIkouho) - 
+  kindex = *(ic->curIkouho) -
     ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead;
   /* 次候補列を得る */
   curretsu = ic->kouhoifp[*(ic->curIkouho)].khretsu;
@@ -1264,7 +1264,7 @@ uiContext d;
   }
   /* kindex がカレント候補列の候補数より大きくなってしまったら
      最右候補をカレント候補とする */
-  if(ic->glineifp[curretsu].glkosu <= kindex) 
+  if(ic->glineifp[curretsu].glkosu <= kindex)
     kindex = ic->glineifp[curretsu].glkosu - 1;
   /* 前候補列の同じ番号に移動する */
   *(ic->curIkouho) = kindex + ic->glineifp[curretsu].glhead;
@@ -1301,7 +1301,7 @@ uiContext d;
   }
 
   /* 候補列の先頭候補をカレント候補にする */
-  *(ic->curIkouho) = 
+  *(ic->curIkouho) =
     ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead;
 
   makeGlineStatus(d);
@@ -1340,7 +1340,7 @@ uiContext d;
   }
 
   /* 候補列の最右候補をカレント候補にする */
-  *(ic->curIkouho) = 
+  *(ic->curIkouho) =
     ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead
     + ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glkosu - 1;
 
@@ -1358,9 +1358,9 @@ uiContext d;
  */
 
 static int getIchiranBangoKouho pro((uiContext));
-static IchiranBangoKouho pro((uiContext));
+static int IchiranBangoKouho pro((uiContext));
 
-static
+static int
 IchiranBangoKouho(d)
 uiContext d;
 {
@@ -1456,7 +1456,7 @@ uiContext d;
       num = (int)(d->ch & 0x0f);
     else if((0x61 <= d->ch) && (d->ch <= 0x66))
       num = (int)(d->ch - 0x57);
-  } 
+  }
   else {
     /* 入力された番号は正しくありません */
     return(NG);
@@ -1474,7 +1474,7 @@ uiContext d;
     else {
       /* 入力された番号は正しくありません */
       return(NG);
-    }  
+    }
   } else {
     /* 候補列の先頭候補を得る */
     kindex = ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead;
@@ -1491,9 +1491,9 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static IchiranKakutei pro((uiContext));
+static int IchiranKakutei pro((uiContext));
 
-static
+static int
 IchiranKakutei(d)
 uiContext d;
 {
@@ -1517,7 +1517,7 @@ uiContext d;
   WStrcpy(d->buffer_return, kakuteiStrings);
 
   if (ic->flags & ICHIRAN_STAY_LONG) {
-    ic->flags |= ICHIRAN_NEXT_EXIT; 
+    ic->flags |= ICHIRAN_NEXT_EXIT;
     d->status = EVERYTIME_CALLBACK;
   }
   else {
@@ -1539,7 +1539,7 @@ void
 ichiranFin(d)
 uiContext d;
 {
-  ichiranContext ic = (ichiranContext)d->modec; 
+  ichiranContext ic = (ichiranContext)d->modec;
 
   /* 候補一覧表示行用のエリアをフリーする */
   freeIchiranBuf(ic);
@@ -1550,153 +1550,153 @@ uiContext d;
   GlineClear(d);
 }
 
-static IchiranExtendBunsetsu pro((uiContext));
+static int IchiranExtendBunsetsu pro((uiContext));
 
-static
+static int
 IchiranExtendBunsetsu(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_Extend);
 }
 
-static IchiranShrinkBunsetsu pro((uiContext));
+static int IchiranShrinkBunsetsu pro((uiContext));
 
-static
+static int
 IchiranShrinkBunsetsu(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_Shrink);
 }
 
-static IchiranAdjustBunsetsu pro((uiContext));
+static int IchiranAdjustBunsetsu pro((uiContext));
 
-static
+static int
 IchiranAdjustBunsetsu(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_AdjustBunsetsu);
 }
 
-static IchiranKillToEndOfLine pro((uiContext));
+static int IchiranKillToEndOfLine pro((uiContext));
 
-static
+static int
 IchiranKillToEndOfLine(d)
 uiContext d;
 {
   return IchiranKakuteiThenDo(d, CANNA_FN_KillToEndOfLine);
 }
 
-static IchiranDeleteNext pro((uiContext));
+static int IchiranDeleteNext pro((uiContext));
 
-static
+static int
 IchiranDeleteNext(d)
 uiContext d;
 {
   return IchiranKakuteiThenDo(d, CANNA_FN_DeleteNext);
 }
 
-static IchiranBubunMuhenkan pro((uiContext));
+static int IchiranBubunMuhenkan pro((uiContext));
 
-static
+static int
 IchiranBubunMuhenkan(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_BubunMuhenkan);
 }
 
-static IchiranHiragana pro((uiContext));
+static int IchiranHiragana pro((uiContext));
 
-static
+static int
 IchiranHiragana(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_Hiragana);
 }
 
-static IchiranKatakana pro((uiContext));
+static int IchiranKatakana pro((uiContext));
 
-static
+static int
 IchiranKatakana(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_Katakana);
 }
 
-static IchiranZenkaku pro((uiContext));
+static int IchiranZenkaku pro((uiContext));
 
-static
+static int
 IchiranZenkaku(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_Zenkaku);
 }
 
-static IchiranHankaku pro((uiContext));
+static int IchiranHankaku pro((uiContext));
 
-static
+static int
 IchiranHankaku(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_Hankaku);
 }
 
-static IchiranRomaji pro((uiContext));
+static int IchiranRomaji pro((uiContext));
 
-static
+static int
 IchiranRomaji(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_Romaji);
 }
 
-static IchiranToUpper pro((uiContext));
+static int IchiranToUpper pro((uiContext));
 
-static
+static int
 IchiranToUpper(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_ToUpper);
 }
 
-static IchiranToLower pro((uiContext));
+static int IchiranToLower pro((uiContext));
 
-static
+static int
 IchiranToLower(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_ToLower);
 }
 
-static IchiranCapitalize pro((uiContext));
+static int IchiranCapitalize pro((uiContext));
 
-static
+static int
 IchiranCapitalize(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_Capitalize);
 }
 
-static IchiranKanaRotate pro((uiContext));
+static int IchiranKanaRotate pro((uiContext));
 
-static
+static int
 IchiranKanaRotate(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_KanaRotate);
 }
 
-static IchiranRomajiRotate pro((uiContext));
+static int IchiranRomajiRotate pro((uiContext));
 
-static
+static int
 IchiranRomajiRotate(d)
 uiContext d;
 {
   return IchiranQuitThenDo(d, CANNA_FN_RomajiRotate);
 }
 
-static IchiranCaseRotateForward pro((uiContext));
+static int IchiranCaseRotateForward pro((uiContext));
 
-static
+static int
 IchiranCaseRotateForward(d)
 uiContext d;
 {

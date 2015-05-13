@@ -12,22 +12,22 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
 static char jishumap_id[] = "@(#) 102.1 $Id: jishumap.h,v 1.1.1.1 2002/10/19 08:27:49 aida_s Exp $";
 #endif /* lint */
 
-extern DoFuncSequence pro((uiContext)),UseOtherKeymap pro((uiContext));
-extern TbForward pro((uiContext)), TbBackward pro((uiContext));
-extern TbBeginningOfLine pro((uiContext)), TbEndOfLine pro((uiContext));
-extern YomiKakutei pro((uiContext));
+extern int DoFuncSequence pro((uiContext)),UseOtherKeymap pro((uiContext));
+extern int TbForward pro((uiContext)), TbBackward pro((uiContext));
+extern int TbBeginningOfLine pro((uiContext)), TbEndOfLine pro((uiContext));
+extern int YomiKakutei pro((uiContext));
 
 static struct funccfunc jishu_funcs[] = {
   {CANNA_FN_FunctionalInsert	,JishuYomiInsert	},

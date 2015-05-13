@@ -12,20 +12,20 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
 static char rcsid[] = "$Id: lisp.c,v 1.11.2.1 2004/04/26 22:49:21 aida_s Exp $";
 #endif
 
-/* 
-** main program of lisp 
+/*
+** main program of lisp
 */
 #include "lisp.h"
 #include "patchlevel.h"
@@ -49,9 +49,9 @@ static char *memtop;
 
 static int ncells = CELLSIZE;
 
-static initIS();
+static int initIS();
 static void finIS();
-static allocarea(), skipspaces(), zaplin(), isterm();
+static int allocarea(), skipspaces(), zaplin(), isterm();
 static void prins();
 static list mkatm(), read1(), ratom(), ratom2(), rstring();
 static int tyipeek(), tyi();
@@ -265,7 +265,7 @@ int
 YYparse_by_rcfilename(s)
 char *s;
 {
-  extern ckverbose;
+  extern int ckverbose;
   int retval = 0;
   FILE *f;
   FILE *saved_outstream;
@@ -584,7 +584,7 @@ initIS()
   nseqtbl++;
   for (p = keywordtable ; p->id ; p++) {
     int line, nextline;
-    
+
     line = 0;
     for (s = p->seq ; *s ; s++) {
       if (seqTbls[line].tbl == 0) { /* テーブルがない */
@@ -783,7 +783,7 @@ char *name;
 /* mkatm -
 	making symbol function	*/
 
-static list 
+static list
 mkatm(name)
 char *name;
 {
@@ -806,7 +806,7 @@ char *name;
 
 /* getatm -- get atom from the oblist if possible	*/
 
-static list 
+static list
 getatm(name,key)
 char *name;
 int  key;
@@ -980,7 +980,7 @@ read1()
     car(p) = p;
     push(p);
     pp = sp;
-    
+
     for (;;) {
     lab2:
       if ( !skipspaces() ) {
@@ -1124,7 +1124,7 @@ char *name;
   (void)strcpy(freecell, name);
   temp->pname = freecell;
   freecell += namesize;
-  
+
   return retval;
 }
 
@@ -1149,7 +1149,7 @@ list l;
 				patom(l);
 				break;
 			}
-			else 
+			else
 				print(car(l));
 		}
 		tyo(')');
@@ -1163,7 +1163,7 @@ list l;
 */
 
 
-static list 
+static list
 ratom()
 {
 	return(ratom2(tyi()));
@@ -1172,9 +1172,9 @@ ratom()
 /* read atom with the first one character -
 	check if the token is numeric or pure symbol & return proper value */
 
-static isnum();
+static int isnum();
 
-static list 
+static list
 ratom2(a)
 int  a;
 {
@@ -1327,7 +1327,8 @@ rcharacter()
   return retval;
 }
 
-static isnum(name)
+static int
+isnum(name)
 char *name;
 {
 	if (*name == '-') {
@@ -1436,7 +1437,7 @@ int c;
     (void)putc(c, outstream);
   }
 }
-	
+
 
 /* prins -
 	print string	*/
@@ -1487,7 +1488,7 @@ list value;
 
 /* pop up n S-expressions from parameter stack	*/
 
-static void 
+static void
 pop(x)
 int  x;
 {
@@ -1500,7 +1501,7 @@ int  x;
 
 /* pop up an S-expression from parameter stack	*/
 
-static list 
+static list
 pop1()
 {
   if (sp >= &stack[STKSIZE]) {
@@ -1522,7 +1523,7 @@ list value;
     *--esp = value;
 }
 
-static list 
+static list
 epop()
 {
   if (esp >= &estack[STKSIZE]) {
@@ -2060,7 +2061,7 @@ int n;
 	return(temp);
 }
 
-static list 
+static list
 Lncons(n)
 int n;
 {
@@ -2086,7 +2087,7 @@ int n;
 	return(temp);
 }
 
-static list 
+static list
 Lprint(n)
 int n;
 {
@@ -2146,7 +2147,7 @@ Lsetq()
 
 static int equal();
 
-static list 
+static list
 Lequal(n)
 int n;
 {
@@ -2219,12 +2220,12 @@ list x, y;
       y = cdr(y);
       goto equaltop;
     }
-    else 
+    else
       return(NO);
   }
 }
 
-static list 
+static list
 Lgreaterp(n)
 int n;
 {
@@ -2255,7 +2256,7 @@ int n;
   }
 }
 
-static list 
+static list
 Llessp(n)
 int n;
 {
@@ -2347,7 +2348,7 @@ int n;
     return T;
 }
 
-static list 
+static list
 Lor()
 {
   list *pp, t;
@@ -2364,7 +2365,7 @@ Lor()
   return(NIL);
 }
 
-static list 
+static list
 Land()
 {
   list *pp, t;
@@ -2381,7 +2382,7 @@ Land()
   return(t);
 }
 
-static list 
+static list
 Lplus(n)
 int n;
 {
@@ -2464,7 +2465,7 @@ int n;
   }
 }
 
-static list 
+static list
 Lquo(n)
 int n;
 {
@@ -2498,7 +2499,7 @@ int n;
   return(mknum(sum));
 }
 
-static list 
+static list
 Lrem(n)
 int n;
 {
@@ -2536,7 +2537,7 @@ int n;
  *	Garbage Collection
  */
 
-static list 
+static list
 Lgc(n)
 int n;
 {
@@ -3192,7 +3193,7 @@ Ldefmode()
 
 	kanjimode->func = searchfunc;
 	kanjimode->keytbl = emptymap;
-	kanjimode->flags = 
+	kanjimode->flags =
 	  CANNA_KANJIMODE_TABLE_SHARED | CANNA_KANJIMODE_EMPTY_MODE;
 	kanjimode->ftbl = empty_mode.ftbl;
 	extrafunc->u.modeptr->emode = kanjimode;
@@ -3270,7 +3271,7 @@ Ldefmode()
 		  extrafunc->u.modeptr->flags &=
 		    ~CANNA_YOMI_IGNORE_USERSYMBOLS;
 		}
- 
+
 		extrafunc->keyword = EXTRA_FUNC_DEFMODE;
 		extrafunc->next = extrafuncp;
 		extrafuncp = extrafunc;
@@ -3315,7 +3316,7 @@ Ldefsym()
   int i, ncand, group;
   wchar_t cand[1024], *p, *mcand, **acand, key, xkey;
   int mcandsize;
-  extern nkeysup;
+  extern int nkeysup;
   extern keySupplement keysup[];
 
   form = sp[0];
@@ -3419,7 +3420,7 @@ Ldefsym()
 
 #ifndef NO_EXTEND_MENU
 
-/* 
+/*
    defselection で一覧の文字を取り出すために必要なので、以下を定義する
  */
 
@@ -3466,8 +3467,8 @@ int *ku, *ten;
   }
   return codeset;
 }
-    
-/* 
+
+/*
    howManuCharsAre -- defselection で範囲指定した場合に
                       その範囲内の図形文字の個数を返す
  */
@@ -3539,7 +3540,7 @@ int tku, tten, num, kodata;
   return NULL;
 }
 
-/* 
+/*
    numtostr -- Key data から文字を取り出す
  */
 
@@ -3593,7 +3594,7 @@ Ldefselection()
     error("String data expected ", md);
     /* NOTREACHED */
   }
-    
+
   push(car(cdr(cdr(form))));
   push(Leval(1));
 
@@ -4017,7 +4018,7 @@ int n;
     /* NOTREACHED */
   }
   if (keyconvCallback) {
-    (*keyconvCallback)(CANNA_CTERMINAL, 
+    (*keyconvCallback)(CANNA_CTERMINAL,
 		       xstring(sp[2]), xstring(sp[1]), xnum(sp[0]));
   }
   pop(3);
@@ -4604,8 +4605,8 @@ static struct cannafndefs cannafns[] = {
   {S_FN_CaseRotate		,CANNA_FN_CaseRotate},
   {S_FN_BaseHiragana		,CANNA_FN_BaseHiragana},
   {S_FN_BaseKatakana		,CANNA_FN_BaseKatakana},
-  {S_FN_BaseKana		,CANNA_FN_BaseKana},	
-  {S_FN_BaseEisu		,CANNA_FN_BaseEisu},	
+  {S_FN_BaseKana		,CANNA_FN_BaseKana},
+  {S_FN_BaseEisu		,CANNA_FN_BaseEisu},
   {S_FN_BaseZenkaku		,CANNA_FN_BaseZenkaku},
   {S_FN_BaseHankaku		,CANNA_FN_BaseHankaku},
   {S_FN_BaseKakutei		,CANNA_FN_BaseKakutei},

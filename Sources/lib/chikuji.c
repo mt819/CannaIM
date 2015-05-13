@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -74,7 +74,7 @@ yomiContext yc;
   return;
 }
 
-extern NothingChanged pro((uiContext));
+extern int NothingChanged pro((uiContext));
 
 /*
   restoreChikujiYomi
@@ -157,7 +157,7 @@ restoreChikujiYomi(d, old)
 	  *s++ = (wchar_t)'\0';
 	}
       }
-      
+
       removeKana(d, yc, ll, j);
 
       yc->nbunsetsu -= n;
@@ -214,7 +214,7 @@ uiContext d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
 
   d->status = 0;
   killmenu(d);
@@ -230,7 +230,7 @@ uiContext d;
     else
       jrKanjiError = "\303\340\274\241\274\253\306\260\312\321\264\271\244\313"
 	"\300\332\302\330\244\250\244\353\244\263\244\310\244\254\244\307"
-	"\244\255\244\336\244\273\244\363";    
+	"\244\255\244\336\244\273\244\363";
                      /* 逐次自動変換に切替えることができません */
     makeGLineMessageFromString(d, jrKanjiError);
     currentModeInfo(d);
@@ -267,7 +267,7 @@ uiContext d;
       jrKanjiError = "\245\265\241\274\245\320\244\254\303\340\274\241\274\253"
 	"\306\260\312\321\264\271\244\362\245\265\245\335\241\274\245\310"
 	"\244\267\244\306\244\244\244\336\244\273\244\363";
-                     /* サーバが逐次自動変換をサポートしていません */     
+                     /* サーバが逐次自動変換をサポートしていません */
       abandonContext(d, yc);
       return(-1);
     }
@@ -444,7 +444,7 @@ chikuji_subst_yomi(d)
   return chikuji_restore_yomi(d);
 }
 
-static ChikujiTanExtend pro((uiContext));
+static int ChikujiTanExtend pro((uiContext));
 
 static int
 ChikujiTanExtend(d)
@@ -484,7 +484,7 @@ ChikujiTanExtend(d)
   return d->nbytes;
 }
 
-static ChikujiTanShrink pro((uiContext));
+static int ChikujiTanShrink pro((uiContext));
 
 static int
 ChikujiTanShrink(d)
@@ -530,7 +530,7 @@ ChikujiTanShrink(d)
   return d->nbytes;
 }
 
-static ChikujiYomiDeletePrevious pro((uiContext));
+static int ChikujiYomiDeletePrevious pro((uiContext));
 
 static int
 ChikujiYomiDeletePrevious(d)
@@ -623,7 +623,7 @@ ChikujiYomiDeletePrevious(d)
   return 0;
 }
 
-static ChikujiHenkan pro((uiContext));
+static int ChikujiHenkan pro((uiContext));
 
 static int
 ChikujiHenkan(d)
@@ -641,7 +641,7 @@ ChikujiHenkan(d)
     jrKanjiError = "\245\265\241\274\245\320\244\254\303\340\274\241\274\253"
 	"\306\260\312\321\264\271\244\362\245\265\245\335\241\274\245\310"
 	"\244\267\244\306\244\244\244\336\244\273\244\363";
-                   /* サーバが逐次自動変換をサポートしていません */     
+                   /* サーバが逐次自動変換をサポートしていません */
     makeGLineMessageFromString(d, jrKanjiError);
     makeKanjiStatusReturn(d, yc);
     d->nbytes = 0;
@@ -757,7 +757,7 @@ int (*fn)();
 
 extern int YomiInsert();
 
-static ChikujiHenkanNaive pro((uiContext));
+static int ChikujiHenkanNaive pro((uiContext));
 
 static int
 ChikujiHenkanNaive(d)
@@ -766,7 +766,7 @@ uiContext d;
   return generalNaive(d, YomiInsert);
 }
 
-static ChikujiHenkanOrNothing pro((uiContext));
+static int ChikujiHenkanOrNothing pro((uiContext));
 
 static int
 ChikujiHenkanOrNothing(d)
@@ -775,7 +775,7 @@ ChikujiHenkanOrNothing(d)
   return generalNaive(d, NothingChanged);
 }
 
-static ChikujiMuhenkan pro((uiContext));
+static int ChikujiMuhenkan pro((uiContext));
 
 static int
 ChikujiMuhenkan(d)

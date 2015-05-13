@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -56,9 +56,9 @@ static void DISPLAY_to_hostname();
 
 */
 
-extern ckverbose;
+extern int ckverbose;
 
-extern YYparse_by_rcfilename();
+extern int YYparse_by_rcfilename();
 
 /* cfuncdef
 
@@ -115,7 +115,7 @@ parse()
 {
   char *p, *getenv();
   int n;
-  extern iroha_debug;
+  extern int iroha_debug;
   int home_canna_exist = 0;
   extern char *initFileSpecified;
   extern int auto_define;
@@ -231,26 +231,26 @@ parse()
       p = getenv("DISPLAY");
       if (p) {
 	char display[NAMEBUFSIZE];
-	
+
 	DISPLAY_to_hostname(p, display, NAMEBUFSIZE);
-	
+
 	CANNA_rcfilename[n] = '-';
 	strcpy(CANNA_rcfilename + n + 1, display);
-	
+
 	if(YYparse_by_rcfilename(CANNA_rcfilename)) {
 	  make_initfilename();
 	}
       }
-      
+
       /* $HOME/.canna-TERM */
-      
+
       p = getenv("TERM");
       if (p) {
 	CANNA_rcfilename[n] = '-';
 	strcpy(CANNA_rcfilename + n + 1, p);
 	if(YYparse_by_rcfilename(CANNA_rcfilename)) {
 	  make_initfilename();
-	}	  
+	}
       }
     }
 #ifdef OBSOLETE_RCFILENAME
@@ -298,7 +298,7 @@ parse()
     /* 最後はシステムデフォルトのファイルを読む */
     strcpy(CANNA_rcfilename, CANNALIBDIR);
     n = strlen(CANNA_rcfilename);
- 
+
     strcpy(CANNA_rcfilename + n, "/default");
     strcat(CANNA_rcfilename + n, RCFILENAME);
     if (YYparse_by_rcfilename(CANNA_rcfilename)) {
@@ -306,7 +306,7 @@ parse()
       p = getenv("DISPLAY");
       if (p) {
 	char display[NAMEBUFSIZE];
-	
+
 	DISPLAY_to_hostname(p, display, NAMEBUFSIZE);
 
 	CANNA_rcfilename[n] = '/';
@@ -331,7 +331,7 @@ parse()
       if (ckverbose) {
 	printf("カスタマイズファイルは読み込みません。\n");
       }
-      sprintf(buf, 
+      sprintf(buf,
 #ifdef CODED_MESSAGE
       "システムのカスタマイズファイル %s が存在しません。",
 #else

@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -26,16 +26,16 @@ static char chikuji_id[] = "$Id: chikujimap.h,v 1.1.1.1 2002/10/19 08:27:48 aida
 
 #define BUNPOU_DISPLAY
 
-extern TanKouhoIchiran(), TanKatakana();
-extern TanPrintBunpou();
-extern TanMuhenkan(), TanBubunKakutei(), TanHankaku();
-extern TanHiragana(), TanRomaji(), TanZenkaku();
-extern TanForwardBunsetsu(), TanBackwardBunsetsu();
-extern TanNextKouho(), TanPreviousKouho();
-extern TanBeginningOfBunsetsu(), TanEndOfBunsetsu(), TanBubunMuhenkan();
-extern TanUpper(), TanCapitalize(), TanDeletePrevious();
-extern TanKanaRotate pro((uiContext)), TanRomajiRotate pro((uiContext));
-extern TanCaseRotateForward pro((uiContext));
+extern int TanKouhoIchiran(), TanKatakana();
+extern int TanPrintBunpou();
+extern int TanMuhenkan(), TanBubunKakutei(), TanHankaku();
+extern int TanHiragana(), TanRomaji(), TanZenkaku();
+extern int TanForwardBunsetsu(), TanBackwardBunsetsu();
+extern int TanNextKouho(), TanPreviousKouho();
+extern int TanBeginningOfBunsetsu(), TanEndOfBunsetsu(), TanBubunMuhenkan();
+extern int TanUpper(), TanCapitalize(), TanDeletePrevious();
+extern int TanKanaRotate pro((uiContext)), TanRomajiRotate pro((uiContext));
+extern int TanCaseRotateForward pro((uiContext));
 
 #define NONE CANNA_FN_Undefined
 
@@ -51,7 +51,7 @@ static struct funccfunc cy_funcs[] = {
   {0				, 0				},
 };
 
-extern searchfunc(), CYsearchfunc(), Yomisearchfunc();
+extern int searchfunc(), CYsearchfunc(), Yomisearchfunc();
 extern BYTE default_kmap[];
 
 KanjiModeRec cy_mode = {

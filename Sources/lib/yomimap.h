@@ -12,21 +12,21 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
 static char yomimap_id[] = "@(#) 102.1 $Id: yomimap.h,v 1.1.1.1 2002/10/19 08:27:52 aida_s Exp $";
 #endif /* lint */
 
-extern ConvertAsBushu pro((uiContext));
-extern DoFuncSequence pro((uiContext)),UseOtherKeymap pro((uiContext));
-extern YomiBubunKakutei pro((uiContext));
+extern int ConvertAsBushu pro((uiContext));
+extern int DoFuncSequence pro((uiContext)),UseOtherKeymap pro((uiContext));
+extern int YomiBubunKakutei pro((uiContext));
 
 static struct funccfunc yomi_funcs[] = {
   {CANNA_FN_FunctionalInsert	,YomiInsert		},

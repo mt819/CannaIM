@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -36,11 +36,11 @@ static char rcsid[]="@(#) 102.1 $Id: RKkana.c,v 1.3 2003/09/17 08:50:53 aida_s E
 #define wchar_t cannawc
 
 /* RkCvtZen
- *	hankaku moji wo zenkaku moji ni suru 
+ *	hankaku moji wo zenkaku moji ni suru
  */
 static
 unsigned short
-hiragana[] = 
+hiragana[] =
 {
 /* 0x00 */
 	0x0000,	0x0000, 0x0000, 0x0000,		0x0000, 0x0000, 0x0000, 0x0000,
@@ -92,7 +92,7 @@ hiragana[] =
 	0x0000, 0x0000, 0x0000, 0x0000,		0x0000, 0x0000, 0x0000, 0x0000,
 };
 static
-unsigned short	
+unsigned short
 hankaku[] = {
 /*0x00*/
 	0x0000, 0x0000, 0x0000, 0x0000,		0x0000, 0x0000, 0x0000, 0x0000,
@@ -203,7 +203,7 @@ extern const struct NormalizePair norm_pair[];
  *	hankaku moji(ASCII+katakana) wo taiou suru zenkaku moji ni suru
  *	dakuten,handakuten shori mo okonau.
  */
-int	
+int
 RkCvtZen(zen, maxzen, han, maxhan)
 unsigned char	*zen;
 int		maxzen;
@@ -283,7 +283,7 @@ int		maxhan;
         l1: ;
         }
 	else  {
-	  if ( !(code = hiragana[hi]) ) 
+	  if ( !(code = hiragana[hi]) )
 	    code = hi;
 	  byte = (code>>8) ? 2 : 1;
 	}
@@ -294,9 +294,9 @@ int		maxhan;
     return count;
 }
 /* RkCvtHan
- *	zenkaku kana moji wo hankaku moji ni suru 
+ *	zenkaku kana moji wo hankaku moji ni suru
  */
-int	
+int
 RkCvtHan(han, maxhan, zen, maxzen)
 unsigned char	*han;
 int		maxhan;
@@ -379,9 +379,9 @@ int		maxzen;
     return count;
 }
 /* RkCvtKana/RkCvtHira
- *	zenkaku hiragana wo katakana ni suru 
+ *	zenkaku hiragana wo katakana ni suru
  */
-int	
+int
 RkCvtKana(kana, maxkana, hira, maxhira)
 unsigned char	*kana;
 int		maxkana;
@@ -402,7 +402,7 @@ int		maxhira;
 	hi = *h++;
 	if (hi == 0x8f) {
 	  ADDCODE(k, maxkana, count, hi, 1);
-	  code = (((unsigned long)h[0]) << 8) 
+	  code = (((unsigned long)h[0]) << 8)
                    | ((unsigned long)h[1]); h += 2;
 	  byte = 2;
 	}
@@ -412,14 +412,14 @@ int		maxhira;
 	    code = (hi == 0xa4) ? (0xa500|(*h++)) : ((hi<<8)|(*h++));
 	    byte = 2;
 	/* hiragana U + " */
-	    dakuon = ( h + 1 < H && 
+	    dakuon = ( h + 1 < H &&
               ((((unsigned long)h[0])<<8)|((unsigned long)h[1])) == 0xa1ab );
 	    if ( hi == 0xa4 && code == 0xa5a6 && dakuon ) {
 		code = 0xa5f4;
 		h += 2;
 	    };
 	}
-	else 
+	else
 	    code = hi, byte = 1;
 	ADDCODE(k, maxkana, count, code, byte);
     };
@@ -427,7 +427,7 @@ int		maxhira;
 	*k = 0;
     return count;
 }
-int	
+int
 RkCvtHira(hira, maxhira, kana, maxkana)
 unsigned char	*hira;
 int		maxhira;
@@ -448,7 +448,7 @@ int		maxkana;
 	hi = *k++;
 	if (hi == 0x8f) {
 	  ADDCODE(h, maxhira, count, hi, 1);
-	  code = (((unsigned long)k[0]) << 8) 
+	  code = (((unsigned long)k[0]) << 8)
                    | ((unsigned long)k[1]); k += 2;
 	  byte = 2;
 	}
@@ -461,13 +461,13 @@ int		maxkana;
 		byte = 4;
 	    }
 	    else
-	    if ( code == 0xa4f5 ) 
+	    if ( code == 0xa4f5 )
 		code = 0xa4ab;
 	    else
-	    if ( code == 0xa4f6 ) 
+	    if ( code == 0xa4f6 )
 		code = 0xa4b1;
 	}
-	else 
+	else
 	    code = hi, byte = 1;
 	ADDCODE(h, maxhira, count, code, byte);
     };
@@ -476,7 +476,7 @@ int		maxkana;
     return count;
 }
 #ifndef __HAIKU__
-int	
+int
 RkCvtNone(dst, maxdst, src, maxsrc)
 unsigned char	*dst;
 int		maxdst;
@@ -497,11 +497,11 @@ int		maxsrc;
 	byte = 1;
 	if (code == 0x8f) {
 	  ADDCODE(d, maxdst, count, code, 1);
-	  code = (((unsigned long)s[0]) << 8) 
+	  code = (((unsigned long)s[0]) << 8)
                    | ((unsigned long)s[1]); s += 2;
 	  byte = 2;
 	}
-	else if ( code & 0x80 ) 
+	else if ( code & 0x80 )
 	    code = (code<<8)|(*s++), byte = 2;
 	ADDCODE(d, maxdst, count, code, byte);
     };
@@ -512,7 +512,7 @@ int		maxsrc;
 #endif
 
 /* RkEuc
- * 	shift jis --> euc 
+ * 	shift jis --> euc
  */
 int
 RkCvtEuc(euc, maxeuc, sj, maxsj)
@@ -536,7 +536,7 @@ int		maxsj;
 	hi = *s++;
 	if ( hi <= 0x7f )  			/* ascii */
 	    code = hi, byte = 1;
-	else 
+	else
 	if ( 0xa0 <= hi && hi <= 0xdf ) 	/* hankaku katakana */
 	    code = 0x8e00|hi, byte = 2;
         else
@@ -576,15 +576,15 @@ int		maxsj;
  * 	arabia suuji wo kansuuji ni kaeru
  */
 static unsigned suujinew[] = {
-	0xa1bb, 0xb0ec, 0xc6f3, 0xbbb0, 0xbbcd, 
+	0xa1bb, 0xb0ec, 0xc6f3, 0xbbb0, 0xbbcd,
 	0xb8de, 0xcfbb, 0xbcb7, 0xc8ac, 0xb6e5,
 };
 static unsigned suujiold[] = {
-	0xa1bb, 0xb0ed, 0xc6f5, 0xbbb2, 0xbbcd, 
+	0xa1bb, 0xb0ed, 0xc6f5, 0xbbb2, 0xbbcd,
 	0xb8e0, 0xcfbb, 0xbcb7, 0xc8ac, 0xb6e5,
 };
 static unsigned kurai4[] = {
-	0, 0xcbfc, 0xb2af, 0xc3fb, 0xb5fe, 0,		
+	0, 0xcbfc, 0xb2af, 0xc3fb, 0xb5fe, 0,
 };
 
 static unsigned kurai3new[] = { 0, 0xbdbd, 0xc9b4, 0xc0e9, };
@@ -653,7 +653,7 @@ int		format;
 			if ( k >= 4 )
 			    return 0;
 
-		    for ( i = 0; i < pend; i++ ) 
+		    for ( i = 0; i < pend; i++ )
 			switch(format) {
 			case 2:
 			    if ( digit[i] ) {
@@ -668,7 +668,7 @@ int		format;
 			    break;
 			case 3:
 			    if ( digit[i] ) {
-			        code = kurai3old[i]; 
+			        code = kurai3old[i];
 				if (code)
 				    ADDCODE(d, maxdst, count, code, 2);
 				code = suujiold[digit[i]];
@@ -707,7 +707,7 @@ int		format;
 	    else
 		if ( k >= 4 )
 		    return 0;
-	    for ( i = 0; i < pend; i++ ) 
+	    for ( i = 0; i < pend; i++ )
 		switch(format) {
 		case 2:
 		    if ( digit[i] ) {
@@ -755,6 +755,7 @@ int		format;
 
 #define CBUFSIZE     512
 
+int
 RkwCvtHan(dst, maxdst, src, srclen)
 wchar_t *dst, *src;
 int maxdst, srclen;
@@ -791,6 +792,7 @@ int maxdst, srclen;
   return len;
 }
 
+int
 RkwCvtHira(dst, maxdst, src, srclen)
 wchar_t *dst, *src;
 int maxdst, srclen;
@@ -827,7 +829,8 @@ int maxdst, srclen;
 #endif
   return len;
 }
-  
+
+int
 RkwCvtKana(dst, maxdst, src, srclen)
 wchar_t *dst, *src;
 int maxdst, srclen;
@@ -864,7 +867,8 @@ int maxdst, srclen;
 #endif
   return len;
 }
-  
+
+int
 RkwCvtZen(dst, maxdst, src, srclen)
 wchar_t *dst, *src;
 int maxdst, srclen;
@@ -918,6 +922,7 @@ int maxdst, srclen;
 }
 #endif
 
+int
 RkwMapRoma(romaji, dst, maxdst, src, srclen, flags, status)
 struct RkRxDic *romaji;
 wchar_t *dst, *src;
@@ -960,17 +965,10 @@ int maxdst, srclen, flags, *status;
   return len;
 }
 
-#ifdef __STDC__
+int
 RkwMapPhonogram(struct RkRxDic *romaji, wchar_t *dst, int maxdst,
 		wchar_t *src, int srclen, wchar_t key, int flags,
 		int *ulen, int *dlen, int *tlen, int *rule)
-#else
-RkwMapPhonogram(romaji, dst, maxdst, src, srclen, key, flags,
-		ulen, dlen, tlen, rule)
-struct RkRxDic *romaji;
-wchar_t *dst, *src, key;
-int maxdst, srclen, flags, *ulen, *dlen, *tlen, *rule;
-#endif
 {
   int status = 0;
   char tmpch;
@@ -1027,6 +1025,7 @@ int maxdst, srclen, flags, *ulen, *dlen, *tlen, *rule;
   return status;
 }
 
+int
 RkwCvtRoma(romaji, dst, maxdst, src, srclen, flags)
 struct RkRxDic *romaji;
 wchar_t *dst, *src;

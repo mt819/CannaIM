@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -29,7 +29,7 @@ static char rcsid[]="$Id: nword.c,v 1.5 2003/07/31 19:03:51 aida_s Exp $";
 
 #if defined(DEBUG_NWORD) || defined(RK_DEBUG) || defined(TEST)
 #include <stdio.h>
-/* 
+/*
  * debug aids
  */
 #define		D_CONC	1
@@ -102,7 +102,7 @@ allocWord(st, bb)
      int bb;
 {
   struct nword 	*new_word;
-   
+
   if (!SX.word) {
     struct nword	*new_page;
     int			i;
@@ -122,8 +122,8 @@ allocWord(st, bb)
   if (new_word) {
     SX.word = new_word->nw_next;
     clearWord(new_word, bb);
-    st->word_in_use++; 
-    SX.word_in_use++; 
+    st->word_in_use++;
+    SX.word_in_use++;
   };
   return new_word;
 }
@@ -132,13 +132,13 @@ static void
 derefWord(word)			/* decrease the reference counter */
      struct nword 	*word;
 {
-  for (; word; word = word->nw_next) 
+  for (; word; word = word->nw_next)
     if (word->nw_cache)
       (void)_RkDerefCache(word->nw_cache);
 }
 
 /*ARGSUSED*/
-static void	
+static void
 killWord(st, word)			/* dispose the unsed words */
 struct nstore	*st;
 struct nword	*word;
@@ -159,7 +159,7 @@ struct nword	*word;
   }
 }
 
-static void	
+static void
 freeWord(st, word)			/* freeWord = derefWord + killWord */
 struct nstore 	*st;
 struct nword 	*word;
@@ -168,12 +168,12 @@ struct nword 	*word;
   killWord(st, word);
 }
 
-void	
+void
 _RkFreeBunq(st)			/* freeWord = derefWord + killWord */
      struct nstore *st;
 {
   struct nbun *bunq = &st->bunq[st->curbun];
-  
+
   freeWord(st, bunq->nb_cand);
   bunq->nb_cand = (struct nword *)0;
   bunq->nb_yoff = 0;
@@ -253,7 +253,7 @@ concWord(cx, p, q, loc, bb) 		/* create the concatinated word p+q */
 	conc.nw_prio = q->nw_prio;
 	break;
     case	ND_SWD:
-	if (!(conc.nw_flags&NW_SWD)) 
+	if (!(conc.nw_flags&NW_SWD))
 	    conc.nw_flags |= NW_SWD;
 	break;
     case	ND_PRE:
@@ -275,9 +275,9 @@ concWord(cx, p, q, loc, bb) 		/* create the concatinated word p+q */
 }
 
 /* clearQue
- *	clear word tree queue 
+ *	clear word tree queue
  */
-static void 
+static void
 clearQue(xq)
 struct nqueue	*xq;
 {
@@ -297,7 +297,7 @@ int	      e;
   struct nqueue *xq = st->xq;
 
   while (s < e) {
-    if (xq[s].tree) 
+    if (xq[s].tree)
       freeWord(st, xq[s].tree);
     clearQue(&xq[s]);
     s++;
@@ -306,7 +306,7 @@ int	      e;
 
 /*
  * Literal
- */	
+ */
 static
 int
 cvtNum(dst, maxdst, src, maxsrc, format)
@@ -380,7 +380,7 @@ cvtLit(dst, maxdst, src, maxsrc, format, mode)
 }
 
 /* setLit
- *	create the literals as many as the context requires 
+ *	create the literals as many as the context requires
  */
 static
 struct nword	*
@@ -396,7 +396,7 @@ setLit(cx, word, maxword, rc, src, srclen, format)
   struct nword	*w = word;
   int 		dstlen;
   unsigned long	mode;
-  
+
   if (!cx->litmode)
     return 0;
   for (mode = cx->litmode[format]; mode; mode >>= RK_XFERBITS)
@@ -404,9 +404,9 @@ setLit(cx, word, maxword, rc, src, srclen, format)
       int	code = MAKELIT(format, mode&RK_XFERMASK);
 
       dstlen = cvtLit((Wchar *)0, 9999, src, srclen, code, (unsigned long)cx->concmode);
-      if (0 < dstlen  && dstlen <= RK_LEN_WMAX) 
+      if (0 < dstlen  && dstlen <= RK_LEN_WMAX)
 	setWord(w++, rc, code, src, srclen, (Wrec *)0, dstlen, cx->gram->P_BB);
-      if (dstlen < 0) 
+      if (dstlen < 0)
 	setWord(w++, rc, code, src, srclen, (Wrec *)0, srclen, cx->gram->P_BB);
     }
   return (struct nword *) w;
@@ -455,7 +455,7 @@ readWord(cx, yy, ys, ye, class, nword, maxword, doflush, douniq)
     struct DM		*qm = md->md_freq;
     struct nword	*pp, *qq;
     int c, nc, num, cf = 0, nl;
-    
+
     if (maxword <=  0)
       break;
     if (!dm)
@@ -488,7 +488,7 @@ readWord(cx, yy, ys, ye, class, nword, maxword, doflush, douniq)
 	};
 	if (qm) {
 	  int	ecount, cval, i;
-	  
+
 	  bitSize = _RkCalcLog2(nk + 1) + 1;
 	  _RkUnpackBits(permutation, qm->dm_qbits, offset, bitSize, nk);
 	  for (ecount = cval = i = 0; i < nk; i++) {
@@ -507,7 +507,7 @@ readWord(cx, yy, ys, ye, class, nword, maxword, doflush, douniq)
 	pp = wrds;
 	for (num = 0; num < nk; num++) {
 	  unsigned permed;
-	  
+
 	  if (maxword <=  0)
 	    break;
 	  if (qm) {
@@ -539,7 +539,7 @@ readWord(cx, yy, ys, ye, class, nword, maxword, doflush, douniq)
 	    }
 	    if (wrds->nw_prio) {
 	      long    t;
-	      
+
 	      t = _RkGetTick(0) - wrds->nw_prio;
 	      wrds->nw_prio = (0 <= t && t < 0x2000) ? (0x2000 - t) << 4 : 0;
 	    };
@@ -600,7 +600,7 @@ makeWord(cx, yy, ys, ye, class, word, maxword, doflush, douniq)
   int			literal = -1;
   int			punct = 0;
   int			gobeyond = 0;
-  
+
   if (ye <= 0)
     return w;
   z = (k = key) + ye;
@@ -641,7 +641,7 @@ makeWord(cx, yy, ys, ye, class, word, maxword, doflush, douniq)
       hinshi = cx->gram->P_T00;
     } else if (0xa1a2 <= c && c <= 0xa1db) {
       /*
-       *	now multiple punctiation characters constitute a single punct 
+       *	now multiple punctiation characters constitute a single punct
        */
       for (; k < z; k++, clen++)
 	if (clen >= RK_KEY_WMAX || !(0xa1a2 <= *k && *k <= 0xa1db)) {
@@ -675,7 +675,7 @@ makeWord(cx, yy, ys, ye, class, word, maxword, doflush, douniq)
       if (!(cx->concmode & RK_MAKE_EISUUJI)) {
 	doflush++;
       } else {
-	for (; k < z; k++, clen++) 
+	for (; k < z; k++, clen++)
 	  if (clen >= RK_KEY_WMAX || !(0xa3b0 <= *k && *k <= 0xa3b9)) {
 	    doflush++;
 	    break;
@@ -697,7 +697,7 @@ makeWord(cx, yy, ys, ye, class, word, maxword, doflush, douniq)
       }
       hinshi = cx->gram->P_T35; literal = LIT_ALPHA;
     } else if (0xa5a1 <= c && c <= 0xa5f6) {	/* zenkaku katakana */
-      for (; k < z; k++, clen++) 
+      for (; k < z; k++, clen++)
 	if (clen >= RK_KEY_WMAX ||
 	    ((0xa5a1 > (c = *k) || c > 0xa5f6) &&
 	     (0xa1a1 > c || c > 0xa1f6))) {
@@ -750,7 +750,7 @@ makeWord(cx, yy, ys, ye, class, word, maxword, doflush, douniq)
       if (!doflush && !gobeyond)
 	cx->poss_cont++;
       if (literal != -1) {
-	if (doflush) 
+	if (doflush)
 	  w= setLit(cx, w, maxword, hinshi, key, clen, literal);
       } else if (w < word + maxword) {
 	  if (doflush) {
@@ -775,9 +775,9 @@ determinate(y1, y2, l)
   for (l = *y1, y1 += 2; l; l--) {
     Wchar *wy = (Wchar *) y2;
     Wrec c1 = (Wrec) ((*wy & 0xff00) >> 8);
-    Wrec c2 = (Wrec) (*wy & 0xff); 
+    Wrec c2 = (Wrec) (*wy & 0xff);
 
-    y2 += 2;	
+    y2 += 2;
     if (*y1++ != c1 || *y1++ != c2) {
       return(0);
     }
@@ -810,9 +810,9 @@ positiveRev(y1, y2, l)
   for (y1 += 2; l; l--) {
     Wchar *wy = (Wchar *) y2;
     Wrec c1 = (Wrec) ((*wy & 0xff00) >> 8);
-    Wrec c2 = (Wrec) (*wy & 0xff); 
+    Wrec c2 = (Wrec) (*wy & 0xff);
 
-    y2 += 2;	
+    y2 += 2;
     if (*y1++ != c1 || *y1++ != c2) {
       return(0);
     }
@@ -982,12 +982,12 @@ parseWord(cx, yy, ys, ye, class, xqh, maxclen, doflush, douniq)
     ye1 = ye - clen;
     r = readWord(cx, yy + clen, ys1, ye1, class,
 		 right, RIGHTSIZE - 1, doflush, douniq);
-    if (Is_Word_Make(cx)) 
+    if (Is_Word_Make(cx))
       r = makeWord(cx, yy + clen, ys1, ye1, class,
 		   r, RIGHTSIZE -1 - (int)(r - right), doflush, douniq);
     for (t = 0; t < sameLen; t++) {
       p = tail[t];
-      for (q = right; q < r; q++)  
+      for (q = right; q < r; q++)
 	if (Is_Word_Connect(cx) &&
 	    (q->nw_class >= ND_OPN ||
 	     RkTestGram(gram, p->nw_rowcol, q->nw_rowcol)))  {
@@ -1021,14 +1021,14 @@ parseWord(cx, yy, ys, ye, class, xqh, maxclen, doflush, douniq)
 		  s = s->nw_next;
 		s->nw_next = pq;
 	      }
-	      else 
+	      else
 		xqh[pq->nw_ylen] = pq;
 	    }
 	    pq->nw_next = (struct nword *)0;
 	  }
 	}
     }
-    for (q = right; q < r; q++) 
+    for (q = right; q < r; q++)
       if (q->nw_cache)
 	_RkDerefCache(q->nw_cache);
     if (!gram)
@@ -1060,7 +1060,7 @@ doParse(cx, yy, ys, ye, xqh, maxclen, doflush, douniq)
 }
 
 /* getKanji
- *	get kanji in reverse order 
+ *	get kanji in reverse order
  */
 Wchar *
 _RkGetKanji(cw, key, mode)
@@ -1093,7 +1093,7 @@ _RkGetKanji(cw, key, mode)
     for (; klen-- ; str += 2)
       *p++ = S2TOS(str);
     return tmp;
-  } else if (cw->nw_lit) {	
+  } else if (cw->nw_lit) {
     if (cvtLit(tmp, klen + 1, key, ylen, cw->nw_lit, mode) > 0)
       return tmp;
     else
@@ -1112,11 +1112,11 @@ getKanji(w, key, d, mode)
 {
   struct nword	*cw, *lw;
   int			hash, klen;
-  
+
   hash = 0;
   for (cw = w; cw; cw = lw) {
     Wchar	*s, *t;
-    
+
     if (!(lw = cw->nw_left))
       continue;
     klen = (cw->nw_klen - lw->nw_klen);
@@ -1154,12 +1154,12 @@ uniqWord(key, words, ylen, mode)
     return;
   }
 #endif
-  
+
   if (!(!key || ylen <= 0)) {
     /* clear hash table */
-    uniq[ 0] = uniq[ 1] = uniq[ 2] = uniq[ 3] = 
-      uniq[ 4] = uniq[ 5] = uniq[ 6] = uniq[ 7] = 
-	uniq[ 8] = uniq[ 9] = uniq[10] = uniq[11] = 
+    uniq[ 0] = uniq[ 1] = uniq[ 2] = uniq[ 3] =
+      uniq[ 4] = uniq[ 5] = uniq[ 6] = uniq[ 7] =
+	uniq[ 8] = uniq[ 9] = uniq[10] = uniq[11] =
 	  uniq[12] = uniq[13] = uniq[14] = uniq[15] = -1;
     for (p = words; p; p = p->nw_next) {
       if (CanSplitWord(p) && p->nw_ylen == ylen) {
@@ -1172,7 +1172,7 @@ uniqWord(key, words, ylen, mode)
 	  heap[hp + wsize] = 0;
 	  hno = getKanji(p, key, (Wchar *)&heap[hp + 1], mode)&15;
 	  /* search on the hash list */
-	  for (h = uniq[hno]; h >= 0; h = heap[h&0xffff]) 
+	  for (h = uniq[hno]; h >= 0; h = heap[h&0xffff])
 	    if ((h >> 16) == p->nw_klen) { /* same length */
 	      long *p1 = &heap[(h&0xffff) + 1];
 	      long *p2 = &heap[hp + 1];
@@ -1217,7 +1217,7 @@ struct compRec {
     long			prio;
 };
 
-static compword pro((const struct compRec *, const struct compRec *));
+static int compword pro((const struct compRec *, const struct compRec *));
 
 static
 int
@@ -1253,7 +1253,7 @@ sortWord(words)
 /* count number of words */
   pos = neg = 0L;
   for (w = words; w; w = w->nw_next)
-    if (w->nw_prio > 0) 
+    if (w->nw_prio > 0)
       pos++;
     else
       neg++;
@@ -1277,9 +1277,9 @@ sortWord(words)
       }
     /* positive list no sakusei */
     if (pos > 1)
-	(void)qsort((char *)wptr, (int)pos, sizeof(struct compRec), 
+	(void)qsort((char *)wptr, (int)pos, sizeof(struct compRec),
                     (int (*) pro((const void *, const void *)))compword);
-    for (i = 1; i < (int)nwords; i++) 
+    for (i = 1; i < (int)nwords; i++)
       wptr[i - 1].word->nw_next = wptr[i].word;
     words = wptr[0].word;
     (void)free((char *)wptr);
@@ -1295,7 +1295,7 @@ height2list(height, maxclen)
 {
   int			i;
   struct nword		*e, *p, *head, *tail;
-  
+
   e = height[0];
   tail = (struct nword *)0;
   for (i = 1; i <= maxclen; i++)
@@ -1309,7 +1309,7 @@ height2list(height, maxclen)
 	head = height[i];
       tail = p;
     }
-  if (tail) 
+  if (tail)
     tail->nw_next = e;
   else
     head = e;
@@ -1324,10 +1324,10 @@ list2height(height, maxclen, parse)
 {
   int		i;
   struct nword	*p, *q;
-  
+
   for (i = 0; i <= maxclen; i++)
     height[i] = (struct nword *)0;
-  for (p = parse; p; p = p->nw_next) 
+  for (p = parse; p; p = p->nw_next)
     if ((unsigned long)p->nw_ylen <= (unsigned long)maxclen && !height[p->nw_ylen])
       height[p->nw_ylen] = p;
   for (i = 0; i <= maxclen; i++)
@@ -1359,7 +1359,7 @@ parseBun(cx, yy, ys, ye, doflush, douniq, maxclen)
 #ifdef TEST
   printf("parseBun[yy = %d, ys = %d, ye = %d]\n", yy, ys, ye);
 #endif
-    
+
   xqh[0] = allocWord(st, cx->gram->P_BB);
   if (xqh[0]) {
     *maxclen = doParse(cx, yy, ys, ye, xqh, 0, doflush, douniq);
@@ -1387,7 +1387,7 @@ modifyPrio(cx, words)
 }
 #endif
 
-static 
+static
 void
 storeBun(cx, yy, ys, ye, bun)
      struct RkContext	*cx;
@@ -1397,7 +1397,7 @@ storeBun(cx, yy, ys, ye, bun)
   struct nword	*full;
   struct nword	*w;
   int		maxclen;
-  
+
 #ifdef BUNMATU
   full = sortWord(modifyPrio(cx, parseBun(cx, yy, ys, ye, 1, 0, &maxclen)));
 #else
@@ -1415,7 +1415,7 @@ storeBun(cx, yy, ys, ye, bun)
   }
 }
 
-/* 
+/*
  * SPLIT
  */
 struct splitParm {
@@ -1434,10 +1434,10 @@ evalSplit(cx, suc, ul)
   struct nword	*p;
   unsigned	l2;
   unsigned long	u2;
-  
+
   l2 = 0;
   u2 = 0L;
-  for (p = suc; p; p = p->nw_next)  
+  for (p = suc; p; p = p->nw_next)
   {
     if (!CanSplitWord(p) || /* 文節にならない */
 	OnlyBunmatu(p) || /* リテラルの直前でしか文節になれない */
@@ -1466,14 +1466,14 @@ evalSplit(cx, suc, ul)
   struct nword	*p;
   int		l2;
   unsigned long	u2;
-  
+
   l2 = 0;
   u2 = 0L;
-  for (p = suc; p; p = p->nw_next)  
+  for (p = suc; p; p = p->nw_next)
   {
     if (!CanSplitWord(p) || (p->nw_flags & NW_SUC))
       continue;
-    if ((unsigned long)l2 < (unsigned long)p->nw_ylen) 
+    if ((unsigned long)l2 < (unsigned long)p->nw_ylen)
       l2 = p->nw_ylen;
     if (u2 < p->nw_prio)
       u2 = p->nw_prio;
@@ -1486,7 +1486,7 @@ evalSplit(cx, suc, ul)
 #define PARMSIZE 256
 
 static
-int	
+int
 calcSplit(cx, yy, top, xq, maxclen, flush)
      struct RkContext	*cx;
      int		yy;
@@ -1567,7 +1567,7 @@ calcSplit(cx, yy, top, xq, maxclen, flush)
       if (flush && (unsigned)yy + w->nw_ylen == cx->store->nyomi) {
 	L1 = l1;
 	break;
-      } 
+      }
 #ifdef BUNMATU
       /*  続く文節がリテラルでないなら文章末品詞は文の途中にならない */
       else if (OnlyBunmatu(w) && xq[l1].tree->nw_lit == 0) {
@@ -1584,7 +1584,7 @@ calcSplit(cx, yy, top, xq, maxclen, flush)
 #endif
       /* 右隣の文節を解析 */
       if (l1 <= maxary) {
-	if (!ul2[l1].l2) 
+	if (!ul2[l1].l2)
 	  evalSplit(cx, xq[l1].tree, &ul2[l1]);
 	ul = ul2[l1];
       }
@@ -1634,7 +1634,7 @@ splitBun(cx, yy, ys, ye)
   struct nword		*w;
   int		 		maxclen;
   int				i, count, junk;
-  
+
 /* create the initial bun-tree table */
     xq[0].tree = parseBun(cx, yy, ys, ye, 1, 1, &maxclen);
 
@@ -1689,7 +1689,7 @@ parseQue(cx, maxq, yy, ys, ye, doflush)
   struct nqueue *xq = st->xq;
   struct nword	 **xqh = st->xqh;
   int		 i, j;
-  
+
 /* put a new seed to start an analysis. */
     if (!xq[0].tree) {
 	xq[0].tree = allocWord(st, cx->gram->P_BB);
@@ -1703,7 +1703,7 @@ parseQue(cx, maxq, yy, ys, ye, doflush)
       list2height(xqh, xq[i].maxlen, xq[i].tree);
       xq[i].maxlen = doParse(cx, yy, ys, ye, xqh, xq[i].maxlen, doflush, 1);
       /* set up new analysis points */
-      for (j = 0; j <= xq[i].maxlen; j++) 
+      for (j = 0; j <= xq[i].maxlen; j++)
 	if (xqh[j] && !xq[i+j].tree) {
 	  xq[i+j].tree = allocWord(st, cx->gram->P_BB);
 	  xq[i+j].maxlen = 0;
@@ -1737,12 +1737,12 @@ IsStableQue(cx, c, doflush)
 
   if (doflush)
   {
-    if (xq[c].maxlen <= 0) 
+    if (xq[c].maxlen <= 0)
       return 0;
     else
       return 1;
   };
-  if (xq[c].maxlen <= 0) 
+  if (xq[c].maxlen <= 0)
     return(!c ? 0 : 1);
 
   for (w = xq[c].tree; w; w = w->nw_next)
@@ -1808,7 +1808,7 @@ Que2Bun(cx, yy, ys, ye, doflush)
 }
 
 /* _RkRenbun2
- *	current bunsetsu kara migi wo saihenkan suru 
+ *	current bunsetsu kara migi wo saihenkan suru
  */
 int
 _RkRenbun2(cx, firstlen)
@@ -1822,7 +1822,7 @@ _RkRenbun2(cx, firstlen)
   int			oldcurbun = st->curbun;
   int			uyomi;
   int			i;
-  
+
   yy = bun->nb_yoff;
   ys = 0;
   ye = st->nyomi - bun->nb_yoff;
@@ -1832,13 +1832,13 @@ _RkRenbun2(cx, firstlen)
     if (uyomi >= 0)
       _RkFreeQue(st, 0, uyomi+1);
   };
-/* 
+/*
  *
  */
-  for (count = 0; ye > 0; count++) 
+  for (count = 0; ye > 0; count++)
   {
 /* sudeni kaiseki zumi deareba, sono kekka wo mochiiru */
-    if (count && !uyomi) 
+    if (count && !uyomi)
     {
       int	b, c;
       for (b = st->curbun; b < (int)st->maxbun; b++)
@@ -1849,7 +1849,7 @@ _RkRenbun2(cx, firstlen)
 	    st->bunq[c].nb_cand = (struct nword *)0;
 	  }
 	  /* shift bunq forward */
-	  while (b < (int)st->maxbun) 
+	  while (b < (int)st->maxbun)
 	    st->bunq[st->curbun++] = st->bunq[b++];
 	  goto	exit;
 	}
@@ -1900,7 +1900,7 @@ _RkRenbun2(cx, firstlen)
       st->bunq[st->maxbun].nb_yoff += st->bunq[i].nb_curlen;
 /* this case will never happen */
     if (0 != (st->nyomi - st->bunq[st->maxbun].nb_yoff))
-	_Rkpanic("Renbun2: uyomi destroyed %d %d\n", 
+	_Rkpanic("Renbun2: uyomi destroyed %d %d\n",
 		st->nyomi, st->bunq[st->maxbun].nb_yoff, 0);
     bun = &st->bunq[st->maxbun];
     if (IS_XAUTCTX(cx) && uyomi > 0)
@@ -1938,7 +1938,7 @@ _RkSubstYomi(cx, ys, ye, yomi, newLen)
   cs = ys;
   ce = ye;
   /*
-   * STEP 0:	reallocate resources if needed 
+   * STEP 0:	reallocate resources if needed
    *		youmigana buffer should be reallocated as well.
    */
   new_size = st->nyomi + (newLen - (ye - ys));
@@ -1951,7 +1951,7 @@ _RkSubstYomi(cx, ys, ye, yomi, newLen)
       cx->store = st;
   };
   /*
-   * STEP 1:	update yomigana buffer 
+   * STEP 1:	update yomigana buffer
    */
   /* move unchanged text portion [ye, ...) */
   bun = &st->bunq[st->maxbun];
@@ -1977,10 +1977,10 @@ _RkSubstYomi(cx, ys, ye, yomi, newLen)
    */
 /* Trim the words which terminate in [cs, ...) */
 
-  for (i = 0; i < cs; i++) 
+  for (i = 0; i < cs; i++)
     if (xq[i].tree && cs - i <= xq[i].maxlen) {
       list2height(xqh, xq[i].maxlen, xq[i].tree);
-      for (j = cs - i; j < xq[i].maxlen; j++) 
+      for (j = cs - i; j < xq[i].maxlen; j++)
 	if (xqh[j + 1]) {
 	  freeWord(st, xqh[j + 1]);
 	  xqh[j + 1] = (struct nword *)0;
@@ -2003,12 +2003,12 @@ _RkSubstYomi(cx, ys, ye, yomi, newLen)
     }
   /*  Kill the whole trees in  [cs, ce) and shift XQ to fill it. */
   _RkFreeQue(st, cs, ce);
-  if (cf < ce) 
+  if (cf < ce)
     for (i = cf, j = ce; j <= st->maxxq; i++, j++) {
       xq[i] = xq[j];
       clearQue(&xq[j]);
     }
-  if (ce < cf) 
+  if (ce < cf)
     for (i = st->maxxq, j = st->maxxq - (cf - ce); j >= ce; i--, j--) {
       xq[i] = xq[j];
       clearQue(&xq[j]);
@@ -2048,7 +2048,7 @@ _RkFlushYomi(cx)
 }
 
 /* _RkLearnBun
- *	bunsetu jouho wo motoni gakushuu suru 
+ *	bunsetu jouho wo motoni gakushuu suru
  *	sarani, word wo kaihou suru
  */
 static
@@ -2058,7 +2058,7 @@ void	blkcpy(d, s, e)
 {	while (s < e)	*d++ = *s++;	}
 
 static
-void	
+void
 doLearn(cx, thisW)
      struct RkContext	*cx;
      struct nword	*thisW;
@@ -2106,7 +2106,7 @@ doLearn(cx, thisW)
       nl = (*wp >> 1) & 0x3f;
       if (qm && qm->dm_qbits)
 	offset = _RkGetOffset((struct ND *)dm->dm_extdata.var, wp);
-      else 
+      else
 	offset = 0L;
       if (*wp & 0x80)
 	wp += 2;
@@ -2121,13 +2121,13 @@ doLearn(cx, thisW)
 */
       if (qm && qm->dm_qbits) {
 	int		bits;
-	
+
 	if (!(qm->dm_flags & DM_WRITABLE))
 	  continue;
 	bits = _RkCalcLog2(ncands + 1) + 1;
 	_RkUnpackBits(permutation, qm->dm_qbits, offset, bits, ncands);
 	for (current = 0; current < ncands; current++)
-	  if (ncands > (int)permutation[current]/2 && 
+	  if (ncands > (int)permutation[current]/2 &&
 	      candidates[permutation[current]/2] == thisW->nw_kanji)
 	    break;
 	if (current < ncands) {
@@ -2140,12 +2140,12 @@ doLearn(cx, thisW)
 			1);
             _RkCopyBits(qm->dm_qbits, (unsigned long) (offset + bits), bits,
                         tmp, (unsigned long) 0L, current);
- 
+
 	  };
 	  qm->dm_flags |= DM_UPDATED;
 	}
       } else {
-	if (!(dm->dm_flags & DM_WRITABLE)) 
+	if (!(dm->dm_flags & DM_WRITABLE))
 	  continue;
 	for (current = 0; current < ncands; current++)
 	  if (candidates[current] == thisW->nw_kanji)
@@ -2155,7 +2155,7 @@ doLearn(cx, thisW)
 	    unsigned char	*t = candidates[0];
 	    unsigned char	*l = candidates[current];
 	    unsigned char	*c = l + 2 * ((*l >> 1) & 0x7f) + 2;
-	    
+
 	    ((struct TW *)thisCache->nc_address)->lucks[1]
 	      = ((struct TW *)thisCache->nc_address)->lucks[0];
 	    blkcpy(tmp, t, l);

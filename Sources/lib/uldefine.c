@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -48,7 +48,7 @@ static int dicTourokuDo pro((uiContext)),
            dicTourokuYomiDo pro((uiContext, canna_callback_t));
 
 
-static char *shinshitbl1[] = 
+static char *shinshitbl1[] =
 {
   "\314\276\273\354",                 /* 名詞 */
   "\270\307\315\255\314\276\273\354", /* 固有名詞 */
@@ -59,7 +59,7 @@ static char *shinshitbl1[] =
   "\244\275\244\316\302\276",         /* その他 */
 };
 
-static char *shinshitbl2[] = 
+static char *shinshitbl2[] =
 {
   "\303\261\264\301\273\372",           /* 単漢字 */
   "\277\364\273\354",                   /* 数詞 */
@@ -143,7 +143,7 @@ tourokuContext p;
 
   return(0);
 }
-  
+
 static tourokuContext
 newTourokuContext()
 {
@@ -421,7 +421,7 @@ mode_context env;
   int err = 0, perr = 0;
   tourokuContext tc;
   wchar_t **dp;
-  extern defaultContext;
+  extern int defaultContext;
 
   popCallback(d); /* yesNo をポップ */
 
@@ -445,8 +445,8 @@ mode_context env;
     err++; if (errno == EPIPE) perr++;
     CANNA_mbstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246\245\363"
 	"\245\310\244\313\274\272\307\324\244\267\244\336\244\267\244\277", 256);
-                          /* 辞書のマウントに失敗しました */ 
-  } else if(d->contextCache != -1 && 
+                          /* 辞書のマウントに失敗しました */
+  } else if(d->contextCache != -1 &&
     RkwMountDic(d->contextCache, tc->newDic->name, 0) < 0) {
     err++; if (errno == EPIPE) perr++;
     CANNA_mbstowcs(d->genbuf, "\274\255\275\361\244\316\245\336\245\246\245\363"
@@ -523,7 +523,7 @@ uiContext d;
   int nmudic; /* マウントされているユーザ辞書の数 */
   struct dicname *p;
   wchar_t **tourokup, **tp;
-  extern defaultContext;
+  extern int defaultContext;
 
   if(defaultContext < 0) {
     if((KanjiInit() < 0) || (defaultContext < 0)) {
@@ -574,7 +574,7 @@ uiContext d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   if(dicTourokuDo(d) < 0) {
     defineEnd(d);
     return(GLineNGReturn(d));
@@ -645,7 +645,7 @@ findUsrDic()
   return res;
 }
 
-/* 
+/*
  * マウントされている辞書のチェック
  * ・カスタマイズファイルで単語登録用辞書として指定されていて、
  *   マウントに失敗している辞書がある
@@ -850,9 +850,9 @@ mode_context env;
   return(dicTourokuHinshi(d));
 }
 
-static uuTYomiQuitCatch pro((uiContext, int, mode_context));
+static int uuTYomiQuitCatch pro((uiContext, int, mode_context));
 
-static
+static int
 uuTYomiQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -1022,13 +1022,13 @@ uiContext d;
   fc->curIkouho = 0;
   currentkouho = 0;
   if (!cannaconf.HexkeySelect)
-    inhibit |= ((unsigned char)NUMBERING | (unsigned char)CHARINSERT); 
+    inhibit |= ((unsigned char)NUMBERING | (unsigned char)CHARINSERT);
   else
-    inhibit |= (unsigned char)CHARINSERT; 
+    inhibit |= (unsigned char)CHARINSERT;
 
   if((retval = selectOne(d, fc->allkouho, &fc->curIkouho, numkouho,
 		 BANGOMAX, inhibit, currentkouho, WITH_LIST_CALLBACK,
-		 NO_CALLBACK, uuTHinshiExitCatch, 
+		 NO_CALLBACK, uuTHinshiExitCatch,
 		 uuTHinshiQuitCatch, uiUtilIchiranTooSmall)) < 0) {
     popForIchiranMode(d);
     popCallback(d);
@@ -1075,7 +1075,7 @@ canna_callback_t quitfunc;
   tc = (tourokuContext)d->modec;
 
   if(!*tc->udic) {
-    if(checkUsrDic(d) < 0) 
+    if(checkUsrDic(d) < 0)
       return(GLineNGReturn(d));
     else
       return(0);

@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -90,6 +90,7 @@ int getFunction(KanjiMode mode, int key)
         return CANNA_FN_FunctionalInsert;
 }
 
+int
 searchfunc(d, mode, whattodo, key, fnum)
 uiContext d;
 KanjiMode mode;
@@ -117,7 +118,7 @@ int fnum;
 #endif
 	if (d->strokecounter == cannaconf.strokelimit + 1) {
 	  jrKanjiPipeError();
-	}	
+	}
       }
       else {
 	d->strokecounter = 0;
@@ -216,7 +217,7 @@ int fnum;
 #define NONE CANNA_FN_Undefined
 
 BYTE default_kmap[256] =
-{               
+{
 /* C-@ */       CANNA_FN_Mark,
 /* C-a */       CANNA_FN_BeginningOfLine,
 /* C-b */       CANNA_FN_Backward,

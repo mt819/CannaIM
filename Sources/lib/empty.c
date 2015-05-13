@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -30,7 +30,7 @@ static char rcs_id[] = "@(#) 102.1 $Id: empty.c,v 1.2 2003/09/17 08:50:53 aida_s
 extern KanjiModeRec yomi_mode, cy_mode;
 
 /* EmptySelfInsert -- 自分自身を確定文字列として返す関数。
- * 
+ *
  */
 
 static
@@ -49,9 +49,9 @@ uiContext d;
   return res;
 }
 
-static EmptySelfInsert pro((uiContext));
+static int EmptySelfInsert pro((uiContext));
 
-static
+static int
 EmptySelfInsert(d)
 uiContext d;
 {
@@ -78,9 +78,9 @@ uiContext d;
  *
  */
 
-static EmptyYomiInsert pro((uiContext));
+static int EmptyYomiInsert pro((uiContext));
 
-static
+static int
 EmptyYomiInsert(d)
 uiContext d;
 {
@@ -96,15 +96,15 @@ uiContext d;
  *
  */
 
-/* 
+/*
   Empty モードでの quotedInset は ^Q のような文字が一回 Emacs などの方
   に通ってしまえばマップが返られてしまうので、カナ漢字変換の方で何かを
   するなんてことは必要ないのではないのかなぁ。
  */
 
-static EmptyQuotedInsert pro((uiContext));
+static int EmptyQuotedInsert pro((uiContext));
 
-static
+static int
 EmptyQuotedInsert(d)
 uiContext d;
 {
@@ -115,13 +115,13 @@ uiContext d;
   return YomiQuotedInsert(d);
 }
 
-/* 
+/*
   AlphaSelfInsert -- 自分自身を確定文字列として返す関数。
  */
 
-static AlphaSelfInsert pro((uiContext));
+static int AlphaSelfInsert pro((uiContext));
 
-static
+static int
 AlphaSelfInsert(d)
 uiContext d;
 {
@@ -143,9 +143,9 @@ uiContext d;
   }
 }
 
-static AlphaNop pro((uiContext));
+static int AlphaNop pro((uiContext));
 
-static
+static int
 AlphaNop(d)
 uiContext d;
 {
@@ -155,9 +155,9 @@ uiContext d;
   return 0;
 }
 
-static EmptyQuit pro((uiContext));
+static int EmptyQuit pro((uiContext));
 
-static
+static int
 EmptyQuit(d)
 uiContext d;
 {
@@ -172,9 +172,9 @@ uiContext d;
   return res;
 }
 
-static EmptyKakutei pro((uiContext));
+static int EmptyKakutei pro((uiContext));
 
-static
+static int
 EmptyKakutei(d)
 uiContext d;
 {
@@ -189,9 +189,9 @@ uiContext d;
   return res;
 }
 
-static EmptyDeletePrevious pro((uiContext));
+static int EmptyDeletePrevious pro((uiContext));
 
-static
+static int
 EmptyDeletePrevious(d)
 uiContext d;
 {
@@ -221,7 +221,7 @@ int fnum;
   return (extraFunc *)0;
 }
 
-static
+static int
 UserMode(d, estruct)
 uiContext d;
 extraFunc *estruct;
@@ -266,7 +266,7 @@ extraFunc *estruct;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   info = d->selinfo;
   while (info) {
     if (info->ichiran == estruct->u.kigoptr) {
@@ -296,10 +296,10 @@ extraFunc *estruct;
   if (!kigop) {
     return NothingChangedWithBeep(d);
   }
-  return uuKigoMake(d, kigop->kigo_data, kigop->kigo_size, 
+  return uuKigoMake(d, kigop->kigo_data, kigop->kigo_size,
                     curkigo, kigop->kigo_mode, uuKigoGeneralExitCatch, posp);
 }
-  
+
 static
 UserMenu(d, estruct)
 uiContext d;
@@ -539,7 +539,7 @@ uiContext d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
   killmenu(d);
   if (ToggleChikuji(d, 0) == -1) {
@@ -570,7 +570,7 @@ uiContext d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
   killmenu(d);
 
@@ -592,12 +592,12 @@ uiContext d;
 #ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
   int retval = 0;
   char s[512];
-  extern defaultContext;
+  extern int defaultContext;
   yomiContext yc = (yomiContext)d->modec;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
   killmenu(d);
 
@@ -631,10 +631,10 @@ uiContext d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
   killmenu(d);
-  
+
   if (cannaconf.Gakushu == 1) {
     makeGLineMessageFromString(d, "\263\330\275\254\244\254\243\317\243\316"
 	"\244\316\276\365\302\326\244\307\244\271");
@@ -661,7 +661,7 @@ uiContext d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
   killmenu(d);
 
@@ -695,10 +695,10 @@ uiContext d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
   killmenu(d);
-  
+
   if (RomkanaTable && romajidic) {
     sprintf(s, "\245\355\241\274\245\336\273\372\244\253\244\312\312\321"
 	"\264\271\245\306\241\274\245\326\245\353\244\317 %s \244\362\273\310"
@@ -725,12 +725,12 @@ uiContext d;
 {
   int retval = 0;
   char s[512];
-  extern defaultContext;
+  extern int defaultContext;
   yomiContext yc = (yomiContext)d->modec;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
   d->status = 0;
   killmenu(d);
 
