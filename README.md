@@ -16,8 +16,7 @@ CannaIM は、河村さんにより BeOS 用に開発され、
 変換用辞書は、https://github.com/mt819/Canna-Dictionary で保守されています。
 
 #Install
-To install canna without Haikudepot, 
-download source code from
+To install canna without Haikudepot, download source code from
 https://github.com/mt819/Canna-Dictionary/archive/master.zip
 then unzip and run 'sh install.sh' in Terminal.
 
