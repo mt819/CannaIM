@@ -483,6 +483,7 @@ char *table;
   return retval;
 }
 
+int
 RomkanaInit()
 {
   extern char *RomkanaTable, *EnglishTable;
@@ -807,7 +808,7 @@ uiContext d;
 
  */
 
-static
+static int
 checkIfYomiExit(d, retval)
 uiContext d;
 int retval;
@@ -838,7 +839,7 @@ int retval;
   return retval;
 }
 
-static
+static int
 checkIfYomiQuit(d, retval)
 uiContext d;
 int retval;
@@ -993,6 +994,7 @@ yomiContext yc;
 
 int YomiInsert pro((uiContext));
 
+int
 YomiInsert(d)
 uiContext d;
 {
@@ -1162,12 +1164,8 @@ uiContext d;
 
 int findSup pro((wchar_t));
 
-#ifdef __STDC__
+int
 findSup(wchar_t key)
-#else
-findSup(key)
-wchar_t key;
-#endif
 {
   int i;
   extern int nkeysup;
@@ -1464,7 +1462,7 @@ int flag, english;
 #define DAKUON_HV 1
 #define DAKUON_FV 2
 
-static
+static int
 dakuonP(ch)
 wchar_t ch;
 {
@@ -1510,7 +1508,7 @@ wchar_t ch;
 #define GROW_FV 2
 #define GROW_HV 3
 
-static
+static int
 growDakuonP(ch)
 wchar_t ch;
 {
@@ -1622,7 +1620,7 @@ static int isDakuon(const wchar_t* s)
     return 0;
 }
 
-static
+static int
 KanaYomiInsert(d)
 uiContext d;
 {
@@ -1778,7 +1776,7 @@ int  start, end, distance;
   /* else { なにもしない } */
 }
 
-static
+static int
 howFarToGoBackward(yc)
 yomiContext yc;
 {
@@ -1801,7 +1799,7 @@ yomiContext yc;
   return 1;
 }
 
-static
+static int
 howFarToGoForward(yc)
 yomiContext yc;
 {
@@ -2067,6 +2065,7 @@ uiContext d;
  *
  */
 
+int
 RomajiFlushYomi(d, b, bsize)
 uiContext d;
 wchar_t *b;
@@ -2219,7 +2218,7 @@ yomiContext yc;
   return 0;
 }
 
-static
+static int
 appendYomi2Yomi(yom, yc)
 yomiContext yom, yc;
 {
@@ -2771,6 +2770,7 @@ uiContext d;
   }
 }
 
+int
 YomiExit(d, retval)
 uiContext d;
 int retval;
@@ -2851,6 +2851,7 @@ wchar_t *kana, *roma;
 
 */
 
+int
 KanaDeletePrevious(d)/* カーソルの左の文字の削除 */
 uiContext d;
 {
@@ -3133,7 +3134,7 @@ newCoreContext()
 
 static int simplePopCallback pro((uiContext, int, mode_context));
 
-static
+static int
 simplePopCallback(d, retval, env)
 uiContext d;
 int retval;
@@ -3145,6 +3146,7 @@ mode_context env;
   return retval;
 }
 
+int
 alphaMode(d)
 uiContext d;
 {
@@ -3282,6 +3284,7 @@ uiContext d;
   return;
 }
 
+int
 YomiQuotedInsert(d)
 uiContext d;
 {
@@ -3637,6 +3640,7 @@ int hexlen;
   }
 }
 
+int
 convertAsHex(d)
 uiContext d;
 {
@@ -3761,6 +3765,7 @@ mode_context env;
   return retval;
 }
 
+int
 selectKeysup(d, yc, ind)
 uiContext d;
 yomiContext yc;
@@ -3809,7 +3814,7 @@ int ind;
 
  */
 
-static
+static int
 regionGairaigo(yc, s, e)
 yomiContext yc;
 int s, e;
@@ -3841,6 +3846,7 @@ yomiContext yc;
   return 0;
 }
 
+int
 containUnconvertedKey(yc)
 yomiContext yc;
 {
@@ -4269,6 +4275,7 @@ uiContext d;
        かな変換を行う。
  */
 
+int
 exitJishu(d)
 uiContext d;
 {
@@ -4463,7 +4470,7 @@ uiContext d;
   return 0;
 }
 
-static
+static int
 YomiJishu(d, fn) /* 読みモードから直接字種モードへ */
 uiContext d;
 int fn;
@@ -4681,6 +4688,7 @@ uiContext d;
 
 extern int getFunction(KanjiMode mode, int key);
 
+int
 Yomisearchfunc(d, mode, whattodo, key, fnum)
 uiContext d;
 KanjiMode mode;

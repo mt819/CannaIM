@@ -45,7 +45,7 @@ unsigned char f;
   return (int (*)())0;
 }
 
-static
+static int
 simpleUndefBehavior(d)
 uiContext d;
 {
@@ -172,6 +172,7 @@ int fnum;
 
 /* 逐次読みモード用 */
 
+int
 CYsearchfunc(d, mode, whattodo, key, fnum)
 uiContext d;
 KanjiMode mode;

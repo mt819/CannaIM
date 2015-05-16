@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -65,6 +65,7 @@ coreContext qc;
 /*
  * 候補一覧行を作る
  */
+int
 getYesNoContext(d,
 	  everyTimeCallback, exitCallback, quitCallback, auxCallback)
 uiContext d;
@@ -81,7 +82,7 @@ canna_callback_t quitCallback, auxCallback;
                   /* できませんでした */
     return(NG);
   }
-  
+
   if((qc = newYesNoContext()) == (coreContext)NULL) {
     popCallback(d);
     return(NG);
@@ -114,7 +115,7 @@ uiContext d;
   everyTimeCallback を設定していないので、下の処理がうまく動かない
  */
 
-static
+static int
 YesNoNop(d)
 uiContext	d;
 {
@@ -134,7 +135,7 @@ uiContext	d;
 
 static int YesNo pro((uiContext));
 
-static
+static int
 YesNo(d)
 uiContext	d;
 {
@@ -154,7 +155,7 @@ uiContext	d;
 
 static int YesNoQuit pro((uiContext));
 
-static
+static int
 YesNoQuit(d)
 uiContext	d;
 {
@@ -162,7 +163,7 @@ uiContext	d;
 
   popYesNoMode(d);
   d->status = QUIT_CALLBACK;
-  
+
   return(retval);
 }
 

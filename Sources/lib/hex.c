@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -46,7 +46,7 @@ static int quitHex();
 
  */
 
-static
+static int
 hexEveryTimeCatch(d, retval, env)
      uiContext d;
      int retval;
@@ -100,7 +100,7 @@ hexEveryTimeCatch(d, retval, env)
   return retval;
 }
 
-static
+static int
 exitHex(d, retval, env)
 uiContext d;
 int retval;
@@ -119,7 +119,7 @@ mode_context env;
   }
 }
 
-static
+static int
 quitHex(d, retval, env)
      uiContext d;
      int retval;
@@ -134,7 +134,7 @@ quitHex(d, retval, env)
 
 yomiContext GetKanjiString();
 
-static
+static int
 hexMode(d, major_mode)
 uiContext d;
 int major_mode;
@@ -162,6 +162,7 @@ int major_mode;
 
  */
 
+int
 HexMode(d)
 uiContext d;
 {
@@ -169,7 +170,7 @@ uiContext d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
 
   return hexMode(d, CANNA_MODE_HexMode);
 }

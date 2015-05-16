@@ -89,6 +89,7 @@ mountContext mc;
 /*
  * 候補一覧行を作る
  */
+int
 getMountContext(d)
 uiContext d;
 {
@@ -150,7 +151,7 @@ char *s;
  * 辞書のマウント／アンマウント                                              *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 uuMountExitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -295,7 +296,7 @@ mode_context env;
   return(0);
 }
 
-static
+static int
 uuMountQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -327,7 +328,7 @@ mode_context env;
  * │                  │ │  :   │
  * └─────────┘ └───┘
  */
-static
+static int
 getDicList(d)
 uiContext d;
 {
@@ -493,6 +494,7 @@ uiContext d;
   return(dicLc);
 }
 
+int
 dicMount(d)
 uiContext d;
 {

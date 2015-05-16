@@ -235,6 +235,7 @@ CannaBeep()
   }
 }
 
+int
 NothingChangedWithBeep(d)
 uiContext d;
 {
@@ -242,6 +243,7 @@ uiContext d;
   return NothingChanged(d);
 }
 
+int
 NothingForGLineWithBeep(d)
 uiContext d;
 {
@@ -251,6 +253,7 @@ uiContext d;
 
 #ifdef SOMEONE_USE_THIS
 /* 誰も使っていないみたい。 */
+int
 Insertable(ch)
 unsigned char ch;
 {
@@ -533,7 +536,7 @@ int focused;
   return (int)(s - ss);
 }
 
-static
+static int
 extractString(str, s, e)
 wchar_t *str, *s, *e;
 {
@@ -747,6 +750,7 @@ int x, y, z;
   }
 }
 
+int
 checkModec(d)
 uiContext d;
 {
@@ -788,6 +792,7 @@ uiContext d;
 
 static char pbufstr[] = " o|do?b%";
 
+int
 showRomeStruct(dpy, win)
 unsigned int dpy, win;
 {
@@ -864,6 +869,7 @@ unsigned int dpy, win;
 
 extern char *jrKanjiError;
 
+int
 NoMoreMemory()
 {
   jrKanjiError = "\245\341\245\342\245\352\244\254\311\324\302\255\244\267\244\306\244\244\244\336\244\271\241\243";
@@ -871,6 +877,7 @@ NoMoreMemory()
   return NG;
 }
 
+int
 GLineNGReturn(d)
 uiContext d;
 {
@@ -882,6 +889,7 @@ uiContext d;
   return(0);
 }
 
+int
 GLineNGReturnFI(d)
 uiContext d;
 {
@@ -893,6 +901,7 @@ uiContext d;
 
 #ifndef NO_EXTEND_MENU
 
+int
 GLineNGReturnTK(d)
 uiContext d;
 {
@@ -906,6 +915,7 @@ uiContext d;
 #endif /* NO_EXTEND_MENU */
 
 #ifdef USE_COPY_ATTRIBUTE
+int
 copyAttribute(dest, src, n)
      BYTE	*dest;
      BYTE	*src;
@@ -1383,6 +1393,7 @@ WStringClose()
   nwsmemories = 0;
 }
 
+int
 WSfree(s)
      wchar_t *s;
 {
@@ -1486,12 +1497,8 @@ int *startp, *cursor, *endp,  bytes, len, attrmask;
     attr[begin] |= attrmask; */
 }
 
-#ifdef __STDC__
+wchar_t
 WToupper(wchar_t w)
-#else
-WToupper(w)
-wchar_t w;
-#endif
 {
   if ('a' <= w && w <= 'z')
     return((wchar_t) (w - 'a' + 'A'));
@@ -1499,12 +1506,8 @@ wchar_t w;
     return(w);
 }
 
-#ifdef __STDC__
+wchar_t
 WTolower(wchar_t w)
-#else
-WTolower(w)
-wchar_t w;
-#endif
 {
   if ('A' <= w && w <= 'Z') {
     return (wchar_t)(w - 'A' + 'a');
@@ -1604,7 +1607,7 @@ char *str;
 
 /* 以下メッセージを gline に出すための仕組み */
 
-static
+static int
 ProcAnyKey(d)
 uiContext d;
 {
@@ -1689,6 +1692,7 @@ canna_callback_t cnt;
 
  */
 
+int
 canna_alert(d, message, cnt)
 uiContext d;
 char *message;

@@ -343,6 +343,7 @@ int sig;
 
 */
 
+int
 parse_string(str)
 char *str;
 {
@@ -539,7 +540,7 @@ static int nseqtbl;		/* 状態の数。状態の数だけ表がある */
 static int nseq;
 static int seqline;
 
-static
+static int
 initIS()
 {
   SeqToID *p;
@@ -658,7 +659,7 @@ finIS() /* identifySequence に用いたメモリ資源を開放する */
 #define CONTINUE 1
 #define END	 0
 
-static
+static int
 identifySequence(c, val)
 unsigned c;
 int *val;
@@ -705,7 +706,7 @@ alloccell()
 
 /* うまく行かなかったら０を返す */
 
-static
+static int
 allocarea()
 {
   /* まずはセル領域 */
@@ -1054,7 +1055,7 @@ read1()
 /* skipping spaces function -
 	if eof read then return NO	*/
 
-static
+static int
 skipspaces()
 {
   int c;
@@ -1079,7 +1080,7 @@ skipspaces()
 /* skip reading until '\n' -
 	if eof read then return NO	*/
 
-static
+static int
 zaplin()
 {
 	int c;
@@ -1454,7 +1455,8 @@ char *s;
 /* isterm -
 	check if the character is terminating the lisp expression	*/
 
-static isterm(c)
+static int
+isterm(c)
 int  c;
 {
 	if (c <= ' ')
@@ -4199,41 +4201,37 @@ static list Vnkouhobunsetsu(setp, arg) int setp; list arg;
   return arg;
 }
 
+#ifndef STANDALONE
 static list VProtoVer(setp, arg) int setp; list arg;
 {
-#ifndef STANDALONE
   extern protocol_version;
 
   if (protocol_version < 0) {
     ObtainVersion();
   }
   return NumAcc(&protocol_version, setp, arg);
-#endif /* STANDALONE */
 }
 
 static list VServVer(setp, arg) int setp; list arg;
 {
-#ifndef STANDALONE
   extern server_version;
 
   if (server_version < 0) {
     ObtainVersion();
   }
   return NumAcc(&server_version, setp, arg);
-#endif /* STANDALONE */
 }
 
 static list VServName(setp, arg) int setp; list arg;
 {
-#ifndef STANDALONE
   extern char *server_name;
 
   if (!server_name) {
     ObtainVersion();
   }
   return StrAcc(&server_name, setp, arg);
-#endif /* STANDALONE */
 }
+#endif /*STANDALONE*/
 
 static list
 VCannaDir(setp, arg) int setp; list arg;
@@ -4456,9 +4454,11 @@ static struct cannavardefs cannavars[] = {
   {S_VA_CannaVersion		,VCannaVersion},
   {S_VA_Abandon			,VAbandon},
   {S_VA_HexDirect		,VHexStyle},
+#ifndef STANDALONE
   {S_VA_ProtocolVersion		,VProtoVer},
   {S_VA_ServerVersion		,VServVer},
   {S_VA_ServerName		,VServName},
+#endif
   {S_VA_CannaDir		,VCannaDir},
   {S_VA_Kojin			,VKojin},
   {S_VA_IndexHankaku	       	,VIndexHankaku},

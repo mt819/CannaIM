@@ -46,6 +46,7 @@ static int serverChangeDo();
  * サーバの切り離し                                                          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+int
 serverFin(d)
 uiContext d;
 {
@@ -75,7 +76,7 @@ uiContext d;
 
 #ifndef STANDALONE
 
-static
+static int
 uuServerChangeEveryTimeCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -132,7 +133,7 @@ mode_context env;
   return retval;
 }
 
-static
+static int
 uuServerChangeExitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -144,7 +145,7 @@ mode_context env;
   return(serverChangeDo(d, retval));
 }
 
-static
+static int
 uuServerChangeQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -159,6 +160,7 @@ mode_context env;
 extern exp(char *) RkwGetServerName();
 #endif /* STANDALONE */
 
+int
 serverChange(d)
 uiContext d;
 {
@@ -205,7 +207,7 @@ uiContext d;
 }
 
 #ifndef STANDALONE
-static
+static int
 serverChangeDo(d, len)
 uiContext d;
 int len;

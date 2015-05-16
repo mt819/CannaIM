@@ -294,6 +294,7 @@ uiContext d;
   return(ret);
 }
 
+int
 ChikujiSubstYomi(d)
   uiContext d;
 {

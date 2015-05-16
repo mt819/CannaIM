@@ -253,7 +253,7 @@ uiContext d;
 /*
  * forichiranContext の初期化
  */
-static
+static int
 clearForIchiranContext(p)
 forichiranContext p;
 {
@@ -283,6 +283,7 @@ newForIchiranContext()
   return fcxt;
 }
 
+int
 getForIchiranContext(d)
 uiContext d;
 {
@@ -328,7 +329,7 @@ uiContext d;
  * 部首モード入力                                                            *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 vBushuMode(d, major_mode)
 uiContext d;
 int major_mode;
@@ -385,7 +386,7 @@ int major_mode;
   return(retval);
 }
 
-static
+static int
 vBushuIchiranQuitCatch(d, retval, env)
      uiContext d;
      int retval;
@@ -405,7 +406,7 @@ vBushuIchiranQuitCatch(d, retval, env)
   return(vBushuMode(d, CANNA_MODE_BushuMode));
 }
 
-static
+static int
 vBushuExitCatch(d, retval, env)
      uiContext d;
      int retval;
@@ -431,6 +432,7 @@ vBushuExitCatch(d, retval, env)
   return res;
 }
 
+int
 BushuMode(d)
 uiContext d;
 {

@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -116,7 +116,7 @@ ichiranContext kc;
 /*
  * 記号一覧行を作る
  */
-static
+static int
 getKigoContext(d,
 	  everyTimeCallback, exitCallback, quitCallback, auxCallback)
 uiContext d;
@@ -134,7 +134,7 @@ canna_callback_t quitCallback, auxCallback;
                                          /* できませんでした */
     return(NG);
   }
-  
+
   if((kc = newKigoContext()) == (ichiranContext)NULL) {
     popCallback(d);
     return(NG);
@@ -180,7 +180,7 @@ uiContext	d;
   int  i, b1, b2;
 
   gptr = kc->glineifp->gldata + NKAKKOCHARS;
-  
+
   /* カレント記号のJISコードを一覧行の中のカッコ内に入れる */
   CANNA_wcstombs(xxx, kc->kouhoifp[*(kc->curIkouho)].khdata, 3);
 
@@ -224,7 +224,7 @@ uiContext	d;
  *		uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 makeKigoInfo(d, headkouho)
 uiContext	d;
 int		headkouho;
@@ -266,17 +266,17 @@ int		headkouho;
   for(cn=NKCODEALLCHARS, lnko=0;
       b1<BYTE1 && lnko<kc->nIkouho && (headkouho+lnko)<KIGOSU ; b1++) {
     for(; b2<BYTE2 && lnko<kc->nIkouho && (headkouho+lnko)<KIGOSU; b2++, lnko++) {
-      
+
       /* 区切りになる空白をコピーする */
       if(lnko != 0) {
 	CANNA_mbstowcs(gptr++, "\241\241", 1);
-                         /* 　 */ 
+                         /* 　 */
 	cn ++;
       }
 
       kc->kouhoifp[lnko].khpoint = cn;
       kc->kouhoifp[lnko].khdata = gptr;
-      
+
       /* 候補をコピーする */
       *xxx = (char)byte1hex + b1;
       *(xxx + 1) = (char)byte2hex + b2;
@@ -296,7 +296,7 @@ int		headkouho;
  * 記号一覧                                                                  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 kigoIchiranExitCatch(d, retval, env)
      uiContext d;
      int retval;
@@ -312,7 +312,7 @@ kigoIchiranExitCatch(d, retval, env)
   return(retval);
 }
 
-static
+static int
 kigoIchiranQuitCatch(d, retval, env)
      uiContext d;
      int retval;
@@ -326,6 +326,7 @@ kigoIchiranQuitCatch(d, retval, env)
 }
 #endif /* NO_EXTEND_MENU */
 
+int
 KigoIchiran(d)
 uiContext	d;
 {
@@ -333,7 +334,7 @@ uiContext	d;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
-  }    
+  }
 
 #ifdef NO_EXTEND_MENU
   d->kanji_status_return->info |= KanjiKigoInfo;
@@ -353,6 +354,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 makeKigoIchiran(d, major_mode)
 uiContext	d;
 int             major_mode;
@@ -419,7 +421,7 @@ int             major_mode;
   return(0);
 }
 
-static
+static int
 KigoNop(d)
 uiContext	d;
 {
@@ -437,7 +439,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoForwardKouho(d)
 uiContext	d;
 {
@@ -446,7 +448,7 @@ uiContext	d;
 
   /* 次の記号にする */
   ++*(kc->curIkouho);
-  
+
   /* 一覧表示の最後の記号だったら、次の一覧行の先頭記号をカレント記号とする */
   if((*(kc->curIkouho) >= kc->nIkouho) ||
      (kc->glineifp->glhead + *(kc->curIkouho) >= KIGOSU)) {
@@ -470,7 +472,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoBackwardKouho(d)
 uiContext	d;
 {
@@ -502,7 +504,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoPreviousKouhoretsu(d)
 uiContext	d;
 {
@@ -533,7 +535,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoNextKouhoretsu(d)
 uiContext	d;
 {
@@ -564,7 +566,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoBeginningOfKouho(d)
 uiContext	d;
 {
@@ -586,7 +588,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoEndOfKouho(d)
 uiContext	d;
 {
@@ -611,7 +613,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoKakutei(d)
 uiContext	d;
 {
@@ -623,7 +625,7 @@ uiContext	d;
   /* エコーストリングを確定文字列とする */
   if (d->n_buffer >= KIGOSIZE) {
     d->nbytes = KIGOSIZE;
-    WStrncpy(d->buffer_return, kc->kouhoifp[*(kc->curIkouho)].khdata, 
+    WStrncpy(d->buffer_return, kc->kouhoifp[*(kc->curIkouho)].khdata,
 	    d->nbytes);
     d->buffer_return[KIGOSIZE] = (wchar_t)0;
   }
@@ -653,7 +655,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoBangoKouho(d)
 uiContext	d;
 {
@@ -667,7 +669,7 @@ uiContext	d;
       num = (int)(d->ch & 0x0f);
     else if((0x61 <= d->ch) && (d->ch <= 0x66))
       num = (int)(d->ch - 0x57);
-  } 
+  }
   else {
     /* 入力された番号は正しくありません */
     return NothingChangedWithBeep(d);
@@ -699,7 +701,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0
  */
-static
+static int
 KigoQuit(d)
 uiContext	d;
 {

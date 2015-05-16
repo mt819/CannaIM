@@ -33,7 +33,7 @@ extern KanjiModeRec yomi_mode, cy_mode;
  *
  */
 
-static
+static int
 inEmptySelfInsert(d)
 uiContext d;
 {
@@ -253,7 +253,7 @@ extraFunc *estruct;
 }
 
 #ifndef NO_EXTEND_MENU /* continues to the bottom of this file */
-static
+static int
 UserSelect(d, estruct)
 uiContext d;
 extraFunc *estruct;
@@ -300,7 +300,7 @@ extraFunc *estruct;
                     curkigo, kigop->kigo_mode, uuKigoGeneralExitCatch, posp);
 }
 
-static
+static int
 UserMenu(d, estruct)
 uiContext d;
 extraFunc *estruct;
@@ -311,7 +311,7 @@ extraFunc *estruct;
 
 /* デフォルト以外のモード使用時に呼び出す関数を切り分ける */
 
-static
+static int
 ProcExtraFunc(d, fnum)
 uiContext d;
 int fnum;
@@ -336,6 +336,7 @@ int fnum;
   return NothingChangedWithBeep(d);
 }
 
+int
 getBaseMode(yc)
 yomiContext yc;
 {
@@ -384,6 +385,7 @@ yomiContext yc;
   currentModeInfo(d);
 }
 
+int
 EmptyBaseHira(d)
 uiContext d;
 {
@@ -398,6 +400,7 @@ uiContext d;
   return 0;
 }
 
+int
 EmptyBaseKata(d)
 uiContext d;
 {
@@ -415,6 +418,7 @@ uiContext d;
   return 0;
 }
 
+int
 EmptyBaseEisu(d)
 uiContext d;
 {
@@ -430,6 +434,7 @@ uiContext d;
   return 0;
 }
 
+int
 EmptyBaseZen(d)
 uiContext d;
 {
@@ -451,6 +456,7 @@ uiContext d;
   return 0;
 }
 
+int
 EmptyBaseHan(d)
 uiContext d;
 {
@@ -479,6 +485,7 @@ uiContext d;
   return 0;
 }
 
+int
 EmptyBaseKana(d)
 uiContext d;
 {
@@ -502,6 +509,7 @@ uiContext d;
   return 0;
 }
 
+int
 EmptyBaseKakutei(d)
 uiContext d;
 {
@@ -516,6 +524,7 @@ uiContext d;
   return 0;
 }
 
+int
 EmptyBaseHenkan(d)
 uiContext d;
 {

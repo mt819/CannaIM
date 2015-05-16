@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -38,11 +38,11 @@ static char rcs_id[] = "@(#) 102.1 $Id: jrbind.c,v 1.4 2003/09/17 08:50:53 aida_
 
 #define ACTHASHTABLESIZE 64
 #define KEYHASHTABLESIZE 16
-   
+
 /*
 
   jrKanjiString は TTY のキー入力を受け取り、そのキーにしたがって必要
-  ならカナ漢字変換を行い、そのキー入力の結果として得られる文字列を 
+  ならカナ漢字変換を行い、そのキー入力の結果として得られる文字列を
   buffer_return で返す。buffer_return はアプリケーション側に用意するバッ
   ファであり、アプリケーションはそのバッファの長さを bytes_buffer で渡
   す。
@@ -51,7 +51,7 @@ static char rcs_id[] = "@(#) 102.1 $Id: jrbind.c,v 1.4 2003/09/17 08:50:53 aida_
   であり、未確定の読みや候補漢字などが返される。kanji_status_returnの
   メンバには、 echoStr, length, revPos, revLen がありそれぞれ、未確定
   文字列へのポインタ、その長さ、未確定文字列のうち、強調する部分へのオ
-  フセット、強調する部分の長さを返す。未確定文字列を格納する領域は 
+  フセット、強調する部分の長さを返す。未確定文字列を格納する領域は
   jrKanjiString で自動的に用意される。
 
  */
@@ -110,6 +110,7 @@ unsigned int dpy, win;
 
 extern int kanjiControl pro((int, uiContext, caddr_t));
 
+int
 XwcLookupKanji2(dpy, win, buffer_return, nbuffer, nbytes, functionalChar,
 		kanji_status_return)
 unsigned int dpy, win;
@@ -143,7 +144,7 @@ wcKanjiStatus *kanji_status_return;
 
 
   bzero(kanji_status_return, sizeof(wcKanjiStatus));
-  
+
   d->ch = (unsigned)*buffer_return;
   d->buffer_return = buffer_return;
   d->n_buffer = nbuffer;

@@ -12,12 +12,12 @@
  * "as is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -188,7 +188,7 @@ int *nengines;
   return res;
 }
 
-static
+static int
 useEngine(libname)
 char *libname;
 {
@@ -217,7 +217,7 @@ char *libname;
 
 #else /* !DL */
 
-static
+static int
 useEngine(libname)
 struct rkfuncs *libname;
 {
@@ -227,7 +227,7 @@ struct rkfuncs *libname;
 
 #endif /* !DL */
 
-static
+static int
 switch_engine(engine)
 char *engine;
 {
@@ -268,6 +268,7 @@ char *engine;
 static char *server_host = (char *)0;
 static char *server_engine = (char *)0;
 
+int
 RkSetServerName(s)
 char *s;
 {
@@ -658,6 +659,7 @@ char *dirname, *names;
   return Rk ? (*Rk->ListDic)(cn, dirname, names, size) : -1;
 }
 
+int
 RkwCopyDic(cn, dir, from, to, mode)
 int cn, mode;
 char *dir, *from, *to;
@@ -665,6 +667,7 @@ char *dir, *from, *to;
   return Rk ? (*Rk->CopyDic)(cn, dir, from, to, mode) : -1;
 }
 
+int
 RkwRemoveDic(cn, dicname, mode)
 int cn, mode;
 char *dicname;
@@ -672,6 +675,7 @@ char *dicname;
   return Rk ? (*Rk->RemoveDic)(cn, dicname, mode) : -1;
 }
 
+int
 RkwRenameDic(cn, from, to, mode)
 int cn, mode;
 char *from, *to;
@@ -679,6 +683,7 @@ char *from, *to;
   return Rk ? (*Rk->RenameDic)(cn, from, to, mode) : -1;
 }
 
+int
 RkwChmodDic(cn, dicname, mode)
 int cn, mode;
 char *dicname;
@@ -686,6 +691,7 @@ char *dicname;
   return Rk ? (*Rk->ChmodDic)(cn, dicname, mode) : -1;
 }
 
+int
 RkwQueryDic(cn, dir, dic, stat)
 int cn;
 char *dir, *dic;
@@ -700,7 +706,7 @@ int cx_num, infolen;
 unsigned char *dirname, *dicname;
 wchar_t *info;
 {
-  return 
+  return
     Rk ? (*Rk->GetWordTextDic)(cx_num, dirname, dicname, info, infolen) : -1;
 }
 
@@ -728,6 +734,7 @@ wchar_t *yomi, *kanjis, *hinshis;
 #define CANNA_SERVER_NAME_LEN 128
 static char iroha_server_name[CANNA_SERVER_NAME_LEN] = {0, 0};
 
+int
 RkSetServerName(s)
 char *s;
 {

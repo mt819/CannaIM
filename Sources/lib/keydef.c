@@ -119,6 +119,7 @@ unsigned char *alphamap, *emptymap;
 
 */
 
+int
 initKeyTables()
 {
   int i;
@@ -190,6 +191,7 @@ restoreDefaultKeymaps()
 
 extern int nothermodes;
 
+int
 changeKeyfunc(modenum, key, fnum, actbuff, keybuff)
 int modenum;
 int key;
@@ -332,6 +334,7 @@ unsigned char *actbuff, *keybuff;
  *
  */
 
+int
 changeKeyfuncOfAll(key, fnum, actbuff, keybuff)
 int key, fnum;
 unsigned char *actbuff, *keybuff;
@@ -592,7 +595,7 @@ clearAllKeySequence()
   }
 }
 
-static
+static int
 specialen(block)
 unsigned char *block;
 {
@@ -605,7 +608,7 @@ unsigned char *block;
   return i;
 }
 
-static
+static int
 to_write_act(depth,keysize,actsize,singleAct)
 int depth;
 int keysize;
@@ -894,6 +897,7 @@ KanjiMode tbl;
   free(map);
 }
 
+int
 askQuitKey(key)
 unsigned key;
 {

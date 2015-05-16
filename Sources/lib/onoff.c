@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -74,6 +74,7 @@ uiContext d;
 /*
  * 候補一覧行を作る
  */
+int
 selectOnOff(d, buf, ck, nelem, bangomax, currentkouho, status,
 	  everyTimeCallback, exitCallback, quitCallback, auxCallback)
 uiContext d;
@@ -96,7 +97,7 @@ int (*quitCallback)(), (*auxCallback)();
                                        /* できませんでした */
     return(NG);
   }
-  
+
   if ((oc = (ichiranContext)newIchiranContext()) == (ichiranContext)NULL) {
     popCallback(d);
     return(NG);
@@ -127,7 +128,7 @@ int (*quitCallback)(), (*auxCallback)();
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static
+static int
 makeOnOffIchiran(d, nelem, bangomax, currentkouho, status)
 uiContext d;
 int nelem, bangomax;
@@ -155,7 +156,7 @@ unsigned char *status;
   }
 
   /* glineinfoとkouhoinfoを作る */
-  /* 
+  /*
    ＊glineinfo＊
       int glkosu   : int glhead     : int gllen  : wchar_t *gldata
       １行の候補数 : 先頭候補が     : １行の長さ : 候補一覧行の文字列
@@ -210,7 +211,7 @@ unsigned char *status;
       if(status[ko] == 1)
 	WStrncpy(gptr, black, WStrlen(black));
       else
-	WStrncpy(gptr, white, WStrlen(white));	 
+	WStrncpy(gptr, white, WStrlen(white));
       cn ++; gptr++; dn +=2;
       /* 候補をコピーする */
       for(; *kptr && dn<d->ncolumns - (cannaconf.kCount ? ICHISIZE + 1: 0);
@@ -272,7 +273,7 @@ unsigned char *status;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static
+static int
 OnOffSelect(d)
 uiContext d;
 {
@@ -304,7 +305,7 @@ uiContext d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static
+static int
 OnOffKakutei(d)
 uiContext d;
 {

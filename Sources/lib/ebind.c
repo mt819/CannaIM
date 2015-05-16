@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -41,7 +41,7 @@ extern int howToReturnModeInfo;
 static wchar_t *inbuf = 0;
 static int inbufsize = 0;
 
-static
+static int
 StoreWCtoEUC(wbuf, wbuflen, wks, ebuf, maxebuf, ks, ch, nbytes)
 wchar_t *wbuf;
 int wbuflen;
@@ -58,7 +58,7 @@ int nbytes;
   /* info */
 
   ks->info = wks->info;
-    
+
   /* 結果 */
 
   if (ks->info & KanjiThroughInfo) {
@@ -121,7 +121,7 @@ int nbytes;
 	rest -= len;
       }
       if (wks->revLen > 0) {
-	len = ks->revLen 
+	len = ks->revLen
 	  = CNvW2E(wks->echoStr + wks->revPos, wks->revLen, p, rest);
 	p += len;
 	rest -= len;
@@ -157,7 +157,7 @@ int nbytes;
     if (wks->gline.length > 0) {
       ks->gline.line = (unsigned char *)p;
       if (wks->gline.revPos > 0) {
-	len = ks->gline.revPos 
+	len = ks->gline.revPos
 	  = CNvW2E(wks->gline.line, wks->gline.revPos, p, rest);
 	p += len;
 	rest -= len;
@@ -187,6 +187,7 @@ int nbytes;
   return ret;
 }
 
+int
 XLookupKanji2(dpy, win, buffer_return, bytes_buffer, nbytes, functionalChar,
 	      kanji_status_return)
 unsigned int dpy, win;
@@ -228,7 +229,7 @@ jrKanjiStatus *kanji_status_return;
 		      (char *)buffer_return, bytes_buffer, kanji_status_return,
 		      ch, nbytes);
 }
-		      
+
 int
 EUCListCallback(client_data, func, items, nitems, cur_item)
 char *client_data;

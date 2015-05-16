@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -96,7 +96,7 @@ uslen(us)
      Wchar	*us;
 {
   Wchar *ous = us;
-  
+
   if (!us)
     return 0;
   while (*us & RK_WMASK)
@@ -147,7 +147,7 @@ euctous(src, srclen, dest, destlen)
      int		srclen, destlen;
 {
   Wchar	*a = dest;
-    
+
   if (!src || !dest || !srclen || !destlen)
     return(a);
   while (*src && (srclen-- > 0) && (destlen-- > 0)) {
@@ -223,12 +223,12 @@ _RkCalcUnlog2(x)
   return((1 << x) - 1);
 }
 
-int 
+int
 _RkCalcLog2(n)
      int n;
 {
   int	lg2;
-  
+
   n--;
   for (lg2 = 0; n > 0; lg2++)
     n >>= 1;
@@ -247,7 +247,7 @@ _RkClearHeader(hd)
      struct HD	*hd;
 {
   int	i;
-    
+
   if (hd) {
     for (i = 0; i < HD_MAXTAG; i++) {
       if (hd->flag[i] > 0) {
@@ -467,6 +467,7 @@ set_hdr_var(hd, n, var)
     return 0;
 }
 
+int
 _RkGetLink(dic, pgno, off, lvo, csn)
      struct ND	*dic;
      long	pgno;
@@ -533,7 +534,7 @@ HowManyChars(yomi, len)
 
   for (chlen = 0, bytelen = 0; bytelen < len; chlen++) {
     Wchar ch = yomi[chlen];
-    
+
     if (us_iscodeG0(ch))
       bytelen++;
     else if (us_iscodeG3(ch))

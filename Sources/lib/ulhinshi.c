@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -269,7 +269,7 @@ initGyouTable()
  * 単語登録の品詞選択 〜Yes/No 共通 Quit〜                                   *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 uuTHinshiYNQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -277,7 +277,7 @@ mode_context env;
 /* ARGSUSED */
 {
   popCallback(d);
-  
+
   return(dicTourokuHinshi(d));
 }
 
@@ -285,7 +285,7 @@ mode_context env;
  * 単語登録の品詞選択 〜Yes/No 第２段階 共通コールバック〜                   *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 uuTHinshi2YesCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -309,7 +309,7 @@ mode_context env;
   return(retval);
 }
 
-static
+static int
 uuTHinshi2NoCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -338,7 +338,7 @@ mode_context env;
  * 単語登録の品詞選択 〜Yes/No 第１段階 コールバック〜                       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 uuTHinshi1YesCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -347,7 +347,7 @@ mode_context env;
 {
   tourokuContext tc;
   coreContext ync;
-  
+
   popCallback(d); /* yesNo をポップ */
 
   tourokuYes(d);   /* 品詞が決まれば tc->hcode にセットする */
@@ -374,7 +374,7 @@ mode_context env;
   return(retval);
 }
 
-static
+static int
 uuTHinshi1NoCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -396,7 +396,7 @@ mode_context env;
     if((retval = getYesNoContext(d,
 		 NO_CALLBACK, uuTHinshi2YesCatch,
 		 uuTHinshiYNQuitCatch, uuTHinshi2NoCatch)) == NG) {
-      defineEnd(d); 
+      defineEnd(d);
       return(GLineNGReturnTK(d));
     }
     ync = (coreContext)d->modec;
@@ -414,7 +414,7 @@ mode_context env;
  * 単語登録の品詞分けする？                                                  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 uuTHinshiQYesCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -442,7 +442,7 @@ mode_context env;
   return(retval);
 }
 
-static
+static int
 uuTHinshiQNoCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -460,6 +460,7 @@ mode_context env;
 
 static int makeHinshi();
 
+int
 dicTourokuHinshiDelivery(d)
 uiContext	d;
 {
@@ -503,7 +504,7 @@ uiContext	d;
 
 /*
  * 選択された品詞から次の動作を行う
- * 
+ *
  * tc->hcode	品詞
  * tc->qbuf	質問
  * tc->genbuf	エラー
@@ -534,7 +535,7 @@ uiContext	d;
     EWStrcpy(tc->hcode, "#KK");
     WSprintf(tc->qbuf, message[5], message[8], tc->tango_buffer);
     break;
-    
+
   case DOSHI:
 
     /* 入力が終止形か？ */
@@ -561,7 +562,7 @@ uiContext	d;
     if (tc->katsuyou == RAGYOU) {
       tc->curHinshi = RAGYODOSHI;
       /* 未然形をつくる */
-      WStrncpy(tmpbuf, tc->tango_buffer, tlen-1);  
+      WStrncpy(tmpbuf, tc->tango_buffer, tlen-1);
       tmpbuf[tlen - 1] = gyouA[tc->katsuyou];
       tmpbuf[tlen] = (wchar_t)0;
       WSprintf(tc->qbuf, message[5], message[10], tmpbuf);
@@ -586,7 +587,7 @@ uiContext	d;
     }
 
     EWStrcpy(tc->hcode, "#KY"); /* 詳細の品詞を必要としない場合 */
-    WStrncpy(tmpbuf, tc->tango_buffer, tlen-1);  
+    WStrncpy(tmpbuf, tc->tango_buffer, tlen-1);
     tmpbuf[tlen-1] = 0;
     WSprintf(tc->qbuf, message[5], message[11], tmpbuf);
     break;
@@ -601,8 +602,8 @@ uiContext	d;
       return(0);
     }
     EWStrcpy(tc->hcode, "#T05"); /* 詳細の品詞を必要としない場合 */
-    WStrncpy(tmpbuf, tc->tango_buffer, tlen-1);  
-    tmpbuf[tlen-1] = 0;  
+    WStrncpy(tmpbuf, tc->tango_buffer, tlen-1);
+    tmpbuf[tlen-1] = 0;
     WSprintf(tc->qbuf, message[5], message[6], tmpbuf);
     break;
 
@@ -653,7 +654,7 @@ uiContext	d;
     break;
 
   case KEIYODOSHIY:
-  case KEIYODOSHIN: 
+  case KEIYODOSHIN:
     WStrncpy(tmpbuf, tc->tango_buffer, tlen - 1);
     tmpbuf[tlen - 1] = 0;
     WSprintf(tc->qbuf, message[5], message[11], tmpbuf);
@@ -668,7 +669,7 @@ uiContext	d;
   return(0);
 }
 
-static
+static int
 tourokuYes(d)
 uiContext	d;
 {
@@ -757,7 +758,7 @@ uiContext	d;
   return(0);
 }
 
-static
+static int
 tourokuNo(d)
 uiContext	d;
 {
@@ -857,6 +858,7 @@ uiContext	d;
   return(0);
 }
 
+int
 makeDoushi(d)
 uiContext	d;
 {
@@ -892,13 +894,13 @@ uiContext	d;
       break;
     }
     return 0;
-}    
+}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * 辞書の一覧                                                                *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 uuTDicExitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -926,7 +928,7 @@ mode_context env;
   return(tangoTouroku(d));
 }
 
-static
+static int
 uuTDicQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -941,6 +943,7 @@ mode_context env;
   return(dicTourokuHinshi(d));
 }
 
+int
 dicTourokuDictionary(d, exitfunc, quitfunc)
 uiContext d;
 int (*exitfunc)();
@@ -972,13 +975,13 @@ int (*quitfunc)();
 
   fc->curIkouho = 0;
   if (!cannaconf.HexkeySelect)
-    inhibit |= ((unsigned char)NUMBERING | (unsigned char)CHARINSERT); 
+    inhibit |= ((unsigned char)NUMBERING | (unsigned char)CHARINSERT);
   else
     inhibit |= (unsigned char)CHARINSERT;
 
    if((retval = selectOne(d, fc->allkouho, &fc->curIkouho, upnelem,
 		 BANGOMAX, inhibit, 0, WITHOUT_LIST_CALLBACK,
-		 NO_CALLBACK, exitfunc, quitfunc, uiUtilIchiranTooSmall)) 
+		 NO_CALLBACK, exitfunc, quitfunc, uiUtilIchiranTooSmall))
                  == NG) {
     if(fc->allkouho)
       free(fc->allkouho);
@@ -1008,7 +1011,7 @@ int (*quitfunc)();
 /*
  * 単語登録を行う
  */
-static
+static int
 tangoTouroku(d)
 uiContext	d;
 {

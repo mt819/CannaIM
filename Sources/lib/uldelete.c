@@ -99,7 +99,7 @@ uiContext d;
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * 単語削除の読みの入力                                                      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-static
+static int
 uuSYomiEveryTimeCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -146,7 +146,7 @@ mode_context env;
   return retval;
 }
 
-static
+static int
 uuSYomiExitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -166,7 +166,7 @@ mode_context env;
   return dicSakujoTango(d);
 }
 
-static
+static int
 uuSYomiQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -184,7 +184,7 @@ mode_context env;
   return prevMenuIfExist(d);
 }
 
-static
+static int
 dicSakujoYomi(d)
 uiContext d;
 {
@@ -211,7 +211,7 @@ uiContext d;
   return 0;
 }
 
-static
+static int
 acDicSakujoYomi(d, dn, dm)
 uiContext d;
 int dn;
@@ -222,7 +222,7 @@ mode_context dm;
   return dicSakujoYomi(d);
 }
 
-static
+static int
 acDicSakujoDictionary(d, dn, dm)
 uiContext d;
 int dn;
@@ -337,6 +337,7 @@ int *num_return;
   return tourokup;
 }
 
+int
 dicSakujo(d)
 uiContext d;
 {
@@ -403,7 +404,7 @@ tourokuContext tc;
 /*
  * 指定された単語が登録されている辞書を取り出す
  */
-static
+static int
 getEffectDic(tc)
 tourokuContext tc;
 {
@@ -554,7 +555,7 @@ tourokuContext tc;
   return 0;
 }
 
-static
+static int
 uuSTangoExitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -588,7 +589,7 @@ mode_context env;
   return dicSakujoDictionary(d);
 }
 
-static
+static int
 uuSTangoQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -612,7 +613,7 @@ mode_context env;
 /*
  * 読みを指定された辞書から変換する
  */
-static
+static int
 dicSakujoBgnBun(d, st)
 uiContext d;
 RkStat *st;
@@ -699,7 +700,7 @@ RkStat *st;
   return(nbunsetsu);
 }
 
-static
+static int
 dicSakujoEndBun(d)
 uiContext d;
 {
@@ -718,7 +719,7 @@ uiContext d;
   return(0);
 }
 
-static
+static int
 dicSakujoTango(d)
 uiContext d;
 {
@@ -828,7 +829,7 @@ uiContext d;
  * 単語削除の辞書一覧                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 getDeleteDic(mc)
 mountContext mc;
 {
@@ -865,7 +866,7 @@ mountContext mc;
 }
 
 
-static
+static int
 uuSDicExitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -905,7 +906,7 @@ mode_context env;
   return dicSakujoDo(d);
 }
 
-static
+static int
 uuSDicQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -921,7 +922,7 @@ mode_context env;
   return dicSakujoTango(d);
 }
 
-static
+static int
 dicSakujoDictionary(d)
 uiContext d;
 {
@@ -1056,7 +1057,7 @@ uiContext d;
  * 単語削除                                                                  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static
+static int
 uuSDeleteYesCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -1160,7 +1161,7 @@ mode_context env;
   return(0);
 }
 
-static
+static int
 uuSDeleteQuitCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -1179,7 +1180,7 @@ mode_context env;
   return dicSakujoDictionary(d);
 }
 
-static
+static int
 uuSDeleteNoCatch(d, retval, env)
 uiContext d;
 int retval;
@@ -1197,7 +1198,7 @@ mode_context env;
   return(retval);
 }
 
-static
+static int
 dicSakujoDo(d)
 uiContext d;
 {

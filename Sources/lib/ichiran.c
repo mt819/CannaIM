@@ -69,6 +69,7 @@ static char *skuuhaku = "\241\241";
 			/* 　 */
 static wchar_t *kuuhaku;
 
+int
 initIchiran()
 {
   int i, retval = 0;
@@ -537,6 +538,7 @@ ichiranContext p;
 /*
  * 候補一覧のデータ構造体を作るための領域を確保する
  */
+int
 allocIchiranBuf(d)
 uiContext d;
 {
@@ -746,6 +748,7 @@ int currentkouho;
   return(0);
 }
 
+int
 tanKouhoIchiran(d, step)
 uiContext d;
 int step;
@@ -818,6 +821,7 @@ int step;
 /*
  * 候補一覧行の表示を強制終了する
  */
+int
 IchiranQuit(d)
 uiContext d;
 {
@@ -875,7 +879,7 @@ uiContext d;
      -- Do determine from the candidate list, then do one more function.
  */
 
-static
+static int
 IchiranKakuteiThenDo(d, func)
 uiContext d;
 int func;
@@ -899,7 +903,7 @@ int func;
   return retval;
 }
 
-static
+static int
 IchiranQuitThenDo(d, func)
 uiContext d;
 int func;
@@ -927,6 +931,7 @@ int func;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 IchiranForwardKouho(d)
 uiContext d;
 {
@@ -980,6 +985,7 @@ uiContext d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 IchiranBackwardKouho(d)
 uiContext d;
 {
@@ -1059,6 +1065,7 @@ uiContext d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 IchiranPreviousKouhoretsu(d)
 uiContext d;
 {
@@ -1137,6 +1144,7 @@ uiContext d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 IchiranNextKouhoretsu(d)
 uiContext d;
 {
@@ -1277,6 +1285,7 @@ uiContext d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 IchiranBeginningOfKouho(d)
 uiContext d;
 {
@@ -1316,6 +1325,7 @@ uiContext d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 IchiranEndOfKouho(d)
 uiContext d;
 {

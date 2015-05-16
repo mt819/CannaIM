@@ -79,7 +79,7 @@ extern int YYparse_by_rcfilename();
 #define OBSOLETE_FILEENVNAME "IROHAFILE"
 #define OBSOLETE_HOSTENVNAME "IROHAHOST"
 
-static
+static int
 make_initfilename()
 {
   if(!CANNA_initfilename) {

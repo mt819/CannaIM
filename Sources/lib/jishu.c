@@ -35,7 +35,7 @@ static char rcs_id[] = "@(#) 102.1 $Id: jishu.c,v 1.3 2003/09/17 08:50:53 aida_s
 #endif
 #define wchar_t cannawc
 
-extern int WToupper pro((wchar_t));
+extern wchar_t WToupper pro((wchar_t));
 static void setInhibitInformation pro((yomiContext));
 static void jishuAdjustRome pro((uiContext)), jishuAdjustRome pro((uiContext));
 static int JishuZenkaku();
@@ -358,7 +358,7 @@ wchar_t *s, *e, **sr, **er;
   return (int)(s - ss);
 }
 
-static
+static int
 inhibittedJishu(d)
 uiContext d;
 {
@@ -375,7 +375,7 @@ uiContext d;
 	  );
 }
 
-static
+static int
 nextJishu(d)
 uiContext d;
 {
@@ -388,7 +388,7 @@ uiContext d;
   return yc->jishu_kc != startkc;
 }
 
-static
+static int
 previousJishu(d)
 uiContext d;
 {
@@ -730,7 +730,7 @@ JishuHankaku(d) /* 半角変換 */
   return 0;
 }
 
-static
+static int
 exitJishuAndDoSomething(d, fnum)
 uiContext d;
 int fnum;

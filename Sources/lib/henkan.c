@@ -152,6 +152,7 @@ const char *const *errors;
  * 引き数	なし
  * 戻り値	0:まあ正常、 -1:とことん不良
  */
+int
 KanjiInit()
 {
 #ifdef __HAIKU__
@@ -444,6 +445,7 @@ defaultContext = RkwInitialize(ptr);
  * 引き数	なし
  * 戻り値	なし
  */
+int
 KanjiFin()
 {
   struct dicname *dp, *np;
@@ -1125,7 +1127,7 @@ KanjiMode prev;
 }
 
 #ifdef DO_MERGE
-static
+static int
 yomiContext
 mergeYomiContext(yc)
 yomiContext yc;
@@ -1293,6 +1295,7 @@ uiContext d;
   return 1;
 }
 
+int
 doHenkan(d, len, kanji)
 uiContext d;
 int len;
@@ -1323,7 +1326,7 @@ wchar_t *kanji;
  *			  カレント候補を kanji で示された候補に合わせる。
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static
+static int
 doYomiHenkan(d, len, kanji, yc)
 uiContext	d;
 int len;
@@ -1541,7 +1544,7 @@ uiContext	d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static
+static int
 tanNextKouho(d, yc)
 uiContext	d;
 yomiContext   yc;
@@ -1626,6 +1629,7 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
+int
 TanKouhoIchiran(d)
 uiContext d;
 {
@@ -1635,6 +1639,7 @@ uiContext d;
   return tanKouhoIchiran(d, 1);
 }
 
+int
 TanNextKouho(d)
 uiContext d;
 {
@@ -1680,6 +1685,7 @@ uiContext d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 TanPreviousKouho(d)
 uiContext	d;
 {
@@ -1724,42 +1730,49 @@ int fn;
   return d->nbytes;
 }
 
+int
 TanHiragana(d)
 uiContext	d;
 {
   return tanJishuHenkan(d, CANNA_FN_Hiragana);
 }
 
+int
 TanKatakana(d)
 uiContext	d;
 {
   return tanJishuHenkan(d, CANNA_FN_Katakana);
 }
 
+int
 TanRomaji(d)
 uiContext	d;
 {
   return tanJishuHenkan(d, CANNA_FN_Romaji);
 }
 
+int
 TanUpper(d)
 uiContext	d;
 {
   return tanJishuHenkan(d, CANNA_FN_ToUpper);
 }
 
+int
 TanCapitalize(d)
 uiContext	d;
 {
   return tanJishuHenkan(d, CANNA_FN_Capitalize);
 }
 
+int
 TanZenkaku(d)
 uiContext d;
 {
   return tanJishuHenkan(d, CANNA_FN_Zenkaku);
 }
 
+int
 TanHankaku(d)
 uiContext d;
 {
@@ -1768,6 +1781,7 @@ uiContext d;
 
 int TanKanaRotate pro((uiContext));
 
+int
 TanKanaRotate(d)
 uiContext d;
 {
@@ -1776,6 +1790,7 @@ uiContext d;
 
 int TanRomajiRotate pro((uiContext));
 
+int
 TanRomajiRotate(d)
 uiContext d;
 {
@@ -1784,6 +1799,7 @@ uiContext d;
 
 int TanCaseRotateForward pro((uiContext));
 
+int
 TanCaseRotateForward(d)
 uiContext d;
 {
@@ -1916,6 +1932,7 @@ int kCurs;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
+int
 TanMuhenkan(d)
 uiContext	d;
 {
@@ -2042,7 +2059,7 @@ uiContext	d;
         -1 -- エラー？
  */
 
-static
+static int
 doTanKakutei(d, yc)
 uiContext	d;
 yomiContext yc;
@@ -2183,6 +2200,7 @@ uiContext d;
   }
 }
 
+int
 TanKakutei(d)
 uiContext d;
 {
@@ -2391,6 +2409,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
+int
 TanPrintBunpou(d)
 uiContext	d;
 {
@@ -2447,7 +2466,7 @@ uiContext	d;
 #endif /* BUNPOU_DISPLAY */
 
 #ifdef MEASURE_TIME
-static
+static int
 TanPrintTime(d)
 uiContext	d;
 {
