@@ -39,7 +39,7 @@ public:
 			void			SendInputStarted();
 
 private:
-			void		_CopyData(const BPath &srcPath,
+			void			_CopyData(const BPath &srcPath,
 								const BPath &dstPath);
 			void			_ChkVersion(const BPath &srcPath,
 								const BPath &dstPath);
