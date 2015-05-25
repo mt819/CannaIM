@@ -20,6 +20,7 @@ class KouhoWindow;
 class PaletteWindow;
 class BMenu;
 class BMessenger;
+class BPath;
 
 extern Preferences gSettings;
 
@@ -38,7 +39,10 @@ public:
 			void			SendInputStarted();
 
 private:
-			status_t		_CopyData(const char* dstPath);
+			void		_CopyData(const BPath &srcPath,
+								const BPath &dstPath);
+			void			_ChkVersion(const BPath &srcPath,
+								const BPath &dstPath);
 			void			_HandleKeyDown(BMessage* msg);
 			void			_HandleLocationReply(BMessage* msg);
 			void			_HandleMethodActivated(bool active);

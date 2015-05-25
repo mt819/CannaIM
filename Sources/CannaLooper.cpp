@@ -11,6 +11,7 @@
 #include <Alert.h>
 #include <Debug.h>
 #include <Entry.h>
+#include <File.h>
 #include <FindDirectory.h>
 #include <Input.h>
 #include <Menu.h>
@@ -28,6 +29,7 @@
 #include "KouhoWindow.h"
 #include "PaletteWindow.h"
 
+#include <syslog.h>
 
 CannaLooper::CannaLooper(CannaMethod* method)
 	: BLooper("Canna Looper"),
@@ -104,14 +106,60 @@ CannaLooper::Quit()
 }
 
 
-status_t
-CannaLooper::_CopyData(const char* dstPath)
+void
+CannaLooper::_CopyData(const BPath &srcPath, const BPath &dstPath)
 {
-	status_t status;
-	BPath srcPath;
+	char buf[1024];
+	sprintf(buf, "cp -a %s %s",srcPath.Path(), dstPath.Path());
+	system(buf);
+}
 
-	// Use BPathFinder() and BPathFinder(B_CURRENT_IMAGE_SYMBOL)
-	// so that users can use either add-on or package.
+void
+CannaLooper::_ChkVersion(const BPath &srcPath, const BPath &dstPath)
+{
+	BPath tmpPath;
+	tmpPath = srcPath;
+	tmpPath.Append("version.txt");
+
+	const BEntry srcEnt(tmpPath.Path());
+	if (!srcEnt.Exists()) {
+		// source has no version, do not copy.
+		return;
+	}
+	BFile src(&srcEnt, B_READ_ONLY);
+	
+	tmpPath = dstPath;
+	tmpPath.Append("Canna/version.txt");
+
+	const BEntry dstEnt(tmpPath.Path());
+	if (dstEnt.Exists()) {
+		BFile dst(&dstEnt, B_READ_ONLY);
+	
+		// compare src / dst version
+		char srcBuf[256], dstBuf[256];
+		ssize_t size;
+
+		size = src.Read(srcBuf, sizeof(srcBuf));
+		srcBuf[size]= '\0';
+		size = dst.Read(dstBuf, sizeof(dstBuf));
+		dstBuf[size]= '\0';
+
+		// src < dst, no copy
+		if (strncmp (srcBuf, dstBuf, 256) <= 0 ) {
+			return;
+		}
+	}
+	
+	_CopyData(srcPath, dstPath);
+}
+
+
+status_t
+CannaLooper::ReadSettings(char* basePath)
+{
+	BPath srcPath;
+	status_t status;
+	
 	status = BPathFinder().FindPath(
 		B_FIND_PATH_DATA_DIRECTORY, "Canna",
 		B_FIND_PATH_EXISTING_ONLY, srcPath);
@@ -120,34 +168,27 @@ CannaLooper::_CopyData(const char* dstPath)
 			B_FIND_PATH_DATA_DIRECTORY, "Canna",
 			B_FIND_PATH_EXISTING_ONLY, srcPath);
 		if (status != B_OK)
-			return B_ERROR;
+			return status;
 	}
-	BCopyEngine CopyEngine(BCopyEngine::COPY_RECURSIVELY);
-	status = CopyEngine.CopyEntry(srcPath.Path(), dstPath);
-	if (status != B_OK)
-		return B_ERROR;
-
-	return B_OK;
-}
-
-
-status_t
-CannaLooper::ReadSettings(char* basePath)
-{
-	BPath path;
-	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	
+	BPath dstPath;
+	status = find_directory(B_USER_SETTINGS_DIRECTORY, &dstPath);
 	if (status != B_OK)
 		return status;
-
-	path.Append("Canna");
-
-	strlcpy(basePath, path.Path(), B_PATH_NAME_LENGTH);
-	strlcat(basePath, "/", B_PATH_NAME_LENGTH);
-
-	BEntry ent(path.Path());
-	if (!ent.Exists()) {
-		return _CopyData(path.Path());
+		
+	BPath tmpPath;
+	tmpPath = dstPath;
+	tmpPath.Append("Canna");
+	
+	const BEntry dstEnt(tmpPath.Path());
+	if (!dstEnt.Exists()) {
+		_CopyData(srcPath, dstPath);
+	} else {
+		_ChkVersion(srcPath, dstPath);
 	}
+	
+	strlcpy(basePath, tmpPath.Path(), B_PATH_NAME_LENGTH);
+	strlcat(basePath, "/", B_PATH_NAME_LENGTH);
 
 	return B_OK;
 }
