@@ -1,0 +1,204 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>CannaIM Manual</title>
+</head>
+<body>
+<h1>
+CannaIM (canna) 1.03
+</h1>
+
+<h2>
+About CannaIM / CannaIM について
+</h2>
+<p>
+CannaIM is a Japanese input method add-on for Haiku. It is based on UNIX input method 'Canna'.<br />
+CannaIM は、Haiku 用日本語入力用のアドオン (インプットメソッドアドオン) です。Unix のインプットメソッドである’Canna’を元にしています。
+</p>
+<p>
+CannaIM was <a href = "https://web.archive.org/web/20000407094056/http://www02.so-net.ne.jp/~djapana/pages/download/downloadJ.html">originally developed by M.Kawamura for BeOS</a>. He contributed source code to the Haiku project in 2004, since then Canna was distributed part of Haiku. In 2014, Due to developing problem, it was outsourced from the project and has been maintained at <a href ="https://github.com/mt819/CannaIM">GitHub</a>. Kana to Kanji dictionaries are also maintained at <a href = "https://github.com/mt819/Canna-Dictionary">GitHub</a>.<br />
+CannaIM は、<a href = "https://web.archive.org/web/20000407094056/http://www02.so-net.ne.jp/~djapana/pages/download/downloadJ.html">河村さんにより BeOS 用に開発され</a>、 2004 年に Haiku プロジェクトへソースコードが寄付されて、Haikuの一部として配布されてきました。2014年に、開発上の問題からHaikuプロジェクトから分離し、ソースコードは、<a href ="https://github.com/mt819/CannaIM">Github</a> にて保守されています。同様に、かな漢字変換用の辞書も <a href = "https://github.com/mt819/Canna-Dictionary">GitHub</a> で保守されています。
+</p>
+<h2>
+Install / インストール
+</h2>
+Install via HaikuDepot.<br />
+HaikuDepot を使ってインストールしてください。
+</p>
+<p>
+If you prefer building CannaIM from source or don't want to use Haikudepot, download source code from https://github.com/mt819/Canna-Dictionary/archive/master.zip then unzip and run 'sh install.sh' in Terminal.<br />
+ソースからビルドする場合、または、HaikuDepot を使いたくない場合は、ソースコードを https://github.com/mt819/Canna-Dictionary/archive/master.zip からダウンロードして展開後、ターミナルから sh install.sh を実行してください。
+</p>
+<h2>
+Uninstall / アンインストール
+</h2>
+Uninstall CannaIM via HaikuDepot, after that, delete /home/config/setteings/Canna folder.<br />
+HaikuDepotでアンインストールしてください。その後、/home/config/setteings/Cannaフォルダーを削除してください。
+</p>
+<p>
+If you install CannaIM without HaikuDepot (using install.sh above), delete files / folders bellow:<br />
+HaikuDepotを使わずインストールした場合（上記のinstall.shでインストールした場合）は、以下のファイル、フォルダーを削除してください。
+</p>
+<h2>
+Usage / 使い方
+</h2>
+<p>
+Tapping Alt + Space toggles CannaIM.<br /> 
+Alt + Spaceキーで、CannaIM のオン / オフを切り替えます。
+</p>
+<p>
+CannaIMがオンになっていると、以下のウィンドウが表示されます。<br />
+When CannaIM is on, below window appers. 
+</p>
+<p>
+<img src="data/cannaim.png">
+</p>
+<p>
+Here is a brief note for CannaIM window.<br />
+以下はウインドウの簡単な説明です。
+</p>
+<ol>
+<li>Change input to fullwidth <a href="http://en.wikipedia.org/wiki/Hiragana">HARAGANA</a>.<br />
+入力を全角ひらがなに変更します。
+<li>Change input to fullwidth <a href="http://en.wikipedia.org/wiki/Katakana">KATAKANA</a>.<br />
+入力を全角カタカナに変更します。
+<li>Change input to fullwidth alphabet.<br />
+入力を全角英数に変更します。
+<li>Change input to halfwidth alphabet.<br />
+入力を半角英数に変更します。
+<li>Expand function: you can add words, mount / unmount dictionaries, and so on.<br />
+拡張機能：単語の登録、辞書の追加/削除などを行います。
+<li>Select Kigou (signs).<br />
+記号入力を行います。
+<li>Input charater by JIS code.<br />
+JISコード入力を行います。
+<li>Select Kanji from radical.<br />
+部首入力を行います。
+</ol>
+<h2>
+Key Bindings / キー配置
+</h2>
+<p>
+Below shows standard key bindings.<br />
+標準のキー配置を以下に示します。
+</p>
+<table>
+<tr>
+<td>
+Alt + Space
+</td>
+<td>Toggle input methods.<br />
+After changing to Canna, then input some Ro-ma ji text (ex. nihongonotesuto), then press space to start conversion.<br />
+インプットメソッド (入力方法) を切り替えます。Canna に変更後ローマ字で入力し、スペースを押すと変換を開始します。
+</td>
+</tr>
+<tr>
+<td>
+Space
+</td>
+<td>
+Select current phrase (Red background text) conversion candidate<br />
+現在の文節（赤い背景で表示されます）の変換候補を選択します。
+</td>
+</tr>
+<tr>
+<td>
+F6
+</td>
+<td>
+Change current phrase to Full width HIRAGANA<br />
+現在の文節を全角ひらがなに変換します。
+</td>
+</tr>
+<tr>
+<td>
+F7
+</td>
+<td>
+Change current phrase to Full width KATAKANA<br />
+現在の文節を全角カタカナに変換します。
+</td>
+</tr>
+<tr>
+<td>
+F9
+</td>
+<td>
+Change current phrase to Full width Alphabets.<br />
+現在の文節を全角アルファベットに変換します。
+</td>
+</tr>
+<tr>
+<td>
+Right arrow
+</td>
+<td>
+Expand current phrase.<br />
+現在の文節を拡張します。
+</td>
+</tr>
+<tr>
+<td>
+Left arrow
+</td>
+<td>
+Shrink current phrase.<br />
+現在の文節を縮小します。
+</td>
+</tr>
+<tr>
+<td>
+Up arrow
+</td>
+<td>
+Cycle current phrase (HIRAGANA/KATAKANA/KANJI/Alphabet).<br />
+現在の文節の字種を変更します(ひらがな→カタカナ→漢字→アルファベット→)。</td>
+</tr>
+<tr>
+<td>
+Down arrow
+</td>
+<td>
+Ends current phrase conversion and move to next phase.<br />
+現在の文節の変換を終了し、次の文節に移動します。
+</td>
+</tr>
+<tr>
+<td>
+Return
+</td>
+<td>
+Ends conversion.<br />
+変換を終了します。
+</td>
+</tr>
+<tr>
+<td>
+ESC
+</td>
+<td>
+Cancel conversion.<br />
+変換をキャンセルします。
+</td>
+</tr>
+</table>
+<p>
+For more imfometion, see default key binding file:
+/boot/system/data/Canna/default/just.canna
+</p>
+<h2>
+HISTORY / 開発履歴 
+</h2>
+1.02-20140801<br />
+* Update Canna 3.5b2 to 3.7p3<br />
+* Add support for x86_64 (a feature of Canna 3.7).<br />
+* Add 7-digit zip code dictionary (yubin7), generated by canna-yubin script.<br />
+  http://sourceforge.jp/projects/canna-yubin/<br />
+<br />
+1.01-20140725<br />
+* Initial version.<br />
+* Source code from Haiku repository, build script from Pe repository.<br />
+  http://cgit.haiku-os.org/haiku/tree/src/add-ons/input_server/methods/canna<br />
+  https://github.com/olta/pe
+</body>
+</html>
+
