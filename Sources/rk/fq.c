@@ -289,8 +289,8 @@ abolishNV(nv)
       for (p = *q; p; p = r) {
 	r = p->next;
 	if (p->data)
-	  free((char *)p->data);
-	free((char *)p);
+	  free(p->data);
+	free(p);
       }
     }
     free(nv->buf);
@@ -322,7 +322,7 @@ readNV(fd)
 	}
       }
     }
-    free((char *)vn);
+    free(vn);
   }
   return (struct NV *)0;
 
@@ -332,22 +332,22 @@ readNV(fd)
   vn->head.left = vn->head.right = &vn->head;
   if (vn->sz) {
     if (!(vn->buf = (struct NVE **)calloc((size_t)vn->tsz, sizeof(struct NVE *)))) {
-      free((char *)vn);
+      free(vn);
       return((struct NV *)0);
     }
     if (!(buf = (unsigned char *)malloc((size_t)vn->sz)) ||
        read(fd, buf, (unsigned int)vn->sz) != (int)vn->sz)
     {
-      free((char *)vn->buf);
+      free(vn->buf);
       if (buf)
-	free((char *)buf);
-      free((char *)vn);
+	free(buf);
+      free(vn);
       return((struct NV *)0);
     }
     for (p = buf, i = 0L; i < cnt; i++, p += *p*2 + 2)
       if ((unsigned long) (p - buf) + *p * 2 + 2 < vn->sz)
 	_RkRegisterNV(vn, p + 2, (int)*p, (int)*(p + 1));
-    free((char *)buf);
+    free(buf);
   } else {
     free(vn);
     return((struct NV *)0);
@@ -401,11 +401,11 @@ writeNV(fd, nv)
       }
     }
   }
-  if (buf) free((char *)buf);
+  if (buf) free(buf);
   return(-1);
 
  write_ok:
-  if (buf) free((char *)buf);
+  if (buf) free(buf);
   return(0);
 }
 
@@ -666,7 +666,7 @@ FQclose(cx, dm, qm, file)
 	(void)lseek(fd, xqm->ex_boff, 0);
 	(void)write(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
       };
-      free((char *)qm->dm_qbits);
+      free(qm->dm_qbits);
       qm->dm_qbits = (unsigned char *)0;
     }
   }
@@ -691,7 +691,7 @@ FQclose(cx, dm, qm, file)
     for (ddm = dmh->dm_next; ddm != dmh; ddm = ddm->dm_next) {
       xqm = (struct xqm *)ddm->dm_extdata.ptr;
       if (xqm) {
-	free((char *)xqm);
+	free(xqm);
 	ddm->dm_extdata.ptr = (pointer)0;
       }
     }

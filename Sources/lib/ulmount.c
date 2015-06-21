@@ -231,7 +231,7 @@ mode_context env;
 		kanjidicnames = dp;
 	      }
 	      else { /* malloc failed */
-		free((char *)dp);
+		free(dp);
 		dp = (struct dicname *)0;
 	      }
 	    }
@@ -418,7 +418,7 @@ uiContext d;
 #endif
     free(dicLbuf);
     free(dicLp);
-    free((char *)soldp);
+    free(soldp);
     return(NG);
   }
   for(i = 0, wptr = dicLbuf; i < dicLc; i++) { /* buf を作る */
@@ -448,7 +448,7 @@ uiContext d;
 #endif
       free(dicLbuf);
       free(dicLp);
-      free((char *)soldp);
+      free(soldp);
       return(NG);
     }
   }
@@ -462,8 +462,8 @@ uiContext d;
                    /* マウントしている辞書の取り出しに失敗しました */
     free(dicLbuf);
     free(dicLp);
-    free((char *)soldp);
-    free((char *)snewp);
+    free(soldp);
+    free(snewp);
     return(NG);
   }
 

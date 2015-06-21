@@ -113,9 +113,9 @@ _RkCreateDM(df, dicname, nickname, class)
 	dm->dm_nv = (struct NV *)0;
 	return dm;
       }
-      free((char *)dm->dm_dicname);
+      free(dm->dm_dicname);
     }
-    free((char *)dm);
+    free(dm);
   }
   return 0;
 }
@@ -129,10 +129,10 @@ _RkFreeDM(dm)
 	dm->dm_next->dm_prev = dm->dm_prev;
 	dm->dm_prev->dm_next = dm->dm_next;
 	if (dm->dm_dicname)
-	    (void)free((char *)dm->dm_dicname);
+	    free(dm->dm_dicname);
 	if (dm->dm_nickname)
-	    (void)free((char *)dm->dm_nickname);
-	(void)free((char *)dm);
+	    free(dm->dm_nickname);
+	free(dm);
     };
 }
 
@@ -182,7 +182,7 @@ _RkCreateDF(dd, lnk, type)
     dm->dm_next = dm->dm_prev = dm;
 
     if (!(df->df_link = allocStr((char *)lnk))) {
-      (void)free(df);
+      free(df);
       return(0);
     };
     df->df_rcount = 0;
@@ -211,8 +211,8 @@ _RkFreeDF(df)
     df->df_next->df_prev = df->df_prev;
     df->df_prev->df_next = df->df_next;
     if (df->df_link)
-      (void)free((char *)df->df_link);
-    (void)free((char *)df);
+      free(df->df_link);
+    free(df);
   };
 }
 
@@ -256,7 +256,7 @@ _RkRealizeDF(df)
     oldmask = umask(2);
     /* create a file */
     t = close(creat(pathname, CREAT_MODE));
-    (void)free(pathname);
+    free(pathname);
     (void)umask(oldmask);
     if (t >= 0) {
       return 0;
@@ -421,9 +421,9 @@ _RkCreateDD(path, name)
 	dd->dd_text.ddt_next = dd->dd_text.ddt_prev = &dd->dd_text;
 	return dd;
       }
-      free((char *)dd->dd_path);
+      free(dd->dd_path);
     }
-    free((char *)dd);
+    free(dd);
   }
   return (struct DD *)0;
 }
@@ -446,9 +446,9 @@ _RkFreeDD(dd)
     dd->dd_next->dd_prev = dd->dd_prev;
     dd->dd_prev->dd_next = dd->dd_next;
     if (dd->dd_path)
-      (void)free((char *)dd->dd_path);
+      free(dd->dd_path);
     if (dd->dd_name)
-      (void)free((char *)dd->dd_name);
+      free(dd->dd_name);
 
     ddLines = &dd->dd_text;
     for (p = ddLines->ddt_next; p != ddLines; p = q) {
@@ -456,10 +456,10 @@ _RkFreeDD(dd)
       p->ddt_next->ddt_prev = p->ddt_prev;
       p->ddt_prev->ddt_next = p->ddt_next;
       if (p->ddt_spec)
-	(void)free((char *)p->ddt_spec);
-      (void)free((char *)p);
+	free(p->ddt_spec);
+      free(p);
     };
-    (void)free((char *)dd);
+    free(dd);
   };
 }
 static
@@ -514,13 +514,13 @@ _RkReadDD(name)
   member = (unsigned char *)malloc(RK_MEMBER_BMAX + 1);
   nickname = (unsigned char *)malloc(RK_NICK_BMAX + 1);
   if (!direct || !file || !path || !line || !lnk || !member || !nickname) {
-    if (direct) (void)free(direct);
-    if (file) (void)free(file);
-    if (path) (void)free(path);
-    if (line) (void)free((char *)line);
-    if (lnk) (void)free((char *)lnk);
-    if (member) (void)free((char *)member);
-    if (nickname) (void)free((char *)nickname);
+    if (direct) free(direct);
+    if (file) free(file);
+    if (path) free(path);
+    if (line) free(line);
+    if (lnk) free(lnk);
+    if (member) free(member);
+    if (nickname) free(nickname);
     return dd;
   }
 #endif
@@ -633,13 +633,13 @@ _RkReadDD(name)
 
  return_dd:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(direct);
-  (void)free(file);
-  (void)free(path);
-  (void)free((char *)line);
-  (void)free((char *)lnk);
-  (void)free((char *)member);
-  (void)free((char *)nickname);
+  free(direct);
+  free(file);
+  free(path);
+  free(line);
+  free(lnk);
+  free(member);
+  free(nickname);
 #endif
   return dd;
 }
@@ -722,7 +722,7 @@ _RkCreateUniquePath(dd, proto)
 
       if (close(creat(filename, CREAT_MODE)) < 0)
 	count++;
-      (void)free(filename);
+      free(filename);
       (void)umask(oldmask);
       if (!count)
 	return newLinkName;
@@ -772,10 +772,10 @@ _RkRealizeDD(dd)
   dicsdir = malloc(RK_PATH_BMAX);
   backup = malloc(RK_PATH_BMAX);
   if (!whattime || !header || !dicsdir || !backup) {
-    if (whattime) (void)free(whattime);
-    if (header) (void)free(header);
-    if (dicsdir) (void)free(dicsdir);
-    if (backup) (void)free(backup);
+    if (whattime) free(whattime);
+    if (header) free(header);
+    if (dicsdir) free(dicsdir);
+    if (backup) free(backup);
     return ret;
   }
 #endif
@@ -902,10 +902,10 @@ _RkRealizeDD(dd)
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(whattime);
-  (void)free(header);
-  (void)free(dicsdir);
-  (void)free(backup);
+  free(whattime);
+  free(header);
+  free(dicsdir);
+  free(backup);
 #endif
   return ret;
 }
@@ -966,7 +966,7 @@ _RkAppendDDP(ddp, dd)
   if (new) {
     if (ddp) {
       for (i = 0; i < count; i++) new[i] = ddp[i];
-      (void)free((char *)ddp);
+      free(ddp);
     };
     new[count++] = dd;
     new[count] = (struct DD *)0;
@@ -1015,7 +1015,7 @@ _RkCreateDDP(ddpath)
       ddp = _RkAppendDDP(ddp, dd);
   };
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(dir);
+  free(dir);
 #endif
   return ddp;
 }
@@ -1032,7 +1032,7 @@ _RkFreeDDP(ddp)
       if (--dd->dd_rcount == 0) {
 	_RkFreeDD(dd);
       };
-    (void)free((char *)ddp);
+    free(ddp);
   };
 }
 
@@ -1224,9 +1224,9 @@ char *name;
   member = malloc(RK_MEMBER_BMAX + 1);
   nickname = malloc(RK_NICK_BMAX + 1);
   if (!lnk || !member || !nickname) {
-    if (lnk) (void)free(lnk);
-    if (member) (void)free(member);
-    if (nickname) (void)free(nickname);
+    if (lnk) free(lnk);
+    if (member) free(member);
+    if (nickname) free(nickname);
     return 0;
   }
 #endif
@@ -1240,9 +1240,9 @@ char *name;
     ret = 1;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(lnk);
-  (void)free(member);
-  (void)free(nickname);
+  free(lnk);
+  free(member);
+  free(nickname);
 #endif
   return ret;
 }
@@ -1272,9 +1272,9 @@ DMcreate(dd, spec)
   member = malloc(RK_MEMBER_BMAX + 1);
   nickname = malloc(RK_NICK_BMAX + 1);
   if (!lnk || !member || !nickname) {
-    if (lnk) (void)free(lnk);
-    if (member) (void)free(member);
-    if (nickname) (void)free(nickname);
+    if (lnk) free(lnk);
+    if (member) free(member);
+    if (nickname) free(nickname);
     return dm;
   }
 #endif
@@ -1307,16 +1307,16 @@ DMcreate(dd, spec)
 	  }
 	  _RkFreeDF(df);
 	}
-	(void)free((char *)ddt->ddt_spec);
+	free(ddt->ddt_spec);
       }
-      (void)free((char *)ddt);
+      free(ddt);
     }
   }
  return_dm:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(lnk);
-  (void)free(member);
-  (void)free(nickname);
+  free(lnk);
+  free(member);
+  free(nickname);
 #endif
   return(dm);
 }
@@ -1334,8 +1334,8 @@ DMremove(dm)
      ddt->ddt_next->ddt_prev = ddt->ddt_prev;
      ddt->ddt_prev->ddt_next = ddt->ddt_next;
      if (ddt->ddt_spec)
-       free((char *)ddt->ddt_spec);
-     free((char *)ddt);
+       free(ddt->ddt_spec);
+     free(ddt);
    };
   /* free dm itself */
   _RkFreeDM(dm);
@@ -1399,7 +1399,7 @@ DMrename(dm, nickname)
   }
   strcpy(new_spec, spec);
   if (!(new_nick = allocStr((char *)nickname))) {
-    (void)free(new_spec);
+    free(new_spec);
     goto return_ret;
   };
   free(ddt->ddt_spec);
@@ -1410,7 +1410,7 @@ DMrename(dm, nickname)
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(spec);
+  free(spec);
 #endif
   return ret;
 }
@@ -1475,7 +1475,7 @@ int mode;
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(spec);
+  free(spec);
 #endif
   return ret;
 }
@@ -1518,7 +1518,7 @@ int mode;
       if (chmod(dicsdir, filemode) == 0) {
 	dd->dd_flags = newflags;
       }
-      free((char *)dicsdir);
+      free(dicsdir);
     }
   }
   newflags = dd->dd_flags;
@@ -1547,13 +1547,13 @@ _RkMountMD(cx, dm, qm, mode, firsttime)
     df = dm->dm_file;
     dd = df->df_direct;
     if (!(file = _RkCreatePath(dd, df->df_link))) {
-      (void)free((char *)md);
+      free(md);
       return -1;
     };
     status = DST_OPEN(dm, file,  DM_WRITABLE, cx->gram->gramdic);
-    (void)free(file);
+    free(file);
     if (status) {
-      (void)free((char *)md);
+      free(md);
       return -1;
     };
   };
@@ -1561,13 +1561,13 @@ _RkMountMD(cx, dm, qm, mode, firsttime)
     df = qm->dm_file;
     dd = df->df_direct;
     if (!(file = _RkCreatePath(dd, df->df_link))) {
-      (void)free((char *)md);
+      free(md);
       return -1;
     };
     status = FQopen(dm, qm, file, DM_WRITABLE);
-    (void)free(file);
+    free(file);
     if (status) {
-      (void)free((char *)md);
+      free(md);
       return -1;
     };
   };
@@ -1616,7 +1616,7 @@ _RkUmountMD(cx, md)
   else {
     md->md_prev->md_next = md->md_next;
     md->md_next->md_prev = md->md_prev;
-    (void)free((char *)md);
+    free(md);
     if (qm) {
       df = qm->dm_file;
       dd = df->df_direct;
@@ -1630,7 +1630,7 @@ _RkUmountMD(cx, md)
 	    if (dd->dd_rcount > 0 && --dd->dd_rcount == 0)
 	      _RkFreeDD(dd);
 	  };
-	  (void)free(file);
+	  free(file);
 	};
       };
     };
@@ -1644,7 +1644,7 @@ _RkUmountMD(cx, md)
 	  if (dd->dd_rcount > 0 && --dd->dd_rcount == 0)
 	    _RkFreeDD(dd);
 	};
-	(void)free(file);
+	free(file);
       };
     };
   };

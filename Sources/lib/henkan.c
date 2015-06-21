@@ -483,7 +483,7 @@ KanjiFin()
     }
     np = dp->next;
     free(dp->name);
-    free((char *)dp);
+    free(dp);
     dp = np;
   }
   kanjidicnames = (struct dicname *)0;
@@ -520,12 +520,12 @@ void
 freeTanContext(tan)
 tanContext tan;
 {
-  if (tan->kanji) free((char *)tan->kanji);
-  if (tan->yomi) free((char *)tan->yomi);
-  if (tan->roma) free((char *)tan->roma);
-  if (tan->kAttr) free((char *)tan->kAttr);
-  if (tan->rAttr) free((char *)tan->rAttr);
-  free((char *)tan);
+  if (tan->kanji) free(tan->kanji);
+  if (tan->yomi) free(tan->yomi);
+  if (tan->roma) free(tan->roma);
+  if (tan->kAttr) free(tan->kAttr);
+  if (tan->rAttr) free(tan->rAttr);
+  free(tan);
 }
 
 static wchar_t *
@@ -697,17 +697,17 @@ yomiContext yc;
 		    }
 		    continue;
 		  }
-		  free((char *)tan->roma);
+		  free(tan->roma);
 		}
-		free((char *)tan->kAttr);
+		free(tan->kAttr);
 	      }
-	      free((char *)tan->yomi);
+	      free(tan->yomi);
 	    }
 	  }
 	  else {
 	    makeRkError(d, KanjiInitError());
 	  }
-	  free((char *)tan->kanji);
+	  free(tan->kanji);
 	}
       }
       else {
@@ -778,7 +778,7 @@ yomiContext yc;
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)xxx);
+  free(xxx);
 #endif
 
   return ret;
@@ -871,17 +871,17 @@ yomiContext yc;
 		    }
 		    continue;
 		  }
-		  if (tan) free((char *)tan->roma);
+		  if (tan) free(tan->roma);
 		}
-		if (tan) free((char *)tan->kAttr);
+		if (tan) free(tan->kAttr);
 	      }
-	      if (tan) free((char *)tan->yomi);
+	      if (tan) free(tan->yomi);
 	    }
 	  }
 	  else {
 	    makeRkError(d, KanjiInitError());
 	  }
-	  if (tan) free((char *)tan->kanji);
+	  if (tan) free(tan->kanji);
 	}
       }
       else {
@@ -988,7 +988,7 @@ yomiContext yc;
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)xxx);
+  free(xxx);
 #endif
 
   return ret;
@@ -1051,15 +1051,15 @@ uiContext d;
 		yc->left = (tanContext)0;
 		goto done;
 	      }
-	      free((char *)tan->roma);
+	      free(tan->roma);
 	    }
-	    free((char *)tan->kAttr);
+	    free(tan->kAttr);
 	  }
-	  free((char *)tan->yomi);
+	  free(tan->yomi);
 	}
-	free((char *)tan->kanji);
+	free(tan->kanji);
       }
-      free((char *)tan); /* not freeTanContext(tan); */
+      free(tan); /* not freeTanContext(tan); */
     }
   }
 #if 0
@@ -1598,7 +1598,7 @@ uiContext d;
   tan->kanji = (wchar_t *)0;
 
   yc = tanbunToYomi(d, tan, prevkanji);
-  free((char *)prevkanji);
+  free(prevkanji);
   if (yc) {
 
     /*ここで
@@ -2045,7 +2045,7 @@ uiContext	d;
   }
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)tmpbuf);
+  free(tmpbuf);
 #endif
   return ret;
 }
@@ -2758,7 +2758,7 @@ int head;
   retval = NothingChangedWithBeep(d);
  done:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)xxx);
+  free(xxx);
 #endif
   return retval;
 }

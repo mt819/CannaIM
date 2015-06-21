@@ -124,12 +124,12 @@ char *romaji;
 	open_flags |= O_BINARY;
 #endif
 	if ( (dic = open((char *)romaji, open_flags)) < 0 ) {
-		free((char *)rdic);
+		free(rdic);
 		return((struct RkRxDic *)0);
 	}
 	if ( readHeader(rdic, dic) ) {
 		(void)close(dic);
-		free((char *)rdic);
+		free(rdic);
 		return((struct RkRxDic *)0);
 	}
 	if (rdic->nr_strsz > 0) {
@@ -138,15 +138,15 @@ char *romaji;
 
 	  if ( !rdic->nr_string ) {
 		(void)close(dic);
-		free((char *)rdic);
+		free(rdic);
 		return((struct RkRxDic *)0);
 	  }
 
 	  sz = read(dic, (char *)rdic->nr_string, rdic->nr_strsz);
 	  (void)close(dic);
 	  if ( sz != rdic->nr_strsz ) {
-	    free((char *)rdic->nr_string);
-	    free((char *)rdic);
+	    free(rdic->nr_string);
+	    free(rdic);
 	    return((struct RkRxDic *)0);
 	  }
 	}
@@ -159,8 +159,8 @@ char *romaji;
 	    (unsigned char **)calloc((unsigned)rdic->nr_nkey, 
 				     sizeof(unsigned char *));
 	  if ( !rdic->nr_keyaddr ) {
-	    free((char *)rdic->nr_string);
-	    free((char *)rdic);
+	    free(rdic->nr_string);
+	    free(rdic);
 	    return((struct RkRxDic *)0);
 	  }
 	}
@@ -217,12 +217,12 @@ char *romaji;
                                               sizeof(struct romaRec));
 	if (!tmp_rdic) {
           if (rdic->nr_string)
-            free((char *)rdic->nr_string);
+            free(rdic->nr_string);
           if (rdic->nr_keyaddr)
-            free((char *)rdic->nr_keyaddr);
+            free(rdic->nr_keyaddr);
 	  if (rdic->nr_brules)
-            free((char *)rdic->nr_brules);
-	  free((char *)rdic);
+            free(rdic->nr_brules);
+	  free(rdic);
 	  return (struct RkRxDic *)NULL;
 	}
 
@@ -253,10 +253,10 @@ RkwCloseRoma(rdic)
 struct RkRxDic	*rdic;
 {
     if ( rdic ) {
-        if (rdic->nr_string) free((char *)rdic->nr_string);
-        if (rdic->nr_keyaddr) free((char *)rdic->nr_keyaddr);
-	if (rdic->nr_brules) free((char *)rdic->nr_brules);
-	free((char *)rdic);
+        if (rdic->nr_string) free(rdic->nr_string);
+        if (rdic->nr_keyaddr) free(rdic->nr_keyaddr);
+	if (rdic->nr_brules) free(rdic->nr_brules);
+	free(rdic);
     };
 }
 
@@ -474,7 +474,7 @@ done:
 	};
     };
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    free((char *)match);
+    free(match);
 #endif
     return count;
 }
@@ -727,7 +727,7 @@ int		*rule_id_inout;
   }
  return_found:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)match);
+  free(match);
 #endif
   return found;
 }
@@ -757,10 +757,10 @@ unsigned	flags;
     yyyy = (unsigned char *)malloc(64);
     if (!xxxx || !yyyy) {
       if (xxxx) {
-	free((char *)xxxx);
+	free(xxxx);
       }
       if (yyyy) {
-	free((char *)yyyy);
+	free(yyyy);
       }
       return count;
     }
@@ -799,8 +799,8 @@ unsigned	flags;
       }
     }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    free((char *)yyyy);
-    free((char *)xxxx);
+    free(yyyy);
+    free(xxxx);
 #endif
     return count;
 }

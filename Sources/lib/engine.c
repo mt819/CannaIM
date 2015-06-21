@@ -135,7 +135,7 @@ int *nengines;
       free(buf);
     }
     if (ebuf) {
-      free((char *)ebuf);
+      free(ebuf);
     }
     if (winbuf) {
       free(winbuf);
@@ -182,7 +182,7 @@ int *nengines;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(winbuf);
-  free((char *)ebuf);
+  free(ebuf);
   free(buf);
 #endif
   return res;

@@ -149,9 +149,9 @@ initKeyTables()
         }
         return 0;
       }
-      free((char *)alphamap);
+      free(alphamap);
     }
-    free((char *)defaultmap);
+    free(defaultmap);
   }
   return NG;
 }
@@ -728,9 +728,9 @@ int      depth;
         }
         return p;
       }
-      free((char *)p->mode);
+      free(p->mode);
     }
-    free((char *)p);
+    free(p);
   }
   return (struct map *)0;
 }
@@ -833,9 +833,9 @@ copyMultiSequence(key, old_tbl, new_tbl)
 	    if (old_sequence[i] == CANNA_FN_UseOtherKeymap) {
 	      if (copyMultiSequence(old_sequence[i-1],
 				    old_map->mode, p->mode) < 0) {
-		free((char *)p->mode->keytbl);
-		free((char *)p->mode);
-		free((char *)p);
+		free(p->mode->keytbl);
+		free(p->mode);
+		free(p);
 		*pp = (struct map *)0;
 		return(-1);
 	      }
@@ -847,13 +847,13 @@ copyMultiSequence(key, old_tbl, new_tbl)
 	}
 	return 0;
       } else {
-	free((char *)p->mode);
-	free((char *)p);
+	free(p->mode);
+	free(p);
 	*pp = (struct map *)0;
 	return(-1);
       }
     } else {
-      free((char *)p);
+      free(p);
       *pp = (struct map *)0;
       return(-1);
     }

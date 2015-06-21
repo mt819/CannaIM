@@ -204,14 +204,14 @@ uiContext d;
 
     for (p = d->selinfo ; p ; p = q) {
       q = p->next;
-      free((char *)p);
+      free(p);
     }
   }
   if (d->attr) {
     if (d->attr->u.attr) {
       free(d->attr->u.attr);
     }
-    free((char *)d->attr);
+    free(d->attr);
   }
   free(d);
 }
@@ -638,11 +638,11 @@ freeKeysup()
 
   for (i = 0 ; i < nkeysup ; i++) {
     if (keysup[i].cand) {
-      free((char *)keysup[i].cand);
+      free(keysup[i].cand);
       keysup[i].cand = (wchar_t **)0;
     }
     if (keysup[i].fullword) {
-      free((char *)keysup[i].fullword);
+      free(keysup[i].fullword);
       keysup[i].fullword = (wchar_t *)0;
     }
   }
@@ -674,16 +674,16 @@ freeExtra()
 	    p->u.modeptr->romdic != (struct RkRxDic *)NULL) {
 	  RkwCloseRoma(p->u.modeptr->romdic);
 	}
-        free((char *)p->u.modeptr->emode);
+        free(p->u.modeptr->emode);
 	if (p->u.modeptr->romaji_table) {
-	  free((char *)p->u.modeptr->romaji_table);
+	  free(p->u.modeptr->romaji_table);
 	}
-        free((char *)p->u.modeptr);
+        free(p->u.modeptr);
         break;
       case EXTRA_FUNC_DEFSELECTION:
-        free((char *)p->u.kigoptr->kigo_str);
-        free((char *)p->u.kigoptr->kigo_data);
-        free((char *)p->u.kigoptr);
+        free(p->u.kigoptr->kigo_str);
+        free(p->u.kigoptr->kigo_data);
+        free(p->u.kigoptr);
         break;
 #ifndef NO_EXTEND_MENU
       case EXTRA_FUNC_DEFMENU:
@@ -691,7 +691,7 @@ freeExtra()
         break;
 #endif
     }
-    free((char *)p);
+    free(p);
   }
   extrafuncp = (extraFunc *)0;
 }
@@ -1331,7 +1331,7 @@ wcKanjiStatusWithValue *arg;
   makeYomiReturnStruct(d);
   arg->val = 0;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)buf);
+  free(buf);
 #endif
   return 0;
 }
@@ -1447,7 +1447,7 @@ KanjiMode c_mode;
     yc->henkanInhibition = inhback;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    free((char *)e);
+    free(e);
   }
 #endif
   return retval;
@@ -2317,7 +2317,7 @@ char *arg;
 	  *p = d->attr;
 	  return 0;
 	}
-	free((char *)d->attr);
+	free(d->attr);
 	d->attr = (wcKanjiAttributeInternal *)0;
       }
     }
@@ -2328,7 +2328,7 @@ char *arg;
   }
   else if (d->attr) { /* && !p */
     free(d->attr->u.attr);
-    free((char *)d->attr);
+    free(d->attr);
     d->attr = (wcKanjiAttributeInternal *)0;
     return 0;
   }

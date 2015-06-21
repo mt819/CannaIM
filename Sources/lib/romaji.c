@@ -251,7 +251,7 @@ wchar_t *insert;
 		 &yc->kCurs, &yc->kEndp,
 		 where, insert, insertlen, mask);
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)buf);
+  free(buf);
 #endif
 }
 #endif /* CALLBACK */
@@ -478,7 +478,7 @@ char *table;
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)rdic);
+  free(rdic);
 #endif
   return retval;
 }
@@ -649,11 +649,11 @@ RomkanaFin()
   /* ローマ字かな変換ルールの補足のための領域の解放 */
   for (i = 0 ; i < nkeysup ; i++) {
     if (keysup[i].cand) {
-      free((char *)keysup[i].cand);
+      free(keysup[i].cand);
       keysup[i].cand = (wchar_t **)NULL;
     }
     if (keysup[i].fullword) {
-      free((char *)keysup[i].fullword);
+      free(keysup[i].fullword);
       keysup[i].fullword = (wchar_t *)NULL;
     }
   }
@@ -1212,10 +1212,10 @@ int flag, english;
   sub_buf = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
   if (!kana_char || !sub_buf) {
     if (kana_char) {
-      free((char *)kana_char);
+      free(kana_char);
     }
     if (sub_buf) {
-      free((char *)sub_buf);
+      free(sub_buf);
     }
     return 0;
   }
@@ -1435,8 +1435,8 @@ int flag, english;
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)kana_char);
-  free((char *)sub_buf);
+  free(kana_char);
+  free(sub_buf);
 #endif
   return retval;
 }
@@ -4465,7 +4465,7 @@ uiContext d;
   yc->cmark = yc->kCurs;
   yc->jishu_kEndp = 0;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)xxxx);
+  free(xxxx);
 #endif
   return 0;
 }
@@ -4537,7 +4537,7 @@ chikujiEndBun(d)
       ycsv;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    free((char *)ycsv);
+    free(ycsv);
   }
 #endif
   return(ret);
@@ -4725,10 +4725,10 @@ int fnum;
       roma = (wchar_t *)malloc(sizeof(wchar_t) * 128);
       if (!kana || !roma) {
 	if (kana) {
-	  free((char *)kana);
+	  free(kana);
 	}
 	if (roma) {
-	  free((char *)roma);
+	  free(roma);
 	}
 	return 0; /* ? suspicious */
       }
@@ -4747,8 +4747,8 @@ int fnum;
 	fnum = CANNA_FN_FunctionalInsert;
       }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-      free((char *)kana);
-      free((char *)roma);
+      free(kana);
+      free(roma);
 #endif
     }
   }
@@ -4962,7 +4962,7 @@ uiContext	d;
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)tmpbuf);
+  free(tmpbuf);
 #endif
   return ret;
 }

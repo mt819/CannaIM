@@ -187,7 +187,7 @@ _Rkpopen(dm, dfnm, mode, gram)
   }
   if (!(xdm->pgs
           = (struct NP *)malloc((size_t)(sizeof(struct NP) * xdm->ttlpg)))) {
-    free((char *)xdm->buf);
+    free(xdm->buf);
     xdm->buf = (unsigned char *)0;
     return(-1);
   }
@@ -204,8 +204,8 @@ _Rkpopen(dm, dfnm, mode, gram)
   (void)lseek(fd, xdm->doff, 0);
   readsize = read(fd, (char *)xdm->buf, (unsigned int) xdm->drsz);
   if (readsize != ((int) xdm->drsz)) {
-    free((char *)xdm->pgs);
-    free((char *)xdm->buf);
+    free(xdm->pgs);
+    free(xdm->buf);
     xdm->buf = (unsigned char *)0;
     xdm->pgs = (struct NP *)0;
     return(-1);
@@ -257,7 +257,7 @@ _Rkpclose(dm, dfnm, gram)
     dm->dm_gram->refcount--;
     if (dm->dm_gram->refcount == 0) {
       (void)RkCloseGram(dm->dm_gram->gramdic);
-      free((char *)dm->dm_gram);
+      free(dm->dm_gram);
     }
   }
   if (xdm) {
@@ -269,16 +269,16 @@ _Rkpclose(dm, dfnm, gram)
 	    munmap((caddr_t)xdm->pgs[i].buf, xdm->pgsz);
 #else
 	  if (xdm->pgs[i].buf) {
-	    free((char *)xdm->pgs[i].buf);
+	    free(xdm->pgs[i].buf);
 	  }
 #endif
 	  xdm->pgs[i].flags &= ~RK_PG_LOADED;
 	}
-      free((char *)xdm->pgs);
+      free(xdm->pgs);
       xdm->pgs = (struct NP *)0;
     }
     if (xdm->buf) {
-      free((char *) xdm->buf);
+      free( xdm->buf);
       xdm->buf = (unsigned char *)0;
     }
   }
@@ -294,7 +294,7 @@ _Rkpclose(dm, dfnm, gram)
     for (ddm = dmh->dm_next; ddm != dmh; ddm = ddm->dm_next) {
       xdm = (struct ND *)ddm->dm_xdm;
       if (xdm) {
-	free((char *)xdm);
+	free(xdm);
 	ddm->dm_xdm = (pointer)0;
       }
     }
@@ -331,7 +331,7 @@ assurep(dic, id)
 #endif
     (void)lseek(fd, off, 0);
     if (read(fd, (char *)buf, size) != (int)size) {
-      free((char *)buf);
+      free(buf);
       return((unsigned char *)0);
     }
 
@@ -605,10 +605,10 @@ _Rkpctl(dm, qm, what, arg, gram)
   nread = (struct nread *)malloc(sizeof(struct nread) * PERM_NREADSIZE);
   permutation = (unsigned *)malloc(sizeof(unsigned) * RK_CAND_NMAX);
   if (!wrec || !key || !nread || !permutation) {
-    if (wrec) free((char *)wrec);
-    if (key) free((char *)key);
-    if (nread) free((char *)nread);
-    if (permutation) free((char *)permutation);
+    if (wrec) free(wrec);
+    if (key) free(key);
+    if (nread) free(nread);
+    if (permutation) free(permutation);
     return ret;
   }
 #endif
@@ -775,10 +775,10 @@ _Rkpctl(dm, qm, what, arg, gram)
   }
  done:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)wrec);
-  free((char *)key);
-  free((char *)nread);
-  free((char *)permutation);
+  free(wrec);
+  free(key);
+  free(nread);
+  free(permutation);
 #endif
   return ret;
 }

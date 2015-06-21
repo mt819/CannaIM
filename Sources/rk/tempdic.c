@@ -58,15 +58,15 @@ freeTD(td)
   for (i = 0; i < (int)td->td_n; i++) {
     struct TN	*tn = &td->td_node[i];
     if (IsWordNode(tn)) {
-      free((char *)tn->tn_word->word);
-      free((char *)tn->tn_word);
+      free(tn->tn_word->word);
+      free(tn->tn_word);
     } else
       freeTD(tn->tn_tree);
   }
   if (td) {
     if (td->td_node)
-      free((char *)td->td_node);
-    free((char *)td);
+      free(td->td_node);
+    free(td);
   }
 }
 
@@ -106,13 +106,13 @@ extendTD(tdic, key, tw)
   tp = tdic->td_node;
   if (tdic->td_n >= tdic->td_max) {
     if (!(tp = (struct TN *)calloc(tdic->td_max + 1, sizeof(struct TN)))) {
-      free((char *)ntw->word);
-      free((char *)ntw);
+      free(ntw->word);
+      free(ntw);
       return (struct TN *)0;
     }
     for (i = 0; i < (int)tdic->td_n; i++)
       tp[i] = tdic->td_node[i];
-    free((char *)tdic->td_node);
+    free(tdic->td_node);
     tdic->td_max++;
     tdic->td_node = tp;
   }
@@ -207,8 +207,8 @@ defineTD(dm, tab, n, newTW, nlen)
 	  if (!(mergeTW = RkUnionWrec(newTW, oldTW)))
 	    return((struct TN *)0);
 	  tn->tn_word = mergeTW;
-	  free((char *)oldW);
-	  free((char *)oldTW);
+	  free(oldW);
+	  free(oldTW);
 	  tn->tn_flags |= TN_WDEF;
 	  if (cache) {
 	    _RkRehashCache(cache, (long)tn->tn_word);
@@ -269,7 +269,7 @@ enterTD(dm, td, gram, word)
     ret = 1;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)wrec);
+  free(wrec);
 #endif
   return ret;
 }
@@ -331,8 +331,8 @@ deleteTD(dm, tab, n, newW)
 
 	    newTW.word = newW;
 	    subW = RkSubtractWrec(oldTW, &newTW);
-	    free((char *)oldW);
-	    free((char *)oldTW);
+	    free(oldW);
+	    free(oldTW);
 	    if (subW) {
 	      tn->tn_word = subW;
 	      tn->tn_flags |= TN_WDEL;
@@ -352,8 +352,8 @@ deleteTD(dm, tab, n, newW)
 	if (deleteTD(dm, &tn->tn_tree, n, newW))
 	  shrinkTD(td, key);
       if (td->td_n <= 0) {
-	free((char *)(td->td_node));
-	free((char *)td);
+	free((td->td_node));
+	free(td);
 	*tab = (struct TD *)0;
 	return(1);
       } else
@@ -389,7 +389,7 @@ _Rktopen(dm, file, mode, gram)
   Wchar *wcline = (Wchar *)malloc(sizeof(Wchar) * RK_LINE_BMAX * 10);
   if (!line || !wcline) {
     if (line) free(line);
-    if (wcline) free((char *)wcline);
+    if (wcline) free(wcline);
     return ret;
   }
 #endif
@@ -444,7 +444,7 @@ _Rktopen(dm, file, mode, gram)
   }
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)wcline);
+  free(wcline);
   free(line);
 #endif
   return ret;
@@ -504,7 +504,7 @@ writeTD(td, gram, fdes)
       } else
         ecount += writeTD(tn->tn_tree, gram, fdes);
     }
-    free((char *)wcline);
+    free(wcline);
     return(ecount);
   }
   return 0;
@@ -767,7 +767,7 @@ _Rktctl(dm, qm, what, arg, gram)
     break;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)wrec);
+  free(wrec);
 #endif
   return status;
 }

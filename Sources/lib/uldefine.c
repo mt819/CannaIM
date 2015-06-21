@@ -203,7 +203,7 @@ uiContext d;
 
   d->modec = tc->next;
   d->current_mode = tc->prevMode;
-  free((char *)tc);
+  free(tc);
 }
 
 
@@ -618,7 +618,7 @@ uiContext d;
       for ( ; *p; p++) {
         WSfree(*p);
       }
-      free((char *)up);
+      free(up);
     }
     return(NG);
   }

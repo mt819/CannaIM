@@ -991,7 +991,7 @@ RkwMapPhonogram(struct RkRxDic *romaji, wchar_t *dst, int maxdst,
       free(cbuf2);
     }
     if (wbuf) {
-      free((char *)wbuf);
+      free(wbuf);
     }
     return status;
   }

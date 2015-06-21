@@ -195,14 +195,14 @@ freeBunStorage(s)
 {
   if (s) {
     if (s->yomi)
-      free((char *)(s->yomi-OVERRUN_MARGIN));
+      free(s->yomi-OVERRUN_MARGIN);
     if (s->bunq)
-      free((char *)(s->bunq-OVERRUN_MARGIN));
+      free(s->bunq-OVERRUN_MARGIN);
     if (s->xq)
-      free((char *)(s->xq-OVERRUN_MARGIN));
+      free(s->xq-OVERRUN_MARGIN);
     if (s->xqh)
-      free((char *)(s->xqh-OVERRUN_MARGIN));
-    free((char *)s);
+      free(s->xqh-OVERRUN_MARGIN);
+    free(s);
   }
 }
 
@@ -285,28 +285,28 @@ _RkReallocBunStorage(src, len)
     if (src->yomi) {
       for (i = 0; i <= (int)src->maxyomi; i++)
 	dst->yomi[i] = src->yomi[i];
-      free((char *)(src->yomi-OVERRUN_MARGIN));
+      free((src->yomi-OVERRUN_MARGIN));
     };
     dst->nyomi = src->nyomi;
     if (src->bunq) {
       for (i = 0; i <= (int)src->maxbun; i++)
 	dst->bunq[i] = src->bunq[i];
-      free((char *)(src->bunq-OVERRUN_MARGIN));
+      free((src->bunq-OVERRUN_MARGIN));
     };
     dst->maxbun = src->maxbun;
     dst->curbun = src->curbun;
     if (src->xq) {
       for (i = 0; i <= src->maxxq; i++)
 	dst->xq[i] = src->xq[i];
-      free((char *)(src->xq-OVERRUN_MARGIN));
+      free((src->xq-OVERRUN_MARGIN));
     };
     if (src->xqh) {
       for (i = 0; i <= src->maxxq; i++)
 	dst->xqh[i] = src->xqh[i];
-      free((char *)(src->xqh-OVERRUN_MARGIN));
+      free((src->xqh-OVERRUN_MARGIN));
     };
     dst->word_in_use = src->word_in_use;
-    free((char *)src);
+    free(src);
     return(dst);
   }
   return((struct nstore *)0);
@@ -1117,7 +1117,7 @@ RkeGetStat(cx_num, st)
   }
  return_res:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)kanji);
+  free(kanji);
 #endif
   return res;
 }
@@ -1517,7 +1517,7 @@ RkeGetLex(cx_num, dst, maxdst)
   }
  return_nwords:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)kanji);
+  free(kanji);
 #endif
   return nwords;
 }
@@ -1556,7 +1556,7 @@ addHinshi(dst, ind, max, yomi, kanji, lex, cx)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)hinshi);
+  free(hinshi);
 #endif
   return ind;
 }
@@ -1631,16 +1631,16 @@ RkwQueryDic(cx_num, dirname, dicname, status)
   if (*dirname && strcmp(dirname, cx->ddpath[0]->dd_name)
       && strcmp(dirname, (char *)SYSTEM_DDHOME_NAME)) {
     if((new_cx_num = RkwCreateContext()) < 0) {
-      free((char *)buff);
+      free(buff);
       return BADCONT;
     }
     if(RkwSetDicPath(new_cx_num, dirname) < 0) {
       CloseContext(new_cx_num);
-      free((char *)buff);
+      free(buff);
       return NOTALC;
     }
     if (!(cx = RkGetContext(new_cx_num))) {
-      free((char *)buff);
+      free(buff);
       return(-1);
     }
   } else {
@@ -1653,13 +1653,13 @@ RkwQueryDic(cx_num, dirname, dicname, status)
   if (!strcmp(dirname, (char *)SYSTEM_DDHOME_NAME)) {
     if (!(dm = _RkSearchDDP(cx->ddpath, dicname))) {
       CloseContext(new_cx_num);
-      free((char *)buff);
+      free(buff);
       return NOENT;
     }
   } else {
     if (!(dm = _RkSearchUDDP(cx->ddpath, dicname))) {
       CloseContext(new_cx_num);
-      free((char *)buff);
+      free(buff);
       return NOENT;
     }
   }
@@ -1675,12 +1675,12 @@ RkwQueryDic(cx_num, dirname, dicname, status)
       status->di_time = stat(file, &st) >= 0 ? st.st_ctime : 0;
       status->di_mode = 0;
       CloseContext(new_cx_num);
-      free((char *)file);
-      free((char *)buff);
+      free(file);
+      free(buff);
       return(0);
     }
   }
-  free((char *)buff);
+  free(buff);
   CloseContext(new_cx_num);
   return(-1);
 }
@@ -1745,7 +1745,7 @@ RkwSync(cx_num, dicname)
     }
   return_ret:;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    free((char *)diclist);
+    free(diclist);
 #endif
   } else {
     ret = _RkwSync(cx, dicname);

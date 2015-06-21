@@ -151,7 +151,7 @@ _RkInitialize(ddhome, numCache)
 		    }
 		    _RkFinalizeCache();
 		  }
-		  free((char *)CX);
+		  free(CX);
 		  now_context = 0L;
 		}
 		free(sx->ddhome);
@@ -191,7 +191,7 @@ _RkFinalizeWord()		/* finalize free word list */
   /* dispose each page in list */
   for (w = SX.page; w; w = t) {
     t = w->nw_next;
-    free((char *)w);
+    free(w);
   } 
   SX.word = (struct nword *)0;
   SX.page = (struct nword *)0;
@@ -212,12 +212,12 @@ RkwFinalize()
   for(i = 0; (unsigned long)i < now_context; i++)
     if (IS_LIVECTX(&CX[i]))
       RkwCloseContext(i);
-  free((char *)CX);
+  free(CX);
   now_context = 0L;
   /* sonohoka no shuuryou shori */
   _RkFinalizeWord();
   _RkFinalizeCache();
-  free((char *)sx->ddhome);
+  free(sx->ddhome);
   sx->ddhome = (char *)0;
   _RkFreeDDP(sx->ddpath);
   RkCloseGram(SG.gramdic);
@@ -346,7 +346,7 @@ int cx_num;
       int j;
 
       for (j = 0 ; j < i; j++) {
-	free((char *)cx->md[i]);
+	free(cx->md[i]);
       }
       return -1;
     }
@@ -378,7 +378,7 @@ int cx_num;
       cx->flags = CTX_LIVE | CTX_NODIC;
       return 0;
     }
-    free((char *)cx->litmode);
+    free(cx->litmode);
 #else
     cx->flags = CTX_LIVE | CTX_NODIC;
     return 0;
@@ -443,7 +443,7 @@ RkwCloseContext(cx_num)
 	n = m->md_next;
 	(void)_RkUmountMD(cx, m);
       };
-      free((char *)mh);
+      free(mh);
       cx->md[i] = (struct MD *)0;
     };
   };
@@ -451,7 +451,7 @@ RkwCloseContext(cx_num)
   cx->qmprev = (struct DM *)0;
   /* convertion table */
   if (cx->litmode) {
-    free((char *)cx->litmode);
+    free(cx->litmode);
     cx->litmode = (unsigned long *)0;
   }
   cx->flags = 0;
@@ -460,7 +460,7 @@ RkwCloseContext(cx_num)
   cx->gram->refcount--;
   if (cx->gram->refcount == 0 && cx->gram != &SG) {
     RkCloseGram(cx->gram->gramdic);
-    free((char *)cx->gram);
+    free(cx->gram);
   }
   cx->gram = (struct RkGram *)0;
 
@@ -470,8 +470,8 @@ RkwCloseContext(cx_num)
     if (gwt) {
       (void)RkwCloseContext(gwt->gwt_cx);
       if (gwt->gwt_dicname)
-	free((char *)gwt->gwt_dicname);
-      free((char *)gwt);
+	free(gwt->gwt_dicname);
+      free(gwt);
     };
     cx->cx_gwt = (pointer)0;
   };
@@ -806,7 +806,7 @@ RkwGetDicList(cx_num, mdname, maxmdname)
       if (j + 1 < maxmdname && mdname) {
 	mdname[j++] = 0;
       }
-      free((char *)diclist);
+      free(diclist);
     }
     else {
       count = -1; /* やっぱり正確な数が分からなかった */
