@@ -195,14 +195,14 @@ freeBunStorage(s)
 {
   if (s) {
     if (s->yomi)
-      (void)free((char *)(s->yomi-OVERRUN_MARGIN));
+      free((char *)(s->yomi-OVERRUN_MARGIN));
     if (s->bunq)
-      (void)free((char *)(s->bunq-OVERRUN_MARGIN));
+      free((char *)(s->bunq-OVERRUN_MARGIN));
     if (s->xq)
-      (void)free((char *)(s->xq-OVERRUN_MARGIN));
+      free((char *)(s->xq-OVERRUN_MARGIN));
     if (s->xqh)
-      (void)free((char *)(s->xqh-OVERRUN_MARGIN));
-    (void)free((char *)s);
+      free((char *)(s->xqh-OVERRUN_MARGIN));
+    free((char *)s);
   }
 }
 
@@ -285,28 +285,28 @@ _RkReallocBunStorage(src, len)
     if (src->yomi) {
       for (i = 0; i <= (int)src->maxyomi; i++)
 	dst->yomi[i] = src->yomi[i];
-      (void)free((char *)(src->yomi-OVERRUN_MARGIN));
+      free((char *)(src->yomi-OVERRUN_MARGIN));
     };
     dst->nyomi = src->nyomi;
     if (src->bunq) {
       for (i = 0; i <= (int)src->maxbun; i++)
 	dst->bunq[i] = src->bunq[i];
-      (void)free((char *)(src->bunq-OVERRUN_MARGIN));
+      free((char *)(src->bunq-OVERRUN_MARGIN));
     };
     dst->maxbun = src->maxbun;
     dst->curbun = src->curbun;
     if (src->xq) {
       for (i = 0; i <= src->maxxq; i++)
 	dst->xq[i] = src->xq[i];
-      (void)free((char *)(src->xq-OVERRUN_MARGIN));
+      free((char *)(src->xq-OVERRUN_MARGIN));
     };
     if (src->xqh) {
       for (i = 0; i <= src->maxxq; i++)
 	dst->xqh[i] = src->xqh[i];
-      (void)free((char *)(src->xqh-OVERRUN_MARGIN));
+      free((char *)(src->xqh-OVERRUN_MARGIN));
     };
     dst->word_in_use = src->word_in_use;
-    (void)free((char *)src);
+    free((char *)src);
     return(dst);
   }
   return((struct nstore *)0);
@@ -1117,7 +1117,7 @@ RkeGetStat(cx_num, st)
   }
  return_res:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)kanji);
+  free((char *)kanji);
 #endif
   return res;
 }
@@ -1517,7 +1517,7 @@ RkeGetLex(cx_num, dst, maxdst)
   }
  return_nwords:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)kanji);
+  free((char *)kanji);
 #endif
   return nwords;
 }
@@ -1556,7 +1556,7 @@ addHinshi(dst, ind, max, yomi, kanji, lex, cx)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)hinshi);
+  free((char *)hinshi);
 #endif
   return ind;
 }
@@ -1631,16 +1631,16 @@ RkwQueryDic(cx_num, dirname, dicname, status)
   if (*dirname && strcmp(dirname, cx->ddpath[0]->dd_name)
       && strcmp(dirname, (char *)SYSTEM_DDHOME_NAME)) {
     if((new_cx_num = RkwCreateContext()) < 0) {
-      (void)free((char *)buff);
+      free((char *)buff);
       return BADCONT;
     }
     if(RkwSetDicPath(new_cx_num, dirname) < 0) {
       CloseContext(new_cx_num);
-      (void)free((char *)buff);
+      free((char *)buff);
       return NOTALC;
     }
     if (!(cx = RkGetContext(new_cx_num))) {
-      (void)free((char *)buff);
+      free((char *)buff);
       return(-1);
     }
   } else {
@@ -1653,13 +1653,13 @@ RkwQueryDic(cx_num, dirname, dicname, status)
   if (!strcmp(dirname, (char *)SYSTEM_DDHOME_NAME)) {
     if (!(dm = _RkSearchDDP(cx->ddpath, dicname))) {
       CloseContext(new_cx_num);
-      (void)free((char *)buff);
+      free((char *)buff);
       return NOENT;
     }
   } else {
     if (!(dm = _RkSearchUDDP(cx->ddpath, dicname))) {
       CloseContext(new_cx_num);
-      (void)free((char *)buff);
+      free((char *)buff);
       return NOENT;
     }
   }
@@ -1745,7 +1745,7 @@ RkwSync(cx_num, dicname)
     }
   return_ret:;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    (void)free((char *)diclist);
+    free((char *)diclist);
 #endif
   } else {
     ret = _RkwSync(cx, dicname);

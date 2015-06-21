@@ -293,16 +293,16 @@ BYTE *arg;
   wbuf2 = (wchar_t *)malloc(sizeof(wchar_t) * 320);
   if (!arg2 || !wbuf || !wbuf1 || !wbuf2) {
     if (arg2) {
-      (void)free((char *)arg2);
+      free((char *)arg2);
     }
     if (wbuf) {
-      (void)free((char *)wbuf);
+      free((char *)wbuf);
     }
     if (wbuf1) {
-      (void)free((char *)wbuf1);
+      free((char *)wbuf1);
     }
     if (wbuf2) {
-      (void)free((char *)wbuf2);
+      free((char *)wbuf2);
     }
     return ret;
   }
@@ -407,10 +407,10 @@ BYTE *arg;
   }
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)wbuf2);
-  (void)free((char *)wbuf1);
-  (void)free((char *)wbuf);
-  (void)free((char *)arg2);
+  free((char *)wbuf2);
+  free((char *)wbuf1);
+  free((char *)wbuf);
+  free((char *)arg2);
 #endif
   return ret;
 }

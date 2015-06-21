@@ -161,10 +161,10 @@ wchar_t *s, *e, **sr, **er;
   yyyy = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
   if (!xxxx || !yyyy) {
     if (xxxx) {
-      (void)free((char *)xxxx);
+      free((char *)xxxx);
     }
     if (yyyy) {
-      (void)free((char *)yyyy);
+      free((char *)yyyy);
     }
     return 0;
   }
@@ -352,8 +352,8 @@ wchar_t *s, *e, **sr, **er;
     *s = (wchar_t)0;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)xxxx);
-  (void)free((char *)yyyy);
+  free((char *)xxxx);
+  free((char *)yyyy);
 #endif
   return (int)(s - ss);
 }

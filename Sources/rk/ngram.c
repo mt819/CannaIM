@@ -67,18 +67,18 @@ RkCloseGram(gram)
      struct RkKxGram	*gram;
 {
   if (gram->ng_conj)
-    (void)free((char *)gram->ng_conj);
+    free((char *)gram->ng_conj);
   if (gram->ng_conjcells)
-    (void)free((char *)gram->ng_conjcells);
+    free((char *)gram->ng_conjcells);
   if (gram->ng_conjrows)
-    (void)free((char *)gram->ng_conjrows);
+    free((char *)gram->ng_conjrows);
   if (gram->ng_strtab)
-    (void)free((char *)gram->ng_strtab);
+    free((char *)gram->ng_strtab);
 #ifdef LOGIC_HACK
   if (gram->ng_neg)
-    (void)free((char *)gram->ng_neg);
+    free((char *)gram->ng_neg);
 #endif
-  (void)free((char *)gram);
+  free((char *)gram);
 }
 
 static
@@ -624,7 +624,7 @@ RkParseWrec(gram, src, left, dst, maxdst)
     ret = dst + wlen;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)localbuffer);
+  free((char *)localbuffer);
 #endif
   return ret;
 }
@@ -660,7 +660,7 @@ RkParseOWrec(gram, src, dst, maxdst, lucks)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)localbuffer);
+  free((char *)localbuffer);
 #endif
   return ret;
 }
@@ -681,8 +681,8 @@ RkParseGramNum(gram, src, row)
   Wchar *wcode = (Wchar *)malloc(sizeof(Wchar) * RK_LINE_BMAX);
   unsigned char *code = (unsigned char *)malloc(RK_LINE_BMAX);
   if (!wcode || !code) {
-    if (wcode) (void)free((char *)wcode);
-    if (code) (void)free((char *)code);
+    if (wcode) free((char *)wcode);
+    if (code) free((char *)code);
     return src;
   }
 #endif
@@ -717,8 +717,8 @@ RkParseGramNum(gram, src, row)
       *row = rnum;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)wcode);
-  (void)free((char *)code);
+  free((char *)wcode);
+  free((char *)code);
 #endif
   return src;
 }
@@ -1044,14 +1044,14 @@ RkWcand2Wrec(key, wc, nc, lucks)
 	  tw->lucks[1] = lucks[1];
 	  tw->word = wrec;
 	} else {
-	  (void)free(tw);
+	  free(tw);
 	  tw = (struct TW *)0;
 	}
       }
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)localbuffer);
+  free((char *)localbuffer);
 #endif
   return tw;
 }

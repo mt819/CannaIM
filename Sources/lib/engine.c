@@ -132,13 +132,13 @@ int *nengines;
   winbuf = malloc(LINEBUFSIZE);
   if (!buf || !ebuf || !winbuf) {
     if (buf) {
-      (void)free(buf);
+      free(buf);
     }
     if (ebuf) {
-      (void)free((char *)ebuf);
+      free((char *)ebuf);
     }
     if (winbuf) {
-      (void)free(winbuf);
+      free(winbuf);
     }
     return res;
   }
@@ -181,9 +181,9 @@ int *nengines;
     fclose(f);
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(winbuf);
-  (void)free((char *)ebuf);
-  (void)free(buf);
+  free(winbuf);
+  free((char *)ebuf);
+  free(buf);
 #endif
   return res;
 }

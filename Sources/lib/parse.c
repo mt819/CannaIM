@@ -352,7 +352,7 @@ parse()
   clisp_fin();
 
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(buf);
+  free(buf);
 #endif
 }
 

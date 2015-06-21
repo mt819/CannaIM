@@ -1331,7 +1331,7 @@ wcKanjiStatusWithValue *arg;
   makeYomiReturnStruct(d);
   arg->val = 0;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)buf);
+  free((char *)buf);
 #endif
   return 0;
 }
@@ -1447,7 +1447,7 @@ KanjiMode c_mode;
     yc->henkanInhibition = inhback;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    (void)free((char *)e);
+    free((char *)e);
   }
 #endif
   return retval;
@@ -2151,7 +2151,7 @@ char *arg;
 
     RkSetServerName((char *)0);
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    (void)free(xxxx);
+    free(xxxx);
 #endif
     return 0;
   }
@@ -2239,17 +2239,17 @@ jrUserInfoStruct *arg;
                   ret = 1;
 		  goto return_ret;
                 }
-		if (romkanatable) (void)free(romkanatable);
+		if (romkanatable) free(romkanatable);
               }
-              if (cannafile) (void)free(cannafile);
+              if (cannafile) free(cannafile);
             }
-            if (topdir) (void)free(topdir);
+            if (topdir) free(topdir);
           }
-          if (srvname) (void)free(srvname);
+          if (srvname) free(srvname);
         }
-        if (gname) (void)free(gname);
+        if (gname) free(gname);
       }
-      if (uname) (void)free(uname);
+      if (uname) free(uname);
     }
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (SetUserinfo) できませんでした";
@@ -2261,7 +2261,7 @@ jrUserInfoStruct *arg;
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(buf);
+  free(buf);
 #endif
   return ret;
 }
@@ -2317,7 +2317,7 @@ char *arg;
 	  *p = d->attr;
 	  return 0;
 	}
-	(void)free((char *)d->attr);
+	free((char *)d->attr);
 	d->attr = (wcKanjiAttributeInternal *)0;
       }
     }
@@ -2327,8 +2327,8 @@ char *arg;
     }
   }
   else if (d->attr) { /* && !p */
-    (void)free(d->attr->u.attr);
-    (void)free((char *)d->attr);
+    free(d->attr->u.attr);
+    free((char *)d->attr);
     d->attr = (wcKanjiAttributeInternal *)0;
     return 0;
   }

@@ -187,7 +187,7 @@ _Rkpopen(dm, dfnm, mode, gram)
   }
   if (!(xdm->pgs
           = (struct NP *)malloc((size_t)(sizeof(struct NP) * xdm->ttlpg)))) {
-    (void)free((char *)xdm->buf);
+    free((char *)xdm->buf);
     xdm->buf = (unsigned char *)0;
     return(-1);
   }
@@ -204,8 +204,8 @@ _Rkpopen(dm, dfnm, mode, gram)
   (void)lseek(fd, xdm->doff, 0);
   readsize = read(fd, (char *)xdm->buf, (unsigned int) xdm->drsz);
   if (readsize != ((int) xdm->drsz)) {
-    (void)free((char *)xdm->pgs);
-    (void)free((char *)xdm->buf);
+    free((char *)xdm->pgs);
+    free((char *)xdm->buf);
     xdm->buf = (unsigned char *)0;
     xdm->pgs = (struct NP *)0;
     return(-1);
@@ -269,16 +269,16 @@ _Rkpclose(dm, dfnm, gram)
 	    munmap((caddr_t)xdm->pgs[i].buf, xdm->pgsz);
 #else
 	  if (xdm->pgs[i].buf) {
-	    (void)free((char *)xdm->pgs[i].buf);
+	    free((char *)xdm->pgs[i].buf);
 	  }
 #endif
 	  xdm->pgs[i].flags &= ~RK_PG_LOADED;
 	}
-      (void)free((char *)xdm->pgs);
+      free((char *)xdm->pgs);
       xdm->pgs = (struct NP *)0;
     }
     if (xdm->buf) {
-      (void)free((char *) xdm->buf);
+      free((char *) xdm->buf);
       xdm->buf = (unsigned char *)0;
     }
   }
@@ -294,7 +294,7 @@ _Rkpclose(dm, dfnm, gram)
     for (ddm = dmh->dm_next; ddm != dmh; ddm = ddm->dm_next) {
       xdm = (struct ND *)ddm->dm_xdm;
       if (xdm) {
-	(void)free((char *)xdm);
+	free((char *)xdm);
 	ddm->dm_xdm = (pointer)0;
       }
     }
@@ -605,10 +605,10 @@ _Rkpctl(dm, qm, what, arg, gram)
   nread = (struct nread *)malloc(sizeof(struct nread) * PERM_NREADSIZE);
   permutation = (unsigned *)malloc(sizeof(unsigned) * RK_CAND_NMAX);
   if (!wrec || !key || !nread || !permutation) {
-    if (wrec) (void)free((char *)wrec);
-    if (key) (void)free((char *)key);
-    if (nread) (void)free((char *)nread);
-    if (permutation) (void)free((char *)permutation);
+    if (wrec) free((char *)wrec);
+    if (key) free((char *)key);
+    if (nread) free((char *)nread);
+    if (permutation) free((char *)permutation);
     return ret;
   }
 #endif
@@ -775,10 +775,10 @@ _Rkpctl(dm, qm, what, arg, gram)
   }
  done:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)wrec);
-  (void)free((char *)key);
-  (void)free((char *)nread);
-  (void)free((char *)permutation);
+  free((char *)wrec);
+  free((char *)key);
+  free((char *)nread);
+  free((char *)permutation);
 #endif
   return ret;
 }
@@ -805,7 +805,7 @@ _Rkpsync(cx, dm, qm)
       int j;
 #endif
       i = FQsync(cx, dm, qm, file);
-      (void)free(file);
+      free(file);
 #ifdef MMAP
       dic = (struct ND *)dm->dm_xdm;
       if(dic)

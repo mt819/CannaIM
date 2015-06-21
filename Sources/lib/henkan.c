@@ -431,7 +431,7 @@ defaultContext = RkwInitialize(ptr);
   ret = -1;
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(buf);
+  free(buf);
 #endif
   return ret;
 }
@@ -476,7 +476,7 @@ KanjiFin()
 #endif
 	  addWarningMesg(buf);
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-	  (void)free(buf);
+	  free(buf);
 #endif
 	}
       }
@@ -778,7 +778,7 @@ yomiContext yc;
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)xxx);
+  free((char *)xxx);
 #endif
 
   return ret;
@@ -988,7 +988,7 @@ yomiContext yc;
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)xxx);
+  free((char *)xxx);
 #endif
 
   return ret;
@@ -2045,7 +2045,7 @@ uiContext	d;
   }
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)tmpbuf);
+  free((char *)tmpbuf);
 #endif
   return ret;
 }
@@ -2758,7 +2758,7 @@ int head;
   retval = NothingChangedWithBeep(d);
  done:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)xxx);
+  free((char *)xxx);
 #endif
   return retval;
 }

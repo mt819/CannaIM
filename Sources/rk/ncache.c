@@ -83,7 +83,7 @@ _RkFinalizeCache()
   register struct RkParam	*sx = &SX;
   
   if (sx->cache) 
-    (void)free((char *)sx->cache);
+    free((char *)sx->cache);
   sx->cache = (struct ncache *)0;
 }
 

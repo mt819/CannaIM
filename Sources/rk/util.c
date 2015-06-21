@@ -251,7 +251,7 @@ _RkClearHeader(hd)
   if (hd) {
     for (i = 0; i < HD_MAXTAG; i++) {
       if (hd->flag[i] > 0) {
-	(void)free(hd->data[i].ptr);
+	free(hd->data[i].ptr);
       }
     }
   }
@@ -379,7 +379,7 @@ _RkReadHeader(fd, hd, off_from_top)
  read_err:
   for (i = 0; i < HD_MAXTAG; i++) {
     if (hd->flag[i] > 0)
-      (void)free(hd->data[i].ptr);
+      free(hd->data[i].ptr);
     hd->flag[i] = 0;
     hd->data[i].var = 0;
   }

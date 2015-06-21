@@ -217,12 +217,12 @@ char *romaji;
                                               sizeof(struct romaRec));
 	if (!tmp_rdic) {
           if (rdic->nr_string)
-            (void)free((char *)rdic->nr_string);
+            free((char *)rdic->nr_string);
           if (rdic->nr_keyaddr)
-            (void)free((char *)rdic->nr_keyaddr);
+            free((char *)rdic->nr_keyaddr);
 	  if (rdic->nr_brules)
-            (void)free((char *)rdic->nr_brules);
-	  (void)free((char *)rdic);
+            free((char *)rdic->nr_brules);
+	  free((char *)rdic);
 	  return (struct RkRxDic *)NULL;
 	}
 
@@ -253,10 +253,10 @@ RkwCloseRoma(rdic)
 struct RkRxDic	*rdic;
 {
     if ( rdic ) {
-        if (rdic->nr_string) (void)free((char *)rdic->nr_string);
-        if (rdic->nr_keyaddr) (void)free((char *)rdic->nr_keyaddr);
-	if (rdic->nr_brules) (void)free((char *)rdic->nr_brules);
-	(void)free((char *)rdic);
+        if (rdic->nr_string) free((char *)rdic->nr_string);
+        if (rdic->nr_keyaddr) free((char *)rdic->nr_keyaddr);
+	if (rdic->nr_brules) free((char *)rdic->nr_brules);
+	free((char *)rdic);
     };
 }
 
@@ -474,7 +474,7 @@ done:
 	};
     };
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    (void)free((char *)match);
+    free((char *)match);
 #endif
     return count;
 }
@@ -727,7 +727,7 @@ int		*rule_id_inout;
   }
  return_found:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)match);
+  free((char *)match);
 #endif
   return found;
 }
@@ -757,10 +757,10 @@ unsigned	flags;
     yyyy = (unsigned char *)malloc(64);
     if (!xxxx || !yyyy) {
       if (xxxx) {
-	(void)free((char *)xxxx);
+	free((char *)xxxx);
       }
       if (yyyy) {
-	(void)free((char *)yyyy);
+	free((char *)yyyy);
       }
       return count;
     }
@@ -799,8 +799,8 @@ unsigned	flags;
       }
     }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    (void)free((char *)yyyy);
-    (void)free((char *)xxxx);
+    free((char *)yyyy);
+    free((char *)xxxx);
 #endif
     return count;
 }

@@ -770,10 +770,10 @@ int maxdst, srclen;
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
     if (cbuf) {
-      (void)free(cbuf);
+      free(cbuf);
     }
     if (cbuf2) {
-      (void)free(cbuf2);
+      free(cbuf2);
     }
     return len;
   }
@@ -807,10 +807,10 @@ int maxdst, srclen;
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
     if (cbuf) {
-      (void)free(cbuf);
+      free(cbuf);
     }
     if (cbuf2) {
-      (void)free(cbuf2);
+      free(cbuf2);
     }
     return len;
   }
@@ -845,10 +845,10 @@ int maxdst, srclen;
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
     if (cbuf) {
-      (void)free(cbuf);
+      free(cbuf);
     }
     if (cbuf2) {
-      (void)free(cbuf2);
+      free(cbuf2);
     }
     return len;
   }
@@ -883,10 +883,10 @@ int maxdst, srclen;
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
     if (cbuf) {
-      (void)free(cbuf);
+      free(cbuf);
     }
     if (cbuf2) {
-      (void)free(cbuf2);
+      free(cbuf2);
     }
     return len;
   }
@@ -938,10 +938,10 @@ int maxdst, srclen, flags, *status;
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf1 || !cbuf2) {
     if (cbuf1) {
-      (void)free(cbuf1);
+      free(cbuf1);
     }
     if (cbuf2) {
-      (void)free(cbuf2);
+      free(cbuf2);
     }
     return len;
   }
@@ -985,13 +985,13 @@ RkwMapPhonogram(struct RkRxDic *romaji, wchar_t *dst, int maxdst,
   wbuf = (wchar_t *)malloc(sizeof(wchar_t) * CBUFSIZE);
   if (!cbuf1 || !cbuf2 || !wbuf) {
     if (cbuf1) {
-      (void)free(cbuf1);
+      free(cbuf1);
     }
     if (cbuf2) {
-      (void)free(cbuf2);
+      free(cbuf2);
     }
     if (wbuf) {
-      (void)free((char *)wbuf);
+      free((char *)wbuf);
     }
     return status;
   }
@@ -1041,10 +1041,10 @@ int maxdst, srclen, flags;
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf1 || !cbuf2) {
     if (cbuf1) {
-      (void)free(cbuf1);
+      free(cbuf1);
     }
     if (cbuf2) {
-      (void)free(cbuf2);
+      free(cbuf2);
     }
     return ret;
   }

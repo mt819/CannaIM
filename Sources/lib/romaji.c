@@ -251,7 +251,7 @@ wchar_t *insert;
 		 &yc->kCurs, &yc->kEndp,
 		 where, insert, insertlen, mask);
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)buf);
+  free((char *)buf);
 #endif
 }
 #endif /* CALLBACK */
@@ -478,7 +478,7 @@ char *table;
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)rdic);
+  free((char *)rdic);
 #endif
   return retval;
 }
@@ -557,7 +557,7 @@ RomkanaInit()
       addWarningMesg(buf);
     }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    (void)free(buf);
+    free(buf);
 #endif
   }
 
@@ -1212,10 +1212,10 @@ int flag, english;
   sub_buf = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
   if (!kana_char || !sub_buf) {
     if (kana_char) {
-      (void)free((char *)kana_char);
+      free((char *)kana_char);
     }
     if (sub_buf) {
-      (void)free((char *)sub_buf);
+      free((char *)sub_buf);
     }
     return 0;
   }
@@ -1435,8 +1435,8 @@ int flag, english;
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)kana_char);
-  (void)free((char *)sub_buf);
+  free((char *)kana_char);
+  free((char *)sub_buf);
 #endif
   return retval;
 }
@@ -4465,7 +4465,7 @@ uiContext d;
   yc->cmark = yc->kCurs;
   yc->jishu_kEndp = 0;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)xxxx);
+  free((char *)xxxx);
 #endif
   return 0;
 }
@@ -4537,7 +4537,7 @@ chikujiEndBun(d)
       ycsv;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    (void)free((char *)ycsv);
+    free((char *)ycsv);
   }
 #endif
   return(ret);
@@ -4725,10 +4725,10 @@ int fnum;
       roma = (wchar_t *)malloc(sizeof(wchar_t) * 128);
       if (!kana || !roma) {
 	if (kana) {
-	  (void)free((char *)kana);
+	  free((char *)kana);
 	}
 	if (roma) {
-	  (void)free((char *)roma);
+	  free((char *)roma);
 	}
 	return 0; /* ? suspicious */
       }
@@ -4747,8 +4747,8 @@ int fnum;
 	fnum = CANNA_FN_FunctionalInsert;
       }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-      (void)free((char *)kana);
-      (void)free((char *)roma);
+      free((char *)kana);
+      free((char *)roma);
 #endif
     }
   }
@@ -4962,7 +4962,7 @@ uiContext	d;
 
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)tmpbuf);
+  free((char *)tmpbuf);
 #endif
   return ret;
 }

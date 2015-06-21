@@ -1013,8 +1013,8 @@ RkwCvtHan(dst, maxdst, src, srclen)
   cbuf = (unsigned char *)malloc(CBUFSIZE);
   cbuf2 = (unsigned char *)malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) (void)free((char *)cbuf);
-    if (cbuf2) (void)free((char *)cbuf2);
+    if (cbuf) free((char *)cbuf);
+    if (cbuf2) free((char *)cbuf2);
     return 0;
   }
 #endif
@@ -1030,8 +1030,8 @@ RkwCvtHan(dst, maxdst, src, srclen)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)cbuf);
-  (void)free((char *)cbuf2);
+  free((char *)cbuf);
+  free((char *)cbuf2);
 #endif
   return len;
 }
@@ -1051,8 +1051,8 @@ RkwCvtHira(dst, maxdst, src, srclen)
   cbuf = (unsigned char *)malloc(CBUFSIZE);
   cbuf2 = (unsigned char *)malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) (void)free((char *)cbuf);
-    if (cbuf2) (void)free((char *)cbuf2);
+    if (cbuf) free((char *)cbuf);
+    if (cbuf2) free((char *)cbuf2);
     return 0;
   }
 #endif
@@ -1068,8 +1068,8 @@ RkwCvtHira(dst, maxdst, src, srclen)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)cbuf);
-  (void)free((char *)cbuf2);
+  free((char *)cbuf);
+  free((char *)cbuf2);
 #endif
   return len;
 }
@@ -1089,8 +1089,8 @@ RkwCvtKana(dst, maxdst, src, srclen)
   cbuf = (unsigned char *)malloc(CBUFSIZE);
   cbuf2 = (unsigned char *)malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) (void)free((char *)cbuf);
-    if (cbuf2) (void)free((char *)cbuf2);
+    if (cbuf) free((char *)cbuf);
+    if (cbuf2) free((char *)cbuf2);
     return 0;
   }
 #endif
@@ -1106,8 +1106,8 @@ RkwCvtKana(dst, maxdst, src, srclen)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)cbuf);
-  (void)free((char *)cbuf2);
+  free((char *)cbuf);
+  free((char *)cbuf2);
 #endif
   return len;
 }
@@ -1127,8 +1127,8 @@ RkwCvtZen(dst, maxdst, src, srclen)
   cbuf = (unsigned char *)malloc(CBUFSIZE);
   cbuf2 = (unsigned char *)malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) (void)free((char *)cbuf);
-    if (cbuf2) (void)free((char *)cbuf2);
+    if (cbuf) free((char *)cbuf);
+    if (cbuf2) free((char *)cbuf2);
     return 0;
   }
 #endif
@@ -1144,8 +1144,8 @@ RkwCvtZen(dst, maxdst, src, srclen)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)cbuf);
-  (void)free((char *)cbuf2);
+  free((char *)cbuf);
+  free((char *)cbuf2);
 #endif
   return len;
 }

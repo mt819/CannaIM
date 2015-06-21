@@ -315,7 +315,7 @@ int     mode;
   }
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(spec);
+  free(spec);
 #endif
   return ret;
 }
@@ -340,7 +340,7 @@ struct DM	*dst;
 #ifdef __CYGWIN32__
     setmode(srcFd, O_BINARY);
 #endif
-    (void)free(srcN);
+    free(srcN);
     if (srcFd >= 0) {
       dstN = _RkCreatePath(dstD, dstF->df_link);
       if (dstN) {
@@ -348,7 +348,7 @@ struct DM	*dst;
 #ifdef __CYGWIN32__
 	setmode(dstFd, O_BINARY);
 #endif
-	(void)free(dstN);
+	free(dstN);
 
 	if (dstFd >= 0) {
 	  char b[RK_BUFFER_SIZE];
@@ -468,7 +468,7 @@ int mode;
   if (!(path = _RkMakePath(dm->dm_file)))
 	return NOTALC;
   res = unlink(path);
-  (void)free(path);
+  free(path);
   if(res)
     return ACCES;
   dum_direct = dm->dm_file->df_direct;
@@ -551,7 +551,7 @@ RkwRenameDic(cx_num, old, new, mode)
     if (!(path = _RkMakePath(dm2->dm_file)))
       return NOTALC;
     (void)unlink(path);
-    (void)free(path);
+    free(path);
     DMremove(dm2);
     DMrename(dm1, new);
     (void)_RkRealizeDD(dd);
@@ -660,7 +660,7 @@ int mode;
 
       res = NOTALC;
       v = RkwSetDicPath(con, path);
-      (void)free(path);
+      free(path);
       if (v >= 0) {
 	struct RkContext *cy = RkGetContext(con);
 
@@ -694,7 +694,7 @@ int mode;
 		  goto newdicUsed;
 		}
 		(void)unlink(path);
-		(void)free(path);
+		free(path);
 		switch (dm2->dm_flags & (DM_READOK | DM_WRITEOK)) {
 		case (DM_READOK | DM_WRITEOK):
 		  perm = "rw";
@@ -864,7 +864,7 @@ struct RkContext *cx;
   if (gwt) {
     while((work = gwt->tdn) != (struct td_n_tupple *)0) {
       gwt->tdn = work->next;
-      (void)free((char *)work);
+      free((char *)work);
     };
   };
 }
@@ -878,7 +878,7 @@ struct RkContext *cx;
   work = gwt->tdn;
   if (work) {
     gwt->tdn = work->next;
-    (void)free(work);
+    free(work);
   }
 }
 
@@ -968,30 +968,30 @@ RkwGetWordTextDic(cx_num, dirname, dicname, info, infolen)
 
     if(dirname[0] != '\0') {
       if((new_cx_num = RkwCreateContext()) < 0) {
-	(void)free((char *)buff);
+	free((char *)buff);
 	return BADCONT;
       }
       if(RkwSetDicPath(new_cx_num, (char *)dirname) < 0) {
 	RkwCloseContext(new_cx_num);
-	(void)free((char *)buff);
+	free((char *)buff);
 	return NOTALC;
       }
     } else {
       if ((new_cx_num = RkwDuplicateContext(cx_num)) < 0) {
-	(void)free((char *)buff);
+	free((char *)buff);
 	return BADCONT;
       }
     }
     if (!(cx = RkGetContext(cx_num)) || !(gwt = (struct _rec *)cx->cx_gwt)) {
       RkwCloseContext(new_cx_num);
-      (void)free((char *)buff);
+      free((char *)buff);
       return BADCONT;
     }
 
     if (!(new_cx = RkGetContext(new_cx_num))) {
       if(dirname[0] != '\0') {
 	RkwCloseContext(new_cx_num);
-	(void)free((char *)buff);
+	free((char *)buff);
 	return BADCONT;
       }
     }
@@ -1005,7 +1005,7 @@ RkwGetWordTextDic(cx_num, dirname, dicname, info, infolen)
 	if (dirname[0] != '\0') {
 	  RkwCloseContext(new_cx_num);
 	}
-	(void)free((char *)buff);
+	free((char *)buff);
 	return NOENT;
       }
     } else {
@@ -1013,7 +1013,7 @@ RkwGetWordTextDic(cx_num, dirname, dicname, info, infolen)
 	if(dirname[0] != '\0') {
 	  RkwCloseContext(new_cx_num);
 	}
-	(void)free((char *)buff);
+	free((char *)buff);
 	return NOENT;
       }
     }
@@ -1021,23 +1021,23 @@ RkwGetWordTextDic(cx_num, dirname, dicname, info, infolen)
       if(dirname[0] != '\0') {
 	RkwCloseContext(new_cx_num);
       }
-      (void)free((char *)buff);
+      free((char *)buff);
       return BADF;
     }
     if(RkwMountDic(new_cx_num, (char *)dicname,0) == -1) {
       RkwCloseContext(new_cx_num);
-      (void)free((char *)buff);
+      free((char *)buff);
       return NOMOUNT;
     }
 
     if (!_RkSearchDDP(new_cx->ddpath, (char *)dicname)) {
       RkwCloseContext(new_cx_num);
-      (void)free((char *)buff);
+      free((char *)buff);
       return BADDR;
     }
     gwt->gwt_cx = new_cx_num;
     if (gwt->gwt_dicname)
-      (void)free((char *)gwt->gwt_dicname);
+      free((char *)gwt->gwt_dicname);
     gwt->gwt_dicname = buff;
     initial_td = (struct TD *)dm->dm_td;
   }
@@ -1045,7 +1045,7 @@ RkwGetWordTextDic(cx_num, dirname, dicname, info, infolen)
     if ((new_cx_num = gwt->gwt_cx) < 0
 	|| !(new_cx = RkGetContext(new_cx_num))) {
       if (gwt->gwt_dicname)
-	(void)free((char *)gwt->gwt_dicname);
+	free((char *)gwt->gwt_dicname);
       gwt->gwt_dicname = (unsigned char *)0;
       return BADCONT;
     }

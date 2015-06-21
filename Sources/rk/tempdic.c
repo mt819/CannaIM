@@ -58,15 +58,15 @@ freeTD(td)
   for (i = 0; i < (int)td->td_n; i++) {
     struct TN	*tn = &td->td_node[i];
     if (IsWordNode(tn)) {
-      (void)free((char *)tn->tn_word->word);
-      (void)free((char *)tn->tn_word);
+      free((char *)tn->tn_word->word);
+      free((char *)tn->tn_word);
     } else
       freeTD(tn->tn_tree);
   }
   if (td) {
     if (td->td_node)
-      (void)free((char *)td->td_node);
-    (void)free((char *)td);
+      free((char *)td->td_node);
+    free((char *)td);
   }
 }
 
@@ -106,13 +106,13 @@ extendTD(tdic, key, tw)
   tp = tdic->td_node;
   if (tdic->td_n >= tdic->td_max) {
     if (!(tp = (struct TN *)calloc(tdic->td_max + 1, sizeof(struct TN)))) {
-      (void)free((char *)ntw->word);
-      (void)free((char *)ntw);
+      free((char *)ntw->word);
+      free((char *)ntw);
       return (struct TN *)0;
     }
     for (i = 0; i < (int)tdic->td_n; i++)
       tp[i] = tdic->td_node[i];
-    (void)free((char *)tdic->td_node);
+    free((char *)tdic->td_node);
     tdic->td_max++;
     tdic->td_node = tp;
   }
@@ -207,8 +207,8 @@ defineTD(dm, tab, n, newTW, nlen)
 	  if (!(mergeTW = RkUnionWrec(newTW, oldTW)))
 	    return((struct TN *)0);
 	  tn->tn_word = mergeTW;
-	  (void)free((char *)oldW);
-	  (void)free((char *)oldTW);
+	  free((char *)oldW);
+	  free((char *)oldTW);
 	  tn->tn_flags |= TN_WDEF;
 	  if (cache) {
 	    _RkRehashCache(cache, (long)tn->tn_word);
@@ -269,7 +269,7 @@ enterTD(dm, td, gram, word)
     ret = 1;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)wrec);
+  free((char *)wrec);
 #endif
   return ret;
 }
@@ -331,8 +331,8 @@ deleteTD(dm, tab, n, newW)
 
 	    newTW.word = newW;
 	    subW = RkSubtractWrec(oldTW, &newTW);
-	    (void)free((char *)oldW);
-	    (void)free((char *)oldTW);
+	    free((char *)oldW);
+	    free((char *)oldTW);
 	    if (subW) {
 	      tn->tn_word = subW;
 	      tn->tn_flags |= TN_WDEL;
@@ -352,8 +352,8 @@ deleteTD(dm, tab, n, newW)
 	if (deleteTD(dm, &tn->tn_tree, n, newW))
 	  shrinkTD(td, key);
       if (td->td_n <= 0) {
-	(void)free((char *)(td->td_node));
-	(void)free((char *)td);
+	free((char *)(td->td_node));
+	free((char *)td);
 	*tab = (struct TD *)0;
 	return(1);
       } else
@@ -388,8 +388,8 @@ _Rktopen(dm, file, mode, gram)
   char *line = malloc(RK_LINE_BMAX * 10);
   Wchar *wcline = (Wchar *)malloc(sizeof(Wchar) * RK_LINE_BMAX * 10);
   if (!line || !wcline) {
-    if (line) (void)free(line);
-    if (wcline) (void)free((char *)wcline);
+    if (line) free(line);
+    if (wcline) free((char *)wcline);
     return ret;
   }
 #endif
@@ -444,8 +444,8 @@ _Rktopen(dm, file, mode, gram)
   }
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)wcline);
-  (void)free(line);
+  free((char *)wcline);
+  free(line);
 #endif
   return ret;
 }
@@ -531,9 +531,9 @@ _Rktclose(dm, file, gram)
   header = malloc(RK_LINE_BMAX);
   whattime = malloc(RK_LINE_BMAX);
   if (!backup || !header || !whattime) {
-    if (backup) (void)free(backup);
-    if (header) (void)free(header);
-    if (whattime) (void)free(whattime);
+    if (backup) free(backup);
+    if (header) free(header);
+    if (whattime) free(whattime);
     return 0;
   }
 #endif
@@ -599,9 +599,9 @@ _Rktclose(dm, file, gram)
   freeTD((struct TD *)xdm);
   --df->df_rcount;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(backup);
-  (void)free(header);
-  (void)free(whattime);
+  free(backup);
+  free(header);
+  free(whattime);
 #endif
   return 0;
 }
@@ -767,7 +767,7 @@ _Rktctl(dm, qm, what, arg, gram)
     break;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)wrec);
+  free((char *)wrec);
 #endif
   return status;
 }
@@ -797,9 +797,9 @@ _Rktsync(cx, dm, qm)
   header = malloc(RK_LINE_BMAX);
   whattime = malloc(RK_LINE_BMAX);
   if (!backup || !header || !whattime) {
-    if (backup) (void)free(backup);
-    if (header) (void)free(header);
-    if (whattime) (void)free(whattime);
+    if (backup) free(backup);
+    if (header) free(header);
+    if (whattime) free(whattime);
     return ret;
   }
 #endif
@@ -863,19 +863,19 @@ _Rktsync(cx, dm, qm)
 #endif
 	dm->dm_flags &= ~DM_UPDATED;
       } else {
-	(void)free(file);
+	free(file);
 	ret = -1;
 	goto return_ret;
       }
     };
-    (void)free(file);
+    free(file);
     ret = 0;
   }
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free(backup);
-  (void)free(header);
-  (void)free(whattime);
+  free(backup);
+  free(header);
+  free(whattime);
 #endif
   return ret;
 }

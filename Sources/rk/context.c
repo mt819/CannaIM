@@ -94,7 +94,7 @@ _RkInitialize(ddhome, numCache)
     strcpy(gramdic, ddhome);
     strcat(gramdic, DEFAULTGRAMDIC);
     SG.gramdic = RkOpenGram(gramdic);
-    (void)free(gramdic);
+    free(gramdic);
     if (SG.gramdic) {
       /* confirm user/ and group/ directory */
       path = malloc(strlen(ddhome) + strlen(USER_DIC_DIR) + 2);
@@ -191,7 +191,7 @@ _RkFinalizeWord()		/* finalize free word list */
   /* dispose each page in list */
   for (w = SX.page; w; w = t) {
     t = w->nw_next;
-    (void)free((char *)w);
+    free((char *)w);
   } 
   SX.word = (struct nword *)0;
   SX.page = (struct nword *)0;
@@ -212,12 +212,12 @@ RkwFinalize()
   for(i = 0; (unsigned long)i < now_context; i++)
     if (IS_LIVECTX(&CX[i]))
       RkwCloseContext(i);
-  (void)free((char *)CX);
+  free((char *)CX);
   now_context = 0L;
   /* sonohoka no shuuryou shori */
   _RkFinalizeWord();
   _RkFinalizeCache();
-  (void)free((char *)sx->ddhome);
+  free((char *)sx->ddhome);
   sx->ddhome = (char *)0;
   _RkFreeDDP(sx->ddpath);
   RkCloseGram(SG.gramdic);
@@ -443,7 +443,7 @@ RkwCloseContext(cx_num)
 	n = m->md_next;
 	(void)_RkUmountMD(cx, m);
       };
-      (void)free((char *)mh);
+      free((char *)mh);
       cx->md[i] = (struct MD *)0;
     };
   };
@@ -451,7 +451,7 @@ RkwCloseContext(cx_num)
   cx->qmprev = (struct DM *)0;
   /* convertion table */
   if (cx->litmode) {
-    (void)free((char *)cx->litmode);
+    free((char *)cx->litmode);
     cx->litmode = (unsigned long *)0;
   }
   cx->flags = 0;
@@ -470,8 +470,8 @@ RkwCloseContext(cx_num)
     if (gwt) {
       (void)RkwCloseContext(gwt->gwt_cx);
       if (gwt->gwt_dicname)
-	(void)free((char *)gwt->gwt_dicname);
-      (void)free((char *)gwt);
+	free((char *)gwt->gwt_dicname);
+      free((char *)gwt);
     };
     cx->cx_gwt = (pointer)0;
   };
