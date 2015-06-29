@@ -211,7 +211,7 @@ unsigned char	*han;
 int		maxhan;
 {
     unsigned char	*z = zen;
-    unsigned char	*h = han;
+    const unsigned char	*h = han;
     unsigned char	*H = han + maxhan;
     unsigned short	hi, lo;
     unsigned 		byte;
