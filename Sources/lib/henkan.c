@@ -1006,7 +1006,7 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
   tanContext tan;
-  int len;
+  int len = 0;
 
   if (yc->id != YOMI_CONTEXT) {
     /* あり得ないのでは? */
