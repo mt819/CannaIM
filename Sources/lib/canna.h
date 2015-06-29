@@ -932,6 +932,7 @@ extern int uuTTangoQuitCatch pro((uiContext, int, mode_context));
 extern void freeAndPopTouroku pro((uiContext));
 extern void popMountMode pro((uiContext));
 extern void freeDic pro((tourokuContext));
+extern int ToggleChikuji(uiContext, int);
 
 /* for VC++ 4.0, by kon */
 extern int doFunc pro((uiContext, int));
