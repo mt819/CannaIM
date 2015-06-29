@@ -42,19 +42,18 @@ static char rcs_id[] = "$Id: chikuji.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
 extern int yomiInfoLevel, nKouhoBunsetsu, KeepCursorPosition;
 extern int defaultContext;
 extern KanjiModeRec tankouho_mode, cy_mode, cb_mode;
-extern void makeYomiReturnStruct pro((uiContext));
-extern exp(int) RkwGetServerVersion pro((int *, int *));
-extern exp(int) RkwGetProtocolVersion pro((int *, int *));
+extern void makeYomiReturnStruct (uiContext);
+extern exp(int) RkwGetServerVersion (int *, int *);
+extern exp(int) RkwGetProtocolVersion (int *, int *);
 
-int forceRomajiFlushYomi pro((uiContext));
-void moveToChikujiTanMode pro((uiContext));
-void moveToChikujiYomiMode pro((uiContext));
+int forceRomajiFlushYomi (uiContext);
+void moveToChikujiTanMode (uiContext);
+void moveToChikujiYomiMode (uiContext);
 
-static void clearHenkanContent pro((yomiContext));
+static void clearHenkanContent (yomiContext);
 
 static void
-clearHenkanContent(yc)
-yomiContext yc;
+clearHenkanContent(yomiContext yc)
 {
   yc->allkouho = 0;
   yc->kouhoCount = yc->curIkouho = 0;
@@ -62,8 +61,7 @@ yomiContext yc;
 }
 
 void
-clearHenkanContext(yc)
-yomiContext yc;
+clearHenkanContext(yomiContext yc)
 {
   if (yc->context >= 0) {
     RkwCloseContext(yc->context);
@@ -74,7 +72,7 @@ yomiContext yc;
   return;
 }
 
-extern int NothingChanged pro((uiContext));
+extern int NothingChanged (uiContext);
 
 /*
   restoreChikujiYomi
@@ -91,9 +89,7 @@ extern int NothingChanged pro((uiContext));
  */
 
 static int
-restoreChikujiYomi(d, old)
-     uiContext d;
-     int old;
+restoreChikujiYomi(uiContext d, int old)
 {
   yomiContext yc = (yomiContext)d->modec;
   wchar_t *s = d->buffer_return, *e = s + d->n_buffer;
@@ -206,8 +202,7 @@ doesSupportChikuji()
 
 #ifndef NO_EXTEND_MENU
 int
-chikujiInit(d)
-uiContext d;
+chikujiInit(uiContext d)
 {
   int chikuji_f;
   yomiContext yc = (yomiContext)d->modec;
@@ -253,8 +248,7 @@ uiContext d;
 #endif /* not NO_EXTEND_MENU */
 
 static int
-chikujiSubstYomi(d)
-uiContext d;
+chikujiSubstYomi(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int n = yc->nbunsetsu, ret;
@@ -295,8 +289,7 @@ uiContext d;
 }
 
 int
-ChikujiSubstYomi(d)
-  uiContext d;
+ChikujiSubstYomi(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -312,8 +305,7 @@ ChikujiSubstYomi(d)
 }
 
 int
-ChikujiTanDeletePrevious(d)
-     uiContext d;
+ChikujiTanDeletePrevious(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int i, j, l = 0, flg = 0;
@@ -398,8 +390,7 @@ ChikujiTanDeletePrevious(d)
  */
 
 static int
-chikuji_restore_yomi(d)
-     uiContext d;
+chikuji_restore_yomi(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int l, j;
@@ -421,8 +412,7 @@ chikuji_restore_yomi(d)
 }
 
 static int
-chikuji_subst_yomi(d)
-     uiContext d;
+chikuji_subst_yomi(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int l, n = yc->nbunsetsu;
@@ -445,11 +435,8 @@ chikuji_subst_yomi(d)
   return chikuji_restore_yomi(d);
 }
 
-static int ChikujiTanExtend pro((uiContext));
-
 static int
-ChikujiTanExtend(d)
-     uiContext d;
+ChikujiTanExtend(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int i;
@@ -485,11 +472,8 @@ ChikujiTanExtend(d)
   return d->nbytes;
 }
 
-static int ChikujiTanShrink pro((uiContext));
-
 static int
-ChikujiTanShrink(d)
-     uiContext d;
+ChikujiTanShrink(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   RkStat stat;
@@ -531,11 +515,8 @@ ChikujiTanShrink(d)
   return d->nbytes;
 }
 
-static int ChikujiYomiDeletePrevious pro((uiContext));
-
 static int
-ChikujiYomiDeletePrevious(d)
-     uiContext d;
+ChikujiYomiDeletePrevious(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   RkStat stat;
@@ -624,11 +605,8 @@ ChikujiYomiDeletePrevious(d)
   return 0;
 }
 
-static int ChikujiHenkan pro((uiContext));
-
 static int
-ChikujiHenkan(d)
-     uiContext d;
+ChikujiHenkan(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int n, tmp, idx;
@@ -720,8 +698,7 @@ ChikujiHenkan(d)
 }
 
 void
-moveToChikujiTanMode(d)
-     uiContext d;
+moveToChikujiTanMode(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -732,8 +709,7 @@ moveToChikujiTanMode(d)
 }
 
 void
-moveToChikujiYomiMode(d)
-     uiContext d;
+moveToChikujiYomiMode(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -743,9 +719,7 @@ moveToChikujiYomiMode(d)
 }
 
 static int
-generalNaive(d, fn)
-uiContext d;
-int (*fn)();
+generalNaive(uiContext d, int (*fn)())
 {
   if ((((yomiContext)d->modec)->generalFlags) &
       (CANNA_YOMI_HANKAKU | CANNA_YOMI_ROMAJI | CANNA_YOMI_BASE_HANKAKU)) {
@@ -758,29 +732,20 @@ int (*fn)();
 
 extern int YomiInsert();
 
-static int ChikujiHenkanNaive pro((uiContext));
-
 static int
-ChikujiHenkanNaive(d)
-uiContext d;
+ChikujiHenkanNaive(uiContext d)
 {
   return generalNaive(d, YomiInsert);
 }
 
-static int ChikujiHenkanOrNothing pro((uiContext));
-
 static int
-ChikujiHenkanOrNothing(d)
-     uiContext d;
+ChikujiHenkanOrNothing(uiContext d)
 {
   return generalNaive(d, NothingChanged);
 }
 
-static int ChikujiMuhenkan pro((uiContext));
-
 static int
-ChikujiMuhenkan(d)
-uiContext d;
+ChikujiMuhenkan(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
