@@ -880,7 +880,7 @@ extern int prevMenuIfExist(uiContext);
 extern int showmenu(uiContext, menustruct *);
 #endif
 extern yomiContext
-  newYomiContext(wchar_t *, int, int, int, int, int)),
+  newYomiContext(wchar_t *, int, int, int, int, int),
   GetKanjiString(uiContext, wchar_t *, int, int, int, int, int,
 		      canna_callback_t, canna_callback_t, canna_callback_t);
 extern void restoreFlags(yomiContext);
