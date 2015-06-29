@@ -968,8 +968,8 @@ extern int RkSetServerName(char *);
 extern int parse_string(char *);
 extern void RomajiStoreYomi(uiContext, wchar_t *, wchar_t *);
 extern int WWhatGPlain(wchar_t);
-extern int WIsG0(wchar_t)), WIsG1(wchar_t);
-extern int WIsG2(wchar_t)), WIsG3(wchar_t);
+extern int WIsG0(wchar_t), WIsG1(wchar_t);
+extern int WIsG2(wchar_t), WIsG3(wchar_t);
 extern int XwcKanjiControl2
  (unsigned int, unsigned int, unsigned int, BYTE *);
 extern int XKanjiControl2
