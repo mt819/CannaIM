@@ -38,9 +38,9 @@ extern KanjiModeRec bunsetsu_mode;
 extern KanjiModeRec cy_mode, cb_mode;
 
 extern int multiSequenceFunc
-  pro((struct _uiContext *, struct _kanjiMode *, int, int, int));
+ (struct _uiContext *, struct _kanjiMode *, int, int, int);
 
-static void undefineKeyfunc pro((unsigned char *, unsigned));
+static void undefineKeyfunc(unsigned char *, unsigned);
 static int regist_key_hash(), copyMultiSequence();
 static void freeMultiSequence();
 static void clearAllFuncSequence(), clearAllKeySequence();

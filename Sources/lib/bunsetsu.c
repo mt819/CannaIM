@@ -80,7 +80,7 @@ yomiContext yc;
   return 0;
 }
 
-int leaveAdjustMode pro((uiContext, yomiContext));
+int leaveAdjustMode(uiContext, yomiContext);
 
 int
 leaveAdjustMode(d, yc)
@@ -95,7 +95,7 @@ yomiContext yc;
   return 0;
 }
 
-static int BunFullExtend pro((uiContext));
+static int BunFullExtend(uiContext);
 
 static int
 BunFullExtend(d)
@@ -108,7 +108,7 @@ uiContext d;
   return 0;
 }
 
-static int BunFullShrink pro((uiContext));
+static int BunFullShrink(uiContext);
 
 static int
 BunFullShrink(d)
@@ -121,7 +121,7 @@ uiContext d;
   return 0;
 }
 
-static int BunExtend pro((uiContext));
+static int BunExtend(uiContext);
 
 static int
 BunExtend(d)
@@ -143,7 +143,7 @@ uiContext d;
   return 0;
 }
 
-static int BunShrink pro((uiContext));
+static int BunShrink(uiContext);
 
 static int
 BunShrink(d)
@@ -169,7 +169,7 @@ uiContext d;
   return 0;
 }
 
-static int BunHenkan pro((uiContext));
+static int BunHenkan(uiContext);
 
 static int
 BunHenkan(d)
@@ -189,7 +189,7 @@ uiContext d;
   return 0;
 }
 
-static int BunQuit pro((uiContext));
+static int BunQuit(uiContext);
 
 static int
 BunQuit(d)
@@ -203,7 +203,7 @@ uiContext d;
   return 0;
 }
 
-static int BunSelfInsert pro((uiContext));
+static int BunSelfInsert(uiContext);
 
 static int
 BunSelfInsert(d)
@@ -216,7 +216,7 @@ uiContext d;
   return d->nbytes;
 }
 
-static int BunQuotedInsert pro((uiContext));
+static int BunQuotedInsert(uiContext);
 
 static int
 BunQuotedInsert(d)
@@ -229,7 +229,7 @@ uiContext d;
   return d->nbytes;
 }
 
-static int BunKillToEOL pro((uiContext));
+static int BunKillToEOL(uiContext);
 
 static int
 BunKillToEOL(d)

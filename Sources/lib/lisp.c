@@ -55,7 +55,7 @@ static int allocarea(), skipspaces(), zaplin(), isterm();
 static void prins();
 static list mkatm(), read1(), ratom(), ratom2(), rstring();
 static int tyipeek(), tyi();
-static void tyo pro((int));
+static void tyo(int);
 static void defatms(), epush();
 static void push(), pop();
 static int  evpsh();
@@ -959,8 +959,8 @@ int n;
   /* NOTREACHED */
 }
 
-static void untyi pro((int));
-static list rcharacter pro((void));
+static void untyi(int);
+static list rcharacter(void);
 
 static list
 read1()

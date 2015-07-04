@@ -1217,7 +1217,7 @@ struct compRec {
     long			prio;
 };
 
-static int compword pro((const struct compRec *, const struct compRec *));
+static int compword(const struct compRec *, const struct compRec *);
 
 static
 int
@@ -1278,7 +1278,7 @@ sortWord(words)
     /* positive list no sakusei */
     if (pos > 1)
 	(void)qsort((char *)wptr, (int)pos, sizeof(struct compRec),
-                    (int (*) pro((const void *, const void *)))compword);
+                    (int (*)(const void *, const void *))compword);
     for (i = 1; i < (int)nwords; i++)
       wptr[i - 1].word->nw_next = wptr[i].word;
     words = wptr[0].word;
@@ -1676,7 +1676,7 @@ splitBun(cx, yy, ys, ye)
  *	queue jou de bunsetu wo kaiseki suru.
  */
 
-static void parseQue pro((struct RkContext *, int, int, int, int, int));
+static void parseQue(struct RkContext *, int, int, int, int, int);
 
 static void
 parseQue(cx, maxq, yy, ys, ye, doflush)

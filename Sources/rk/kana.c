@@ -231,7 +231,7 @@ euccharlen(s, bytelen)
  *	hankaku moji(ASCII+katakana) wo taiou suru zenkaku moji ni suru
  *	dakuten,handakuten shori mo okonau.
  */
-int RkCvtZen pro((unsigned char *, int, unsigned char *, int));
+int RkCvtZen(unsigned char *, int, unsigned char *, int);
 
 int
 RkCvtZen(zen, maxzen, han, maxhan)
@@ -303,7 +303,7 @@ RkCvtZen(zen, maxzen, han, maxhan)
 /* RkCvtHan
  *	zenkaku kana moji wo hankaku moji ni suru 
  */
-int RkCvtHan pro((unsigned char *, int, unsigned char *, int));
+int RkCvtHan(unsigned char *, int, unsigned char *, int);
 
 int
 RkCvtHan(han, maxhan, zen, maxzen)
@@ -390,7 +390,7 @@ RkCvtHan(han, maxhan, zen, maxzen)
 /* RkCvtKana/RkCvtHira
  *	zenkaku hiragana wo katakana ni suru 
  */
-int RkCvtKana pro((unsigned char *, int, unsigned char *, int));
+int RkCvtKana(unsigned char *, int, unsigned char *, int);
 
 int
 RkCvtKana(kana, maxkana, hira, maxhira)
@@ -436,7 +436,7 @@ RkCvtKana(kana, maxkana, hira, maxhira)
   return count;
 }
 
-int RkCvtHira pro((unsigned char *, int, unsigned char *, int));
+int RkCvtHira(unsigned char *, int, unsigned char *, int);
 
 int
 RkCvtHira(hira, maxhira, kana, maxkana)
@@ -483,7 +483,7 @@ RkCvtHira(hira, maxhira, kana, maxkana)
 
 #endif
 
-int RkCvtNone pro((unsigned char *, int, unsigned char *, int));
+int RkCvtNone(unsigned char *, int, unsigned char *, int);
 
 int
 RkCvtNone(dst, maxdst, src, maxsrc)
@@ -998,7 +998,7 @@ RkwCvtSuuji(dst, maxdst, src, maxsrc, format)
 unsigned char	*ustoeuc();
 Wchar		*euctous();
 
-int RkwCvtHan pro((Wchar *, int, Wchar *, int));
+int RkwCvtHan(Wchar *, int, Wchar *, int);
 
 int
 RkwCvtHan(dst, maxdst, src, srclen)
@@ -1036,7 +1036,7 @@ RkwCvtHan(dst, maxdst, src, srclen)
   return len;
 }
 
-int RkwCvtHira pro((Wchar *, int, Wchar *, int));
+int RkwCvtHira(Wchar *, int, Wchar *, int);
 
 int
 RkwCvtHira(dst, maxdst, src, srclen)
@@ -1074,7 +1074,7 @@ RkwCvtHira(dst, maxdst, src, srclen)
   return len;
 }
 
-int RkwCvtKana pro((Wchar *, int, Wchar *, int));
+int RkwCvtKana(Wchar *, int, Wchar *, int);
 
 int  
 RkwCvtKana(dst, maxdst, src, srclen)
@@ -1112,7 +1112,7 @@ RkwCvtKana(dst, maxdst, src, srclen)
   return len;
 }
 
-int RkwCvtZen pro((Wchar *, int, Wchar *, int));
+int RkwCvtZen(Wchar *, int, Wchar *, int);
 
 int  
 RkwCvtZen(dst, maxdst, src, srclen)
@@ -1151,7 +1151,7 @@ RkwCvtZen(dst, maxdst, src, srclen)
 }
 #endif /* __HAIKU__*/
 
-int RkwCvtNone pro((Wchar *, int, Wchar *, int));
+int RkwCvtNone(Wchar *, int, Wchar *, int);
 
 int
 RkwCvtNone(dst, maxdst, src, srclen)

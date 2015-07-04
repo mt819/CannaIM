@@ -470,7 +470,7 @@ RkwEndBun(cx_num, mode)
  *	current bunsetu ha 0 ni naru.
  */
 
-int RkwRemoveBun pro((int, int));
+int RkwRemoveBun(int, int);
 
 int
 RkwRemoveBun(cx_num, mode)
@@ -508,7 +508,7 @@ RkwRemoveBun(cx_num, mode)
  *	# bunsetu
  */
 
-int RkwSubstYomi pro((int, int, int, Wchar *, int));
+int RkwSubstYomi(int, int, int, Wchar *, int);
 
 int
 RkwSubstYomi(cx_num, ys, ye, yomi, newLen)
@@ -543,7 +543,7 @@ RkwSubstYomi(cx_num, ys, ye, yomi, newLen)
  *	# bunsetu
  */
 
-int RkwFlushYomi pro((int));
+int RkwFlushYomi(int);
 
 int
 RkwFlushYomi(cx_num)
@@ -597,7 +597,7 @@ _RkResize(cx_num, len, t)
   return(store->maxbun);
 }
 
-int RkwResize pro((int, int));
+int RkwResize(int, int);
 
 int
 RkwResize(cx_num, len)
@@ -623,7 +623,7 @@ RkeResize(cx_num, len)
   return(_RkResize(cx_num, len, 1));
 }
 
-int RkwEnlarge pro((int));
+int RkwEnlarge(int);
 
 int
  RkwEnlarge(cx_num)
@@ -657,7 +657,7 @@ int
   return(store->maxbun);
 }
 
-int RkwShorten pro((int));
+int RkwShorten(int);
 
 int
 RkwShorten(cx_num)
@@ -695,7 +695,7 @@ RkwShorten(cx_num)
  *	okikaeta noti, saihen kan suru
  */
 
-int RkwStoreYomi pro((int, Wchar *, int));
+int RkwStoreYomi(int, Wchar *, int);
 
 int
 RkwStoreYomi(cx_num, yomi, nlen)
@@ -780,7 +780,7 @@ RkwStoreYomi(cx_num, yomi, nlen)
  * 	current bunsetu no idou
  */
 
-int RkwGoTo pro((int, int));
+int RkwGoTo(int, int);
 
 int
 RkwGoTo(cx_num, bnum)
@@ -932,7 +932,7 @@ RkwNfer(cx_num)
   return(bun->nb_curcand = bun->nb_maxcand);
 }
 
-int RkwNext pro((int));
+int RkwNext(int);
 
 int
 RkwNext(cx_num)
@@ -952,7 +952,7 @@ RkwNext(cx_num)
   return(bun->nb_curcand);
 }
 
-int RkwPrev pro((int));
+int RkwPrev(int);
 
 int
 RkwPrev(cx_num)
@@ -1122,17 +1122,17 @@ RkeGetStat(cx_num, st)
   return res;
 }
 
-static int addIt pro((struct nword *, Wchar *,
+static int addIt(struct nword *, Wchar *,
 		      int (*proc)(Wchar *, int, int, Wchar *, Wchar *,
 				  RkLex *, struct RkContext *),
 		      Wchar *dst, int, int, unsigned long,
-		      struct RkContext *));
+		      struct RkContext *);
 static int
 addIt(cw, key, proc, dst, ind, maxdst, mode, cx)
 struct nword *cw;
 Wchar *key;
-int (*proc) pro((Wchar *, int, int, Wchar *, Wchar *,
-		 RkLex *, struct RkContext *));
+int (*proc)(Wchar *, int, int, Wchar *, Wchar *,
+		 RkLex *, struct RkContext *);
 Wchar *dst;
 int ind;
 int maxdst;
@@ -1163,8 +1163,8 @@ static int
 getIt(cx, cnum, proc, dst, max)
 struct RkContext *cx;
 int cnum;
-int (*proc) pro((Wchar *, int, int, Wchar *, Wchar *,
-		 RkLex *, struct RkContext *));
+int (*proc)(Wchar *, int, int, Wchar *, Wchar *,
+		 RkLex *, struct RkContext *);
 Wchar *dst;
 int max;
 {
@@ -1205,7 +1205,7 @@ addYomi(dst, ind, max, yomi, kanji, lex)
  *	current bunsetu no yomi wo toru
  */
 
-int RkwGetYomi pro((int, Wchar *, int));
+int RkwGetYomi(int, Wchar *, int);
 
 int
 RkwGetYomi(cx_num, yomi, maxyomi)
@@ -1239,7 +1239,7 @@ RkwGetYomi(cx_num, yomi, maxyomi)
   return i;
 }
 
-int RkwGetLastYomi pro((int, Wchar *, int));
+int RkwGetLastYomi(int, Wchar *, int);
 
 int
 RkwGetLastYomi(cx_num, yomi, maxyomi)
@@ -1334,7 +1334,7 @@ getKanji(cx, cnum, dst, maxdst)
  *	current bunsetu no kanji tuduri wo toru
  */
 
-int RkwGetKanji pro((int, Wchar *, int));
+int RkwGetKanji(int, Wchar *, int);
 
 int
 RkwGetKanji(cx_num, dst, maxdst)
@@ -1565,7 +1565,7 @@ addHinshi(dst, ind, max, yomi, kanji, lex, cx)
  *	current bunsetu no hinshi mojiretu wo toru
  */
 
-int RkwGetHinshi pro((int, Wchar *, int));
+int RkwGetHinshi(int, Wchar *, int);
 
 int
 RkwGetHinshi(cx_num, dst, maxdst)

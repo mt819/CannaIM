@@ -228,7 +228,7 @@ uiContext d;
 void
 CannaBeep()
 {
-  extern int (*jrBeepFunc) pro((void));
+  extern int (*jrBeepFunc)(void);
 
   if (jrBeepFunc) {
     jrBeepFunc();
@@ -266,8 +266,8 @@ unsigned char ch;
 }
 #endif /* SOMEONE_USE_THIS */
 
-extern int extractJishuString pro((yomiContext, wchar_t *,  wchar_t *,
-                               wchar_t **,  wchar_t **));
+extern int extractJishuString(yomiContext, wchar_t *,  wchar_t *,
+                               wchar_t **,  wchar_t **);
 
 /*
   extractSimpleYomiString -- yomiContext の読み部分だけを取り出す
@@ -283,8 +283,8 @@ extern int extractJishuString pro((yomiContext, wchar_t *,  wchar_t *,
  */
 
 static int extractSimpleYomiString
-  pro((yomiContext, wchar_t *, wchar_t *, wchar_t **, wchar_t **,
-       wcKanjiAttributeInternal *, int));
+ (yomiContext, wchar_t *, wchar_t *, wchar_t **, wchar_t **,
+       wcKanjiAttributeInternal *, int);
 
 static int
 extractSimpleYomiString(yc, s, e, sr, er, pat, focused)
@@ -364,8 +364,8 @@ int focused;
  */
 
 static int extractKanjiString
-  pro((yomiContext, wchar_t *, wchar_t *, int, wchar_t **, wchar_t **,
-       wcKanjiAttributeInternal *, int));
+ (yomiContext, wchar_t *, wchar_t *, int, wchar_t **, wchar_t **,
+       wcKanjiAttributeInternal *, int);
 
 static int
 extractKanjiString(yc, s, e, b, sr, er, pat, focused)
@@ -472,8 +472,8 @@ int focused;
  */
 
 static int extractYomiString
-  pro((yomiContext, wchar_t *, wchar_t *, int, wchar_t **, wchar_t **,
-       wcKanjiAttributeInternal *, int));
+ (yomiContext, wchar_t *, wchar_t *, int, wchar_t **, wchar_t **,
+       wcKanjiAttributeInternal *, int);
 
 static int
 extractYomiString(yc, s, e, b, sr, er, pat, focused)
@@ -905,7 +905,7 @@ int
 GLineNGReturnTK(d)
 uiContext d;
 {
-  extern void popTourokuMode pro((uiContext));
+  extern void popTourokuMode(uiContext);
   popTourokuMode(d);
   popCallback(d);
   GLineNGReturn(d);
@@ -1621,7 +1621,7 @@ uiContext d;
   return 0;
 }
 
-static int wait_anykey_func pro((uiContext, KanjiMode, int, int, int));
+static int wait_anykey_func(uiContext, KanjiMode, int, int, int);
 
 static int
 wait_anykey_func(d, mode, whattodo, key, fnum)
@@ -1655,7 +1655,7 @@ uiContext d;
 canna_callback_t cnt;
 {
   coreContext cc;
-  extern coreContext newCoreContext pro((void));
+  extern coreContext newCoreContext(void);
 
 
   cc = newCoreContext();

@@ -453,7 +453,7 @@ _Rktopen(dm, file, mode, gram)
 /*
  * CLOSE
  */
-static int writeTD pro((struct TD *, struct RkKxGram *, int));
+static int writeTD(struct TD *, struct RkKxGram *, int);
 
 static int
 writeTD(td, gram, fdes)

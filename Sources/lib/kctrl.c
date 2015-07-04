@@ -44,11 +44,11 @@ static char rcs_id[] = "@(#) 102.1 $Id: kctrl.c,v 1.10 2003/09/21 09:08:17 aida_
 extern char *CANNA_initfilename;
 extern char saveapname[];
 
-static int insertEmptySlots pro((uiContext));
-static int callCallback pro((uiContext, int));
-static void freeKeysup pro((void));
-static void freeBuffer pro((void));
-static void freeExtra pro((void));
+static int insertEmptySlots(uiContext);
+static int callCallback(uiContext, int);
+static void freeKeysup(void);
+static void freeBuffer(void);
+static void freeExtra(void);
 extern int ckverbose;
 
 static int
@@ -503,7 +503,7 @@ KC_initialize(d, arg)
 
   if (FirstTime) {
 #ifdef ENGINE_SWITCH
-    extern char *RkGetServerEngine pro((void));
+    extern char *RkGetServerEngine(void);
     if (!RkGetServerEngine()) {
       RkSetServerName((char *)0);
     }
@@ -1017,7 +1017,7 @@ KC_inhibitHankakuKana(d, arg)
 }
 
 #ifndef NO_EXTEND_MENU
-extern void popTourokuMode pro((uiContext));
+extern void popTourokuMode(uiContext);
 
 static int
 popTourokuWithGLineClear(d, retval, env)
@@ -1102,7 +1102,7 @@ int flag;
 
  */
 
-static void closeRKContextInUIContext pro((uiContext, int));
+static void closeRKContextInUIContext(uiContext, int);
 
 static void
 closeRKContextInUIContext(d, flag)
@@ -1464,7 +1464,7 @@ int res;
 
   for (cbp = d->cb; cbp ;) {
     int index;
-    int (*callbackfunc) pro((uiContext, int, mode_context));
+    int (*callbackfunc)(uiContext, int, mode_context);
 
     index = d->status;
     d->status = 0; /* Callback がなくても EXIT、QUIT、AUX はクリアする */
@@ -1794,7 +1794,7 @@ jrListCallbackStruct *arg;
 {
   if (cannaconf.iListCB) {
     d->client_data = (char *)0;
-    d->list_func = (int (*) pro((char *, int, wchar_t **, int, int *)))0;
+    d->list_func = (int (*)(char *, int, wchar_t **, int, int *))0;
     return -1;
   }
   if (arg->callback_func) {
@@ -1813,7 +1813,7 @@ jrListCallbackStruct *arg;
   }
   else {
     d->client_data = (char *)0;
-    d->list_func = (int (*) pro((char *, int, wchar_t **, int, int *)))0;
+    d->list_func = (int (*)(char *, int, wchar_t **, int, int *))0;
   }
   return 0;
 }

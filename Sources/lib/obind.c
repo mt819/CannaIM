@@ -63,7 +63,7 @@ typedef struct {
 
 typedef struct {
   char *client_data;
-  int (*callback_func) pro((char *, int, wchar_t **, int, int *));
+  int (*callback_func)(char *, int, wchar_t **, int, int *);
 } owcListCallbackStruct;
 
 typedef canna_uint16_t cannawc16;
@@ -72,10 +72,10 @@ typedef canna_uint32_t cannawc32;
 extern int howToReturnModeInfo;
 extern char *context_table;
 
-exp(int) wcKanjiString pro((const int, const int, wchar_t *, const int,
-			    owcKanjiStatus *));
-exp(int) wcKanjiControl pro((const int, const int, char *));
-exp(int) wcCloseKanjiContext pro((const int, owcKanjiStatusWithValue *));
+exp(int) wcKanjiString(const int, const int, wchar_t *, const int,
+			    owcKanjiStatus *);
+exp(int) wcKanjiControl(const int, const int, char *);
+exp(int) wcCloseKanjiContext(const int, owcKanjiStatusWithValue *);
 
 static size_t
 Oldwcsnlen(owcs, maxlen)
@@ -583,10 +583,10 @@ owcKanjiStatusWithValue *ksva;
 #undef wcKanjiControl
 #undef wcCloseKanjiContext
 
-exp(int) wcKanjiString pro((const int, const int, cannawc *, const int,
-			    wcKanjiStatus *));
-exp(int) wcKanjiControl pro((const int, const int, char *));
-exp(int) wcCloseKanjiContext pro((const int, wcKanjiStatusWithValue *));
+exp(int) wcKanjiString(const int, const int, cannawc *, const int,
+			    wcKanjiStatus *);
+exp(int) wcKanjiControl(const int, const int, char *);
+exp(int) wcCloseKanjiContext(const int, wcKanjiStatusWithValue *);
 
 static int
 wc_unsupported()

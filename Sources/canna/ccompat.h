@@ -26,12 +26,6 @@
 #define CCOMPAT_H
 #include "cannaconf.h"
 
-#if defined(__STDC__) || defined(__cplusplus)
-# define pro(x) x
-#else
-# define pro(x) ()
-#endif
-
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else

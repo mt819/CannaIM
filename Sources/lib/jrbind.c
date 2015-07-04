@@ -108,7 +108,7 @@ unsigned int dpy, win;
   return (uiContext)0;
 }
 
-extern int kanjiControl pro((int, uiContext, caddr_t));
+extern int kanjiControl(int, uiContext, caddr_t);
 
 int
 XwcLookupKanji2(dpy, win, buffer_return, nbuffer, nbytes, functionalChar,

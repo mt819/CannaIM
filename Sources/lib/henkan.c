@@ -54,13 +54,13 @@ extern struct dicname *RengoGakushu, *KatakanaGakushu, *HiraganaGakushu;
 extern KanjiModeRec cy_mode, cb_mode, yomi_mode, tankouho_mode, empty_mode;
 extern char saveapname[];
 extern int mountnottry;
-extern exp(int) RkwGetServerVersion pro((int *, int *));
+extern exp(int) RkwGetServerVersion(int *, int *);
 
 #define DICERRORMESGLEN 78
 
-static int doYomiHenkan pro((uiContext, int, wchar_t *, yomiContext));
-static yomiContext tanbunToYomi pro((uiContext, tanContext, wchar_t *));
-static void tanbunCommitYomi pro((uiContext, tanContext, yomiContext));
+static int doYomiHenkan(uiContext, int, wchar_t *, yomiContext);
+static yomiContext tanbunToYomi(uiContext, tanContext, wchar_t *);
+static void tanbunCommitYomi(uiContext, tanContext, yomiContext);
 
 static char dictmp[DICERRORMESGLEN];
 static char *mountErrorMessage = "\244\362\245\336\245\246\245\363\245\310"
@@ -165,7 +165,7 @@ KanjiInit()
   extern struct dicname *kanjidicnames;
   extern int FirstTime;
   extern jrUserInfoStruct *uinfo;
-  extern char *RkGetServerHost pro((void));
+  extern char *RkGetServerHost(void);
   int ret = -1;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   char buf[256];
@@ -592,10 +592,10 @@ yomiContext yc;
   yc->henkanInhibition = tan->henkanInhibition;
 }
 
-extern yomiContext dupYomiContext pro((yomiContext));
-extern void setMode pro((uiContext, tanContext, int));
+extern yomiContext dupYomiContext(yomiContext);
+extern void setMode(uiContext, tanContext, int);
 
-extern void trimYomi pro((uiContext, int, int, int, int));
+extern void trimYomi(uiContext, int, int, int, int);
 
 /*
  * 学習を可能にするためtanContextをyomiContextにする。
@@ -994,11 +994,11 @@ yomiContext yc;
   return ret;
 }
 
-extern void restoreChikujiIfBaseChikuji pro((yomiContext));
-extern void ReCheckStartp pro((yomiContext));
-extern void fitmarks pro((yomiContext));
+extern void restoreChikujiIfBaseChikuji(yomiContext);
+extern void ReCheckStartp(yomiContext);
+extern void fitmarks(yomiContext);
 
-int YomiBubunKakutei pro((uiContext));
+int YomiBubunKakutei(uiContext);
 
 int
 YomiBubunKakutei(d)
@@ -1658,7 +1658,7 @@ uiContext d;
   TanHenkan -- 回数をチェックする以外は TanNextKouho とほぼ同じ
 
  */
-static int TanHenkan pro((uiContext));
+static int TanHenkan(uiContext);
 
 static int
 TanHenkan(d)
@@ -1716,7 +1716,7 @@ uiContext	d;
   tanJishuHenkan -- 特定の文節だけ字種変換する
  */
 
-static int tanJishuHenkan pro((uiContext, int));
+static int tanJishuHenkan(uiContext, int);
 
 static int
 tanJishuHenkan(d, fn)
@@ -1779,7 +1779,7 @@ uiContext d;
   return tanJishuHenkan(d, CANNA_FN_Hankaku);
 }
 
-int TanKanaRotate pro((uiContext));
+int TanKanaRotate(uiContext);
 
 int
 TanKanaRotate(d)
@@ -1788,7 +1788,7 @@ uiContext d;
   return tanJishuHenkan(d, CANNA_FN_KanaRotate);
 }
 
-int TanRomajiRotate pro((uiContext));
+int TanRomajiRotate(uiContext);
 
 int
 TanRomajiRotate(d)
@@ -1797,7 +1797,7 @@ uiContext d;
   return tanJishuHenkan(d, CANNA_FN_RomajiRotate);
 }
 
-int TanCaseRotateForward pro((uiContext));
+int TanCaseRotateForward(uiContext);
 
 int
 TanCaseRotateForward(d)
@@ -2217,7 +2217,7 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static int TanKakuteiYomiInsert pro((uiContext));
+static int TanKakuteiYomiInsert(uiContext);
 
 static int
 TanKakuteiYomiInsert(d)
@@ -2336,7 +2336,7 @@ int n;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static int TanExtendBunsetsu pro((uiContext));
+static int TanExtendBunsetsu(uiContext);
 
 static int
 TanExtendBunsetsu(d)
@@ -2369,7 +2369,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static int TanShrinkBunsetsu pro((uiContext));
+static int TanShrinkBunsetsu(uiContext);
 
 static int
 TanShrinkBunsetsu(d)
@@ -2519,7 +2519,7 @@ jrKanjiPipeError()
 
  */
 
-static int TanBunsetsuMode pro((uiContext));
+static int TanBunsetsuMode(uiContext);
 
 static int
 TanBunsetsuMode(d)
@@ -2685,7 +2685,7 @@ uiContext d;
   return 0;
 }
 
-static int TbChooseChar pro((uiContext, int));
+static int TbChooseChar(uiContext, int);
 
 static int
 TbChooseChar(d, head)
@@ -2763,8 +2763,8 @@ int head;
   return retval;
 }
 
-static int TanChooseHeadChar pro((uiContext));
-static int TanChooseTailChar pro((uiContext));
+static int TanChooseHeadChar(uiContext);
+static int TanChooseTailChar(uiContext);
 
 static int
 TanChooseHeadChar(d)

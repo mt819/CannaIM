@@ -233,7 +233,7 @@ char *romaji;
 	}
 
         qsort((char *)tmp_rdic, rdic->nr_nkey, sizeof(struct romaRec), 
-                (int (*) pro((const void *, const void *)))compar);
+                (int (*)(const void *, const void *))compar);
 
         for (i = 0; i < rdic->nr_nkey; i++) {
 	  rdic->nr_keyaddr[i] = tmp_rdic[i].roma;

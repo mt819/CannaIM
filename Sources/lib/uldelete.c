@@ -40,14 +40,14 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-extern exp(int) RkwGetServerVersion pro((int *, int *));
-extern exp(int) RkwChmodDic pro((int, char *, int));
+extern exp(int) RkwGetServerVersion(int *, int *);
+extern exp(int) RkwChmodDic(int, char *, int);
 
-static int dicSakujoYomi pro((uiContext)),
-           dicSakujoEndBun pro((uiContext)),
-           dicSakujoTango pro((uiContext)),
-           dicSakujoDictionary pro((uiContext)),
-           dicSakujoDo pro((uiContext));
+static int dicSakujoYomi(uiContext)),
+           dicSakujoEndBun(uiContext)),
+           dicSakujoTango(uiContext)),
+           dicSakujoDictionary(uiContext)),
+           dicSakujoDo(uiContext);
 
 void
 freeWorkDic3(tc)

@@ -133,7 +133,7 @@ uiContext	d;
  * auxCallback ...       n が入力された
  */
 
-static int YesNo pro((uiContext));
+static int YesNo(uiContext);
 
 static int
 YesNo(d)
@@ -153,7 +153,7 @@ uiContext	d;
   return(0);
 }
 
-static int YesNoQuit pro((uiContext));
+static int YesNoQuit(uiContext);
 
 static int
 YesNoQuit(d)

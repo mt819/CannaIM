@@ -40,12 +40,12 @@ static char rcs_id[] = "@(#) 102.1 $Id: ulhinshi.c,v 1.3 2003/09/17 08:50:53 aid
 extern int errno;
 #endif
 
-static int tourokuYes pro((uiContext)),
-           tourokuNo pro((uiContext)),
-           makeDoushi pro((uiContext)),
-           uuTDicExitCatch pro((uiContext, int, mode_context)),
-           uuTDicQuitCatch pro((uiContext, int, mode_context)),
-           tangoTouroku pro((uiContext));
+static int tourokuYes(uiContext),
+           tourokuNo(uiContext),
+           makeDoushi(uiContext),
+           uuTDicExitCatch(uiContext, int, mode_context),
+           uuTDicQuitCatch(uiContext, int, mode_context),
+           tangoTouroku(uiContext);
 
 static char *e_message[] = {
 #ifdef CODED_MESSAGE

@@ -983,7 +983,7 @@ RkUniqWcand(wc, nwc)
 }
 
 static struct TW *
-RkWcand2Wrec pro((Wrec *, struct RkWcand *, int, unsigned long *));
+RkWcand2Wrec(Wrec *, struct RkWcand *, int, unsigned long *);
 
 static struct TW *
 RkWcand2Wrec(key, wc, nc, lucks)

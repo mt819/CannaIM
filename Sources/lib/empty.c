@@ -49,7 +49,7 @@ uiContext d;
   return res;
 }
 
-static int EmptySelfInsert pro((uiContext));
+static int EmptySelfInsert(uiContext);
 
 static int
 EmptySelfInsert(d)
@@ -78,7 +78,7 @@ uiContext d;
  *
  */
 
-static int EmptyYomiInsert pro((uiContext));
+static int EmptyYomiInsert(uiContext);
 
 static int
 EmptyYomiInsert(d)
@@ -102,7 +102,7 @@ uiContext d;
   するなんてことは必要ないのではないのかなぁ。
  */
 
-static int EmptyQuotedInsert pro((uiContext));
+static int EmptyQuotedInsert(uiContext);
 
 static int
 EmptyQuotedInsert(d)
@@ -119,7 +119,7 @@ uiContext d;
   AlphaSelfInsert -- 自分自身を確定文字列として返す関数。
  */
 
-static int AlphaSelfInsert pro((uiContext));
+static int AlphaSelfInsert(uiContext);
 
 static int
 AlphaSelfInsert(d)
@@ -143,7 +143,7 @@ uiContext d;
   }
 }
 
-static int AlphaNop pro((uiContext));
+static int AlphaNop(uiContext);
 
 static int
 AlphaNop(d)
@@ -155,7 +155,7 @@ uiContext d;
   return 0;
 }
 
-static int EmptyQuit pro((uiContext));
+static int EmptyQuit(uiContext);
 
 static int
 EmptyQuit(d)
@@ -172,7 +172,7 @@ uiContext d;
   return res;
 }
 
-static int EmptyKakutei pro((uiContext));
+static int EmptyKakutei(uiContext);
 
 static int
 EmptyKakutei(d)
@@ -189,7 +189,7 @@ uiContext d;
   return res;
 }
 
-static int EmptyDeletePrevious pro((uiContext));
+static int EmptyDeletePrevious(uiContext);
 
 static int
 EmptyDeletePrevious(d)

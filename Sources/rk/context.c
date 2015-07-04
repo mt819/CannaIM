@@ -482,7 +482,7 @@ RkwCloseContext(cx_num)
 /* RkDuplicateContext
  *	onaji naiyou no context wo sakuseisuru
  */
-int RkwDuplicateContext pro((int));
+int RkwDuplicateContext(int);
 
 int
 RkwDuplicateContext(cx_num)
@@ -705,7 +705,7 @@ struct dics {
   int dictype;
 };
 
-static int diccmp pro((const struct dics *, const struct dics *));
+static int diccmp(const struct dics *, const struct dics *);
 
 static int
 diccmp(a, b)
@@ -784,7 +784,7 @@ RkwGetDicList(cx_num, mdname, maxmdname)
 	}
       }
       qsort(diclist, count, sizeof(struct dics), 
-	    (int (*) pro((const void *, const void *)))diccmp);
+	    (int (*)(const void *, const void *)))diccmp);
 
       n = count;
       for (i = j = 0, dicp = diclist ; i < n ; i++, dicp++) {
@@ -955,7 +955,7 @@ RkwDeleteDic(cx_num, name, word)
  lib/RKC API.  In case STANDALONE, it becomes possible for libRK to be
  linked with libcanna directly. */
 
-int RkwSetAppName pro((int, char *));
+int RkwSetAppName(int, char *);
 
 int
 RkwSetAppName(Context, name)
@@ -965,7 +965,7 @@ char *name;
   return 0;
 }
 
-char *RkwGetServerName pro((void));
+char *RkwGetServerName(void);
 
 char *
 RkwGetServerName()
@@ -973,7 +973,7 @@ RkwGetServerName()
   return (char *)NULL;
 }
 
-int RkwGetProtocolVersion pro((int *, int *));
+int RkwGetProtocolVersion(int *, int *);
 
 int
 RkwGetProtocolVersion(majorp, minorp)

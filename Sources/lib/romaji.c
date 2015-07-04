@@ -51,10 +51,10 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-int forceRomajiFlushYomi pro((uiContext));
-static int KanaYomiInsert pro((uiContext));
-static int chikujiEndBun pro((uiContext));
-extern void EWStrcat pro((wchar_t *, char *));
+int forceRomajiFlushYomi(uiContext);
+static int KanaYomiInsert(uiContext);
+static int chikujiEndBun(uiContext);
+extern void EWStrcat(wchar_t *, char *);
 
 extern int yomiInfoLevel;
 
@@ -620,7 +620,7 @@ RomkanaInit()
 /* ローマ字かな変換テーブルのクローズ */
 
 extern keySupplement keysup[];
-extern exp(void) RkwCloseRoma pro((struct RkRxDic *));
+extern exp(void) RkwCloseRoma(struct RkRxDic *);
 
 void
 RomkanaFin()
@@ -915,7 +915,7 @@ yomiContext yc;
   }
 }
 
-extern void setMode pro((uiContext d, tanContext tan, int forw));
+extern void setMode(uiContext d, tanContext tan, int forw);
 
 void
 removeCurrentBunsetsu(d, tan)
@@ -992,7 +992,7 @@ yomiContext yc;
   }
 }
 
-int YomiInsert pro((uiContext));
+int YomiInsert(uiContext);
 
 int
 YomiInsert(d)
@@ -1162,7 +1162,7 @@ uiContext d;
    見つからない時は０を返す。
  */
 
-int findSup pro((wchar_t));
+int findSup(wchar_t);
 
 int
 findSup(wchar_t key)
@@ -1819,7 +1819,7 @@ yomiContext yc;
   return 1;
 }
 
-static int YomiBackward pro((uiContext));
+static int YomiBackward(uiContext);
 
 static int
 YomiBackward(d) /* カーソルの左移動 */
@@ -1888,7 +1888,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiNop pro((uiContext));
+static int YomiNop(uiContext);
 
 static int
 YomiNop(d)
@@ -1901,7 +1901,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiForward pro((uiContext));
+static int YomiForward(uiContext);
 
 static int
 YomiForward(d) /* カーソルの右移動 */
@@ -1962,7 +1962,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiBeginningOfLine pro((uiContext));
+static int YomiBeginningOfLine(uiContext);
 
 static int
 YomiBeginningOfLine(d) /* カーソルの左端移動 */
@@ -1996,7 +1996,7 @@ uiContext d;
   return(0);
 }
 
-static int YomiEndOfLine pro((uiContext));
+static int YomiEndOfLine(uiContext);
 
 static int
 YomiEndOfLine(d) /* カーソルの右端移動 */
@@ -2098,7 +2098,7 @@ int bsize;
   return ret;
 }
 
-static int saveFlags pro((yomiContext));
+static int saveFlags(yomiContext);
 
 static int
 saveFlags(yc)
@@ -2649,7 +2649,7 @@ int n;
 
 extern KanjiModeRec cy_mode;
 
-int YomiKakutei pro((uiContext));
+int YomiKakutei(uiContext);
 
 int
 YomiKakutei(d)
@@ -2949,7 +2949,7 @@ uiContext d;
   return(0);
 }
 
-static int YomiDeletePrevious pro((uiContext));
+static int YomiDeletePrevious(uiContext);
 
 static int
 YomiDeletePrevious(d)
@@ -2988,7 +2988,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiDeleteNext pro((uiContext));
+static int YomiDeleteNext(uiContext);
 
 static int
 YomiDeleteNext(d)/* カーソル上の文字の削除 */
@@ -3063,7 +3063,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiKillToEndOfLine pro((uiContext));
+static int YomiKillToEndOfLine(uiContext);
 
 static int
 YomiKillToEndOfLine(d)  /* カーソルから右のすべての文字の削除 */
@@ -3095,7 +3095,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiQuit pro((uiContext));
+static int YomiQuit(uiContext);
 
 static int
 YomiQuit(d)/* 読みの取り消し */
@@ -3132,7 +3132,7 @@ newCoreContext()
   return cc;
 }
 
-static int simplePopCallback pro((uiContext, int, mode_context));
+static int simplePopCallback(uiContext, int, mode_context);
 
 static int
 simplePopCallback(d, retval, env)
@@ -3183,7 +3183,7 @@ uiContext d;
 
  */
 
-static int exitYomiQuotedInsert pro((uiContext, int, mode_context));
+static int exitYomiQuotedInsert(uiContext, int, mode_context);
 
 static int
 exitYomiQuotedInsert(d, retval, env)
@@ -3228,7 +3228,7 @@ uiContext d;
   }
 }
 
-static int yomiquotedfunc pro((uiContext, KanjiMode, int, int, int));
+static int yomiquotedfunc(uiContext, KanjiMode, int, int, int);
 
 static int
 yomiquotedfunc(d, mode, whattodo, key, fnum)
@@ -3542,7 +3542,7 @@ mapAsHex(d)
 
   */
 
-static int ConvertAsHex pro((uiContext));
+static int ConvertAsHex(uiContext);
 
 static int
 ConvertAsHex(d)
@@ -3685,7 +3685,7 @@ int ind, n;
   }
 }
 
-static int everySupkey pro((uiContext, int, mode_context));
+static int everySupkey(uiContext, int, mode_context);
 
 static int
 everySupkey(d, retval, env)
@@ -3706,7 +3706,7 @@ mode_context env;
   return retval;
 }
 
-static int exitSupkey pro((uiContext, int, mode_context));
+static int exitSupkey(uiContext, int, mode_context);
 
 static int
 exitSupkey(d, retval, env)
@@ -3750,7 +3750,7 @@ mode_context env;
 #endif
 }
 
-static int quitSupkey pro((uiContext, int, mode_context));
+static int quitSupkey(uiContext, int, mode_context);
 
 static int
 quitSupkey(d, retval, env)
@@ -3879,7 +3879,7 @@ yomiContext yc;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static int YomiHenkan pro((uiContext));
+static int YomiHenkan(uiContext);
 
 static int
 YomiHenkan(d)
@@ -3949,7 +3949,7 @@ uiContext	d;
   return 0;
 }
 
-static int YomiHenkanNaive pro((uiContext));
+static int YomiHenkanNaive(uiContext);
 
 static int
 YomiHenkanNaive(d)
@@ -3966,7 +3966,7 @@ uiContext	d;
   }
 }
 
-static int YomiHenkanOrNothing pro((uiContext));
+static int YomiHenkanOrNothing(uiContext);
 
 static int
 YomiHenkanOrNothing(d)
@@ -3985,11 +3985,11 @@ uiContext	d;
 
 /* ベース文字の切り替え */
 
-extern int EmptyBaseHira pro((uiContext)), EmptyBaseKata pro((uiContext));
-extern int EmptyBaseEisu pro((uiContext));
-extern int EmptyBaseZen pro((uiContext)), EmptyBaseHan pro((uiContext));
+extern int EmptyBaseHira(uiContext), EmptyBaseKata(uiContext);
+extern int EmptyBaseEisu(uiContext);
+extern int EmptyBaseZen(uiContext), EmptyBaseHan(uiContext);
 
-static int YomiBaseHira pro((uiContext));
+static int YomiBaseHira(uiContext);
 
 static int
 YomiBaseHira(d)
@@ -4001,7 +4001,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiBaseKata pro((uiContext));
+static int YomiBaseKata(uiContext);
 
 static int
 YomiBaseKata(d)
@@ -4013,7 +4013,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiBaseEisu pro((uiContext));
+static int YomiBaseEisu(uiContext);
 
 static int
 YomiBaseEisu(d)
@@ -4025,7 +4025,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiBaseZen pro((uiContext));
+static int YomiBaseZen(uiContext);
 
 static int
 YomiBaseZen(d)
@@ -4037,7 +4037,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiBaseHan pro((uiContext));
+static int YomiBaseHan(uiContext);
 
 static int
 YomiBaseHan(d)
@@ -4049,7 +4049,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiBaseKana pro((uiContext));
+static int YomiBaseKana(uiContext);
 
 static int
 YomiBaseKana(d)
@@ -4061,7 +4061,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiBaseKakutei pro((uiContext));
+static int YomiBaseKakutei(uiContext);
 
 static int
 YomiBaseKakutei(d)
@@ -4073,7 +4073,7 @@ uiContext d;
   return 0;
 }
 
-static int YomiBaseHenkan pro((uiContext));
+static int YomiBaseHenkan(uiContext);
 
 static int
 YomiBaseHenkan(d)
@@ -4085,7 +4085,7 @@ uiContext d;
   return 0;
 }
 
-int YomiBaseHiraKataToggle pro((uiContext));
+int YomiBaseHiraKataToggle(uiContext);
 
 int
 YomiBaseHiraKataToggle(d)
@@ -4105,7 +4105,7 @@ uiContext d;
   return 0;
 }
 
-int YomiBaseZenHanToggle pro((uiContext));
+int YomiBaseZenHanToggle(uiContext);
 
 int
 YomiBaseZenHanToggle(d)
@@ -4125,7 +4125,7 @@ uiContext d;
   return 0;
 }
 
-int YomiBaseRotateForw pro((uiContext));
+int YomiBaseRotateForw(uiContext);
 
 int
 YomiBaseRotateForw(d)
@@ -4157,7 +4157,7 @@ uiContext d;
   return 0;
 }
 
-int YomiBaseRotateBack pro((uiContext));
+int YomiBaseRotateBack(uiContext);
 
 int
 YomiBaseRotateBack(d)
@@ -4188,7 +4188,7 @@ uiContext d;
   return 0;
 }
 
-int YomiBaseKanaEisuToggle pro((uiContext));
+int YomiBaseKanaEisuToggle(uiContext);
 
 int
 YomiBaseKanaEisuToggle(d)
@@ -4208,7 +4208,7 @@ uiContext d;
   return 0;
 }
 
-int YomiBaseKakuteiHenkanToggle pro((uiContext));
+int YomiBaseKakuteiHenkanToggle(uiContext);
 
 int
 YomiBaseKakuteiHenkanToggle(d)
@@ -4228,7 +4228,7 @@ uiContext d;
   return 0;
 }
 
-int YomiModeBackup pro((uiContext));
+int YomiModeBackup(uiContext);
 
 int
 YomiModeBackup(d)
@@ -4581,7 +4581,7 @@ int start, end, RKflag, engflag;
   yc->rStartp = yc->rCurs;
 }
 
-int YomiMark pro((uiContext));
+int YomiMark(uiContext);
 
 int
 YomiMark(d)
@@ -4805,9 +4805,9 @@ uiContext d;
 }
 #endif
 
-int doTanConvertTb pro((uiContext, yomiContext));
+int doTanConvertTb(uiContext, yomiContext);
 
-int TanBubunKakutei pro((uiContext));
+int TanBubunKakutei(uiContext);
 
 int
 TanBubunKakutei(d)
@@ -5001,7 +5001,7 @@ int k, r;
   yc->rStartp = yc->rCurs;
 }
 
-static int YomiNextJishu pro((uiContext));
+static int YomiNextJishu(uiContext);
 
 static int
 YomiNextJishu(d) /* 読みモードからの順回り文字種変換 */
@@ -5010,7 +5010,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_Next);
 }
 
-static int YomiPreviousJishu pro((uiContext));
+static int YomiPreviousJishu(uiContext);
 
 static int
 YomiPreviousJishu(d) /* 読みモードからの逆回り文字種変換 */
@@ -5019,7 +5019,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_Prev);
 }
 
-static int YomiKanaRotate pro((uiContext));
+static int YomiKanaRotate(uiContext);
 
 static int
 YomiKanaRotate(d) /* 読みモードからの順回りかな文字種変換 */
@@ -5028,7 +5028,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_KanaRotate);
 }
 
-static int YomiRomajiRotate pro((uiContext));
+static int YomiRomajiRotate(uiContext);
 
 static int
 YomiRomajiRotate(d) /* 読みモードからの順回り英数文字種変換 */
@@ -5037,7 +5037,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_RomajiRotate);
 }
 
-static int YomiCaseRotateForward pro((uiContext));
+static int YomiCaseRotateForward(uiContext);
 
 static int
 YomiCaseRotateForward(d) /* 読みモードからの順回り英数文字種変換 */
@@ -5046,7 +5046,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_CaseRotate);
 }
 
-static int YomiZenkaku pro((uiContext));
+static int YomiZenkaku(uiContext);
 
 static int
 YomiZenkaku(d) /* 読みモードからの全角変換 */
@@ -5055,7 +5055,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_Zenkaku);
 }
 
-static int YomiHankaku pro((uiContext));
+static int YomiHankaku(uiContext);
 
 static int
 YomiHankaku(d) /* 読みモードからの半角変換 */
@@ -5067,7 +5067,7 @@ uiContext d;
     return YomiJishu(d, CANNA_FN_Hankaku);
 }
 
-static int YomiHiraganaJishu pro((uiContext));
+static int YomiHiraganaJishu(uiContext);
 
 static int
 YomiHiraganaJishu(d) /* 読みモードから字種モードのひらがなへ */
@@ -5076,7 +5076,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_Hiragana);
 }
 
-static int YomiKatakanaJishu pro((uiContext));
+static int YomiKatakanaJishu(uiContext);
 
 static int
 YomiKatakanaJishu(d) /* 読みモードから字種モードのカタカナへ */
@@ -5085,7 +5085,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_Katakana);
 }
 
-static int YomiRomajiJishu pro((uiContext));
+static int YomiRomajiJishu(uiContext);
 
 static int
 YomiRomajiJishu(d) /* 読みモードから字種モードのローマ字へ */
@@ -5094,7 +5094,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_Romaji);
 }
 
-static int YomiToLower pro((uiContext));
+static int YomiToLower(uiContext);
 static int
 YomiToLower(d)
 uiContext d;
@@ -5102,7 +5102,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_ToLower);
 }
 
-static int YomiToUpper pro((uiContext));
+static int YomiToUpper(uiContext);
 
 static int
 YomiToUpper(d)
@@ -5111,7 +5111,7 @@ uiContext d;
   return YomiJishu(d, CANNA_FN_ToUpper);
 }
 
-static int YomiCapitalize pro((uiContext));
+static int YomiCapitalize(uiContext);
 
 static int
 YomiCapitalize(d)

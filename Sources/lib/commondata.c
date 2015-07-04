@@ -179,7 +179,7 @@ struct CannaConfig *cf;
   cf->auto_sync = 1;
 }
 
-static void freeUInfo pro((void));
+static void freeUInfo(void);
 
 static void
 freeUInfo()

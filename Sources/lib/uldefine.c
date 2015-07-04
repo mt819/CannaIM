@@ -42,10 +42,10 @@ extern int errno;
 
 exp(int) RkwCreateDic();
 
-static int dicTourokuDo pro((uiContext)),
-           checkUsrDic pro((uiContext)),
-           dicTourokuYomi pro((uiContext)),
-           dicTourokuYomiDo pro((uiContext, canna_callback_t));
+static int dicTourokuDo(uiContext),
+           checkUsrDic(uiContext),
+           dicTourokuYomi(uiContext),
+           dicTourokuYomiDo(uiContext, canna_callback_t);
 
 
 static char *shinshitbl1[] =
@@ -854,7 +854,7 @@ mode_context env;
   return(dicTourokuHinshi(d));
 }
 
-static int uuTYomiQuitCatch pro((uiContext, int, mode_context));
+static int uuTYomiQuitCatch(uiContext, int, mode_context);
 
 static int
 uuTYomiQuitCatch(d, retval, env)

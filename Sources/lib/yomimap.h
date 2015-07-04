@@ -24,9 +24,9 @@
 static char yomimap_id[] = "@(#) 102.1 $Id: yomimap.h,v 1.1.1.1 2002/10/19 08:27:52 aida_s Exp $";
 #endif /* lint */
 
-extern int ConvertAsBushu pro((uiContext));
-extern int DoFuncSequence pro((uiContext)),UseOtherKeymap pro((uiContext));
-extern int YomiBubunKakutei pro((uiContext));
+extern int ConvertAsBushu(uiContext);
+extern int DoFuncSequence(uiContext),UseOtherKeymap(uiContext);
+extern int YomiBubunKakutei(uiContext);
 
 static struct funccfunc yomi_funcs[] = {
   {CANNA_FN_FunctionalInsert	,YomiInsert		},

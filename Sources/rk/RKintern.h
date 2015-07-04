@@ -203,16 +203,16 @@ typedef union _rkunion {
 #define	S2TOS(s2)	(((unsigned short)(s2)[0]<<8)|(s2)[1])
 #define	LTOL4(l, l4)	{\
 	(l4)[0] = LOMASK((l)>>24); (l4)[1] = LOMASK((l)>>16);\
-	(l4)[2] = LOMASK((l)>> 8); (l4)[3] = LOMASK((l));\
+	(l4)[2] = LOMASK((l)>> 8); (l4)[3] = LOMASK((l);\
 	}
 #define	LTOL3(l, l3)	{\
 			   (l3)[0] = LOMASK((l)>>16);\
 			   (l3)[1] = LOMASK((l)>> 8);\
-			   (l3)[2] = LOMASK((l));\
+			   (l3)[2] = LOMASK((l);\
 			}
 #define	STOS2(s, s2)	{\
 			   (s2)[0] = LOMASK((s)>> 8);\
-			   (s2)[1] = LOMASK((s));\
+			   (s2)[1] = LOMASK((s);\
 			 }
 
 #define RkNumber(ary) (sizeof(ary)/sizeof(ary[0]))
@@ -435,7 +435,7 @@ struct RUT{
 #define WriteVal(csn, tick, buf){\
    (buf)[0] = (unsigned char)(((csn)>>12) & 0xff);\
    (buf)[1] = (unsigned char)(((csn)>>4) & 0xff);\
-   (buf)[2] = (unsigned char)((((csn)<< 4) & 0xf0)|(((tick)>>16) & 0x0f));\
+   (buf)[2] = (unsigned char)((((csn)<< 4) & 0xf0)|(((tick)>>16) & 0x0f);\
    (buf)[3] = (unsigned char)(((tick)>>8) & 0xff);\
    (buf)[4] = (unsigned char)((tick) & 0xff);\
 }
@@ -926,18 +926,18 @@ typedef struct _rec {
  */
 struct RkDST {
   int (*d_open) /* jisho ga open sareta toki */
-    pro((struct DM *, char *, int, struct RkKxGram *));
+   (struct DM *, char *, int, struct RkKxGram *);
   int (*d_close) /* jisho ga close sareta toki */
-    pro((struct DM *, char *, struct RkKxGram *));
+   (struct DM *, char *, struct RkKxGram *);
   int (*d_search) /* jisho kara tango wo search suru */
-    pro((struct RkContext *, struct DM *, Wchar *,
-	 int, struct nread *, int, int *));
+   (struct RkContext *, struct DM *, Wchar *,
+	 int, struct nread *, int, int *);
   int (*d_io) /* jisho he tango to cache no io */
-    pro((struct DM *, struct ncache *, int));
+   (struct DM *, struct ncache *, int);
   int (*d_ctl)	/* jisho koyuuno sousa */
-    pro((struct DM *, struct DM *, int, Wchar *, struct RkKxGram *));
+   (struct DM *, struct DM *, int, Wchar *, struct RkKxGram *);
   int (*d_sync) /* jisho sync suru */
-    pro((struct RkContext *, struct DM *, struct DM *));
+   (struct RkContext *, struct DM *, struct DM *);
 };
 extern struct RkDST	_RkDST[];
 
@@ -963,7 +963,7 @@ extern struct RkDST	_RkDST[];
 
 #define DST_DoPrint		9999	/* print debug information */
 
-
+
 
 /* Internal Functions */
 struct RkParam		*RkGetSystem();
@@ -971,7 +971,7 @@ struct DD		*RkGetSystemDD();
 struct DD		*RkGetUserDD();
 struct RkContext	*RkGetContext();
 struct RkContext	*RkGetXContext();
-struct RkKxGram		*RkReadGram pro((int, size_t));
+struct RkKxGram		*RkReadGram(int, size_t);
 struct RkKxGram		*RkOpenGram();
 struct RkKxGram		*RkDuplicateGram();
 void			RkCloseGram();
@@ -1009,7 +1009,7 @@ void			freeDF();
 
 int			_RkCandNumber();
 int			_RkWordLength();
-int			_RkCalcLog2 pro((int));
+int			_RkCalcLog2(int);
 int			_RkCalcUnlog2();
 
 /* etc. */
@@ -1061,9 +1061,9 @@ char			*_RkCreatePath();
 char			*_RkCreateUniquePath();
 char			*_RkMakePath();
 
-unsigned char		*_RkCreateHeader pro((struct HD *, size_t *size));
-int			_RkReadHeader pro((int, struct HD *, off_t));
-void			_RkClearHeader pro((struct HD *));
+unsigned char		*_RkCreateHeader(struct HD *, size_t *size);
+int			_RkReadHeader(int, struct HD *, off_t);
+void			_RkClearHeader(struct HD *);
 void			_RkRehashCache();
 
 /*
@@ -1138,64 +1138,64 @@ void			_RkRehashCache();
 #ifndef	_RK_INTERN_FUNCTIONS_DEF_
 #define	_RK_INTERN_FUNCTIONS_DEF_
 
-struct DM *_RkSearchDicWithFreq pro((struct DD **, char *, struct DM **));
+struct DM *_RkSearchDicWithFreq(struct DD **, char *, struct DM **);
 #ifdef __STDC__
-void _Rkpanic pro((const char *, ...));
+void _Rkpanic(const char *, ...);
 #else
 void _Rkpanic();
 #endif
-void RkAssertFail pro((const char *, int, const char *));
-unsigned long _RkGetTick pro((int));
-struct TW *RkCopyWrec pro((struct TW *));
-struct TW *RkUnionWrec pro((struct TW *, struct TW *));
-struct TW *RkSubtractWrec pro((struct TW *, struct TW *));
-void _RkFreeQue pro((struct nstore *, int, int));
-void freeTdn pro((struct RkContext *));
-void _RkFreeBunq pro((struct nstore *));
-int _RkRealizeDD pro((struct DD *));
-int RkCvtWide pro((Wchar *, int, char *, int));
-int RkCvtNarrow pro((char *, int, Wchar *, int));
+void RkAssertFail(const char *, int, const char *);
+unsigned long _RkGetTick(int);
+struct TW *RkCopyWrec(struct TW *);
+struct TW *RkUnionWrec(struct TW *, struct TW *);
+struct TW *RkSubtractWrec(struct TW *, struct TW *);
+void _RkFreeQue(struct nstore *, int, int);
+void freeTdn(struct RkContext *);
+void _RkFreeBunq(struct nstore *);
+int _RkRealizeDD(struct DD *);
+int RkCvtWide(Wchar *, int, char *, int);
+int RkCvtNarrow(char *, int, Wchar *, int);
 
 #if defined(MMAP)
-int _RkDoInvalidateCache pro((long, unsigned long));
+int _RkDoInvalidateCache(long, unsigned long);
 #endif
 
-int _RkGetLink pro((struct ND *, long, unsigned long,
-		    unsigned long *, unsigned long *));
-long _RkUnpackBits pro((unsigned *, unsigned char *, long, int, int));
-long _RkPackBits pro((unsigned char *, long, int, unsigned *, int));
-int _RkSetBitNum pro((unsigned char *, unsigned long, int, int, int));
-int FQsync pro((struct RkContext *, struct DM *, struct DM *, char *));
+int _RkGetLink(struct ND *, long, unsigned long,
+		    unsigned long *, unsigned long *);
+long _RkUnpackBits(unsigned *, unsigned char *, long, int, int);
+long _RkPackBits(unsigned char *, long, int, unsigned *, int);
+int _RkSetBitNum(unsigned char *, unsigned long, int, int, int);
+int FQsync(struct RkContext *, struct DM *, struct DM *, char *);
 
-int RkwCvtSuuji pro((Wchar *, int, Wchar *, int, int));
-int RkwCvtNone pro((Wchar *, int, Wchar *, int));
+int RkwCvtSuuji(Wchar *, int, Wchar *, int, int);
+int RkwCvtNone(Wchar *, int, Wchar *, int);
 
-int _RkRowNumber pro((unsigned char *));
-int RkTestGram pro((const struct RkKxGram *, int, int));
+int _RkRowNumber(unsigned char *);
+int RkTestGram(const struct RkKxGram *, int, int);
 #ifdef LOGIC_HACK
-int RkCheckNegGram pro((const struct RkKxGram *, int, int, int));
+int RkCheckNegGram(const struct RkKxGram *, int, int, int);
 #endif
-void RkFirstGram pro((struct RkGramIterator *, const struct RkKxGram *));
-void RkEndGram pro((struct RkGramIterator *, const struct RkKxGram *));
-int _RkRegisterNV pro((struct NV *, Wrec *, int, int));
-int FQopen pro((struct DM *, struct DM *, char *, int));
-void FQclose pro((struct RkContext *, struct DM *, struct DM *, char *));
-int _RkSubstYomi pro((struct RkContext *, int, int, Wchar *, int));
+void RkFirstGram(struct RkGramIterator *, const struct RkKxGram *);
+void RkEndGram(struct RkGramIterator *, const struct RkKxGram *);
+int _RkRegisterNV(struct NV *, Wrec *, int, int);
+int FQopen(struct DM *, struct DM *, char *, int);
+void FQclose(struct RkContext *, struct DM *, struct DM *, char *);
+int _RkSubstYomi(struct RkContext *, int, int, Wchar *, int);
 long _RkCopyBits
-     pro((unsigned char *, long, int, unsigned char *, long, int));
-int _RkIsInDDP pro((struct DD **, struct DD *));
-int _RkEql pro((Wchar *, unsigned char *, int));
-int DMcheck pro((char *, char *));
-int copyFile pro((struct DM *, struct DM *));
-int DDchmod pro((struct DD *, int));
-int DMchmod pro((struct DM *, int));
-int uslen pro((Wchar *));
-unsigned char *ustoeuc pro((Wchar *, int, unsigned char *, int));
-int _RkSubstYomi pro((struct RkContext *, int, int, Wchar *, int));
-int HowManyChars pro((Wchar *, int));
-int HowManyBytes pro((Wchar *, int));
-int _RkFlushYomi pro((struct RkContext *));
-int parse_string pro((char *));
+    (unsigned char *, long, int, unsigned char *, long, int);
+int _RkIsInDDP(struct DD **, struct DD *);
+int _RkEql(Wchar *, unsigned char *, int);
+int DMcheck(char *, char *);
+int copyFile(struct DM *, struct DM *);
+int DDchmod(struct DD *, int);
+int DMchmod(struct DM *, int);
+int uslen(Wchar *);
+unsigned char *ustoeuc(Wchar *, int, unsigned char *, int);
+int _RkSubstYomi(struct RkContext *, int, int, Wchar *, int);
+int HowManyChars(Wchar *, int);
+int HowManyBytes(Wchar *, int);
+int _RkFlushYomi(struct RkContext *);
+int parse_string(char *);
 
 #endif /* _RK_INTERN_FUNCTIONS_DEF_ */
 
