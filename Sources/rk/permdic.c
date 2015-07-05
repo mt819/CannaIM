@@ -161,8 +161,8 @@ _Rkpopen(dm, dfnm, mode, gram)
   struct ND	*xdm;
   int 		writable, i, readsize;
   int fd;
-  off_t		gramoff;
-  size_t	gramsz;
+  off_t		gramoff = 0;
+  size_t	gramsz = 0;
 
   if (!(df = dm->dm_file) || !(dd = df->df_direct))
     return -1;
@@ -311,7 +311,6 @@ assurep(dic, id)
   off_t	off = dic->doff + dic->drsz + dic->pgsz * id;
   unsigned	size = dic->pgsz;
   unsigned char	*buf;
-  int i;
   int fd;
 
   fd = dic->fd;
