@@ -609,8 +609,8 @@ makeKanjiStatusReturn(d, yc)
 uiContext d;
 yomiContext yc;
 {
-  int len;
-  wchar_t *s = d->genbuf, *e = s + ROMEBUFSIZE, *sr, *er, *sk, *ek;
+  int len = 0;
+  wchar_t *s = d->genbuf, *e = s + ROMEBUFSIZE, *sr = NULL, *er = NULL, *sk, *ek;
   tanContext tan = (tanContext)yc;
   long truecaret = -1;
 
