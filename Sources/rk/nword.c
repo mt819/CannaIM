@@ -1294,7 +1294,7 @@ height2list(height, maxclen)
      int maxclen;
 {
   int			i;
-  struct nword		*e, *p, *head, *tail;
+  struct nword		*e, *p, *head = NULL, *tail;
 
   e = height[0];
   tail = (struct nword *)0;
