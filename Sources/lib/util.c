@@ -1093,8 +1093,6 @@ WWhatGPlain(wc)
 wchar_t wc;
 #endif
 {
-  static char plain[4] = {0, 2, 3, 1};
-
 #ifdef CANNA_WCHAR16
   switch (((unsigned long)wc) & 0x8080) {
   case 0x0000:
@@ -1109,6 +1107,7 @@ wchar_t wc;
   /* NOTREACHED */
   return 0; /* suppress warning: control reaches end of non-void function */
 #else /* !CANNA_WCHAR16 */
+  static char plain[4] = {0, 2, 3, 1};
   return plain[(((unsigned long)wc) >> 28) & 3];
 #endif /* !CANNA_WCHAR16 */
 }
