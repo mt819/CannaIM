@@ -3213,7 +3213,7 @@ Ldefmode()
 	    ecode = DEFMODE_NOTSTRING;
 	    edata = rd;
 	    if (stringp(rd) || null(rd)) {
-	      char *newstr;
+	      char *newstr = NULL;
 	      long f = extrafunc->u.modeptr->flags;
 
 	      if (stringp(rd)) {
