@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -63,7 +63,7 @@ int fd_dic = -1;        /* mmap */
 #define DEFAULTGRAMDIC "/canna/fuzokugo.d"
 #endif
 
-static int	
+static int
 _RkInitialize(ddhome, numCache)
      char	*ddhome;
      int	numCache;
@@ -187,12 +187,12 @@ static void
 _RkFinalizeWord()		/* finalize free word list */
 {
   struct nword	*w, *t;
-  
+
   /* dispose each page in list */
   for (w = SX.page; w; w = t) {
     t = w->nw_next;
     free(w);
-  } 
+  }
   SX.word = (struct nword *)0;
   SX.page = (struct nword *)0;
   SX.word_in_use = 0;
@@ -263,7 +263,7 @@ RkGetXContext(cx_num)
      int	cx_num;
 {
   struct RkContext	*cx;
-  
+
   cx = RkGetContext(cx_num);
   if (cx)
     if (!IS_XFERCTX(cx))
@@ -271,7 +271,7 @@ RkGetXContext(cx_num)
   return(cx);
 }
 
-void	
+void
 _RkEndBun(cx)
 struct RkContext	*cx;
 {
@@ -313,7 +313,7 @@ RkwSetDicPath(cx_num, path)
 {
   struct RkContext	*cx = RkGetContext(cx_num);
   struct DD		**new;
- 
+
   new = _RkCreateDDP(path);
   if (new) {
     _RkFreeDDP(cx->ddpath);
@@ -341,7 +341,7 @@ int cx_num;
   /* create mount list headers */
   for (i = 0; i < 4; i++) {
     struct MD *mh;
-    
+
     if (!(mh = (struct MD *)Calloc(1, sizeof(struct MD)))) {
       int j;
 
@@ -392,7 +392,7 @@ RkwCreateContext()
 {
   int	cx_num, i;
   struct RkContext *newcx;
-    
+
   /* saisho no aki context wo mitsukeru */
   for(cx_num = 0; cx_num < (int)now_context; cx_num++) {
     if(!CX[cx_num].flags) {
@@ -435,7 +435,7 @@ RkwCloseContext(cx_num)
   /* subete no jisho wo MD suru */
   for (i = 0; i < 4; i++) {
     struct MD	*mh, *m, *n;
-    
+
     /* destroy mount list */
     mh = cx->md[i];
     if (mh) {
@@ -495,7 +495,7 @@ RkwDuplicateContext(cx_num)
   if (dup >= 0) {
     int		i;
     struct RkContext	*dx;
-    
+
     sx  = RkGetContext(cx_num);
     if (sx) {
       dx = RkGetContext(dup);
@@ -506,19 +506,19 @@ RkwDuplicateContext(cx_num)
       if (!(sx->flags & CTX_NODIC)) {
 	dx->flags &= ~CTX_NODIC;
       }
-      
+
       /* copy the mount list */
       for (i = 0; i < 4; i++) {
 	struct MD	*mh, *md;
-	
+
 	/* should mount dictionaries in reverse order */
 	mh = sx->md[i];
-	for (md = mh->md_prev; md != mh; md = md->md_prev) 
+	for (md = mh->md_prev; md != mh; md = md->md_prev)
 	  (void)_RkMountMD(dx, md->md_dic, md->md_freq,
 			   md->md_flags & MD_WRITE, 0);
       };
       dx->ddpath = _RkCopyDDP(sx->ddpath);
-      if (sx->litmode && dx->litmode) 
+      if (sx->litmode && dx->litmode)
 	for (i = 0; i < MAXLIT; i++)
 	  dx->litmode[i] = sx->litmode[i];
     } else {
@@ -555,7 +555,7 @@ RkwMountDic(cx_num, name, mode)
       struct MD	*mh = cx->md[dm->dm_class];
       struct MD	*md, *nd;
       int		count = 0;
-      
+
       /* search the dictionary */
       for (md = mh->md_next; md != mh; md = nd) {
 	nd = md->md_next;
@@ -589,7 +589,7 @@ RkwUnmountDic(cx_num, name)
     for (i = 0; i < 4; i++)  {
       struct MD	*mh = cx->md[i];
       struct MD	*md, *nd;
-      
+
       for (md = mh->md_next; md != mh; md = nd) {
 	struct DM	*dm = md->md_dic;
 	char *ename;
@@ -624,7 +624,7 @@ RkwRemountDic(cx_num, name, mode)
     for (i = 0; i < 4; i++) {
       struct MD	*mh = cx->md[i];
       struct MD	*md, *pd;
-      
+
       /* do in reverse order */
       for (md = mh->md_prev; md != mh; md = pd) {
 	struct DM	*dm = md->md_dic;
@@ -668,7 +668,7 @@ RkwGetMountList(cx_num, mdname, maxmdname)
   struct MD		*mh, *md;
   int			p, i, j;
   int			count = -1;
-  
+
   cx  = RkGetContext(cx_num);
   if (cx) {
     i = count = 0;
@@ -677,7 +677,7 @@ RkwGetMountList(cx_num, mdname, maxmdname)
       for (md = mh->md_next; md != mh; md = md->md_next) {
 	struct DM	*dm = md->md_dic;
 	char *name;
-	
+
 	if (md->md_flags & (MD_MPEND|MD_UPEND)) {
 	  continue;
 	};
@@ -783,8 +783,8 @@ RkwGetDicList(cx_num, mdname, maxmdname)
 	  }
 	}
       }
-      qsort(diclist, count, sizeof(struct dics), 
-	    (int (*)(const void *, const void *)))diccmp);
+      qsort(diclist, count, sizeof(struct dics),
+	    (int (*)(const void *, const void *))diccmp);
 
       n = count;
       for (i = j = 0, dicp = diclist ; i < n ; i++, dicp++) {
@@ -863,7 +863,7 @@ RkwDefineDic(cx_num, name, word)
       prevname = cx->dmprev->dm_nickname;
     if (cx->qmprev)
       prevname = cx->qmprev->dm_nickname;
-    
+
     if (prevname && !STRCMP(prevname, name))
       return(DST_CTL(cx->dmprev, cx->qmprev, DST_DoDefine, word,
 		     cx->gram->gramdic));
@@ -871,7 +871,7 @@ RkwDefineDic(cx_num, name, word)
       for (i = 0; i < 4; i++)  {
 	struct MD	*mh = cx->md[i];
 	struct MD	*md, *nd;
-	
+
 	for (md = mh->md_next; md != mh; md = nd) {
 	  struct DM	*dm = md->md_dic;
 	  struct DM	*qm = md->md_freq;
@@ -881,7 +881,7 @@ RkwDefineDic(cx_num, name, word)
 	    dname = dm->dm_nickname;
 	  if (qm)
 	    dname = qm->dm_nickname;
-	  
+
 	  if (dname) {
 	    if (!STRCMP(dname, name)) {
 	      cx->dmprev = dm;
@@ -909,23 +909,23 @@ RkwDeleteDic(cx_num, name, word)
 {
   struct RkContext	*cx;
   int			i;
-  
+
   if ((cx = RkGetContext(cx_num)) && name) {
     char        *prevname = (char *)0;
-    
+
     if (cx->dmprev)
       prevname = cx->dmprev->dm_nickname;
     if (cx->qmprev)
       prevname = cx->qmprev->dm_nickname;
 
     if (prevname && !STRCMP(prevname, name))
-      return(DST_CTL(cx->dmprev, cx->qmprev, DST_DoDelete, word, 
+      return(DST_CTL(cx->dmprev, cx->qmprev, DST_DoDelete, word,
 		     cx->gram->gramdic));
     else {
       for (i = 0; i < 4; i++)  {
 	struct MD	*mh = cx->md[i];
 	struct MD	*md, *nd;
-	
+
 	for (md = mh->md_next; md != mh; md = nd) {
 	  struct DM	*dm = md->md_dic;
 	  struct DM	*qm = md->md_freq;
@@ -935,7 +935,7 @@ RkwDeleteDic(cx_num, name, word)
 	    dname = dm->dm_nickname;
 	  if (qm)
 	    dname = qm->dm_nickname;
-	  
+
 	  if (dname) {
 	    if (!STRCMP(dname, name)) {
 	      cx->dmprev = dm;

@@ -459,7 +459,7 @@ canna_callback_t everyTimeCallback, exitCallback, quitCallback, auxCallback;
   ichiranContext ic;
 
   if (allowcallback != WITHOUT_LIST_CALLBACK &&
-      d->list_func == (int (*)(char *, int, wchar_t **, int, int *)))0) {
+      d->list_func == (int (*)(char *, int, wchar_t **, int, int *))0) {
     allowcallback = WITHOUT_LIST_CALLBACK;
   }
 

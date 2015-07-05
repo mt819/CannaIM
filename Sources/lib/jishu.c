@@ -37,7 +37,7 @@ static char rcs_id[] = "@(#) 102.1 $Id: jishu.c,v 1.3 2003/09/17 08:50:53 aida_s
 
 extern wchar_t WToupper(wchar_t);
 static void setInhibitInformation(yomiContext);
-static void jishuAdjustRome(uiContext)), jishuAdjustRome(uiContext);
+static void jishuAdjustRome(uiContext), jishuAdjustRome(uiContext);
 static int JishuZenkaku();
 static int JishuHankaku();
 

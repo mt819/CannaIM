@@ -43,10 +43,10 @@ extern int errno;
 extern exp(int) RkwGetServerVersion(int *, int *);
 extern exp(int) RkwChmodDic(int, char *, int);
 
-static int dicSakujoYomi(uiContext)),
-           dicSakujoEndBun(uiContext)),
-           dicSakujoTango(uiContext)),
-           dicSakujoDictionary(uiContext)),
+static int dicSakujoYomi(uiContext),
+           dicSakujoEndBun(uiContext),
+           dicSakujoTango(uiContext),
+           dicSakujoDictionary(uiContext),
            dicSakujoDo(uiContext);
 
 void
