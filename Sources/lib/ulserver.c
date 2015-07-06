@@ -40,7 +40,9 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
+#ifndef STANDALONE
 static int serverChangeDo();
+#endif
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * サーバの切り離し                                                          *
