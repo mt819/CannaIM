@@ -721,7 +721,7 @@ RkCvtNarrow(dst, maxdst, src, maxsrc)
   Wchar		*S = src + maxsrc;
   int 		count = 0;
   long		code;
-  int		byte;
+  int		byte = 0;
 
     if ( --maxdst <= 0 )
 	return count;
