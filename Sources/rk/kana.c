@@ -93,6 +93,7 @@ hiragana[] =
 	0x0000, 0x0000, 0x0000, 0x0000,		0x0000, 0x0000, 0x0000, 0x0000,
 };
 
+#ifndef __HAIKU__
 static
 Wchar	
 hankaku[] = {
@@ -145,6 +146,7 @@ hankaku[] = {
 	0x00b2, 0x00b4, 0x00a6, 0x00dd,		0xb3de, 0x00b6, 0x00b9, 0x0000,
 	0x0000, 0x0000, 0x0000, 0x0000,		0x0000, 0x0000, 0x0000, 0x0000,
 };
+#endif
 
 #ifdef OBSOLETE_RKKANA
 
@@ -204,6 +206,8 @@ unsigned long code;
     }\
 }
 
+#ifndef __HAIKU__
+
 static int
 euccharlen(s, bytelen)
      unsigned char	*s;
@@ -226,7 +230,6 @@ euccharlen(s, bytelen)
   return res;
 }
 
-#ifndef __HAIKU__
 /* RkCvtZen
  *	hankaku moji(ASCII+katakana) wo taiou suru zenkaku moji ni suru
  *	dakuten,handakuten shori mo okonau.
