@@ -40,6 +40,15 @@ static char rcs_id[] = "@(#) 102.1 $Id: ulhinshi.c,v 1.3 2003/09/17 08:50:53 aid
 extern int errno;
 #endif
 
+extern int dicTourokuHinshi(uiContext);
+extern int dicTourokuDictionary(uiContext, int (*)(), int (*)());
+extern int getYesNoContext(uiContext, canna_callback_t, canna_callback_t,
+	canna_callback_t, canna_callback_t);
+extern void clearYomi(uiContext);
+extern int dicTourokuTango(uiContext, canna_callback_t);
+extern int getForIchiranContext(uiContext);
+extern int GLineNGReturnTK(uiContext);
+
 static int tourokuYes(uiContext),
            tourokuNo(uiContext),
            makeDoushi(uiContext),
