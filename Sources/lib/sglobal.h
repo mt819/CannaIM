@@ -54,7 +54,6 @@
 #define KeepCursorPosition                  G054_KeepCursorPosition
 #define KigoIchiran                         G055_KigoIchiran
 #define LearnNumericalType                  G056_LearnNumericalType
-#define ModeNames                           G057_ModeNames
 #define NoMoreMemory                        G058_NoMoreMemory
 #define NothingChanged                      G059_NothingChanged
 #define NothingChangedWithBeep              G060_NothingChangedWithBeep
@@ -157,11 +156,9 @@
 #define allowNextInput                      G157_allowNextInput
 #define alphaMode                           G158_alphaMode
 #define alpha_kmap                          G159_alpha_kmap
-#define alpha_mode                          G160_alpha_mode
 #define alphamap                            G161_alphamap
 #define appendTan2Yomi                      G162_appendTan2Yomi
 #define askQuitKey                          G163_askQuitKey
-#define auto_define                         G164_auto_define
 #define auto_sync                           G165_auto_sync
 #define bunsetsu_mode                       G166_bunsetsu_mode
 #define canna_alert                         G167_canna_alert
@@ -191,8 +188,6 @@
 #define cutOffLeftSide                      G191_cutOffLeftSide
 #define cvtAsHex                            G192_cvtAsHex
 #define cy_mode                             G193_cy_mode
-#define defaultBushuContext                 G194_defaultBushuContext
-#define defaultContext                      G195_defaultContext
 #define default_kmap                        G196_default_kmap
 #define dicMount                            G197_dicMount
 #define dicSakujo                           G198_dicSakujo
@@ -210,7 +205,6 @@
 #define dupYomiContext                      G210_dupYomiContext
 #define echostrClear                        G211_echostrClear
 #define empty_kmap                          G212_empty_kmap
-#define empty_mode                          G213_empty_mode
 #define emptymap                            G214_emptymap
 #define englishdic                          G215_englishdic
 #define enterAdjustMode                     G216_enterAdjustMode
@@ -274,7 +268,6 @@
 #define initUlKigoTable                     G274_initUlKigoTable
 #define initfunc                            G275_initfunc
 #define internContext                       G276_internContext
-#define iroha_debug                         G277_iroha_debug
 #define jishu_mode                          G278_jishu_mode
 #define kCount                              G279_kCount
 #define kPos2rPos                           G280_kPos2rPos
@@ -379,7 +372,6 @@
 #define wideproto                           G379_wideproto
 #define xString                             G380_xString
 #define yomiInfoLevel                       G381_yomiInfoLevel
-#define yomi_mode                           G382_yomi_mode
 #define doTanConvertTb                      G383_doTanConvertTb
 #define doKakutei                           G384_doKakutei
 #define restoreChikujiIfBaseChikuji         G385_restoreChikujiIfBaseChikuji
