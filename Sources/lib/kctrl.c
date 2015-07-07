@@ -1643,11 +1643,8 @@ KC_getContext(d, arg)
 }
 
 static int
-KC_closeUIContext(d, arg)
-uiContext d;
-wcKanjiStatusWithValue *arg;
+KC_closeUIContext(uiContext d, wcKanjiStatusWithValue *arg)
 {
-  extern struct ModeNameRecs ModeNames[];
   int ret;
 
   d->buffer_return = arg->buffer;
