@@ -81,15 +81,9 @@ uiContext d;
 /* uiContext の初期化 */
 
 int
-initRomeStruct(d, flg)
-     uiContext	d;
-     int	flg;
+initRomeStruct(uiContext d, int flg)
 {
-  extern  KanjiModeRec alpha_mode, empty_mode;
-  extern  KanjiModeRec kzhr_mode, kzkt_mode, kzal_mode;
-  extern  KanjiModeRec khkt_mode, khal_mode;
   yomiContext yc;
-  extern int defaultContext, defaultBushuContext;
 
   bzero(d, sizeof(uiContextRec));
 
