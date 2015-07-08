@@ -133,6 +133,7 @@ autodicError()
   addWarningMesg(jrKanjiError);
 }
 
+#ifndef __HAIKU__
 static void
 warnRKCErrors(errors)
 const char *const *errors;
@@ -140,6 +141,7 @@ const char *const *errors;
   for (; *errors; ++errors)
     addWarningMesg((char *)*errors);
 }
+#endif
 
 /*
  * かな漢字変換のための初期処理
