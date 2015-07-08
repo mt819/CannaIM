@@ -631,7 +631,6 @@ uiContext d;
 yomiContext yc;
 {
   int cur = yc->curbun, i, len, ylen = 0, rlen = 0, ret = 0;
-  int scuryomi, ecuryomi, scurroma, ecurroma;
   tanContext tan, prevLeft = yc->left, curtan = (tanContext)0;
   tanContext st = (tanContext)NULL, et = (tanContext)NULL;
   BYTE *p, *q, *r;
@@ -645,7 +644,6 @@ yomiContext yc;
 #endif
 
   yc->kouhoCount = 0;
-  scuryomi = ecuryomi = scurroma = ecurroma = 0;
 
 /*  jrKanjiError = "メモリが足りません"; */
   jrKanjiError = "malloc (doTanBubunMuhenkan) \244\307\244\255\244\336\244\273"
