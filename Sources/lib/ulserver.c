@@ -53,9 +53,9 @@ serverFin(d)
 uiContext d;
 {
   int retval = 0;
+#ifndef STANDALONE
   yomiContext yc = (yomiContext)d->modec;
 
-#ifndef STANDALONE
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
   }
@@ -169,12 +169,10 @@ uiContext d;
   int retval = 0;
 #ifndef STANDALONE
   wchar_t *w;
-#endif
   extern KanjiModeRec yomi_mode;
   extern int defaultContext;
   yomiContext yc = (yomiContext)d->modec;
 
-#ifndef STANDALONE
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
   }
