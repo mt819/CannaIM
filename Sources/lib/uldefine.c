@@ -42,6 +42,17 @@ extern int errno;
 
 exp(int) RkwCreateDic();
 
+extern int checkGLineLen(uiContext);
+extern int _do_func_slightly(uiContext, int, mode_context, KanjiMode);
+extern int dicTourokuTango(uiContext, canna_callback_t);
+extern int getYesNoContext(uiContext, canna_callback_t, canna_callback_t,
+	canna_callback_t, canna_callback_t);
+extern int dicTourokuHinshi(uiContext);
+extern int canna_alert(uiContext, char *, canna_callback_t);
+extern int getForIchiranContext(uiContext);
+extern int GLineNGReturnTK(uiContext);
+
+
 static int dicTourokuDo(uiContext),
            checkUsrDic(uiContext),
            dicTourokuYomi(uiContext),
