@@ -1858,8 +1858,7 @@ createKanjiContext()
 /* wcCloseKanjiContext コンテクストをクローズするもの。 */
 
 int
-wcCloseKanjiContext(const int context)
-wcKanjiStatusWithValue *ksva;
+wcCloseKanjiContext(const int context, wcKanjiStatusWithValue *ksva)
 {
   context_table[context] = 0;
   return  XwcKanjiControl2(0, context, KC_CLOSEUICONTEXT, (BYTE *)ksva);

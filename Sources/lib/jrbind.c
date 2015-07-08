@@ -61,8 +61,8 @@ extern int FirstTime;
 extern BYTE *actFromHash();
 
 int
-wcKanjiString(const int context_id, const int ch, const int nbuffer,
-	wchar_t *buffer_return, wcKanjiStatus *kanji_status_return)
+wcKanjiString(const int context_id, const int ch, wchar_t *buffer_return,
+	const int nbuffer, wcKanjiStatus *kanji_status_return)
 {
   int res;
 

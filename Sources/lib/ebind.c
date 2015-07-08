@@ -416,8 +416,8 @@ BYTE *arg;
 }
 
 int
-jrKanjiString(const int context_id, const int ch, const int nbuffer,
-	char *buffer_return, jrKanjiStatus *kanji_status_return)
+jrKanjiString(const int context_id, const int ch, char *buffer_return,
+	const int nbuffer, jrKanjiStatus *kanji_status_return)
 {
   *buffer_return = ch;
 

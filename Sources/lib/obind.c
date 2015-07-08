@@ -542,8 +542,8 @@ BYTE *arg;
 }
 
 int
-wcKanjiString(int context_id, int ch, int nbuffer,
-	wchar_t *buffer_return, owcKanjiStatus *kanji_status_return)
+wcKanjiString(int context_id, int ch, wchar_t *buffer_return,
+	int nbuffer, owcKanjiStatus *kanji_status_return)
 {
   *buffer_return = (wchar_t)ch;
 
