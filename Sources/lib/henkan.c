@@ -157,7 +157,6 @@ KanjiInit()
 {
 #ifdef __HAIKU__
   extern char		basepath[];
-  char 			dichomedir[256];
 #endif
   char *ptr, *getenv(), *kodmesg = ""/* 辞書の種別毎のメッセージ */;
   int con;
