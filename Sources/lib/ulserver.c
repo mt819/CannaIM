@@ -159,7 +159,7 @@ mode_context env;
   return prevMenuIfExist(d);
 }
 
-extern exp(char *) RkwGetServerName();
+extern char * RkwGetServerName();
 #endif /* STANDALONE */
 
 int

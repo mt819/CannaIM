@@ -17,7 +17,7 @@
  * ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
  * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
  * CONTRACT, NEGLIGENCE OR OTHER TORTUOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -72,10 +72,10 @@ typedef canna_uint32_t cannawc32;
 extern int howToReturnModeInfo;
 extern char *context_table;
 
-exp(int) wcKanjiString(const int, const int, wchar_t *, const int,
+int wcKanjiString(const int, const int, wchar_t *, const int,
 			    owcKanjiStatus *);
-exp(int) wcKanjiControl(const int, const int, char *);
-exp(int) wcCloseKanjiContext(const int, owcKanjiStatusWithValue *);
+int wcKanjiControl(const int, const int, char *);
+int wcCloseKanjiContext(const int, owcKanjiStatusWithValue *);
 
 static size_t
 Oldwcsnlen(owcs, maxlen)
@@ -213,7 +213,7 @@ int nbytes;
   /* info */
 
   owks->info = wks->info;
-    
+
   /* 結果 */
 
   if (owks->info & KanjiThroughInfo) {
@@ -280,7 +280,7 @@ int nbytes;
 	p += len;
       }
       if (wks->revLen > 0) {
-	len = owks->revLen 
+	len = owks->revLen
 	  = WCstoOldwcs(p, wks->echoStr + wks->revPos, wks->revLen);
 	p += len;
       }
@@ -312,7 +312,7 @@ int nbytes;
     if (wks->gline.length > 0) {
       owks->gline.line = p;
       if (wks->gline.revPos > 0) {
-	len = owks->gline.revPos 
+	len = owks->gline.revPos
 	  = WCstoOldwcs(p, wks->gline.line, wks->gline.revPos);
 	p += len;
       }
@@ -379,7 +379,7 @@ owcKanjiStatus *kanji_status_return;
   free(inbuf);
   return r;
 }
-		      
+
 
 int
 owcListCallback(client_data, func, items, nitems, cur_item)
@@ -541,11 +541,9 @@ BYTE *arg;
   return ret;
 }
 
-exp(int)
-wcKanjiString(context_id, ch, buffer_return, nbuffer, kanji_status_return)
-int context_id, ch, nbuffer;
-wchar_t *buffer_return;
-owcKanjiStatus  *kanji_status_return;
+int
+wcKanjiString(int context_id, int ch, int nbuffer,
+	wchar_t *buffer_return, owcKanjiStatus *kanji_status_return)
 {
   *buffer_return = (wchar_t)ch;
 
@@ -555,20 +553,15 @@ owcKanjiStatus  *kanji_status_return;
 		       kanji_status_return);
 }
 
-exp(int)
-wcKanjiControl(context, request, arg)
-int context;
-int request;
-char *arg;
+int
+wcKanjiControl(int context, int request, char *arg)
 {
   return owcKanjiControl2((unsigned int)0, (unsigned int)context,
 			request, (BYTE *)arg);
 }
 
-exp(int)
-wcCloseKanjiContext(context,ksva)
-int context;
-owcKanjiStatusWithValue *ksva;
+int
+wcCloseKanjiContext(int context, owcKanjiStatusWithValue *ksva)
 {
   /* really working? */
   context_table[context] = 0;
@@ -583,10 +576,10 @@ owcKanjiStatusWithValue *ksva;
 #undef wcKanjiControl
 #undef wcCloseKanjiContext
 
-exp(int) wcKanjiString(const int, const int, cannawc *, const int,
+int wcKanjiString(const int, const int, cannawc *, const int,
 			    wcKanjiStatus *);
-exp(int) wcKanjiControl(const int, const int, char *);
-exp(int) wcCloseKanjiContext(const int, wcKanjiStatusWithValue *);
+int wcKanjiControl(const int, const int, char *);
+int wcCloseKanjiContext(const int, wcKanjiStatusWithValue *);
 
 static int
 wc_unsupported()
@@ -595,28 +588,21 @@ wc_unsupported()
   return -1;
 }
 
-exp(int)
-wcKanjiString(context_id, ch, buffer_return, nbuffer, kanji_status_return)
-int context_id, ch, nbuffer;
-cannawc *buffer_return;
-wcKanjiStatus  *kanji_status_return;
+int
+wcKanjiString(int context_id, int ch, int nbuffer,
+	cannawc *buffer_return, wcKanjiStatus *kanji_status_return)
 {
   return wc_unsupported();
 }
 
-exp(int)
-wcKanjiControl(context, request, arg)
-int context;
-int request;
-char *arg;
+int
+wcKanjiControl(int context, int request, char *arg)
 {
   return wc_unsupported();
 }
 
-exp(int)
-wcCloseKanjiContext(context,ksva)
-int context;
-wcKanjiStatusWithValue *ksva;
+int
+wcCloseKanjiContext(int context, wcKanjiStatusWithValue *ksva)
 {
   return  wc_unsupported();
 }

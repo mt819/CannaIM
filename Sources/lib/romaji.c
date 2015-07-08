@@ -620,7 +620,7 @@ RomkanaInit()
 /* ローマ字かな変換テーブルのクローズ */
 
 extern keySupplement keysup[];
-extern exp(void) RkwCloseRoma(struct RkRxDic *);
+extern void RkwCloseRoma(struct RkRxDic *);
 
 void
 RomkanaFin()

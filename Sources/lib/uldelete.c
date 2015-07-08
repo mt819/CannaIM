@@ -40,8 +40,8 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-extern exp(int) RkwGetServerVersion(int *, int *);
-extern exp(int) RkwChmodDic(int, char *, int);
+extern int RkwGetServerVersion(int *, int *);
+extern int RkwChmodDic(int, char *, int);
 
 static int dicSakujoYomi(uiContext),
            dicSakujoEndBun(uiContext),

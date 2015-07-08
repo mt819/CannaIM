@@ -415,11 +415,9 @@ BYTE *arg;
   return ret;
 }
 
-exp(int)
-jrKanjiString(context_id, ch, buffer_return, nbuffer, kanji_status_return)
-const int context_id, ch, nbuffer;
-char  *buffer_return;
-jrKanjiStatus  *kanji_status_return;
+int
+jrKanjiString(const int context_id, const int ch, const int nbuffer,
+	char *buffer_return, jrKanjiStatus *kanji_status_return)
 {
   *buffer_return = ch;
 
@@ -431,11 +429,8 @@ jrKanjiStatus  *kanji_status_return;
 
 /* jrKanjiControl -- カナ漢字変換の制御を行う */
 
-exp(int)
-jrKanjiControl(context, request, arg)
-     const int context;
-     const int request;
-     char *arg;
+int
+jrKanjiControl(const int context, const int request, char *arg)
 {
   return XKanjiControl2((unsigned int)0, (unsigned int)context,
 			request, (BYTE *)arg);

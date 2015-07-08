@@ -1823,18 +1823,16 @@ KC_setVerbose(d, arg)
 
 /* kanjiInitialize かな漢字変換の初期化 KC_INITIALIZEと等価である。 */
 
-exp(int)
-kanjiInitialize(mes)
-char ***mes;
+int
+kanjiInitialize(char ***mes)
 {
   return KC_initialize((uiContext)0, (char *)mes);
 }
 
 /* kanjiFinalize KC_FINALIZEと等価である。 */
 
-exp(int)
-kanjiFinalize(mes)
-char ***mes;
+int
+kanjiFinalize(char ***mes)
 {
   return KC_finalize((uiContext)0, (char *)mes);
 }
@@ -1843,7 +1841,7 @@ char ***mes;
 
 unsigned char context_table[100] = "";
 
-exp(int)
+int
 createKanjiContext()
 {
   int i;
@@ -1859,9 +1857,8 @@ createKanjiContext()
 
 /* wcCloseKanjiContext コンテクストをクローズするもの。 */
 
-exp(int)
-wcCloseKanjiContext(context,ksva)
-const int context;
+int
+wcCloseKanjiContext(const int context)
 wcKanjiStatusWithValue *ksva;
 {
   context_table[context] = 0;
@@ -1870,10 +1867,8 @@ wcKanjiStatusWithValue *ksva;
 
 /* jrCloseKanjiContext コンテクストをクローズするもの。 */
 
-exp(int)
-jrCloseKanjiContext(context,ksva)
-const int context;
-jrKanjiStatusWithValue *ksva;
+int
+jrCloseKanjiContext(const int context, jrKanjiStatusWithValue *ksva)
 {
   context_table[context] = 0;
   return  XKanjiControl2(0, context, KC_CLOSEUICONTEXT, (BYTE *)ksva);

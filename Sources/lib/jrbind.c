@@ -60,11 +60,9 @@ extern int FirstTime;
 
 extern BYTE *actFromHash();
 
-exp(int)
-wcKanjiString(context_id, ch, buffer_return, nbuffer, kanji_status_return)
-const int context_id, ch, nbuffer;
-wchar_t        *buffer_return;
-wcKanjiStatus  *kanji_status_return;
+int
+wcKanjiString(const int context_id, const int ch, const int nbuffer,
+	wchar_t *buffer_return, wcKanjiStatus *kanji_status_return)
 {
   int res;
 
@@ -79,11 +77,8 @@ wcKanjiStatus  *kanji_status_return;
 
 /* jrKanjiControl -- カナ漢字変換の制御を行う */
 
-exp(int)
-wcKanjiControl(context, request, arg)
-     const int context;
-     const int request;
-     char *arg;
+int
+wcKanjiControl(const int context, const int request, char *arg)
 {
   return XwcKanjiControl2((unsigned int)0, (unsigned int)context,
 			  (unsigned int)request, (BYTE *)arg);

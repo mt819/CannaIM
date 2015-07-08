@@ -40,7 +40,7 @@ static char rcs_id[] = "@(#) 102.1 $Id: uldefine.c,v 1.6 2003/09/17 08:50:53 aid
 extern int errno;
 #endif
 
-exp(int) RkwCreateDic();
+extern int RkwCreateDic();
 
 extern int checkGLineLen(uiContext);
 extern int _do_func_slightly(uiContext, int, mode_context, KanjiMode);

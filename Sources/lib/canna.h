@@ -36,7 +36,6 @@
 #include <canna/jrkanji.h>
 
 #define POINTERINT canna_intptr_t
-#define exp(x) x
 
 #if 0
 #define USE_MALLOC_FOR_BIG_ARRAY
@@ -913,7 +912,7 @@ extern void restoreDefaultKeymaps(void);
 extern void finExtMenu(void);
 #endif
 extern void freeIchiranBuf(ichiranContext);
-extern exp(char *) RkwGetServerName(void);
+extern char * RkwGetServerName(void);
 extern void popForIchiranMode(uiContext);
 extern void clisp_main(void);
 extern void clisp_fin(void);
