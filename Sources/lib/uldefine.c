@@ -728,7 +728,6 @@ dicTourokuTango(d, quitfunc)
 uiContext d;
 canna_callback_t quitfunc;
 {
-  tourokuContext tc = (tourokuContext)d->modec;
   yomiContext yc, yc2;
   int retval = 0;
 
