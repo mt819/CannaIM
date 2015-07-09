@@ -35,6 +35,8 @@ static char rcs_id[] = "@(#) 102.1 $Id: ulkigo.c,v 1.2 2003/01/10 13:08:45 aida_
 #endif
 #define wchar_t cannawc
 
+extern int getForIchiranContext(uiContext);
+
 #ifndef NO_EXTEND_MENU
 extern int uiUtilIchiranTooSmall();
 
