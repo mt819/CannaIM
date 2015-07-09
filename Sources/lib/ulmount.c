@@ -40,6 +40,11 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
+extern int selectOnOff(uiContext, wchar_t **, int *, int, int, int, 
+	unsigned char *, int (*)(), int(*)(), int (*)(), int(*)());
+
+
+
 /* cfunc mountContext
  *
  * mountContext
