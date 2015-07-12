@@ -38,6 +38,8 @@ static	char	rcs_id[] = "@(#) 102.1 $Id: onoff.c,v 1.3 2003/09/17 08:50:53 aida_s
 #ifndef NO_EXTEND_MENU
 #define ICHISIZE 9
 
+extern int allocIchiranBuf(uiContext);
+
 static int makeOnOffIchiran();
 
 static wchar_t *black;
