@@ -44,12 +44,23 @@ static char rcs_id[] = "@(#) 102.1 $Id: kctrl.c,v 1.10 2003/09/21 09:08:17 aida_
 extern char *CANNA_initfilename;
 extern char saveapname[];
 
+extern int initExtMenu();
+extern int initBushuTable();
+extern int initGyouTable();
+extern int initHinshiTable();
+extern int initUlKigoTable();
+extern int initUlKeisenTable();
+extern int initOnoffTable();
+extern int initHinshiMessage();
+extern int dicTourokuControl(uiContext, wchar_t *, canna_callback_t);
+
 static int insertEmptySlots(uiContext);
 static int callCallback(uiContext, int);
 static void freeKeysup(void);
 static void freeBuffer(void);
 static void freeExtra(void);
 extern int ckverbose;
+
 
 static int
 doInitializeFunctions(d)
