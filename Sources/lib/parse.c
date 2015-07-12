@@ -59,6 +59,7 @@ static void DISPLAY_to_hostname();
 extern int ckverbose;
 
 extern int YYparse_by_rcfilename();
+extern int clisp_init();
 
 /* cfuncdef
 
