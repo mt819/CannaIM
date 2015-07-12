@@ -151,7 +151,7 @@ uiContext d;
   ichiranContext ic = (ichiranContext)d->modec;
   wchar_t *p;
   char str[16];
-  int i, cur;
+  int i, cur = 0;
 
   if (cannaconf.kCount) {
     cur = *(ic->curIkouho) + 1;
@@ -1457,7 +1457,7 @@ getIchiranBangoKouho(d)
 uiContext d;
 {
   ichiranContext ic = (ichiranContext)d->modec;
-  int num, kindex;
+  int num = 0, kindex;
 
   /* 入力データは ０〜９ ａ〜ｆ か？ */
   if(((0x30 <= d->ch) && (d->ch <= 0x39))
