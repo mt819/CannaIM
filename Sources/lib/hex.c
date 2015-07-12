@@ -38,6 +38,9 @@ static char rcs_id[] = "@(#) 102.1 $Id: hex.c,v 1.2 2003/01/10 13:08:44 aida_s E
 #endif
 #define wchar_t cannawc
 
+extern int convertAsHex(uiContext);
+extern int checkGLineLen(uiContext);
+extern int cvtAsHex(uiContext, wchar_t *, wchar_t *, int);
 static int quitHex();
 
 /* cfuncdef
