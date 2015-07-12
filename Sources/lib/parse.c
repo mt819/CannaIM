@@ -116,10 +116,8 @@ parse()
 {
   char *p, *getenv();
   int n;
-  extern int iroha_debug;
   int home_canna_exist = 0;
   extern char *initFileSpecified;
-  extern int auto_define;
 #ifdef __HAIKU__
 	extern char basepath[];
 #endif
