@@ -54,6 +54,9 @@ static	char	rcs_id[] = "@(#) 102.1 $Id: kigo.c,v 1.3 2003/09/17 08:50:53 aida_s 
 /* 同コラム数 */
 #define KCODEALLCOLS    (KAKKOCOLS + KAKKOCOLS + KCODECOLS)
 
+extern int allocIchiranBuf(uiContext);
+int makeKigoIchiran(uiContext, int);;
+
 static int kigo_curIkouho;
 
 void
