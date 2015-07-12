@@ -152,7 +152,7 @@ yomiContext yc;
 wchar_t *s, *e, **sr, **er;
 {
   wchar_t *ss = s;
-  int jishulen, len, revlen;
+  int jishulen = 0, len, revlen = 0;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   wchar_t xxxx[1024], yyyy[1024];
 #else
