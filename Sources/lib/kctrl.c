@@ -1413,7 +1413,7 @@ KanjiMode c_mode;
   wcKanjiStatus ks;
   long gfback;
   BYTE inhback;
-  int retval;
+  int retval = 0;
   yomiContext yc = (yomiContext)0;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   uiContextRec f, *e = &f;
