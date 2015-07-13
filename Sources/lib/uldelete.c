@@ -42,6 +42,18 @@ extern int errno;
 
 extern int RkwGetServerVersion(int *, int *);
 extern int RkwChmodDic(int, char *, int);
+extern void popTourokuMode(uiContext);
+extern int checkGLineLen(uiContext);
+extern void clearYomi(uiContext);
+extern int getTourokuContext(uiContext);
+extern int GLineNGReturnTK(uiContext);
+extern int canna_alert(uiContext, char *, canna_callback_t);
+extern int getForIchiranContext(uiContext);
+extern int getMountContext(uiContext);
+extern int selectOnOff(uiContext, wchar_t **, int *, int, int, int, 
+	unsigned char *, int (*)(), int(*)(), int (*)(), int(*)());
+extern int getYesNoContext(uiContext, canna_callback_t, canna_callback_t,
+	canna_callback_t, canna_callback_t);
 
 static int dicSakujoYomi(uiContext),
            dicSakujoEndBun(uiContext),
