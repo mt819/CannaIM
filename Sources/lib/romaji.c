@@ -2406,7 +2406,7 @@ yomiContext *yc_return;
 {
   tanContext tan, netan;
   yomiContext yc;
-  int len, res;
+  int len = 0, res;
   wchar_t *ss = s;
   extern int auto_define;
   autoDef autotop = NULL, autocur;
