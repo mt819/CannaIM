@@ -169,6 +169,7 @@ static struct _e_menu {
 
 #define N_BUILTIN_MENU (sizeof(e_me) / sizeof(struct _e_menu))
 
+extern int getForIchiranContext(uiContext);
 static menustruct *me[N_BUILTIN_MENU];
 
 #define MBUFSIZE 512
