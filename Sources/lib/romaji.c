@@ -3325,7 +3325,6 @@ mapAsKuten(d)
   char tmpbuf[4];
   wchar_t *hexbuf;
   wchar_t buf[2];
-  static int allowTwoByte = 1;
 
   tmpbuf[0] = tmpbuf[1] = tmpbuf[2] = tmpbuf[3] = '\0';
 
@@ -4698,7 +4697,7 @@ int fnum;
 {
   yomiContext yc = (yomiContext)0;
   int len;
-  extern KanjiModeRec yomi_mode;
+  extern KanjiModeRec;
 
   if (d) {
     yc = (yomiContext)d->modec;
