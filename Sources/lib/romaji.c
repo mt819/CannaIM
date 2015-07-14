@@ -4697,7 +4697,6 @@ int fnum;
 {
   yomiContext yc = (yomiContext)0;
   int len;
-  extern KanjiModeRec;
 
   if (d) {
     yc = (yomiContext)d->modec;
