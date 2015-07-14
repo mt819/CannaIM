@@ -4290,7 +4290,7 @@ static list VCodeInput(setp, arg) int setp; list arg;
     }
   }
   /* else { .. */
-  if (/* 0 <= cannaconf.code_input && /* unsigned にしたので冗長になった */
+  if (/* 0 <= cannaconf.code_input &&  unsigned にしたので冗長になった */
       cannaconf.code_input <= CANNA_CODE_KUTEN) {
     return copystring(input_code[cannaconf.code_input],
 		      strlen(input_code[cannaconf.code_input]));
