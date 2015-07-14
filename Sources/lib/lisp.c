@@ -4064,10 +4064,10 @@ int n;
 
 extern char *RkGetServerHost();
 
+#if !defined(STANDALONE) && !defined(WIN_CANLISP)
 static void
 ObtainVersion()
 {
-#if !defined(STANDALONE) && !defined(WIN_CANLISP)
   int a, b;
   char *serv;
   extern int protocol_version, server_version;
@@ -4096,8 +4096,8 @@ ObtainVersion()
   }
 
   RkwFinalize();
-#endif /* STANDALONE */
 }
+#endif /* STANDALONE */
 
 /* 変数アクセスのための関数 */
 
