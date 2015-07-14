@@ -272,7 +272,7 @@ char *s;
   extern int ckverbose;
   int retval = 0;
   FILE *f;
-  FILE *saved_outstream;
+  FILE *saved_outstream = NULL;
 
   if (setjmp(fatal_env)) {
     retval = 0;
