@@ -49,6 +49,10 @@ static char *memtop;
 
 static int ncells = CELLSIZE;
 
+extern int changeModeName(int, char *);
+extern int changeKeyfunc(int, int, int, unsigned char *, unsigned char *);
+extern int changeKeyfuncOfAll(int, int, unsigned char *, unsigned char *);
+
 static int initIS();
 static void finIS();
 static int allocarea(), skipspaces(), zaplin(), isterm();
