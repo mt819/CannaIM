@@ -78,17 +78,6 @@ int wcKanjiControl(const int, const int, char *);
 int wcCloseKanjiContext(const int, owcKanjiStatusWithValue *);
 
 static size_t
-Oldwcsnlen(owcs, maxlen)
-const wchar_t *owcs;
-size_t maxlen;
-{
-  const wchar_t *p, *endp;
-  for (p = owcs, endp = owcs + maxlen; *p && p < endp; ++p)
-    ;
-  return endp - p;
-}
-
-static size_t
 wc32stowc16s(wc16s, wc32s, len)
 cannawc16 *wc16s;
 const cannawc32 *wc32s;
