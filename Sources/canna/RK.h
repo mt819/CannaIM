@@ -25,12 +25,6 @@
 #define		_RK_h
 
 
-#ifdef canna_export
-# define CANNA_EXP_PREDEFINED
-#else /* canna_export has not been not defined */
-# define canna_export(x) x
-#endif
-
 #include <canna/sysdep.h>
 
 typedef	struct {
@@ -153,7 +147,7 @@ struct RkRxDic	{
 #define OLDSRV    -110
 #define NOTUXSRV  -111
 #define NOTOWNSRV -112
-
+
 /* kanakanji henkan */
 
 #ifdef __cplusplus
@@ -175,66 +169,66 @@ typedef canna_uint32_t cannawc;
 
 #ifdef CANNAWC_DEFINED
 
-canna_export(void) RkwFinalize(void);
-canna_export(int) RkwInitialize(char *);
-canna_export(int) RkwCreateContext(void);
-canna_export(int) RkwCloseContext(int);
-canna_export(int) RkwDuplicateContext(int);
-canna_export(int) RkwSetDicPath(int, char *);
-canna_export(int) RkwGetDirList(int, char *,int);
-canna_export(int) RkwGetDicList(int, char *,int);
-canna_export(int) RkwMountDic(int, char *, int);
-canna_export(int) RkwUnmountDic(int, char *);
-canna_export(int) RkwRemountDic(int, char *, int);
-canna_export(int) RkwSync(int, char *);
-canna_export(int) RkwGetMountList(int, char *, int);
-canna_export(int) RkwDefineDic(int, char *, cannawc *);
-canna_export(int) RkwDeleteDic(int, char *, cannawc *);
-canna_export(int) RkwBgnBun(int, cannawc *, int, int);
-canna_export(int) RkwEndBun(int, int);
-canna_export(int) RkwGoTo(int, int);
-canna_export(int) RkwLeft(int);
-canna_export(int) RkwRight(int);
-canna_export(int) RkwXfer(int, int);
-canna_export(int) RkwNfer(int);
-canna_export(int) RkwNext(int);
-canna_export(int) RkwPrev(int);
-canna_export(int) RkwResize(int, int);
-canna_export(int) RkwEnlarge(int);
-canna_export(int) RkwShorten(int);
-canna_export(int) RkwSubstYomi(int, int, int, cannawc *, int);
-canna_export(int) RkwStoreYomi(int, cannawc *, int);
-canna_export(int) RkwGetLastYomi(int, cannawc *, int);
-canna_export(int) RkwFlushYomi(int);
-canna_export(int) RkwRemoveBun(int, int);
-canna_export(int) RkwGetStat(int, RkStat *);
-canna_export(int) RkwGetYomi(int, cannawc *, int);
-canna_export(int) RkwGetHinshi(int, cannawc *, int);
-canna_export(int) RkwGetKanji(int, cannawc *, int);
-canna_export(int) RkwGetKanjiList(int, cannawc *, int);
-canna_export(int) RkwGetLex(int, RkLex *, int);
-canna_export(int) RkwCvtHira(cannawc *, int, cannawc *, int);
-canna_export(int) RkwCvtKana(cannawc *, int, cannawc *, int);
-canna_export(int) RkwCvtHan(cannawc *, int, cannawc *, int);
-canna_export(int) RkwCvtZen(cannawc *, int, cannawc *, int);
-canna_export(int) RkwCvtEuc(cannawc *, int, cannawc *, int);
-canna_export(int) RkwCreateDic(int, char *, int);
-canna_export(int) RkwQueryDic(int, char *, char *, struct DicInfo *);
-canna_export(void) RkwCloseRoma(struct RkRxDic *);
-canna_export(struct) RkRxDic * RkwOpenRoma(char *);
-canna_export(int) RkwSetUserInfo(char *, char *, char *);
-canna_export(char *) RkwGetServerName(void);
-canna_export(int) RkwGetServerVersion(int *, int *);
-canna_export(int) RkwListDic(int, char *, char *, int);
-canna_export(int) RkwCopyDic(int, char *, char *, char *, int);
-canna_export(int) RkwRemoveDic(int, char *, int);
-canna_export(int) RkwRenameDic(int, char *, char *, int);
-canna_export(int) RkwChmodDic(int, char *, int);
-canna_export(int) RkwGetWordTextDic(int, unsigned char *,
+void RkwFinalize(void);
+int RkwInitialize(char *);
+int RkwCreateContext(void);
+int RkwCloseContext(int);
+int RkwDuplicateContext(int);
+int RkwSetDicPath(int, char *);
+int RkwGetDirList(int, char *,int);
+int RkwGetDicList(int, char *,int);
+int RkwMountDic(int, char *, int);
+int RkwUnmountDic(int, char *);
+int RkwRemountDic(int, char *, int);
+int RkwSync(int, char *);
+int RkwGetMountList(int, char *, int);
+int RkwDefineDic(int, char *, cannawc *);
+int RkwDeleteDic(int, char *, cannawc *);
+int RkwBgnBun(int, cannawc *, int, int);
+int RkwEndBun(int, int);
+int RkwGoTo(int, int);
+int RkwLeft(int);
+int RkwRight(int);
+int RkwXfer(int, int);
+int RkwNfer(int);
+int RkwNext(int);
+int RkwPrev(int);
+int RkwResize(int, int);
+int RkwEnlarge(int);
+int RkwShorten(int);
+int RkwSubstYomi(int, int, int, cannawc *, int);
+int RkwStoreYomi(int, cannawc *, int);
+int RkwGetLastYomi(int, cannawc *, int);
+int RkwFlushYomi(int);
+int RkwRemoveBun(int, int);
+int RkwGetStat(int, RkStat *);
+int RkwGetYomi(int, cannawc *, int);
+int RkwGetHinshi(int, cannawc *, int);
+int RkwGetKanji(int, cannawc *, int);
+int RkwGetKanjiList(int, cannawc *, int);
+int RkwGetLex(int, RkLex *, int);
+int RkwCvtHira(cannawc *, int, cannawc *, int);
+int RkwCvtKana(cannawc *, int, cannawc *, int);
+int RkwCvtHan(cannawc *, int, cannawc *, int);
+int RkwCvtZen(cannawc *, int, cannawc *, int);
+int RkwCvtEuc(cannawc *, int, cannawc *, int);
+int RkwCreateDic(int, char *, int);
+int RkwQueryDic(int, char *, char *, struct DicInfo *);
+void RkwCloseRoma(struct RkRxDic *);
+struct RkRxDic * RkwOpenRoma(char *);
+int RkwSetUserInfo(char *, char *, char *);
+char * RkwGetServerName(void);
+int RkwGetServerVersion(int *, int *);
+int RkwListDic(int, char *, char *, int);
+int RkwCopyDic(int, char *, char *, char *, int);
+int RkwRemoveDic(int, char *, int);
+int RkwRenameDic(int, char *, char *, int);
+int RkwChmodDic(int, char *, int);
+int RkwGetWordTextDic(int, unsigned char *,
 					 unsigned char *, cannawc *, int);
-canna_export(int) RkwGetSimpleKanji(int, char *, cannawc *, int,
+int RkwGetSimpleKanji(int, char *, cannawc *, int,
 					 cannawc *, int, cannawc *, int);
-canna_export(int) RkwStoreRange(int, cannawc *, int);
+int RkwStoreRange(int, cannawc *, int);
 
 #endif
 

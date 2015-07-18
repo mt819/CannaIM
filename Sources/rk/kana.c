@@ -521,7 +521,7 @@ RkCvtNone(dst, maxdst, src, maxsrc)
 }
 
 #ifdef USE_SJIS_TEXT_DIC
-canna_export(int)
+int
 SJistowcs(wc_return, maxwc, sj, maxsj)
 Wchar *wc_return;
 int maxwc;
