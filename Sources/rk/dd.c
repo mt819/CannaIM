@@ -45,7 +45,6 @@ static char rcsid[]="$Id: dd.c,v 1.5 2003/09/17 08:50:52 aida_s Exp $";
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#define	Calloc		calloc
 #define cx_gwt		cx_extdata.ptr
 #define	STRCMP(d, s)	strcmp((char *)(d), (char *)(s))
 
@@ -97,7 +96,7 @@ _RkCreateDM(df, dicname, nickname, class)
 {
   struct DM	*dm;
 
-  dm = (struct DM *)Calloc(1, sizeof(struct DM));
+  dm = (struct DM *)calloc(1, sizeof(struct DM));
   if (dm) {
     dm->dm_next = dm->dm_prev = dm;
     dm->dm_file = df;
@@ -173,7 +172,7 @@ _RkCreateDF(dd, lnk, type)
 {
   struct DF	*df;
 
-  df = (struct DF *)Calloc(1, sizeof(struct DF));
+  df = (struct DF *)calloc(1, sizeof(struct DF));
   if (df) {
     struct DM	*dm = &df->df_members;
 
@@ -408,7 +407,7 @@ _RkCreateDD(path, name)
 {
   struct DD	*dd;
 
-  dd = (struct DD *)Calloc(1, sizeof(struct DD));
+  dd = (struct DD *)calloc(1, sizeof(struct DD));
   if (dd) {
     dd->dd_next = dd->dd_prev = dd;
     dd->dd_path = allocStr((char *)path);
@@ -945,7 +944,7 @@ _RkCopyDDP(ddp)
   if (ddp) {
     int	count = _RkCountDDP(ddp);
 
-    new = (struct DD **)Calloc(count + 1, (unsigned)sizeof(struct DD *));
+    new = (struct DD **)calloc(count + 1, (unsigned)sizeof(struct DD *));
     if (new)
       for (i = 0; (dd = new[i] = ddp[i]) != (struct DD *)0 ; i++)
 	dd->dd_rcount++;
@@ -962,7 +961,7 @@ _RkAppendDDP(ddp, dd)
   int		i;
   int		count = _RkCountDDP(ddp);
 
-  new = (struct DD **)Calloc(count + 2, (unsigned)sizeof(struct DD *));
+  new = (struct DD **)calloc(count + 2, (unsigned)sizeof(struct DD *));
   if (new) {
     if (ddp) {
       for (i = 0; i < count; i++) new[i] = ddp[i];
@@ -1540,7 +1539,7 @@ _RkMountMD(cx, dm, qm, mode, firsttime)
   char		*file;
   int		status;
 
-  if (!dm || !(md = (struct MD *)Calloc(1, sizeof(struct MD))))
+  if (!dm || !(md = (struct MD *)calloc(1, sizeof(struct MD))))
     return -1;
   /* increment the reference counter */
   if (dm->dm_rcount == 0) {

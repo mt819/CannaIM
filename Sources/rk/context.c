@@ -33,7 +33,6 @@ static char rcsid[]="$Id: context.c,v 1.5 2003/09/17 08:50:52 aida_s Exp $";
 
 static unsigned long now_context = 0L;
 
-#define	Calloc		calloc
 #define cx_gwt		cx_extdata.ptr
 #define	STRCMP(d, s)	strcmp((char *)(d), (char *)(s))
 
@@ -135,7 +134,7 @@ _RkInitialize(ddhome, numCache)
 #endif
 		SG.P_Ftte  = RkGetGramNum(SG.gramdic, "Ftte");
 		CX = (struct RkContext *)
-		  Calloc(INIT_CONTEXT, sizeof(struct RkContext));
+		  calloc(INIT_CONTEXT, sizeof(struct RkContext));
 		if (CX) {
 		  now_context += INIT_CONTEXT;
 		  if (_RkInitializeCache(numCache) == 0) {
@@ -342,7 +341,7 @@ int cx_num;
   for (i = 0; i < 4; i++) {
     struct MD *mh;
 
-    if (!(mh = (struct MD *)Calloc(1, sizeof(struct MD)))) {
+    if (!(mh = (struct MD *)calloc(1, sizeof(struct MD)))) {
       int j;
 
       for (j = 0 ; j < i; j++) {
@@ -361,7 +360,7 @@ int cx_num;
   cx->ddpath = (struct DD **)0;
   cx->kouhomode = (unsigned long)0;
   cx->concmode = 0;
-  cx->litmode = (unsigned long *)Calloc(MAXLIT, sizeof(unsigned long));
+  cx->litmode = (unsigned long *)calloc(MAXLIT, sizeof(unsigned long));
   cx->gram = &SG;
   if (cx->litmode) {
     for (i = 0; i < MAXLIT; i++) {
@@ -369,7 +368,7 @@ int cx_num;
     }
     cx->poss_cont = 0;
 #ifdef EXTENSION_NEW
-    cx->cx_gwt = (pointer)Calloc(1, sizeof(struct _rec));
+    cx->cx_gwt = (pointer)calloc(1, sizeof(struct _rec));
     if (cx->cx_gwt) {
       struct _rec	*gwt = (struct _rec *)cx->cx_gwt;
       gwt->gwt_cx = -1;  /* means no GetWordTextdic context
