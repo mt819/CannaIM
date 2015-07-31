@@ -148,26 +148,6 @@ hankaku[] = {
 };
 #endif
 
-#ifdef OBSOLETE_RKKANA
-
-#define	ADDCODE(dst, maxdst, count, code, length) {\
-    if ( (unsigned long)(length) <= (unsigned long)(maxdst) ) {\
-	(maxdst) -= (length); (count) += (length);\
-	if ( (dst) ) {\
-	    (dst) += (length);\
-	    switch((length)) {\
-	    case 4:	*--(dst) = (code)&255; (code) >>= 8;\
-	    case 3:	*--(dst) = (code)&255; (code) >>= 8;\
-	    case 2:	*--(dst) = (code)&255; (code) >>= 8;\
-	    case 1:	*--(dst) = (code)&255; (code) >>= 8;\
-	    };\
-	    (dst) += (length);\
-	};\
-    };\
-}
-
-#else /* !OBSOLETE_RKKANA */
-
 static int
 _ADDCODE(dst, maxdst, count, code, length)
 unsigned char *dst;
@@ -194,8 +174,6 @@ unsigned long code;
 #define ADDCODE(dst, maxdst, count, code, length) \
 { int llen = _ADDCODE(dst, maxdst, count, (unsigned long) code, length); \
   if (llen > 0 && (dst)) { (dst) += llen; (maxdst) -= llen; (count) += llen; }}
-
-#endif /* !OBSOLETE_RKKANA */
 
 #define	ADDWCODE(dst, maxdst, count, code) {\
     if ( (maxdst) > 0 ) {\
