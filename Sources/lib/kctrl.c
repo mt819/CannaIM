@@ -620,8 +620,10 @@ KC_initialize(d, arg)
     /* サーバ名保持用メモリの開放 */
     /* RkSetServerName((char *)0); してはいけないのでは？ */
 
+#ifdef ENGINE_SWITCH
     /* エンジンのクローズ */
     close_engine();
+#endif
 
     return -1;
   }
@@ -768,8 +770,10 @@ KC_finalize(d, arg)
     /* デフォルト以外のモード用メモリの開放 */
     freeExtra();
 
+#ifdef ENGINE_SWITCH
     /* エンジンのクローズ */
     close_engine();
+#endif
 
     if (arg) {
       *(char ***)arg = nWarningMesg ? WarningMesg : (char **)0;

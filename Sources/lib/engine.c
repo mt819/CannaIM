@@ -722,6 +722,19 @@ wchar_t *yomi, *kanjis, *hinshis;
 			       maxkanjis, hinshis, maxhinshis) : -1;
 }
 
+void
+close_engine()
+{
+#ifdef DL
+  if (dlh) {
+    (void)dlclose(dlh);
+    dlh = (DSOHANDLE)0;
+  }
+#endif /* DL */
+  Rk = (struct rkfuncs *)0;
+  current_engine = -1;
+}
+
 #ifndef wchar_t
 # error "wchar_t is already undefined"
 #endif
@@ -756,19 +769,4 @@ RkGetServerHost()
   }
 }
 #endif /* !ENGINE_SWITCH */
-
-void
-close_engine()
-{
-#ifdef ENGINE_SWITCH
-#ifdef DL
-  if (dlh) {
-    (void)dlclose(dlh);
-    dlh = (DSOHANDLE)0;
-  }
-#endif /* DL */
-  Rk = (struct rkfuncs *)0;
-  current_engine = -1;
-#endif /* ENGINE_SWITCH */
-}
 
