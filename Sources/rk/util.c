@@ -298,7 +298,7 @@ read_tags(hd, srctop, srcend, pass)
 	hd->flag[i] = len;
 	if (!(hd->data[i].ptr = (unsigned char *)malloc((size_t) (len + 1))))
 	  return -1;
-	(void)memcpy(hd->data[i].ptr, srctop + off, (size_t) len);
+	memcpy(hd->data[i].ptr, srctop + off, (size_t) len);
 	hd->data[i].ptr[len] = 0;
       }
     }
@@ -425,7 +425,7 @@ _RkCreateHeader(hd, size)
     if (!hd->flag[i])
       continue;
 
-    (void)memcpy(tagdst, Hdrtag[i], HD_TAGSIZ);
+    memcpy(tagdst, Hdrtag[i], HD_TAGSIZ);
     tagdst += HD_TAGSIZ;
     if (hd->flag[i] == -1) {
       len = 0;
@@ -433,7 +433,7 @@ _RkCreateHeader(hd, size)
     } else {
       len = hd->flag[i];
       off = datadst - ptr;
-      (void)memcpy(datadst, hd->data[i].ptr, (size_t) len);
+      memcpy(datadst, hd->data[i].ptr, (size_t) len);
       datadst += len;
     }
     l_to_bst4(len, tagdst); tagdst += HD_TAGSIZ;
