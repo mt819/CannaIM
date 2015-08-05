@@ -563,14 +563,14 @@ _Rktclose(dm, file, gram)
       strcpy(whattime, ctime(&tloc));
       whattime[strlen(whattime)-1] = 0;
       strcpy(header, "#*DIC ");
-      (void)strcat(header, dm->dm_nickname);
-      (void)strcat(header, " [");
-      (void)strcat(header, whattime);
-      (void)strcat(header, "]");
+      strcat(header, dm->dm_nickname);
+      strcat(header, " [");
+      strcat(header, whattime);
+      strcat(header, "]");
 #ifdef USE_SJIS_TEXT_DIC
-      (void)strcat(header, "\r\n");
+      strcat(header, "\r\n");
 #else
-      (void)strcat(header, "\n");
+      strcat(header, "\n");
 #endif
       n = strlen(header);
       if (write(fdes, header, n) != n) {
@@ -831,14 +831,14 @@ _Rktsync(cx, dm, qm)
 	strcpy(whattime, ctime(&tloc));
 	whattime[strlen(whattime)-1] = 0;
 	strcpy(header, "#*DIC ");
-	(void)strcat(header, dm->dm_nickname);
-	(void)strcat(header, " [");
-	(void)strcat(header, whattime);
-	(void)strcat(header, "]");
+	strcat(header, dm->dm_nickname);
+	strcat(header, " [");
+	strcat(header, whattime);
+	strcat(header, "]");
 #ifdef USE_SJIS_TEXT_DIC
-	(void)strcat(header, "\r\n");
+	strcat(header, "\r\n");
 #else
-	(void)strcat(header, "\n");
+	strcat(header, "\n");
 #endif
 	n = strlen(header);
 	if (write(fdes, header, n) != n) {

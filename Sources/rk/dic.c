@@ -269,16 +269,16 @@ int     mode;
 	goto return_ret;
       }
       if (mode & Rk_MWD) {
-	  (void)strcpy(extent, "mwd");
+	  strcpy(extent, "mwd");
       } else if (mode & Rk_SWD) {
-	  (void)strcpy(extent, "swd");
+	  strcpy(extent, "swd");
       } else if (mode & Rk_PRE) {
-	  (void)strcpy(extent, "pre");
+	  strcpy(extent, "pre");
       } else if (mode & Rk_SUC) {
-	  (void)strcpy(extent, "suc");
+	  strcpy(extent, "suc");
       } else {
 	  /* return INVAL;	*/
-	  (void)strcpy(extent, "mwd");
+	  strcpy(extent, "mwd");
       };
       (void)sprintf(spec, "%s(.%s) -%s--%s-\n", filename, extent, dicname,
 		    DEFAULT_PERMISSION);
@@ -964,7 +964,7 @@ RkwGetWordTextDic(cx_num, dirname, dicname, info, infolen)
     size = strlen((char *)dicname) + 1;
     if (!(buff = (unsigned char *)malloc(size)))
       return (NOTALC);
-    (void)strcpy((char *)buff, (char *)dicname);
+    strcpy((char *)buff, (char *)dicname);
 
     if(dirname[0] != '\0') {
       if((new_cx_num = RkwCreateContext()) < 0) {
