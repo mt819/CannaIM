@@ -628,7 +628,7 @@ _RkReadDD(name)
       };
     };
   };
-  (void)fclose(fp);
+  fclose(fp);
 
  return_dd:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY

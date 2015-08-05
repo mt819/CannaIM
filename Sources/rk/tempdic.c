@@ -427,7 +427,7 @@ _Rktopen(dm, file, mode, gram)
       } else
 	ecount++;
     }
-    (void)fclose(f);
+    fclose(f);
     dm->dm_offset = 0L;
     df->df_size = offset;
     if (ecount) {
