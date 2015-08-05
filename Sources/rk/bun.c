@@ -1627,7 +1627,7 @@ RkwQueryDic(cx_num, dirname, dicname, status)
   size = strlen(dicname) + 1;
   if (!(buff = (unsigned char *)malloc(size)))
     return(-1);
-  (void)strcpy((char *)buff, dicname);
+  strcpy((char *)buff, dicname);
   if (*dirname && strcmp(dirname, cx->ddpath[0]->dd_name)
       && strcmp(dirname, (char *)SYSTEM_DDHOME_NAME)) {
     if((new_cx_num = RkwCreateContext()) < 0) {

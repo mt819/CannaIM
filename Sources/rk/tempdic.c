@@ -562,7 +562,7 @@ _Rktclose(dm, file, gram)
       tloc = time(0);
       strcpy(whattime, ctime(&tloc));
       whattime[strlen(whattime)-1] = 0;
-      (void)strcpy(header, "#*DIC ");
+      strcpy(header, "#*DIC ");
       (void)strcat(header, dm->dm_nickname);
       (void)strcat(header, " [");
       (void)strcat(header, whattime);
@@ -830,7 +830,7 @@ _Rktsync(cx, dm, qm)
 	tloc = time(0);
 	strcpy(whattime, ctime(&tloc));
 	whattime[strlen(whattime)-1] = 0;
-	(void)strcpy(header, "#*DIC ");
+	strcpy(header, "#*DIC ");
 	(void)strcat(header, dm->dm_nickname);
 	(void)strcat(header, " [");
 	(void)strcat(header, whattime);

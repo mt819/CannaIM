@@ -684,7 +684,7 @@ RkwGetMountList(cx_num, mdname, maxmdname)
 	j = i + strlen(name) + 1;
 	if (j + 1 < maxmdname) {
 	  if (mdname) {
-	    (void)strcpy(mdname + i, name);
+	    strcpy(mdname + i, name);
 	  }
 	  i = j;
 	  count++;
@@ -795,7 +795,7 @@ RkwGetDicList(cx_num, mdname, maxmdname)
 	  k = j + strlen(dicp->nickname) + 1;
 	  if (k + 1 < maxmdname) {
 	    if (mdname) {
-	      (void)strcpy(mdname + j, dicp->nickname);
+	      strcpy(mdname + j, dicp->nickname);
 	      j = k;
 	    }
 	  }
@@ -832,7 +832,7 @@ RkwGetDirList(cx_num, ddname, maxddname)
       j = i + strlen(dd->dd_name) + 1;
       if (j + 1 < maxddname) {
 	if (ddname)
-	  (void)strcpy(ddname + i, dd->dd_name);
+	  strcpy(ddname + i, dd->dd_name);
 	i = j;
 	count++;
       };

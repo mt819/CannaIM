@@ -1126,7 +1126,7 @@ char *name;
   temp = (struct atomcell *)freecell;
   retval = SYMBOL_TAG | (freecell - celltop);
   freecell += sizeof(struct atomcell);
-  (void)strcpy(freecell, name);
+  strcpy(freecell, name);
   temp->pname = freecell;
   freecell += namesize;
 

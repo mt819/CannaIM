@@ -372,7 +372,7 @@ char *table;
       else {
         p = getenv("HOME");
         if (p) {
-          (void)strcpy(rdic, p);
+          strcpy(rdic, p);
           (void)strcat(rdic, "/");
           (void)strcat(rdic, table);
           retval = RkwOpenRoma(rdic);

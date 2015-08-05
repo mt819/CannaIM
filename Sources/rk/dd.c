@@ -531,7 +531,7 @@ _RkReadDD(name)
     goto return_dd;
 
   /* create dd even if there is no directory or dics.dir file */
-  (void)strcpy(path, sx->ddhome);
+  strcpy(path, sx->ddhome);
   (void)strcat(path, "/");
   (void)strcat(path, name);
   dd = _RkCreateDD((unsigned char *)path, (unsigned char *)name);
@@ -543,7 +543,7 @@ _RkReadDD(name)
     dd = (struct DD *)0;
     goto return_dd;
   }
-  (void)strcpy(direct, path);
+  strcpy(direct, path);
   (void)strcat(direct, dics_dir);
 
   /* check for accessing right */
@@ -608,7 +608,7 @@ _RkReadDD(name)
 
     if (strlen((char *)path) + strlen((char *)lnk) + 1 >= RK_PATH_BMAX)
       continue;
-    (void)strcpy(file, path);
+    strcpy(file, path);
     (void)strcat(file, "/");
     (void)strcat(file, (char *)lnk);
     if (close(open(file, 0)) < 0)
@@ -679,7 +679,7 @@ _RkCreatePath(dd, name)
   sz = strlen(dd->dd_path) + strlen(name) + 2;
   ddname = malloc(sz);
   if (ddname)  {
-    (void)strcpy(ddname, dd->dd_path);
+    strcpy(ddname, dd->dd_path);
     (void)strcat(ddname, "/");
     (void)strcat(ddname, name);
   };
@@ -785,12 +785,12 @@ _RkRealizeDD(dd)
     goto return_ret;
   }
   /* dics.dir */
-  (void)strcpy(dicsdir, dd->dd_path);
+  strcpy(dicsdir, dd->dd_path);
   (void)strcat(dicsdir, "/dics.dir");
   backup[0] = 0;
   tmpres = close(open(dicsdir, 0));
   if (tmpres >= 0) {
-    (void)strcpy(backup, dd->dd_path);
+    strcpy(backup, dd->dd_path);
     (void)strcat(backup, "/#dics.dir");
 #ifdef HAVE_RENAME
 #ifdef __EMX__
@@ -832,7 +832,7 @@ _RkRealizeDD(dd)
   tloc = time(0);
   strcpy(whattime, ctime(&tloc));
   whattime[strlen(whattime)-1] = 0;
-  (void)strcpy(header, "#CANNA dics.dir [");
+  strcpy(header, "#CANNA dics.dir [");
   (void)strcat(header, whattime);
   (void)strcat(header, "] ");
   (void)strcat(header, dd->dd_name);
@@ -1376,16 +1376,16 @@ DMrename(dm, nickname)
   switch (dm->dm_class) {
   default:
   case ND_MWD:
-    (void)strcpy(member, ".mwd");
+    strcpy(member, ".mwd");
     break;
   case ND_SWD:
-    (void)strcpy(member, ".swd");
+    strcpy(member, ".swd");
     break;
   case ND_PRE:
-    (void)strcpy(member, ".pre");
+    strcpy(member, ".pre");
     break;
   case ND_SUC:
-    (void)strcpy(member, ".suc");
+    strcpy(member, ".suc");
     break;
   };
   (void)sprintf(spec, "%s(%s) -%s--%s%s-", df->df_link,
