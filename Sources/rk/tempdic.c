@@ -577,7 +577,7 @@ _Rktclose(dm, file, gram)
 	ecount++;
       }
       ecount += writeTD(xdm, gram, fdes);
-      (void)close(fdes);
+      close(fdes);
     } else
       ecount++;
 
@@ -845,7 +845,7 @@ _Rktsync(cx, dm, qm)
 	  ecount++;
 	}
 	ecount += writeTD(xdm, gram, fdes);
-	(void)close(fdes);
+	close(fdes);
       } else
 	ecount++;
 

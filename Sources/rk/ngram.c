@@ -306,7 +306,7 @@ RkOpenGram(mydic)
     return((struct RkKxGram *)0);
   }
   gram = RkReadGram(fd, gramsz);
-  (void)close(fd);
+  close(fd);
   return gram;
 }
 

@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #if !defined(lint) && !defined(__CODECENTER__)
@@ -54,7 +54,7 @@ extern void qsort();
 int
 compar(p, q)
 struct romaRec	*p, *q;
-{	
+{
   unsigned char	*s = p->roma;
   unsigned char	*t = q->roma;
 
@@ -128,7 +128,7 @@ char *romaji;
 		return((struct RkRxDic *)0);
 	}
 	if ( readHeader(rdic, dic) ) {
-		(void)close(dic);
+		close(dic);
 		free(rdic);
 		return((struct RkRxDic *)0);
 	}
@@ -137,13 +137,13 @@ char *romaji;
 	    (unsigned char *)malloc((unsigned int)rdic->nr_strsz);
 
 	  if ( !rdic->nr_string ) {
-		(void)close(dic);
+		close(dic);
 		free(rdic);
 		return((struct RkRxDic *)0);
 	  }
 
 	  sz = read(dic, (char *)rdic->nr_string, rdic->nr_strsz);
-	  (void)close(dic);
+	  close(dic);
 	  if ( sz != rdic->nr_strsz ) {
 	    free(rdic->nr_string);
 	    free(rdic);
@@ -156,7 +156,7 @@ char *romaji;
 
 	if (rdic->nr_nkey > 0) {
 	  rdic->nr_keyaddr =
-	    (unsigned char **)calloc((unsigned)rdic->nr_nkey, 
+	    (unsigned char **)calloc((unsigned)rdic->nr_nkey,
 				     sizeof(unsigned char *));
 	  if ( !rdic->nr_keyaddr ) {
 	    free(rdic->nr_string);
@@ -229,16 +229,16 @@ char *romaji;
         for (i = 0; i < rdic->nr_nkey; i++) {
 	  tmp_rdic[i].roma = rdic->nr_keyaddr[i];
 	  if (rdic->nr_brules)
-	    tmp_rdic[i].bang = rdic->nr_brules[i]; 
+	    tmp_rdic[i].bang = rdic->nr_brules[i];
 	}
 
-        qsort((char *)tmp_rdic, rdic->nr_nkey, sizeof(struct romaRec), 
+        qsort((char *)tmp_rdic, rdic->nr_nkey, sizeof(struct romaRec),
                 (int (*)(const void *, const void *))compar);
 
         for (i = 0; i < rdic->nr_nkey; i++) {
 	  rdic->nr_keyaddr[i] = tmp_rdic[i].roma;
 	  if (rdic->nr_brules)
-	    rdic->nr_brules[i]  = tmp_rdic[i].bang; 
+	    rdic->nr_brules[i]  = tmp_rdic[i].bang;
 	}
 	free ((char *)tmp_rdic);
 #endif /* JAPANESE_SORT */
@@ -283,8 +283,8 @@ struct rstat {
     int	start, end;	/* match sury key no hanni */
 };
 
-static 
-int	
+static
+int
 findRoma(rdic, m, c, n, flg)
 struct RkRxDic	*rdic;
 struct rstat	*m;
@@ -297,17 +297,17 @@ int		flg;
     if (flg && 'A' <= c && c <= 'Z') {
       c += 'a' - 'A';
     }
-    for(s = m->start; s < m->end; s++) 
+    for(s = m->start; s < m->end; s++)
 	if( c == xkey(rdic, s, n) )
 	    break;
-    for(e = s; e < m->end; e++) 
+    for(e = s; e < m->end; e++)
 	if( c != xkey(rdic, e, n) )
 	    break;
     m->start	= s;
     m->end	= e;
     return e - s;
 }
-static 
+static
 unsigned char	*
 getKana(rdic, p, flags)
 struct RkRxDic	*rdic;
@@ -324,7 +324,7 @@ int		flags;
 
     klen = strlen((char *)kana);
     switch(flags&RK_XFERMASK) {
-    default: 
+    default:
 	(void)RkCvtNone(tmp, sizeof(tmp), kana, klen);
 	return tmp;
     case RK_XFER:
@@ -337,11 +337,11 @@ int		flags;
 	(void)RkCvtKana(tmp, sizeof(tmp), kana, klen);
 	return tmp;
     case RK_ZFER:
-	(void)RkCvtZen(tmp, sizeof(tmp), kana, klen); 
+	(void)RkCvtZen(tmp, sizeof(tmp), kana, klen);
 	return tmp;
     };
 }
-static 
+static
 unsigned char	*
 getRoma(rdic, p)
 struct RkRxDic	*rdic;
@@ -350,7 +350,7 @@ int		p;
     return rdic->nr_keyaddr[p];
 }
 /*ARGSUSED*/
-static 
+static
 unsigned char	*
 getTSU(rdic, flags)
 struct RkRxDic	*rdic;
@@ -367,7 +367,7 @@ int		flags;
     };
 }
 
-int	
+int
 RkMapRoma(rdic, dst, maxdst, src, maxsrc, flags, status)
 struct RkRxDic	*rdic;
 unsigned char	*dst;
@@ -423,7 +423,7 @@ int		*status;
 			static unsigned char	tmp[256];
 
 			switch(flags&RK_XFERMASK) {
-			default: 
+			default:
 			    byte = RkCvtNone(tmp, sizeof(tmp), src, count);
 			    break;
 			case RK_XFER:
@@ -436,7 +436,7 @@ int		*status;
 			    byte = RkCvtKana(tmp, sizeof(tmp), src, count);
 			    break;
 			case RK_ZFER:
-			    byte = RkCvtZen(tmp, sizeof(tmp), src, count); 
+			    byte = RkCvtZen(tmp, sizeof(tmp), src, count);
 			    break;
 			};
 			kana = tmp;
@@ -462,7 +462,7 @@ int		*status;
 	};
 	byte = 0;
     }
-    else 
+    else
 	byte = (maxsrc <= 0) ? 0 : (*src & 0x80) ? 2 : 1;
 done:
     *status = found*byte;
@@ -479,7 +479,7 @@ done:
     return count;
 }
 
-static 
+static
 unsigned char	*
 getrawKana(rdic, p)
 struct RkRxDic	*rdic;
@@ -494,7 +494,7 @@ int		p;
   return kana;
 }
 
-static 
+static
 unsigned char	*
 getTemp(rdic, p)
 struct RkRxDic	*rdic;
@@ -517,7 +517,7 @@ int		p;
 }
 
 
-int	
+int
 RkMapPhonogram(rdic, dst, maxdst, src, srclen, key, flags,
 	       used_len_return, dst_len_return, tmp_len_return,
 	       rule_id_inout)
@@ -548,15 +548,15 @@ int		*rule_id_inout;
     return found;
   }
 #endif
-  
+
   if ( rdic ) {
     if ((rdic->dic == RX_KPDIC || rdic->dic == RX_PTDIC)
 	&& rule_id_inout && (lastrule = *rule_id_inout)) {
       if (!key) {
 	if (rdic->nr_brules && rdic->nr_brules[lastrule] &&
 	    !(flags & RK_FLUSH)) {
-	  /* もし、! が付いていた場合には第３フィールドに書かれている 
-             文字で始まるルールがあると仮想的に考えられるわけであるか 
+	  /* もし、! が付いていた場合には第３フィールドに書かれている
+             文字で始まるルールがあると仮想的に考えられるわけであるか
              ら key が与えられていないのであれば与えられた文字列が短か
              すぎるためなんともできないよしのリターン値を返す。 */
 	  /* RK_FLUSH は調べるべきかどうか悩むところ */
@@ -699,7 +699,7 @@ int		*rule_id_inout;
     found = 0;
   }
  done:
-  
+
   if (dst_len_return) {
     *dst_len_return = byte;
   }
@@ -734,7 +734,7 @@ int		*rule_id_inout;
 
 /* RkCvtRoma
  */
-int	
+int
 RkCvtRoma(rdic, dst, maxdst, src, maxsrc, flags)
 struct RkRxDic	*rdic;
 unsigned char	*dst;
@@ -770,13 +770,13 @@ unsigned	flags;
       while ( s < S ) {
 	int ulen, dlen, tlen, rule = 0;
 	unsigned dontflush = RK_FLUSH;
-      
+
 	key = xxxx[xp++] = *s++;
       flush:
 	do {
 	  RkMapPhonogram(rdic, d, maxdst, xxxx, xp, (unsigned)key,
 			 flags & ~dontflush, &ulen, &dlen, &tlen, &rule);
-	
+
 	  if ( dlen + 1 <= maxdst ) {
 	    maxdst -= dlen; count += dlen;
 	    if ( dst ) {
@@ -784,7 +784,7 @@ unsigned	flags;
 	      (void)strncpy((char *)yyyy, (char *)d, tlen);
 	    }
 	  }
-	
+
 	  if (ulen < (int)xp) {
 	    strncpy((char *)yyyy + tlen, (char *)xxxx + ulen, xp - ulen);
 	  }

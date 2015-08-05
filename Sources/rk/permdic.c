@@ -143,7 +143,7 @@ openDF(df, dfnm, w, gramoff, gramsz)
   _RkClearHeader(&hd);
   df->df_size = off;
   if (!count) {
-    (void)close(fd);
+    close(fd);
     return errres;
   }
   return (df->df_fdes = fd);
@@ -289,7 +289,7 @@ _Rkpclose(dm, dfnm, gram)
 
     fd = df->df_fdes;
 
-    (void)close(fd);
+    close(fd);
     dmh = &df->df_members;
     for (ddm = dmh->dm_next; ddm != dmh; ddm = ddm->dm_next) {
       xdm = (struct ND *)ddm->dm_xdm;
