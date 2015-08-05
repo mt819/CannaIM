@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 /************************************************************************/
@@ -78,7 +78,7 @@ int
 uslen(WCHAR_T *us)
 {
   WCHAR_T *ous = us;
-  
+
   if (!us)
     return 0;
   while (*us & RK_WMASK)
@@ -121,7 +121,7 @@ WCHAR_T *
 euctous(unsigned char *src, int srclen, WCHAR_T *dest, int destlen)
 {
   WCHAR_T	*a = dest;
-    
+
   if (!src || !dest || !srclen || !destlen)
     return(a);
   while (*src && (srclen-- > 0) && (destlen-- > 0)) {
@@ -158,8 +158,8 @@ _Rkpanic(char *fmt, int p, int q, int r)
 {
 #ifndef WIN
   char	msg[RK_LINE_BMAX];
-  
-  (void)sprintf(msg, fmt, p, q, r);
+
+  sprintf(msg, fmt, p, q, r);
   (void)fprintf(logfile ? logfile : stderr, "%s\n", msg);
   (void)fflush(logfile);
 #endif
@@ -173,11 +173,11 @@ _RkCalcUnlog2(int x)
   return((1 << x) - 1);
 }
 
-int 
+int
 _RkCalcLog2(int n)
 {
   int	lg2;
-  
+
   n--;
   for (lg2 = 0; n > 0; lg2++)
     n >>= 1;
@@ -397,7 +397,7 @@ HowManyChars(WCHAR_T *yomi, int len)
 
   for (chlen = 0, bytelen = 0; bytelen < len; chlen++) {
     WCHAR_T ch = yomi[chlen];
-    
+
     if (us_iscodeG0(ch))
       bytelen++;
     else if (us_iscodeG3(ch))

@@ -210,7 +210,7 @@ int     mode;
 	ret = ACCES;
 	goto return_ret;
       }
-      (void)sprintf(spec, "%s(%s) -%s--%s-\n",
+      sprintf(spec, "%s(%s) -%s--%s-\n",
 		    filename, sm->dm_dicname, sm->dm_nickname,
 		    DEFAULT_PERMISSION);
       if (!DMcheck(spec, dicname)) {
@@ -280,7 +280,7 @@ int     mode;
 	  /* return INVAL;	*/
 	  strcpy(extent, "mwd");
       };
-      (void)sprintf(spec, "%s(.%s) -%s--%s-\n", filename, extent, dicname,
+      sprintf(spec, "%s(.%s) -%s--%s-\n", filename, extent, dicname,
 		    DEFAULT_PERMISSION);
       if (!DMcheck(spec, dicname)) {
 	ret = NOENT;
@@ -558,11 +558,11 @@ RkwRenameDic(cx_num, old, new, mode)
     return 1;
   } else {
 #ifndef WINDOWS_STYLE_FILENAME
-    (void)sprintf(spec, "%s(.%s) -%s--%s%s-\n", "tmp.t", "mwd", new,
+    sprintf(spec, "%s(.%s) -%s--%s%s-\n", "tmp.t", "mwd", new,
 		  (dm1->dm_flags & DM_READOK) ? "r" : "",
 		  (dm1->dm_flags & DM_WRITEOK) ? "w" : "");
 #else
-    (void)sprintf(spec, "%s(.%s) -%s--%s%s-\n", "tmp.ctd", "mwd", new,
+    sprintf(spec, "%s(.%s) -%s--%s%s-\n", "tmp.ctd", "mwd", new,
 		  (dm1->dm_flags & DM_READOK) ? "r" : "",
 		  (dm1->dm_flags & DM_WRITEOK) ? "w" : "");
 #endif
@@ -728,7 +728,7 @@ int mode;
   /* I leave this array on the stack because this will not glow so big.
    1996.6.5 kon */
 
-		  (void)sprintf(spec, "%s(%s) -%s--%s-\n",
+		  sprintf(spec, "%s(%s) -%s--%s-\n",
 				filename, dm1->dm_dicname, to, perm);
 		  res = NOTALC;
 		  dm2 = DMcreate(userDDP[0], spec);

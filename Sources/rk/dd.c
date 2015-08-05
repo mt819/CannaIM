@@ -1388,7 +1388,7 @@ DMrename(dm, nickname)
     strcpy(member, ".suc");
     break;
   };
-  (void)sprintf(spec, "%s(%s) -%s--%s%s-", df->df_link,
+  sprintf(spec, "%s(%s) -%s--%s%s-", df->df_link,
 		dicname ? dicname : member, nickname,
 		(dm->dm_flags & DM_READOK) ? "r" : "",
 		(dm->dm_flags & DM_WRITEOK) ? "w" : "");
@@ -1455,7 +1455,7 @@ int mode;
   if (newflags != dm->dm_flags) {
     if (df->df_direct->dd_flags & DD_WRITEOK) {
       dm->dm_flags = newflags;
-      (void)sprintf(spec, "%s(%s) -%s--%s%s-",
+      sprintf(spec, "%s(%s) -%s--%s%s-",
 		    df->df_link, dm->dm_dicname, dm->dm_nickname,
 		    (dm->dm_flags & DM_READOK) ? "r" : "",
 		    (dm->dm_flags & DM_WRITEOK) ? "w" : "");

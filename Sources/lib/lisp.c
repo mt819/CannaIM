@@ -1559,7 +1559,7 @@ list atm;
 
   if (constp(atm)) {
     if (numberp(atm)) {
-      (void)sprintf(namebuf,"%d",(int)xnum(atm));
+      sprintf(namebuf,"%d",(int)xnum(atm));
       prins(namebuf);
     }
     else {		/* this is a string */
