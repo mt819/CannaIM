@@ -550,7 +550,7 @@ RkwRenameDic(cx_num, old, new, mode)
       return EXIST;
     if (!(path = _RkMakePath(dm2->dm_file)))
       return NOTALC;
-    (void)unlink(path);
+    unlink(path);
     free(path);
     DMremove(dm2);
     DMrename(dm1, new);
@@ -693,7 +693,7 @@ int mode;
 		  res = NOTALC;
 		  goto newdicUsed;
 		}
-		(void)unlink(path);
+		unlink(path);
 		free(path);
 		switch (dm2->dm_flags & (DM_READOK | DM_WRITEOK)) {
 		case (DM_READOK | DM_WRITEOK):
