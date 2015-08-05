@@ -84,11 +84,9 @@ int	Rk_errno;
 #ifndef RK_DEBUG
 #define	RkDebug(fmt, p, q, r)
 #endif
-#ifdef __STDC__
+
 #define QUOTE(s) #s
-#else
-#define QUOTE(s) "s"
-#endif
+
 #ifdef NDEBUG
 #define RK_ASSERT(expr) ((void)0)
 #else
@@ -1139,11 +1137,7 @@ void			_RkRehashCache();
 #define	_RK_INTERN_FUNCTIONS_DEF_
 
 struct DM *_RkSearchDicWithFreq(struct DD **, char *, struct DM **);
-#ifdef __STDC__
 void _Rkpanic(const char *, ...);
-#else
-void _Rkpanic();
-#endif
 void RkAssertFail(const char *, int, const char *);
 unsigned long _RkGetTick(int);
 struct TW *RkCopyWrec(struct TW *);

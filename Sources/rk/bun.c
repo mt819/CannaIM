@@ -330,7 +330,6 @@ getCurrentBun(store)
  *		RK_ERRNO_EINVAL
  *		RK_ERRNO_ENOMEM
  */
-#ifdef __STDC__
 int
 RkwBgnBun(
      int	cx_num,
@@ -338,14 +337,6 @@ RkwBgnBun(
      int	n,
      int	kouhomode
 )
-#else
-int
-RkwBgnBun(cx_num, yomi, n, kouhomode)
-     int	cx_num;
-     Wchar	*yomi;
-     int	n;
-     int	kouhomode;
-#endif
 {
   struct RkContext	*cx;
   unsigned long		mask1, mask2;
@@ -418,18 +409,8 @@ RkwBgnBun(cx_num, yomi, n, kouhomode)
  *	return	0
  *		-1(RK_ERRNO_ECTX)
  */
-#ifdef __STDC__
 int
-RkwEndBun(
-     int	cx_num,
-     int	mode
-)
-#else
-int
-RkwEndBun(cx_num, mode)
-     int	cx_num;
-     int	mode;
-#endif
+RkwEndBun(int cx_num, int mode)
 {
   struct RkContext	*cx;
   struct nstore		*store;
@@ -607,18 +588,8 @@ RkwResize(cx_num, len)
   return(_RkResize(cx_num, len, 0));
 }
 
-#ifdef __STDC__
 int
-RkeResize(
-     int	cx_num,
-     int	len
-)
-#else
-int
-RkeResize(cx_num, len)
-     int	cx_num;
-     int	len;
-#endif
+RkeResize(int cx_num, int len)
 {
   return(_RkResize(cx_num, len, 1));
 }
@@ -801,16 +772,8 @@ RkwGoTo(cx_num, bnum)
   return(store->curbun);
 }
 
-#ifdef __STDC__
 int
-RkwLeft(
-     int	cx_num
-)
-#else
-int
-RkwLeft(cx_num)
-     int	cx_num;
-#endif
+RkwLeft(int cx_num)
 {
   struct RkContext	*cx;
   struct nstore	*store;
@@ -826,16 +789,8 @@ RkwLeft(cx_num)
   return store->curbun;
 }
 
-#ifdef __STDC__
 int
-RkwRight(
-     int	cx_num
-)
-#else
-int
-RkwRight(cx_num)
-     int	cx_num;
-#endif
+RkwRight(int cx_num)
 {
   struct RkContext	*cx;
   struct nstore	*store;
@@ -882,18 +837,8 @@ getXFER(cx, cnum)
   return(cnum < 0 ? RK_NFER : (cx->kouhomode>>(RK_XFERBITS*cnum))&RK_XFERMASK);
 }
 
-#ifdef __STDC__
 int
-RkwXfer(
-     int	cx_num,
-     int  	knum
-)
-#else
-int
-RkwXfer(cx_num, knum)
-     int	cx_num;
-     int  	knum;
-#endif
+RkwXfer(int cx_num, int knum)
 {
   struct RkContext	*cx;
   struct nbun		*bun;
@@ -909,16 +854,8 @@ RkwXfer(cx_num, knum)
   return(bun->nb_curcand);
 }
 
-#ifdef __STDC__
 int
-RkwNfer(
-     int	cx_num
-)
-#else
-int
-RkwNfer(cx_num)
-     int	cx_num;
-#endif
+RkwNfer(int cx_num)
 {
   struct RkContext	*cx;
   struct nbun	*bun;
@@ -1000,18 +937,8 @@ findBranch(store, cnum)
 
 /* RkGetStat
  */
-#ifdef __STDC__
 int
-RkwGetStat(
-     int	cx_num,
-     RkStat	*st
-)
-#else
-int
-RkwGetStat(cx_num, st)
-     int	cx_num;
-     RkStat	*st;
-#endif
+RkwGetStat(int cx_num, RkStat *st)
 {
   struct RkContext	*cx;
   struct nstore		*store;
@@ -1072,18 +999,8 @@ RkwGetStat(cx_num, st)
 
 /* RkGetStat
  */
-#ifdef __STDC__
 int
-RkeGetStat(
-     int	cx_num,
-     RkStat	*st
-)
-#else
-int
-RkeGetStat(cx_num, st)
-     int	cx_num;
-     RkStat	*st;
-#endif
+RkeGetStat(int cx_num, RkStat *st)
 {
   struct RkContext *cx;
   struct nstore *store;
@@ -1362,20 +1279,8 @@ RkwGetKanji(cx_num, dst, maxdst)
 /* RkGetKanjiList
  * 	genzai sentaku sareta kouho mojiretu wo toridasu
  */
-#ifdef __STDC__
 int
-RkwGetKanjiList(
-     int	cx_num,
-     Wchar	*dst,
-     int	maxdst
-)
-#else
-int
-RkwGetKanjiList(cx_num, dst, maxdst)
-     int	cx_num;
-     Wchar	*dst;
-     int	maxdst;
-#endif
+RkwGetKanjiList(int cx_num, Wchar *dst, int maxdst)
 {
   struct RkContext	*cx;
   int			i, len, ind = 0, num = 0;
@@ -1426,20 +1331,8 @@ addLex(dst, ind, max, yomi, kanji, lex, cx)
   return ind;
 }
 
-#ifdef __STDC__
 int
-RkwGetLex(
-     int	cx_num,
-     RkLex	*dst,
-     int	maxdst
-)
-#else
-int
-RkwGetLex(cx_num, dst, maxdst)
-     int	cx_num;
-     RkLex	*dst;
-     int	maxdst;
-#endif
+RkwGetLex(int cx_num, RkLex *dst, int maxdst)
 {
   RkContext	*cx;
   struct nbun	*bun;
@@ -1467,20 +1360,8 @@ RkwGetLex(cx_num, dst, maxdst)
 
 /* RkeGetLex -- ほぼ RkwGetLex と同じだが長さはバイト長で返る */
 
-#ifdef __STDC__
 int
-RkeGetLex(
-     int	cx_num,
-     RkLex	*dst,
-     int	maxdst
-)
-#else
-int
-RkeGetLex(cx_num, dst, maxdst)
-     int	cx_num;
-     RkLex	*dst;
-     int	maxdst;
-#endif
+RkeGetLex(int cx_num, RkLex *dst, int maxdst)
 {
   struct RkContext *cx;
   struct nstore *store;
@@ -1598,20 +1479,7 @@ RkwGetHinshi(cx_num, dst, maxdst)
 #define	CloseContext(a)	{if ((a) != cx_num) RkwCloseContext(a);}
 
 int
-#ifdef __STDC__
-RkwQueryDic(
-     int		cx_num,
-     char	*dirname,
-     char	*dicname,
-     struct DicInfo	*status
-)
-#else
-RkwQueryDic(cx_num, dirname, dicname, status)
-     int		cx_num;
-     char	*dirname;
-     char	*dicname;
-     struct DicInfo	*status;
-#endif
+RkwQueryDic(int cx_num, char *dirname, char *dicname, struct DicInfo *status)
 {
   struct RkContext	*cx;
   int			new_cx_num, size;

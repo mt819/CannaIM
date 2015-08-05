@@ -26,9 +26,7 @@ static char rcsid[]="@(#)$Id: util.c,v 1.8 2003/09/17 08:50:52 aida_s Exp $ $Aut
 
 #include "RKintern.h"
 #include <stdio.h>
-#ifdef __STDC__
 #include <stdarg.h>
-#endif
 
 #define	isEndTag(s)	(s[0] == 0 && s[1] == 0 && s[2] == 0 && s[3] == 0)
 
@@ -177,28 +175,14 @@ euctous(src, srclen, dest, destlen)
 static FILE	*log = (FILE *)0;
 
 void
-_Rkpanic(
-#ifdef __STDC__
-    const char *fmt, ...
-#else
-    fmt, p, q, r
-#endif
-    )
-#ifndef __STDC__
-     const char	*fmt;
-/* VARARGS2 */
-#endif
+_Rkpanic(const char *fmt, ...)
 {
   FILE *target = log ? log : stderr;
-#ifdef __STDC__
   va_list va;
 
   va_start(va, fmt);
   vfprintf(target, fmt, va);
   va_end(va);
-#else
-  fprintf(target, fmt, p, q, r);
-#endif
   fputc('\n', target);
   fflush(target);
   if (log)

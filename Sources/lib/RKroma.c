@@ -47,10 +47,6 @@ struct romaRec {
   unsigned char bang;
 };
 
-#if !defined(__STDC__)
-extern void qsort();
-#endif
-
 int
 compar(p, q)
 struct romaRec	*p, *q;

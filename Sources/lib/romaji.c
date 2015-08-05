@@ -865,9 +865,7 @@ int retval;
   return retval;
 }
 
-#ifdef __STDC__
 void fitmarks(yomiContext);
-#endif
 
 void
 fitmarks(yc)

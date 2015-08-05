@@ -144,11 +144,7 @@ static jmp_buf fatal_env;
 
  */
 
-#ifdef __STDC__
 static list getatmz(char *);
-#else
-static list getatmz();
-#endif
 
 /*********************************************************************
  *                      wchar_t replace begin                        *

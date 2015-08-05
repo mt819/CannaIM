@@ -436,24 +436,11 @@ newIchiranContext()
  * 候補一覧行を作る
  */
 
-#ifdef __STDC__
 int
 selectOne(uiContext d, wchar_t **buf, int *ck, int nelem, int bangomax,
 	  unsigned inhibit, int currentkouho, int allowcallback,
 	  canna_callback_t everyTimeCallback, canna_callback_t exitCallback,
 	  canna_callback_t quitCallback, canna_callback_t auxCallback)
-#else
-selectOne(d, buf, ck, nelem, bangomax, inhibit, currentkouho, allowcallback,
-	  everyTimeCallback, exitCallback, quitCallback, auxCallback)
-uiContext d;
-wchar_t **buf;
-int *ck;
-int nelem, bangomax;
-unsigned inhibit;
-int currentkouho;
-int allowcallback;
-canna_callback_t everyTimeCallback, exitCallback, quitCallback, auxCallback;
-#endif
 {
   extern KanjiModeRec ichiran_mode;
   ichiranContext ic;
