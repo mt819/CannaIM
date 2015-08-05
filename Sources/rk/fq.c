@@ -553,13 +553,13 @@ FQscan(df, codm, file, w)
 	break;
     }
     off += hd.data[HD_HSZ].var;
-    (void)lseek(fd, off, 0);
+    lseek(fd, off, 0);
     (void)read(fd, (char *)ll, 4);
     off += 4;
     bitsiz = L4TOL(ll);
     bitoff = off;
     off += bitsiz;
-    (void)lseek(fd, off, 0);
+    lseek(fd, off, 0);
     dmh = &df->df_members;
     for (dm = dmh->dm_next; dm != dmh; dm = dm->dm_next) {
       if (!strcmp((char *)dm->dm_dicname, (char *)hd.data[HD_CODM].ptr)) {
@@ -633,7 +633,7 @@ FQopen(dm, qm, file, mode)
     qm->dm_qbits = (unsigned char *)malloc((unsigned)xqm->ex_bsiz);
     if (!qm->dm_qbits)
       return -1;
-    (void)lseek(fd, xqm->ex_boff, 0);
+    lseek(fd, xqm->ex_boff, 0);
     (void)read(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
     qm->dm_rut = LoadRUC(fd);
     qm->dm_nv = readNV(fd);
@@ -663,7 +663,7 @@ FQclose(cx, dm, qm, file)
   if (xqm) {
     if (qm->dm_qbits) {
       if (qm->dm_flags & DM_UPDATED) {
-	(void)lseek(fd, xqm->ex_boff, 0);
+	lseek(fd, xqm->ex_boff, 0);
 	(void)write(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
       };
       free(qm->dm_qbits);
@@ -716,7 +716,7 @@ FQsync(cx, dm, qm, file)
   if (xqm) {
     if (qm->dm_qbits) {
       if (qm->dm_flags & DM_UPDATED) {
-	(void)lseek(fd, xqm->ex_boff, 0);
+	lseek(fd, xqm->ex_boff, 0);
 	if (write(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz) !=
 	    (int) xqm->ex_bsiz)
 	  rv = -1;

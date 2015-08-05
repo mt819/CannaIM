@@ -201,7 +201,7 @@ _Rkpopen(dm, dfnm, mode, gram)
     xdm->pgs[i].buf = (unsigned char *) 0;
   }
 
-  (void)lseek(fd, xdm->doff, 0);
+  lseek(fd, xdm->doff, 0);
   readsize = read(fd, (char *)xdm->buf, (unsigned int) xdm->drsz);
   if (readsize != ((int) xdm->drsz)) {
     free(xdm->pgs);
@@ -328,7 +328,7 @@ assurep(dic, id)
     if (!(buf = (unsigned char *)malloc(size)))
       return((unsigned char *)0);
 #endif
-    (void)lseek(fd, off, 0);
+    lseek(fd, off, 0);
     if (read(fd, (char *)buf, size) != (int)size) {
       free(buf);
       return((unsigned char *)0);
