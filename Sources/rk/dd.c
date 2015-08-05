@@ -532,8 +532,8 @@ _RkReadDD(name)
 
   /* create dd even if there is no directory or dics.dir file */
   strcpy(path, sx->ddhome);
-  (void)strcat(path, "/");
-  (void)strcat(path, name);
+  strcat(path, "/");
+  strcat(path, name);
   dd = _RkCreateDD((unsigned char *)path, (unsigned char *)name);
   if (!dd) {
     goto return_dd;
@@ -544,7 +544,7 @@ _RkReadDD(name)
     goto return_dd;
   }
   strcpy(direct, path);
-  (void)strcat(direct, dics_dir);
+  strcat(direct, dics_dir);
 
   /* check for accessing right */
   if ((fdes = open(direct, 0)) < 0) { /* no file? */
@@ -609,8 +609,8 @@ _RkReadDD(name)
     if (strlen((char *)path) + strlen((char *)lnk) + 1 >= RK_PATH_BMAX)
       continue;
     strcpy(file, path);
-    (void)strcat(file, "/");
-    (void)strcat(file, (char *)lnk);
+    strcat(file, "/");
+    strcat(file, (char *)lnk);
     if (close(open(file, 0)) < 0)
       continue;
     df = _RkAllocDF(dd, lnk, dftype);
@@ -680,8 +680,8 @@ _RkCreatePath(dd, name)
   ddname = malloc(sz);
   if (ddname)  {
     strcpy(ddname, dd->dd_path);
-    (void)strcat(ddname, "/");
-    (void)strcat(ddname, name);
+    strcat(ddname, "/");
+    strcat(ddname, name);
   };
   return ddname;
 }
@@ -786,12 +786,12 @@ _RkRealizeDD(dd)
   }
   /* dics.dir */
   strcpy(dicsdir, dd->dd_path);
-  (void)strcat(dicsdir, "/dics.dir");
+  strcat(dicsdir, "/dics.dir");
   backup[0] = 0;
   tmpres = close(open(dicsdir, 0));
   if (tmpres >= 0) {
     strcpy(backup, dd->dd_path);
-    (void)strcat(backup, "/#dics.dir");
+    strcat(backup, "/#dics.dir");
 #ifdef HAVE_RENAME
 #ifdef __EMX__
     unlink(backup);
@@ -833,10 +833,10 @@ _RkRealizeDD(dd)
   strcpy(whattime, ctime(&tloc));
   whattime[strlen(whattime)-1] = 0;
   strcpy(header, "#CANNA dics.dir [");
-  (void)strcat(header, whattime);
-  (void)strcat(header, "] ");
-  (void)strcat(header, dd->dd_name);
-  (void)strcat(header, "\n");
+  strcat(header, whattime);
+  strcat(header, "] ");
+  strcat(header, dd->dd_name);
+  strcat(header, "\n");
   n = strlen(header);
   tmpres = write(fdes, header, n);
   if (tmpres != n) {
