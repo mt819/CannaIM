@@ -110,7 +110,7 @@ char *dic;
   int mnterrlen;
   if (DICERRORMESGLEN <
       (unsigned)(strlen(dic) + (mnterrlen = strlen(mountErrorMessage)) + 1)) {
-    (void)strncpy(dictmp, dic, DICERRORMESGLEN - mnterrlen - 3/* ... */ - 1);
+    strncpy(dictmp, dic, DICERRORMESGLEN - mnterrlen - 3/* ... */ - 1);
     strcpy(dictmp + DICERRORMESGLEN - mnterrlen - 3 - 1, "...");
     strcpy(dictmp + DICERRORMESGLEN - mnterrlen - 1, mountErrorMessage);
   }

@@ -781,7 +781,7 @@ unsigned	flags;
 	    maxdst -= dlen; count += dlen;
 	    if ( dst ) {
 	      d += dlen;
-	      (void)strncpy((char *)yyyy, (char *)d, tlen);
+	      strncpy((char *)yyyy, (char *)d, tlen);
 	    }
 	  }
 

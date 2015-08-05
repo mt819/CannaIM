@@ -752,7 +752,7 @@ RkSetServerName(s)
 char *s;
 {
   if (s)
-    (void)strncpy(iroha_server_name, s, CANNA_SERVER_NAME_LEN);
+    strncpy(iroha_server_name, s, CANNA_SERVER_NAME_LEN);
   else
     iroha_server_name[0] = '\0';
   return 0;
