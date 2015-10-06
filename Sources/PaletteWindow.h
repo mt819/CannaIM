@@ -30,6 +30,7 @@ private:
 	BPictureButton*		HexButton;
 	BPictureButton*		BushuButton;
 	BPictureButton*		TorokuButton;
+	BMenu*				fMenu;
 	void				AllButtonOff();
 public:
 	PaletteWindow( BRect rect, BLooper* looper );

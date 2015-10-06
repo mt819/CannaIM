@@ -157,6 +157,29 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 						offpict, onpict, msg, B_TWO_STATE_BUTTON );
 	back->AddChild( BushuButton );
 
+	fMenu = new BMenu(B_EMPTY_STRING);
+	fMenu->SetFont(be_plain_font);
+	fMenu->AddItem(new BMenuItem("About CannaIM" B_UTF8_ELLIPSIS,
+		new BMessage( B_ABOUT_REQUESTED)));
+	fMenu->AddSeparatorItem();
+	fMenu->AddItem(new BMenuItem("Convert arrow keys",
+		new BMessage(ARROW_KEYS_FLIPPED)));
+	fMenu->AddItem(new BMenuItem("Reload Init file",
+		new BMessage(RELOAD_INIT_FILE)));
+
+	if (gSettings.convert_arrowkey) {
+		BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
+		item->SetMarked(true);
+	}
+
+	BMenuBar *fBar = new BMenuBar( BRect( 87, 26, 110, 41 ),
+         const char* "menu",
+         B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP,
+         B_ITEMS_IN_ROW,
+         false);
+	fBar->AddItem(fMenu);
+	back->AddChild(fBar);
+
 /*
 	largeimage->SetBits( TorokuOnbits, largebytes, 0, cspace );
 	back->BeginPicture( new BPicture );
@@ -213,6 +236,9 @@ void PaletteWindow::MessageReceived( BMessage *msg )
 			}
 			break;
 
+		case B_ABOUT_REQUESTED:
+		case ARROW_KEYS_FLIPPED:
+		case RELOAD_INIT_FILE:
 		case MODE_CHANGED_FROM_PALETTE:
 			cannaLooper->PostMessage( msg );
 			break;
