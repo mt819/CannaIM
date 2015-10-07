@@ -15,6 +15,7 @@
 #include <Box.h>
 
 extern Preferences gSettings;
+class BackBox;
 
 class PaletteWindow : public BWindow
 {
@@ -30,7 +31,7 @@ private:
 	BPictureButton*		HexButton;
 	BPictureButton*		BushuButton;
 	BPictureButton*		TorokuButton;
-	BMenu*				fMenu;
+	BackBox*					fBack;
 	void				AllButtonOff();
 public:
 	PaletteWindow( BRect rect, BLooper* looper );

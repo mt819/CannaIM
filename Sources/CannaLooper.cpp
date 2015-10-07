@@ -251,9 +251,9 @@ CannaLooper::MessageReceived(BMessage* msg)
 		case ARROW_KEYS_FLIPPED:
 		{
 //			BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
-			gSettings.convert_arrowkey = !gSettings.convert_arrowkey;
-			item->SetMarked(gSettings.convert_arrowkey);
-			fCanna->SetConvertArrowKey(gSettings.convert_arrowkey);
+//			gSettings.convert_arrowkey = !gSettings.convert_arrowkey;
+//			item->SetMarked(gSettings.convert_arrowkey);
+//			fCanna->SetConvertArrowKey(gSettings.convert_arrowkey);
 			break;
 		}
 

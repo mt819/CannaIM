@@ -11,10 +11,54 @@
 #include "canna/mfdef.h"
 #include "PaletteIconImages.h"
 #include <Bitmap.h>
+#include <Menu.h>
+#include <MenuItem.h>
+#include <PopUpMenu.h>
 #include <Screen.h>
 
 #include <private/interface/WindowPrivate.h>
 
+class BackBox:public BBox{
+public:
+	BackBox(BRect frame, BLooper *looper);
+	virtual	void		MouseDown(BPoint point);
+	virtual				~BackBox();
+private:
+	BPopUpMenu*				fMenu;
+};
+
+BackBox::BackBox(BRect frame, BLooper *looper)
+:BBox(frame, NULL,
+	B_FOLLOW_LEFT | B_FOLLOW_TOP,
+	B_WILL_DRAW | B_FRAME_EVENTS | B_NAVIGABLE_JUMP,
+	B_FANCY_BORDER)
+{
+	fMenu = new BPopUpMenu(B_EMPTY_STRING);
+	fMenu->AddItem(new BMenuItem("About CannaIM" B_UTF8_ELLIPSIS,
+		new BMessage( B_ABOUT_REQUESTED)));
+	fMenu->AddSeparatorItem();
+	fMenu->AddItem(new BMenuItem("Convert arrow keys",
+		new BMessage(ARROW_KEYS_FLIPPED)));
+	fMenu->AddItem(new BMenuItem("Reload Init file",
+		new BMessage(RELOAD_INIT_FILE)));
+	fMenu->SetTargetForItems(looper);
+
+	if (gSettings.convert_arrowkey) {
+		BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
+		item->SetMarked(true);
+	}
+}
+BackBox::~BackBox()
+{
+	delete fMenu;
+}
+
+void		BackBox::MouseDown(BPoint point)
+{
+BPoint where;
+where= 	ConvertToScreen(point);
+fMenu->Go(where,true);	
+}
 PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 	:BWindow( rect, B_EMPTY_STRING, kLeftTitledWindowLook,
 			B_FLOATING_ALL_WINDOW_FEEL,
@@ -28,7 +72,7 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 	frame.OffsetTo( -1, -1 );
 	frame.bottom += 3;
 	frame.right += 3;
-	back = new BBox( frame );
+	BackBox *back = new BackBox( frame , looper);
 	AddChild( back );
 
 	BRect largerect( 0, 0, HexOnwidth - 1, HexOnheight - 1 );
@@ -157,28 +201,7 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 						offpict, onpict, msg, B_TWO_STATE_BUTTON );
 	back->AddChild( BushuButton );
 
-	fMenu = new BMenu(B_EMPTY_STRING);
-	fMenu->SetFont(be_plain_font);
-	fMenu->AddItem(new BMenuItem("About CannaIM" B_UTF8_ELLIPSIS,
-		new BMessage( B_ABOUT_REQUESTED)));
-	fMenu->AddSeparatorItem();
-	fMenu->AddItem(new BMenuItem("Convert arrow keys",
-		new BMessage(ARROW_KEYS_FLIPPED)));
-	fMenu->AddItem(new BMenuItem("Reload Init file",
-		new BMessage(RELOAD_INIT_FILE)));
 
-	if (gSettings.convert_arrowkey) {
-		BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
-		item->SetMarked(true);
-	}
-
-	BMenuBar *fBar = new BMenuBar( BRect( 87, 26, 110, 41 ),
-         const char* "menu",
-         B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP,
-         B_ITEMS_IN_ROW,
-         false);
-	fBar->AddItem(fMenu);
-	back->AddChild(fBar);
 
 /*
 	largeimage->SetBits( TorokuOnbits, largebytes, 0, cspace );
