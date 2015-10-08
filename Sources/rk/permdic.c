@@ -95,8 +95,8 @@ openDF(df, dfnm, w, gramoff, gramsz)
     nd.pgsz = _RkCalcUnlog2(hd.data[HD_L2P].var) + 1;
     nd.ttlpg = hd.data[HD_PAG].var;
     nd.fd = fd;
-    nd.buf = (unsigned char *)0;
-    nd.pgs = (struct NP *)0;
+    nd.buf = NULL;
+    nd.pgs = NULL;
     nd.version = HD_VERSION(&hd);
     off += hd.data[HD_SIZ].var;
     if (!strncmp(".swd",
@@ -188,7 +188,7 @@ _Rkpopen(dm, dfnm, mode, gram)
   if (!(xdm->pgs
           = (struct NP *)malloc((size_t)(sizeof(struct NP) * xdm->ttlpg)))) {
     free(xdm->buf);
-    xdm->buf = (unsigned char *)0;
+    xdm->buf = NULL;
     return(-1);
   }
   for (i = 0; i < (int)xdm->ttlpg; i++) {
@@ -206,8 +206,8 @@ _Rkpopen(dm, dfnm, mode, gram)
   if (readsize != ((int) xdm->drsz)) {
     free(xdm->pgs);
     free(xdm->buf);
-    xdm->buf = (unsigned char *)0;
-    xdm->pgs = (struct NP *)0;
+    xdm->buf = NULL;
+    xdm->pgs = NULL;
     return(-1);
   }
   if (dm->dm_class == ND_SWD && gramsz) {
@@ -275,11 +275,11 @@ _Rkpclose(dm, dfnm, gram)
 	  xdm->pgs[i].flags &= ~RK_PG_LOADED;
 	}
       free(xdm->pgs);
-      xdm->pgs = (struct NP *)0;
+      xdm->pgs = NULL;
     }
     if (xdm->buf) {
       free( xdm->buf);
-      xdm->buf = (unsigned char *)0;
+      xdm->buf = NULL;
     }
   }
 
@@ -315,23 +315,23 @@ assurep(dic, id)
 
   fd = dic->fd;
   if (!dic->pgs)
-    return((unsigned char *)0);
+    return NULL;
   if ((unsigned)id >= dic->ttlpg)
-    return((unsigned char *)0);
+    return NULL;
   if (!isLoadedPage(dic->pgs + id)) {
 
 #ifdef MMAP
     buf = (unsigned char *)mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd_dic, 0);
     if ((int)buf == -1)
-      return((unsigned char *)0);
+      return NULL;
 #else
     if (!(buf = (unsigned char *)malloc(size)))
-      return((unsigned char *)0);
+      return NULL;
 #endif
     lseek(fd, off, 0);
     if (read(fd, (char *)buf, size) != (int)size) {
       free(buf);
-      return((unsigned char *)0);
+      return NULL;
     }
 
     dic->pgs[id].buf = buf;
@@ -813,7 +813,7 @@ _Rkpsync(cx, dm, qm)
             if (_RkDoInvalidateCache(dic->pgs[j].buf, dic->pgsz) == 1) {
 	      if (((int) (dic->pgs[j].buf)) != -1)
 	        munmap((caddr_t)dic->pgs[j].buf, dic->pgsz);
-              dic->pgs[j].buf = (unsigned char *)0;
+              dic->pgs[j].buf = NULL;
               dic->pgs[j].lnksz = (unsigned) 0;
               dic->pgs[j].ndsz = (unsigned) 0;
               dic->pgs[j].lvo = (unsigned) 0;

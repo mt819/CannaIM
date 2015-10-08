@@ -82,7 +82,7 @@ newTD()
     td->td_max = 1;
     if (!(td->td_node = (struct TN *)calloc(td->td_max, sizeof(struct TN)))) {
       freeTD(td);
-      return((struct TD *)0);
+      return NULL;
     }
   }
   return(td);
@@ -102,13 +102,13 @@ extendTD(tdic, key, tw)
   struct TW	*ntw;
 
   if (!(ntw = RkCopyWrec(tw)))
-    return (struct TN *)0;
+    return NULL;
   tp = tdic->td_node;
   if (tdic->td_n >= tdic->td_max) {
     if (!(tp = (struct TN *)calloc(tdic->td_max + 1, sizeof(struct TN)))) {
       free(ntw->word);
       free(ntw);
-      return (struct TN *)0;
+      return NULL;
     }
     for (i = 0; i < (int)tdic->td_n; i++)
       tp[i] = tdic->td_node[i];
@@ -203,9 +203,9 @@ defineTD(dm, tab, n, newTW, nlen)
 	oldW = oldTW->word;
 	if (!key|| yomi_equal(newW, oldW, n)) {
 	  if ((cache = _RkFindCache(dm, (long)oldTW)) && cache->nc_count > 0)
-	    return((struct TN *)0);
+	    return NULL;
 	  if (!(mergeTW = RkUnionWrec(newTW, oldTW)))
-	    return((struct TN *)0);
+	    return NULL;
 	  tn->tn_word = mergeTW;
 	  free(oldW);
 	  free(oldTW);
@@ -217,7 +217,7 @@ defineTD(dm, tab, n, newTW, nlen)
 	  return tn;
 	}
 	if (!(td = newTD()))
-	  return((struct TN *)0);
+	  return NULL;
 	td->td_n = 1;
 	key = nthKey(oldW, n);
 	td->td_node[0].tn_key = key;
@@ -354,7 +354,7 @@ deleteTD(dm, tab, n, newW)
       if (td->td_n <= 0) {
 	free((td->td_node));
 	free(td);
-	*tab = (struct TD *)0;
+	*tab = NULL;
 	return(1);
       } else
 	return(0);
@@ -432,7 +432,7 @@ _Rktopen(dm, file, mode, gram)
     df->df_size = offset;
     if (ecount) {
       freeTD((struct TD *)xdm);
-      dm->dm_td = (pointer)0;
+      dm->dm_td = NULL;
       dm->dm_flags &= ~DM_EXIST;
       ret = -1;
     } else {
@@ -463,7 +463,7 @@ writeTD(td, gram, fdes)
 {
   int	i, tmpres;
   int	ecount = 0;
-  Wchar *wcline = (Wchar *)0;
+  Wchar *wcline = NULL;
 
   wcline = (Wchar *)malloc(RK_WREC_BMAX * sizeof(Wchar));
   if (wcline) {

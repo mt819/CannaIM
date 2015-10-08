@@ -84,7 +84,7 @@ _RkFinalizeCache()
   
   if (sx->cache) 
     free(sx->cache);
-  sx->cache = (struct ncache *)0;
+  sx->cache = NULL;
 }
 
 static
@@ -115,13 +115,13 @@ struct ncache	*newCache(ndm, address)
     aremove(new);
     hremove(new);
     new->nc_dic = ndm;
-    new->nc_word = (unsigned char *)0;
+    new->nc_word = NULL;
     new->nc_flags  = 0;
     new->nc_address = address;
     new->nc_count = 0;
     return(new);
   };
-  return (struct ncache *)0;
+  return NULL;
 }
 
 int
@@ -134,9 +134,9 @@ _RkRelease()
       continue;
     (void)flushCache(new->nc_dic, new);
     hremove(new);
-    new->nc_dic = (struct DM *)0;
+    new->nc_dic = NULL;
     new->nc_flags  = (unsigned short)0;
-    new->nc_word = (unsigned char *)0;
+    new->nc_word = NULL;
     new->nc_address = (long)0;
     new->nc_count = (unsigned long)0;
     return 1;
@@ -259,7 +259,7 @@ _RkFindCache(dm, addr)
   for (cache = head->nc_hnext; cache != head; cache = cache->nc_hnext)  
     if (cache->nc_dic == dm && cache->nc_address == addr) 
       return cache;
-  return (struct ncache *)0;
+  return NULL;
 }
 
 void
@@ -305,7 +305,7 @@ _RkReadCache(dm, addr)
   if (cache) {
     if (DST_READ(dm, cache)) {
       ainserttop(cache);
-      return (struct ncache *)0;
+      return NULL;
     } else {
       cache->nc_hnext = head->nc_hnext;
       cache->nc_hprev = head;
@@ -315,6 +315,6 @@ _RkReadCache(dm, addr)
       return(cache);
     };
   } else {
-    return (struct ncache *)0;
+    return NULL;
   };
 }

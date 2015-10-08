@@ -85,7 +85,7 @@ int mode;
   else { /* ユーザ辞書 */
     userDDP[0] = ddpath[0];
   }
-  userDDP[1] = (struct DD*)0;
+  userDDP[1] = NULL;
   return 0;
 }
 
@@ -182,7 +182,7 @@ int     mode;
   }
 
   systemDDP[0] = sx->ddpath[0];
-  systemDDP[1] = (struct DD *)0;
+  systemDDP[1] = NULL;
 
   type = (mode & PL_DIC) ? DF_FREQDIC : DF_TEMPDIC;
 /* find dictionary in current mount list */
@@ -667,7 +667,7 @@ int mode;
 	res = ACCES;
 	if (cy->ddpath[1]->dd_flags & DD_WRITEOK) {
 	  userDDP[0] = cy->ddpath[0];
-	  userDDP[1] = (struct DD *)0;
+	  userDDP[1] = NULL;
 
 	  res = NOENT;
 	  dm1 = _RkSearchDDP(userDDP, from);
@@ -677,7 +677,7 @@ int mode;
 	    res = BADF;
 	    if (type != DF_RUCDIC) {
 	      userDDP[0] = cy->ddpath[1];
-	      userDDP[1] = (struct DD *)0;
+	      userDDP[1] = NULL;
 
 	      dm2 = _RkSearchDDP(userDDP, to);
 	      if (dm2) { /* to があって、強制モードなら消す */
@@ -789,7 +789,7 @@ int mode;
     if (dirmode != 0) { /* ディレクトリ */
       switch (dirmode) {
       case RK_SYS_DIR:
-	dd = (struct DD *)0; /* or SX.ddpath[0] */
+	dd = NULL; /* or SX.ddpath[0] */
 	break;
       case RK_GRP_DIR:
 	if (cx->ddpath[1] && cx->ddpath[2]) {
@@ -846,7 +846,7 @@ struct TD *tdp;
   struct _rec		*gwt;
   if (!cx || !(gwt = (struct _rec *)cx->cx_gwt) ||
       !(new = (struct td_n_tupple *)malloc(sizeof(struct td_n_tupple)))) {
-    return (struct td_n_tupple *)0;
+    return NULL;
   }
   new->td = (char *)tdp;
   new->n = 0;
@@ -862,7 +862,7 @@ struct RkContext *cx;
   struct td_n_tupple *work;
   struct _rec	*gwt = (struct _rec *)cx->cx_gwt;
   if (gwt) {
-    while((work = gwt->tdn) != (struct td_n_tupple *)0) {
+    while((work = gwt->tdn) != NULL) {
       gwt->tdn = work->next;
       free(work);
     };
@@ -902,7 +902,7 @@ GetLine(cx, gram, tdp, line, size)
   }
   while (gwt->tdn && gwt->tdn->n >= (int)((struct TD *)gwt->tdn->td)->td_n)
     popTdn(cx);
-  if (gwt->tdn == (struct td_n_tupple *)0)
+  if (gwt->tdn == NULL)
     return -1;
   vtd = (struct TD *)gwt->tdn->td;
   vtn = vtd->td_node + gwt->tdn->n;
@@ -1046,10 +1046,10 @@ RkwGetWordTextDic(cx_num, dirname, dicname, info, infolen)
 	|| !(new_cx = RkGetContext(new_cx_num))) {
       if (gwt->gwt_dicname)
 	free(gwt->gwt_dicname);
-      gwt->gwt_dicname = (unsigned char *)0;
+      gwt->gwt_dicname = NULL;
       return BADCONT;
     }
-    initial_td = (struct TD *)0;
+    initial_td = NULL;
   }
   if (GetLine(new_cx, cx->gram->gramdic, (struct TD *)initial_td,
 	      info, infolen) < 0) {

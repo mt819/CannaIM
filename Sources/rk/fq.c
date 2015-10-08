@@ -324,7 +324,7 @@ readNV(fd)
     }
     free(vn);
   }
-  return (struct NV *)0;
+  return NULL;
 
  read_ok:
 
@@ -333,7 +333,7 @@ readNV(fd)
   if (vn->sz) {
     if (!(vn->buf = (struct NVE **)calloc((size_t)vn->tsz, sizeof(struct NVE *)))) {
       free(vn);
-      return((struct NV *)0);
+      return NULL;
     }
     if (!(buf = (unsigned char *)malloc((size_t)vn->sz)) ||
        read(fd, buf, (unsigned int)vn->sz) != (int)vn->sz)
@@ -342,7 +342,7 @@ readNV(fd)
       if (buf)
 	free(buf);
       free(vn);
-      return((struct NV *)0);
+      return NULL;
     }
     for (p = buf, i = 0L; i < cnt; i++, p += *p*2 + 2)
       if ((unsigned long) (p - buf) + *p * 2 + 2 < vn->sz)
@@ -350,7 +350,7 @@ readNV(fd)
     free(buf);
   } else {
     free(vn);
-    return((struct NV *)0);
+    return NULL;
   }
   vn->head.right->left = &vn->head;
   vn->head.left->right = &vn->head;
@@ -363,7 +363,7 @@ writeNV(fd, nv)
      struct NV	*nv;
 {
   unsigned char	ll[4];
-  unsigned char	*buf = (unsigned char *)0, *r;
+  unsigned char	*buf = NULL, *r;
   struct NVE	*p, **q;
   unsigned long i;
 
@@ -627,8 +627,8 @@ FQopen(dm, qm, file, mode)
     xqm = (struct xqm *)qm->dm_extdata.ptr;
     fd = df->df_extdata.var;
 
-    qm->dm_rut = (struct RUT *)0;
-    qm->dm_nv = (struct NV *)0;
+    qm->dm_rut = NULL;
+    qm->dm_nv = NULL;
   /* dispatch */
     qm->dm_qbits = (unsigned char *)malloc((unsigned)xqm->ex_bsiz);
     if (!qm->dm_qbits)
@@ -667,20 +667,20 @@ FQclose(cx, dm, qm, file)
 	(void)write(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
       };
       free(qm->dm_qbits);
-      qm->dm_qbits = (unsigned char *)0;
+      qm->dm_qbits = NULL;
     }
   }
   if (qm->dm_rut) {
     if (qm->dm_flags & DM_UPDATED)
       SaveRUC(fd, qm->dm_rut);
     freeRUT(qm->dm_rut);
-    qm->dm_rut = (struct RUT *)0;
+    qm->dm_rut = NULL;
   }
   if (qm->dm_nv) {
     if (qm-> dm_flags & DM_UPDATED)
       writeNV(fd, qm->dm_nv);
     abolishNV(qm->dm_nv);
-    qm->dm_nv = (struct NV *)0;
+    qm->dm_nv = NULL;
   }
   qm->dm_flags &= ~DM_UPDATED;
   if (--df->df_rcount == 0)  {
@@ -692,7 +692,7 @@ FQclose(cx, dm, qm, file)
       xqm = (struct xqm *)ddm->dm_extdata.ptr;
       if (xqm) {
 	free(xqm);
-	ddm->dm_extdata.ptr = (pointer)0;
+	ddm->dm_extdata.ptr = NULL;
       }
     }
   }

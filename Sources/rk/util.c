@@ -172,7 +172,7 @@ euctous(src, srclen, dest, destlen)
   return dest;
 }
 
-static FILE	*log = (FILE *)0;
+static FILE	*log = NULL;
 
 void
 _Rkpanic(const char *fmt, ...)

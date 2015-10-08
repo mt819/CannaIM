@@ -98,7 +98,7 @@ gram_to_tab(gram)
     top[i] = str;
     str += strlen(str) + 1;
   };
-  top[gram->ng_rowcol] = (char *)0;
+  top[gram->ng_rowcol] = NULL;
   return top;
 }
 
@@ -186,7 +186,7 @@ RkReadGram(fd, gramsz)
 int fd;
 size_t gramsz;
 {
-  struct RkKxGram	*gram = (struct RkKxGram *)0;
+  struct RkKxGram	*gram = NULL;
   unsigned char		l4[4];
   unsigned long		sz = 0xdeadbeefUL, rc = 0xdeadbeefUL;
   int errorres;
@@ -255,7 +255,7 @@ cellsfail:;
       free(gram);
     }
   }
-  return (struct RkKxGram *)0;
+  return NULL;
 }
 
 struct RkKxGram	*
@@ -271,7 +271,7 @@ RkOpenGram(mydic)
   int			fd;
 
   if ((fd = open(mydic, 0)) < 0)
-    return (struct RkKxGram *)0;
+    return NULL;
 #ifdef __CYGWIN32__
   setmode(fd, O_BINARY);
 #endif
@@ -303,7 +303,7 @@ RkOpenGram(mydic)
   _RkClearHeader(&hd);
   if (lk) {
     close(fd);
-    return((struct RkKxGram *)0);
+    return NULL;
   }
   gram = RkReadGram(fd, gramsz);
   close(fd);
@@ -315,7 +315,7 @@ struct RkKxGram	*
 RkDuplicateGram(ogram)
 struct RkKxGram *ogram;
 {
-  struct RkKxGram *gram = (struct RkKxGram *)0;
+  struct RkKxGram *gram = NULL;
 
   gram = (struct RkKxGram *)calloc(1, sizeof(struct RkKxGram));
   if (gram) {
@@ -353,7 +353,7 @@ cellsfail:
     free(gram);
   }
   RkSetErrno(RK_ERRNO_ENOMEM);
-  return (struct RkKxGram *)0;
+  return NULL;
 }
 #endif /* unused */
 
@@ -595,7 +595,7 @@ RkParseWrec(gram, src, left, dst, maxdst)
 {
   unsigned	wreclen, wlen, ylen, nc;
   unsigned long	lucks[2];
-  unsigned char *ret = (unsigned char *)0;
+  unsigned char *ret = NULL;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   unsigned char	localbuffer[RK_WREC_BMAX];
 #else
@@ -638,7 +638,7 @@ RkParseOWrec(gram, src, dst, maxdst, lucks)
      unsigned long	*lucks;
 {
   unsigned	wreclen, wlen, ylen, nc;
-  unsigned char *ret = (unsigned char *)0;
+  unsigned char *ret = NULL;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   Wrec localbuffer[RK_WREC_BMAX];
 #else
@@ -755,7 +755,7 @@ RkUparseGramNum(gram, row, dst, maxdst)
       *dst = (Wchar)0;
       return dst;
     }
-    return (Wchar *)0;
+    return NULL;
   } else {
     int keta, uni, temp = row;
 
@@ -774,7 +774,7 @@ RkUparseGramNum(gram, row, dst, maxdst)
       *dst = (Wchar)0;
       return dst;
     }
-    return (Wchar *)0;
+    return NULL;
   }
 }
 
@@ -804,7 +804,7 @@ _RkUparseWrec(gram, src, dst, maxdst, lucks, add)
   int 		num, ncnd, ylen, row, oldrow, i, l, oh = 0;
   Wchar		*endp = dst + maxdst, *endt, luckw[5], wch;
 
-  endt = (Wchar *)0;
+  endt = NULL;
   ylen = (*wrec >> 1) & 0x3f;
   ncnd = _RkCandNumber(wrec);
   if (*wrec & 0x80)
@@ -889,7 +889,7 @@ _RkUparseWrec(gram, src, dst, maxdst, lucks, add)
     *endt = (Wchar)0;
     return(endt);
   }
-  return((Wchar *)0);
+  return NULL;
 }
 
 Wchar	*
@@ -921,7 +921,7 @@ RkCopyWrec(src)
 	dst->lucks[1] = src->lucks[1];
       } else {
 	free(dst);
-	dst = (struct TW *)0;
+	dst = NULL;
       }
     }
   }
@@ -994,7 +994,7 @@ RkWcand2Wrec(key, wc, nc, lucks)
 {
   int		i, j;
   unsigned	ylen, sz;
-  struct TW	*tw = (struct TW *)0;
+  struct TW	*tw = NULL;
   Wrec		*wrec, *a;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   unsigned char	localbuffer[RK_WREC_BMAX], *dst = localbuffer;
@@ -1045,7 +1045,7 @@ RkWcand2Wrec(key, wc, nc, lucks)
 	  tw->word = wrec;
 	} else {
 	  free(tw);
-	  tw = (struct TW *)0;
+	  tw = NULL;
 	}
       }
     }
@@ -1130,16 +1130,16 @@ RkSubtractWrec(tw1, tw2)
   Wrec			*a, *b, *wrec1 = tw1->word, *wrec2 = tw2->word;
 
   wc1 = (struct RkWcand *) malloc(sizeof(struct RkWcand) * RK_CAND_NMAX);
-  if (!wc1) return((struct TW *)0);
+  if (!wc1) return NULL;
   wc2 = (struct RkWcand *) malloc(sizeof(struct RkWcand) * RK_CAND_NMAX);
   if (!wc2) {
     free(wc1);
-    return((struct TW *)0);
+    return NULL;
   }
 
   if ((ylen = (*wrec1 >> 1) & 0x3f) != ((*wrec2 >> 1) & 0x3f)) {
     free(wc1); free(wc2);
-    return((struct TW *)0);
+    return NULL;
   }
   if (*(a = wrec1) & 0x80)
     a += 2;
@@ -1150,7 +1150,7 @@ RkSubtractWrec(tw1, tw2)
   while (ylen--) {
     if (*a++ != *b++ || *a++ != *b++) {
       free(wc1); free(wc2);
-      return((struct TW *)0);
+      return NULL;
     }
   }
   nc1 = RkScanWcand(wrec1, wc1, RK_CAND_NMAX);
@@ -1158,7 +1158,7 @@ RkSubtractWrec(tw1, tw2)
   nc = RkSubtractWcand(wc1, nc1, wc2, nc2, tw1->lucks);
   if (nc <= 0) {
     free(wc1); free(wc2);
-    return((struct TW *)0);
+    return NULL;
   }
   else {
     struct TW *wc3 = RkWcand2Wrec(wrec1, wc1, nc, tw1->lucks);
@@ -1178,23 +1178,23 @@ RkUnionWrec(tw1, tw2)
   int			nc1, nc2, nc;
 
   wc1 = (struct RkWcand *) malloc(sizeof(struct RkWcand) * RK_CAND_NMAX);
-  if (!wc1) return((struct TW *)0);
+  if (!wc1) return NULL;
   wc2 = (struct RkWcand *) malloc(sizeof(struct RkWcand) * RK_CAND_NMAX);
   if (!wc2) {
     free(wc1);
-    return((struct TW *)0);
+    return NULL;
   }
 
   if (((*wrec1 >> 1) & 0x3f) != ((*wrec2 >> 1) & 0x3f)) {
     free(wc1); free(wc2);
-    return (struct TW *)0;
+    return NULL;
   }
   nc1 = RkScanWcand(wrec1, wc1, RK_CAND_NMAX);
   nc2 = RkScanWcand(wrec2, wc2, RK_CAND_NMAX);
   nc  = RkUnionWcand(wc1, nc1, RK_CAND_NMAX, wc2, nc2);
   if (RK_CAND_NMAX < nc) {
     free(wc1); free(wc2);
-    return (struct TW *)0;
+    return NULL;
   }
   else {
     struct TW *wc3 = RkWcand2Wrec(wrec1, wc1, nc, tw1->lucks);

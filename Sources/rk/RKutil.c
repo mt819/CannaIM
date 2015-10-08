@@ -149,7 +149,7 @@ euctous(unsigned char *src, int srclen, WCHAR_T *dest, int destlen)
 }
 
 #ifndef WIN
-static FILE	*logfile = (FILE *)0;
+static FILE	*logfile = NULL;
 #endif
 
 void

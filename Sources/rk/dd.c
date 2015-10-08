@@ -73,7 +73,7 @@ char *
 allocStr(s)
      char	*s;
 {
-  char	*d = (char *)0;
+  char	*d = NULL;
   int	len;
 
   if ((len = strlen(s)) && (d = malloc(len + 1))) {
@@ -106,10 +106,10 @@ _RkCreateDM(df, dicname, nickname, class)
       if (dm->dm_nickname) {
 	dm->dm_class = class;
 	dm->dm_flags = dm->dm_packbyte = dm->dm_rcount = 0;
-	dm->dm_gram = (struct RkGram *)0;
-	dm->dm_extdata.ptr = (pointer)0;
-	dm->dm_rut = (struct RUT *)0;
-	dm->dm_nv = (struct NV *)0;
+	dm->dm_gram = NULL;
+	dm->dm_extdata.ptr = NULL;
+	dm->dm_rut = NULL;
+	dm->dm_nv = NULL;
 	return dm;
       }
       free(dm->dm_dicname);
@@ -186,7 +186,7 @@ _RkCreateDF(dd, lnk, type)
     };
     df->df_rcount = 0;
     df->df_type  = type;
-    df->df_extdata.ptr = (pointer)0;
+    df->df_extdata.ptr = NULL;
   };
   return(df);
 }
@@ -424,7 +424,7 @@ _RkCreateDD(path, name)
     }
     free(dd);
   }
-  return (struct DD *)0;
+  return NULL;
 }
 
 static
@@ -472,7 +472,7 @@ _RkLookupDD(dd, name)
   for (d = dd->dd_next; d != dd; d = d->dd_next)
     if (!STRCMP(d->dd_name,  name))
       return d;
-  return (struct DD *)0;
+  return NULL;
 }
 
 /* _RkReadDD
@@ -484,7 +484,7 @@ _RkReadDD(name)
      char	*name;
 {
   char		*dics_dir = "/dics.dir";
-  struct DD *dd = (struct DD *)0;
+  struct DD *dd = NULL;
   struct DF		*df;
   struct DM		*dm;
   struct DDT		*ddLines;
@@ -540,7 +540,7 @@ _RkReadDD(name)
   }
   /* jisho table ga aruka ? */
   if (strlen(path) + strlen(dics_dir) + 1 >= RK_PATH_BMAX) {
-    dd = (struct DD *)0;
+    dd = NULL;
     goto return_dd;
   }
   strcpy(direct, path);
@@ -675,7 +675,7 @@ _RkCreatePath(dd, name)
   char        *ddname;
 
   if (!dd || !dd->dd_path || !name)
-    return (char *)0;
+    return NULL;
   sz = strlen(dd->dd_path) + strlen(name) + 2;
   ddname = malloc(sz);
   if (ddname)  {
@@ -696,10 +696,10 @@ _RkCreateUniquePath(dd, proto)
 
   /* now checking ... */
   if (!dd || !dd->dd_path || !proto)
-    return (char *)0;
+    return NULL;
   /* create directory */
   if (_RkRealizeDD(dd) < 0)
-    return (char *)0;
+    return NULL;
   /* try at most 100 times */
   for (i = 1; i < 100; i++) {
     int		count;
@@ -727,7 +727,7 @@ _RkCreateUniquePath(dd, proto)
 	return newLinkName;
     };
   };
-  return (char *)0;
+  return NULL;
 }
 
 char	*
@@ -737,7 +737,7 @@ _RkMakePath(df)
   if (df)
     return _RkCreatePath(df->df_direct, df->df_link);
   else
-    return (char *)0;
+    return NULL;
 }
 
 int
@@ -937,7 +937,7 @@ struct DD	**
 _RkCopyDDP(ddp)
      struct DD	**ddp;
 {
-  struct DD	**new = (struct DD **)0;
+  struct DD	**new = NULL;
   int		i;
   struct DD	*dd;
 
@@ -946,7 +946,7 @@ _RkCopyDDP(ddp)
 
     new = (struct DD **)calloc(count + 1, (unsigned)sizeof(struct DD *));
     if (new)
-      for (i = 0; (dd = new[i] = ddp[i]) != (struct DD *)0 ; i++)
+      for (i = 0; (dd = new[i] = ddp[i]) != NULL ; i++)
 	dd->dd_rcount++;
   };
   return new;
@@ -968,7 +968,7 @@ _RkAppendDDP(ddp, dd)
       free(ddp);
     };
     new[count++] = dd;
-    new[count] = (struct DD *)0;
+    new[count] = NULL;
     dd->dd_rcount++;
   } else
     new = ddp;
@@ -981,7 +981,7 @@ _RkCreateDDP(ddpath)
 {
   char		*d, *s;
   struct DD 	*dd;
-  struct DD	**ddp  = (struct DD **)0;
+  struct DD	**ddp  = NULL;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   char dir[RK_PATH_BMAX + 1];
 #else
@@ -1027,7 +1027,7 @@ _RkFreeDDP(ddp)
   int		i;
 
   if (ddp) {
-    for (i = 0; (dd = ddp[i]) != (struct DD *)0 ; i++)
+    for (i = 0; (dd = ddp[i]) != NULL ; i++)
       if (--dd->dd_rcount == 0) {
 	_RkFreeDD(dd);
       };
@@ -1049,7 +1049,7 @@ _RkSearchDDP(ddp, name)
   int		i;
 
   if (ddp) {
-    for (i = 0; (dd = ddp[i]) != (struct DD *)0 ; i++) {
+    for (i = 0; (dd = ddp[i]) != NULL ; i++) {
       fh = &dd->dd_files;
       for (f = fh->df_next; f && (f != fh); f = f->df_next) {
 	if (f->df_type == DF_FREQDIC) {
@@ -1075,7 +1075,7 @@ _RkSearchDDP(ddp, name)
       }
     }
   }
-  return (struct DM *)0;
+  return NULL;
 }
 
 /* _RkSearchDDQ
@@ -1094,7 +1094,7 @@ _RkSearchDDQ(ddp, name, type)
   int		i;
 
   if (ddp) {
-    for (i = 0; (dd = ddp[i]) != (struct DD *)0 ; i++) {
+    for (i = 0; (dd = ddp[i]) != NULL ; i++) {
       fh = &dd->dd_files;
       for (f = fh->df_next; f && (f != fh); f = f->df_next)
 	if (f->df_type == (unsigned)type) {
@@ -1106,7 +1106,7 @@ _RkSearchDDQ(ddp, name, type)
 	};
     };
   };
-  return((struct DM *)0);
+  return NULL;
 }
 
 /*
@@ -1124,7 +1124,7 @@ _RkSearchUDDP(ddp, name)
   if (dm && STRCMP(dm->dm_file->df_direct->dd_name, SYSTEM_DDHOME_NAME)) {
     return dm;
   }
-  return((struct DM *)0);
+  return NULL;
 }
 
 /* 辞書メンバ名で辞書を探す
@@ -1143,7 +1143,7 @@ _RkSearchDDMEM(ddp, name)
   int		i;
 
   if (ddp) {
-    for (i = 0; (dd = ddp[i]) != (struct DD *)0 ; i++) {
+    for (i = 0; (dd = ddp[i]) != NULL ; i++) {
       fh = &dd->dd_files;
       for (f = fh->df_next; f && (f != fh); f = f->df_next) {
 	if (f->df_type != DF_FREQDIC && f->df_type != DF_RUCDIC) {
@@ -1157,7 +1157,7 @@ _RkSearchDDMEM(ddp, name)
       }
     }
   }
-  return (struct DM *)0;
+  return NULL;
 }
 
 /*
@@ -1178,8 +1178,8 @@ struct DM **qmp;
   struct DD *udd[2];
   struct DM *dm, *qm;
 
-  udd[1] = (struct DD *)0;
-  *qmp = (struct DM *)0;
+  udd[1] = NULL;
+  *qmp = NULL;
 
   while (*ddpath) {
     udd[0] = *ddpath;
@@ -1194,7 +1194,7 @@ struct DM **qmp;
     }
     ddpath++;
   }
-  return (struct DM *)0;
+  return NULL;
 }
 
 /* DMcheck
@@ -1257,7 +1257,7 @@ DMcreate(dd, spec)
 {
   int		dftype, dmclass;
   struct DF	*df;
-  struct DM	*dm = (struct DM *)0;
+  struct DM	*dm = NULL;
   struct DDT	*ddt;
   struct DDT	*ddLines = &dd->dd_text;
   int r, w;
@@ -1357,7 +1357,7 @@ DMrename(dm, nickname)
   char		*new_spec;
   char		*new_nick;
   char		member[5];
-  char *dicname = (char *)0;
+  char *dicname = NULL;
   int ret = -1;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   char		spec[RK_LINE_BMAX];
@@ -1608,8 +1608,8 @@ _RkUmountMD(cx, md)
   struct DD	*dd;
   char		*file;
 
-  cx->dmprev = (struct DM *)0;
-  cx->qmprev = (struct DM *)0;
+  cx->dmprev = NULL;
+  cx->qmprev = NULL;
   if (IS_XFERCTX(cx))
     md->md_flags |= MD_UPEND;
   else {
@@ -1620,7 +1620,7 @@ _RkUmountMD(cx, md)
       df = qm->dm_file;
       dd = df->df_direct;
       if (cx->nv == qm->dm_nv)
-	cx->nv = (struct NV *)0;
+	cx->nv = NULL;
       if (qm->dm_rcount > 0 && --qm->dm_rcount == 0) {
 	file = _RkCreatePath(dd, df->df_link);
 	if (file) {

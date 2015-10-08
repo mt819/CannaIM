@@ -217,10 +217,10 @@ allocBunStorage(len)
     Wchar	*p, *q, pat;
     int			i;
 
-    s->yomi = (Wchar *)0;
-    s->bunq = (struct nbun *)0;
-    s->xq = (struct nqueue *)0;
-    s->xqh = (struct nword **)0;
+    s->yomi = NULL;
+    s->bunq = NULL;
+    s->xq = NULL;
+    s->xqh = NULL;
     s->nyomi = (unsigned)0;
     s->maxyomi = (unsigned)len;
 #ifdef RK_LOG
@@ -244,7 +244,7 @@ allocBunStorage(len)
     if (!s->yomi || !s->bunq || !s->xq || !s->xqh) {
       RkSetErrno(RK_ERRNO_ENOMEM);
       freeBunStorage(s);
-      return (struct nstore *)0;
+      return NULL;
     }
     s->yomi += OVERRUN_MARGIN;
     s->bunq += OVERRUN_MARGIN;
@@ -309,7 +309,7 @@ _RkReallocBunStorage(src, len)
     free(src);
     return(dst);
   }
-  return((struct nstore *)0);
+  return NULL;
 }
 
 static struct nbun *
@@ -318,7 +318,7 @@ getCurrentBun(store)
 {
   if (store && 0 <= store->curbun && store->curbun < (int)store->maxbun)
     return &store->bunq[store->curbun];
-  return (struct nbun *)0;
+  return NULL;
 }
 
 /* RkBgnBun
@@ -925,14 +925,14 @@ findBranch(store, cnum)
   if (!(bun = getCurrentBun(store)) ||
       (0 > cnum) ||
       (cnum >= (int)bun->nb_maxcand))
-    return((struct nword *)0);
+    return NULL;
   for (w = bun->nb_cand; w; w = w->nw_next) {
     if (CanSplitWord(w) && bun->nb_curlen == w->nw_ylen) {
       if (cnum-- <= 0)
 	return(w);
     }
   }
-  return((struct nword *)0);
+  return NULL;
 }
 
 /* RkGetStat

@@ -120,7 +120,7 @@ _RkInitialize(ddhome, numCache)
 	    else {
 	      free(path);
 
-	      sx->word = (struct nword *)0;
+	      sx->word = NULL;
 	      dd->dd_next = dd->dd_prev = dd;
 	      sx->ddhome = allocStr(ddhome);
 	      if (sx->ddhome) {
@@ -146,7 +146,7 @@ _RkInitialize(ddhome, numCache)
 			goto return_con;
 		      }
 		      _RkFreeDDP(sx->ddpath);
-		      sx->ddpath = (struct DD **)0;
+		      sx->ddpath = NULL;
 		    }
 		    _RkFinalizeCache();
 		  }
@@ -192,8 +192,8 @@ _RkFinalizeWord()		/* finalize free word list */
     t = w->nw_next;
     free(w);
   }
-  SX.word = (struct nword *)0;
-  SX.page = (struct nword *)0;
+  SX.word = NULL;
+  SX.page = NULL;
   SX.word_in_use = 0;
   SX.page_in_use = 0;
 }
@@ -217,7 +217,7 @@ RkwFinalize()
   _RkFinalizeWord();
   _RkFinalizeCache();
   free(sx->ddhome);
-  sx->ddhome = (char *)0;
+  sx->ddhome = NULL;
   _RkFreeDDP(sx->ddpath);
   RkCloseGram(SG.gramdic);
   sx->flag &= ~SX_INITED;
@@ -244,7 +244,7 @@ struct DD	*
 RkGetSystemDD()
 {
   struct RkParam	*sx;
-  return(((sx = RkGetSystem()) && sx->ddpath) ? sx->ddpath[0] : (struct DD *)0);
+  return(((sx = RkGetSystem()) && sx->ddpath) ? sx->ddpath[0] : NULL);
 }
 
 /* RkGetContext: Context heno pointer wo motomeru
@@ -254,7 +254,7 @@ struct RkContext *
 RkGetContext(cx_num)
      int	cx_num;
 {
-  return(IsLiveCxNum(cx_num) ? &CX[cx_num] : (struct RkContext *)0);
+  return(IsLiveCxNum(cx_num) ? &CX[cx_num] : NULL);
 }
 
 struct RkContext *
@@ -266,7 +266,7 @@ RkGetXContext(cx_num)
   cx = RkGetContext(cx_num);
   if (cx)
     if (!IS_XFERCTX(cx))
-      cx = (struct RkContext *)0;
+      cx = NULL;
   return(cx);
 }
 
@@ -350,14 +350,14 @@ int cx_num;
       return -1;
     }
     mh->md_next = mh->md_prev = mh;
-    mh->md_dic = (struct DM *)0;
+    mh->md_dic = NULL;
     mh->md_flags = 0;
     cx->md[i] = mh;
   }
-  cx->dmprev = (struct DM *)0;
-  cx->qmprev = (struct DM *)0;
-  cx->nv = (struct NV *)0;
-  cx->ddpath = (struct DD **)0;
+  cx->dmprev = NULL;
+  cx->qmprev = NULL;
+  cx->nv = NULL;
+  cx->ddpath = NULL;
   cx->kouhomode = (unsigned long)0;
   cx->concmode = 0;
   cx->litmode = (unsigned long *)calloc(MAXLIT, sizeof(unsigned long));
@@ -373,7 +373,7 @@ int cx_num;
       struct _rec	*gwt = (struct _rec *)cx->cx_gwt;
       gwt->gwt_cx = -1;  /* means no GetWordTextdic context
 			    is available */
-      gwt->gwt_dicname = (unsigned char *)0;
+      gwt->gwt_dicname = NULL;
       cx->flags = CTX_LIVE | CTX_NODIC;
       return 0;
     }
@@ -430,7 +430,7 @@ RkwCloseContext(cx_num)
   if (IS_XFERCTX(cx))
     RkwEndBun(cx_num, 0);
   _RkFreeDDP(cx->ddpath);
-  cx->ddpath = (struct DD **)0;
+  cx->ddpath = NULL;
   /* subete no jisho wo MD suru */
   for (i = 0; i < 4; i++) {
     struct MD	*mh, *m, *n;
@@ -443,15 +443,15 @@ RkwCloseContext(cx_num)
 	(void)_RkUmountMD(cx, m);
       };
       free(mh);
-      cx->md[i] = (struct MD *)0;
+      cx->md[i] = NULL;
     };
   };
-  cx->dmprev = (struct DM *)0;
-  cx->qmprev = (struct DM *)0;
+  cx->dmprev = NULL;
+  cx->qmprev = NULL;
   /* convertion table */
   if (cx->litmode) {
     free(cx->litmode);
-    cx->litmode = (unsigned long *)0;
+    cx->litmode = NULL;
   }
   cx->flags = 0;
 
@@ -461,7 +461,7 @@ RkwCloseContext(cx_num)
     RkCloseGram(cx->gram->gramdic);
     free(cx->gram);
   }
-  cx->gram = (struct RkGram *)0;
+  cx->gram = NULL;
 
 #ifdef EXTENSION_NEW
   if (cx->cx_gwt) {
@@ -756,7 +756,7 @@ RkwGetDicList(cx_num, mdname, maxmdname)
   /* まず数を数える */
   if ((cx  = RkGetContext(cx_num)) && (ddp = cx->ddpath)) {
     count = 0;
-    for (i = 0; (dd = ddp[i]) != (struct DD *)0 ; i++) {
+    for (i = 0; (dd = ddp[i]) != NULL; i++) {
       fh = &dd->dd_files;
       for (df = fh->df_next; df != fh; df = df->df_next) {
 	mh = &df->df_members;
@@ -768,9 +768,9 @@ RkwGetDicList(cx_num, mdname, maxmdname)
     /* 辞書リストの配列を malloc する */
     diclist = (struct dics *)malloc(count * sizeof(struct dics));
     if (diclist) {
-      struct dics *dicp = diclist, *prevdicp = (struct dics *)0;
+      struct dics *dicp = diclist, *prevdicp = NULL;
 
-      for (i = 0 ; (dd = ddp[i]) != (struct DD *)0 ; i++) {
+      for (i = 0 ; (dd = ddp[i]) != NULL ; i++) {
 	fh = &dd->dd_files;
 	for (df = fh->df_next; df != fh; df = df->df_next) {
 	  mh = &df->df_members;
@@ -828,7 +828,7 @@ RkwGetDirList(cx_num, ddname, maxddname)
 
   if ((cx  = RkGetContext(cx_num)) && (ddp = cx->ddpath)) {
     i = count = 0;
-    for (p = 0; (dd = ddp[p]) != (struct DD *)0 ; p++) {
+    for (p = 0; (dd = ddp[p]) != NULL; p++) {
       j = i + strlen(dd->dd_name) + 1;
       if (j + 1 < maxddname) {
 	if (ddname)
@@ -856,7 +856,7 @@ RkwDefineDic(cx_num, name, word)
   int			i;
 
   if ((cx = RkGetContext(cx_num)) && word && name) {
-    char        *prevname = (char *)0;
+    char        *prevname = NULL;
 
     if (cx->dmprev)
       prevname = cx->dmprev->dm_nickname;
@@ -874,7 +874,7 @@ RkwDefineDic(cx_num, name, word)
 	for (md = mh->md_next; md != mh; md = nd) {
 	  struct DM	*dm = md->md_dic;
 	  struct DM	*qm = md->md_freq;
-	  char          *dname = (char *)0;
+	  char          *dname = NULL;
 
 	  if (dm)
 	    dname = dm->dm_nickname;
@@ -910,7 +910,7 @@ RkwDeleteDic(cx_num, name, word)
   int			i;
 
   if ((cx = RkGetContext(cx_num)) && name) {
-    char        *prevname = (char *)0;
+    char        *prevname = NULL;
 
     if (cx->dmprev)
       prevname = cx->dmprev->dm_nickname;
@@ -928,7 +928,7 @@ RkwDeleteDic(cx_num, name, word)
 	for (md = mh->md_next; md != mh; md = nd) {
 	  struct DM	*dm = md->md_dic;
 	  struct DM	*qm = md->md_freq;
-	  char          *dname = (char *)0;
+	  char          *dname = NULL;
 
 	  if (dm)
 	    dname = dm->dm_nickname;
@@ -969,7 +969,7 @@ char *RkwGetServerName(void);
 char *
 RkwGetServerName()
 {
-  return (char *)NULL;
+  return NULL;
 }
 
 int RkwGetProtocolVersion(int *, int *);

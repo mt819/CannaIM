@@ -1015,17 +1015,17 @@ int			_RkCalcUnlog2();
 #ifdef OPTIMIZE
 #define RkGetContext(cx_num)\
     ((IsCxNum(cn) && IS_LIVECTX(&CX[cn])) ? \
-     (&CX[cx_num]) : ((struct RkContext *)0))
+     (&CX[cx_num]) : NULL)
 
 #define RkGetXContext(cx_num)\
     ((IsCxNum(cn) && IS_LIVECTX(&CX[cn]) && \
       ((IS_XFERCTX(cx)) || (IS_XAUTCTX(cx))) ? \
-      (&CX[cx_num]) : ((struct RkContext *)0))
+      (&CX[cx_num]) : NULL)
 
 #define RkGetNXContext(cx_num)\
     ((IsCxNum(cn) && IS_LIVECTX(&CX[cn]) && \
       !(IS_XFERCTX(cx)) && !(IS_XAUTCTX(cx))) ? \
-      (&CX[cx_num]) : ((struct RkContext *)0))
+      (&CX[cx_num]) : NULL)
 
 #endif
 
