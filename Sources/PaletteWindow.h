@@ -9,19 +9,17 @@
 #ifndef PALETTEWINDOW_H
 #define PALETTEWINDOW_H
 
-#include <Looper.h>
 #include <Window.h>
-#include <PictureButton.h>
-#include <Box.h>
 
 extern Preferences gSettings;
 class BackBox;
+class BLooper;
+class BPictureButton;
 
 class PaletteWindow : public BWindow
 {
 private:
 	BLooper*			cannaLooper;
-	BBox*				back;
 	BPictureButton*		HiraButton;
 	BPictureButton*		KataButton;
 	BPictureButton*		ZenAlphaButton;
@@ -31,7 +29,7 @@ private:
 	BPictureButton*		HexButton;
 	BPictureButton*		BushuButton;
 	BPictureButton*		TorokuButton;
-	BackBox*					fBack;
+	BackBox*			fBack;
 	void				AllButtonOff();
 public:
 	PaletteWindow( BRect rect, BLooper* looper );

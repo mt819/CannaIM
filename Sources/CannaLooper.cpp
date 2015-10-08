@@ -14,8 +14,6 @@
 #include <File.h>
 #include <FindDirectory.h>
 #include <Input.h>
-#include <Menu.h>
-#include <MenuItem.h>
 #include <Messenger.h>
 #include <Path.h>
 #include <PathFinder.h>
@@ -45,7 +43,6 @@ CannaLooper::CannaLooper(CannaMethod* method)
 
 	fKouhoFont.SetFamilyAndStyle(family, style);
 	fKouhoFont.SetSize(12);
-
 
 	Run();
 }
@@ -98,6 +95,7 @@ CannaLooper::_CopyData(const BPath &srcPath, const BPath &dstPath)
 	sprintf(buf, "cp -a %s %s",srcPath.Path(), dstPath.Path());
 	system(buf);
 }
+
 
 void
 CannaLooper::_ChkVersion(const BPath &srcPath, const BPath &dstPath)
@@ -250,10 +248,7 @@ CannaLooper::MessageReceived(BMessage* msg)
 
 		case ARROW_KEYS_FLIPPED:
 		{
-//			BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
-//			gSettings.convert_arrowkey = !gSettings.convert_arrowkey;
-//			item->SetMarked(gSettings.convert_arrowkey);
-//			fCanna->SetConvertArrowKey(gSettings.convert_arrowkey);
+			fCanna->SetConvertArrowKey(gSettings.convert_arrowkey);
 			break;
 		}
 
