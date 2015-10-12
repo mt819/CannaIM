@@ -211,7 +211,7 @@ int n, nc;
     }
     free((char *)res);
   }
-  return (menustruct *)0;
+  return NULL;
 }
 
 static menustruct *
@@ -222,7 +222,7 @@ struct _e_menu *eucmenu;
   e_menuitem *euctable = eucmenu->mi;
   menuitem *menubody;
   wchar_t *wp, **wpp;
-  menustruct *res = (menustruct *)0;
+  menustruct *res = NULL;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   wchar_t buf[MBUFSIZE];
 #else
@@ -508,7 +508,7 @@ menustruct *ms;
     }
     p = p->next;
   }
-  return (menuinfo *)0;
+  return NULL;
 }
 
 /*
@@ -530,7 +530,7 @@ menustruct *table;
   unsigned inhibit = 0;
   int retval = 0;
   menuinfo *minfo;
-  int *prevcurp = (int *)0;
+  int *prevcurp = NULL;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);

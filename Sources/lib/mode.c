@@ -37,7 +37,7 @@ static char rcs_id[] = "@(#) 102.1 $Id: mode.c,v 1.2 2003/01/10 13:08:45 aida_s 
 
 extern int howToReturnModeInfo;
 static wchar_t numMode[2];
-static wchar_t *bad = (wchar_t *)0;
+static wchar_t *bad = NULL;
 struct ModeNameRecs ModeNames[CANNA_MODE_MAX_IMAGINARY_MODE];
 
 static
@@ -110,11 +110,11 @@ int mnum;
       case EXTRA_FUNC_DEFMODE:
 	return extrafunc->u.modeptr;
       default:
-	return (newmode *)0;
+	return NULL;
       }
     }
   }
-  return (newmode *)0;
+  return NULL;
 }
 
 extern int nothermodes;
@@ -132,7 +132,7 @@ int mid;
       return ep->display_name;
     }
   }
-  return (wchar_t *)0;
+  return NULL;
 }
 
 void
@@ -280,7 +280,7 @@ uiContext d;
   EmptyBaseModeInfo(d, yc);
 
   if(yc->rCurs)
-    return RomajiFlushYomi(d, (wchar_t *)0, 0); /* これは暫定的 */
+    return RomajiFlushYomi(d, NULL, 0); /* これは暫定的 */
 
   d->kanji_status_return->length = 0;
   return 0;
@@ -292,7 +292,7 @@ uiContext d;
 wchar_t *arg;
 {
   coreContext cc = (coreContext)d->modec;
-  wchar_t *mode_str = (wchar_t *)0;
+  wchar_t *mode_str = NULL;
   extraFunc *ep;
 
   switch (howToReturnModeInfo) {
@@ -395,7 +395,7 @@ char *str;
       }
       else {
 	ModeNames[modeid].alloc = 0;
-	ModeNames[modeid].name = (wchar_t *)0;
+	ModeNames[modeid].name = NULL;
       }
     }
     else if (modeid < (CANNA_MODE_MAX_IMAGINARY_MODE + nothermodes)) {
@@ -408,7 +408,7 @@ char *str;
 	  ep->display_name = WString(str);
 	}
 	else {
-	  ep->display_name = (wchar_t *)0;
+	  ep->display_name = NULL;
 	}
       }
       else {

@@ -249,9 +249,9 @@ uiContext d;
   d->current_mode = yc->curMode = yc->myEmptyMode = &empty_mode;
   yc->romdic = romajidic;
   d->ncolumns = DEFAULT_COLUMN_WIDTH;
-  d->minfo = (menuinfo *)0;
-  d->selinfo = (selectinfo *)0;
-  d->prevMenu = (menustruct *)0;
+  d->minfo = NULL;
+  d->selinfo = NULL;
+  d->prevMenu = NULL;
   return 0;
 }
 
@@ -357,7 +357,7 @@ uiContext context;
   struct bukRec *p, **pp;
 
   key = makeKey(data1, data2);
-  for (pp = &conHash[key]; (p = *pp) != (struct bukRec *)0; pp = &(p->next)) {
+  for (pp = &conHash[key]; (p = *pp) != NULL; pp = &(p->next)) {
     if (p->data1 == data1 && p->data2 == data2) {
       freeRomeStruct(p->context);
       p->context = context;
@@ -369,7 +369,7 @@ uiContext context;
     p->data1 = data1;
     p->data2 = data2;
     p->context = context;
-    p->next = (struct bukRec *)0;
+    p->next = NULL;
   }
   return p;
 }
@@ -457,7 +457,7 @@ initWarningMesg()
 
   for (i = 0 ; i < nWarningMesg ; i++) {
     free(WarningMesg[i]);
-    WarningMesg[i] = (char *)0;
+    WarningMesg[i] = NULL;
   }
   nWarningMesg = 0;
 }
@@ -510,7 +510,7 @@ KC_initialize(d, arg)
 #ifdef ENGINE_SWITCH
     extern char *RkGetServerEngine(void);
     if (!RkGetServerEngine()) {
-      RkSetServerName((char *)0);
+      RkSetServerName(NULL);
     }
 #endif
 
@@ -522,7 +522,7 @@ KC_initialize(d, arg)
 #ifndef NO_EXTEND_MENU
     if (initExtMenu() < 0) {
       jrKanjiError = "Insufficient memory.";
-      if (arg) *(char ***)arg = (char **)0;
+      if (arg) *(char ***)arg = NULL;
       return -1;
     }
 #endif
@@ -558,7 +558,7 @@ KC_initialize(d, arg)
 #endif
 
                     /* keyconvCallback は parse 後は不要なのでクリアする */
-                    KC_keyconvCallback(d, (char *)0);
+                    KC_keyconvCallback(d, NULL);
 
                     /* 一覧関係文字列の初期化 */
                     if (initIchiran() != NG) {
@@ -573,7 +573,7 @@ KC_initialize(d, arg)
                          漢字にならなくてもいいし。 */
 
                       if (arg) {
-                      *(char ***)arg = nWarningMesg ? WarningMesg : (char **)0;
+                      *(char ***)arg = nWarningMesg ? WarningMesg : NULL;
                       }
                       FirstTime = 0;
                       return 0;
@@ -630,7 +630,7 @@ KC_initialize(d, arg)
   else {
     /* 前にInitializeをしている場合にはもうメッセージをださないことにする */
     if (arg) {
-      *(char ***)arg = (char **)0;
+      *(char ***)arg = NULL;
     }
     return -1;
   }
@@ -646,11 +646,11 @@ freeKeysup()
   for (i = 0 ; i < nkeysup ; i++) {
     if (keysup[i].cand) {
       free(keysup[i].cand);
-      keysup[i].cand = (wchar_t **)0;
+      keysup[i].cand = NULL;
     }
     if (keysup[i].fullword) {
       free(keysup[i].fullword);
-      keysup[i].fullword = (wchar_t *)0;
+      keysup[i].fullword = NULL;
     }
   }
   nkeysup = 0;
@@ -776,7 +776,7 @@ KC_finalize(d, arg)
 #endif
 
     if (arg) {
-      *(char ***)arg = nWarningMesg ? WarningMesg : (char **)0;
+      *(char ***)arg = nWarningMesg ? WarningMesg : NULL;
     }
     return res;
   }
@@ -1274,7 +1274,7 @@ KC_parse(d, arg)
 
   parse_string(*arg);
 
-  *(char ***)arg = nWarningMesg ? WarningMesg : (char **)0;
+  *(char ***)arg = nWarningMesg ? WarningMesg : NULL;
 
   return nWarningMesg;
 }
@@ -1439,7 +1439,7 @@ KanjiMode c_mode;
   e->more.todo = 0;
   e->modec = mode_c;
   e->current_mode = c_mode;
-  e->cb = (struct callback *)0;
+  e->cb = NULL;
 
   if (((coreContext)mode_c)->id == YOMI_CONTEXT) {
     yc = (yomiContext)mode_c;
@@ -1799,7 +1799,7 @@ uiContext d;
 jrListCallbackStruct *arg;
 {
   if (cannaconf.iListCB) {
-    d->client_data = (char *)0;
+    d->client_data = NULL;
     d->list_func = (int (*)(char *, int, wchar_t **, int, int *))0;
     return -1;
   }
@@ -1818,7 +1818,7 @@ jrListCallbackStruct *arg;
     }
   }
   else {
-    d->client_data = (char *)0;
+    d->client_data = NULL;
     d->list_func = (int (*)(char *, int, wchar_t **, int, int *))0;
   }
   return 0;
@@ -2125,7 +2125,7 @@ char *arg;
   char *p;
 
   if (!arg) {
-    RkSetServerName((char *)0);
+    RkSetServerName(NULL);
     return 0;
   }
 
@@ -2149,7 +2149,7 @@ char *arg;
 #endif
     makeGLineMessageFromString(d, xxxx);
 
-    RkSetServerName((char *)0);
+    RkSetServerName(NULL);
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
     free(xxxx);
 #endif
@@ -2190,18 +2190,18 @@ jrUserInfoStruct *arg;
 #endif
 
   if (arg) {
-    uname = arg->uname ? strdup(arg->uname) : (char *)0;
+    uname = arg->uname ? strdup(arg->uname) : NULL;
     if (uname || !arg->uname) {
-      gname = arg->gname ? strdup(arg->gname) : (char *)0;
+      gname = arg->gname ? strdup(arg->gname) : NULL;
       if (gname || !arg->gname) {
-        srvname = arg->srvname ? strdup(arg->srvname) : (char *)0;
+        srvname = arg->srvname ? strdup(arg->srvname) : NULL;
         if (srvname || !arg->srvname) {
-	  topdir = arg->topdir ? strdup(arg->topdir) : (char *)0;
+	  topdir = arg->topdir ? strdup(arg->topdir) : NULL;
           if (topdir || !arg->topdir) {
-	    cannafile = arg->cannafile ? strdup(arg->cannafile) : (char *)0;
+	    cannafile = arg->cannafile ? strdup(arg->cannafile) : NULL;
             if (cannafile || !arg->cannafile) {
               romkanatable =
-		arg->romkanatable ? strdup(arg->romkanatable) : (char *)0;
+		arg->romkanatable ? strdup(arg->romkanatable) : NULL;
               if (romkanatable || !arg->romkanatable) {
                 uinfo = (jrUserInfoStruct *)malloc(sizeof(jrUserInfoStruct));
                 if (uinfo) {
@@ -2318,7 +2318,7 @@ char *arg;
 	  return 0;
 	}
 	free(d->attr);
-	d->attr = (wcKanjiAttributeInternal *)0;
+	d->attr = NULL;
       }
     }
     else { /* called twice */
@@ -2329,7 +2329,7 @@ char *arg;
   else if (d->attr) { /* && !p */
     free(d->attr->u.attr);
     free(d->attr);
-    d->attr = (wcKanjiAttributeInternal *)0;
+    d->attr = NULL;
     return 0;
   }
   return -1;

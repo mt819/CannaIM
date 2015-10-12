@@ -487,7 +487,7 @@ KanjiFin()
     free(dp);
     dp = np;
   }
-  kanjidicnames = (struct dicname *)0;
+  kanjidicnames = NULL;
 
   defaultContext = -1;
   defaultBushuContext = -1;
@@ -739,7 +739,7 @@ yomiContext yc;
     yc->right = (tanContext)lyc;
     lyc->left = (tanContext)yc;
 
-    kPos2rPos(lyc, 0, yc->cStartp, (int *)0, &rpos);
+    kPos2rPos(lyc, 0, yc->cStartp, NULL, &rpos);
     d->modec = (mode_context)lyc;
     moveToChikujiYomiMode(d);
     trimYomi(d, yc->cStartp, yc->kEndp, rpos, yc->rEndp);
@@ -917,7 +917,7 @@ yomiContext yc;
     yc->right = (tanContext)lyc;
     lyc->left = (tanContext)yc;
 
-    kPos2rPos(lyc, 0, yc->cStartp, (int *)0, &rpos);
+    kPos2rPos(lyc, 0, yc->cStartp, NULL, &rpos);
     d->modec = (mode_context)lyc;
     moveToChikujiYomiMode(d);
     trimYomi(d, yc->cStartp, yc->kEndp, rpos, yc->rEndp);
@@ -1044,8 +1044,7 @@ uiContext d;
 
 		trimYomi(d, yc->kCurs, yc->kEndp, yc->rCurs, yc->rEndp);
 
-		len = doKakutei(d, tan, (tanContext)yc, sb, eb,
-				(yomiContext *)0);
+		len = doKakutei(d, tan, (tanContext)yc, sb, eb, NULL);
 		d->modec = (mode_context)yc;
 		yc->left = (tanContext)0;
 		goto done;
@@ -1594,7 +1593,7 @@ uiContext d;
   wchar_t *prevkanji;
 
   prevkanji = tan->kanji;
-  tan->kanji = (wchar_t *)0;
+  tan->kanji = NULL;
 
   yc = tanbunToYomi(d, tan, prevkanji);
   free(prevkanji);
@@ -1908,7 +1907,7 @@ int kCurs;
   if (kCurs >= 0) {
     int rpos;
 
-    kPos2rPos(yc, 0, kCurs, (int *)0, &rpos);
+    kPos2rPos(yc, 0, kCurs, NULL, &rpos);
     yc->kCurs = yc->kRStartp = kCurs;
     yc->rCurs = yc->rStartp = rpos;
   }
@@ -2318,7 +2317,7 @@ int n;
   }
   yc->minorMode = CANNA_MODE_TankouhoMode;
   yc->kouhoCount = 0;
-  if (doHenkan(d, len + n, (wchar_t *)0) < 0) {
+  if (doHenkan(d, len + n, NULL) < 0) {
     makeGLineMessageFromString(d, jrKanjiError);
     makeYomiReturnStruct(d);
     currentModeInfo(d);

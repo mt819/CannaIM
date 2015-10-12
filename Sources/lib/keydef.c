@@ -491,7 +491,7 @@ unsigned char *buff;
   struct seq_struct *p, **pp;
 
   hashKey = createHashKey(tbl_ptr, key, ACTHASHTABLESIZE);
-  for (pp = &seq_hash[hashKey] ; (p = *pp) != (struct seq_struct *)0 ;
+  for (pp = &seq_hash[hashKey] ; (p = *pp) != NULL ;
        pp = &(p->next)) {
     if (p->to_tbl == tbl_ptr && p->as_key == key) {
       if (p->kinou_seq)
@@ -524,7 +524,7 @@ int which_seq;
   struct seq_struct *p, **pp;
 
   hashKey = createHashKey(tbl_ptr, key, which_seq);
-  for (pp = &seq_hash[hashKey] ; (p = *pp) != (struct seq_struct *)0 ;
+  for (pp = &seq_hash[hashKey] ; (p = *pp) != NULL ;
        pp = &(p->next)) {
     if (p->to_tbl == tbl_ptr && p->as_key == key) {
       *pp = p->next;
@@ -657,7 +657,7 @@ int      depth;
     createHashKey((unsigned char *)tbl, keybuff[depth], KEYHASHTABLESIZE);
   debug_message("regist_map:hashKey = %d \244\307\244\271\241\243\n",hashKey,0,0);
                                          /* です。 */
-  for (pp = &otherMap[hashKey]; (p = *pp) != (struct map *)0 ;
+  for (pp = &otherMap[hashKey]; (p = *pp) != NULL ;
        pp = &(p->next)) {
     if (p->key == keybuff[depth] && p->tbl == tbl) {
       for (q = p->mode->keytbl; *q != 255; q += 2) {
@@ -685,7 +685,7 @@ int      depth;
 	p->mode->keytbl =
 	  (unsigned char *)realloc(p->mode->keytbl,sequencelen +3);
         if (!p->mode->keytbl) {
-          return (struct map *)0;
+          return NULL;
         }
         p->mode->keytbl[sequencelen] = keybuff[depth +1];
         p->mode->keytbl[++sequencelen] =
@@ -732,7 +732,7 @@ int      depth;
     }
     free(p);
   }
-  return (struct map *)0;
+  return NULL;
 }
 
 struct map *
@@ -746,7 +746,7 @@ struct map ***ppp;
 
   hashKey = createHashKey((unsigned char *)tbl, key, KEYHASHTABLESIZE);
   debug_message("mapFromHash:hashKeyは%d\n",hashKey,0,0);
-  for(pp = otherMap + hashKey ; (p = *pp) != (struct map *)0 ;
+  for(pp = otherMap + hashKey ; (p = *pp) != NULL ;
       pp = &(p->next)) {
     if (p->tbl == tbl && p->key == key) {
       debug_message("mapFromHash:map\244\254\244\337\244\304\244\253\244\352"
@@ -806,11 +806,11 @@ copyMultiSequence(key, old_tbl, new_tbl)
   struct map *p, **pp;
   struct map *old_map;
 
-  old_map = mapFromHash(old_tbl, key, (struct map ***)0);
+  old_map = mapFromHash(old_tbl, key, NULL);
   old_sequence = old_map->mode->keytbl;
   sequencelen = specialen(old_sequence);
   hashKey = createHashKey((unsigned char *)new_tbl, key, KEYHASHTABLESIZE);
-  for (pp = &otherMap[hashKey]; (p = *pp) != (struct map *)0 ;
+  for (pp = &otherMap[hashKey]; (p = *pp) != NULL ;
        pp = &(p->next)) {
     if (p->key == key && p->tbl == new_tbl) {
       return 0;
@@ -836,7 +836,7 @@ copyMultiSequence(key, old_tbl, new_tbl)
 		free(p->mode->keytbl);
 		free(p->mode);
 		free(p);
-		*pp = (struct map *)0;
+		*pp = NULL;
 		return(-1);
 	      }
 	    } else if (old_sequence[i] == CANNA_FN_FuncSequence)
@@ -849,12 +849,12 @@ copyMultiSequence(key, old_tbl, new_tbl)
       } else {
 	free(p->mode);
 	free(p);
-	*pp = (struct map *)0;
+	*pp = NULL;
 	return(-1);
       }
     } else {
       free(p);
-      *pp = (struct map *)0;
+      *pp = NULL;
       return(-1);
     }
   } else

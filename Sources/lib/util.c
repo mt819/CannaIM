@@ -946,7 +946,7 @@ debug_malloc(n)
 int n;
 {
   if (fail_malloc)
-    return (char *)0;
+    return NULL;
   else
     return malloc(n);
 }
@@ -1002,8 +1002,8 @@ int cnt;
 {
   wchar_t *ws;
 
-  if  (ws2 == (wchar_t *)0)
-    return((wchar_t *)0);
+  if  (ws2 == NULL)
+    return NULL;
   if (ws2 < ws1 && ws1 < ws2 + cnt) {
     while (cnt--) {
       ws1[cnt] = ws2[cnt];
@@ -1317,7 +1317,7 @@ char *s;
   if (wsmemories == (wchar_t **)NULL) {
     nwsmemories = WSBLOCKSIZE;
     if (!(wsmemories = (wchar_t **)calloc(nwsmemories, sizeof(wchar_t *))))
-      return((wchar_t *)0) ;
+      return NULL ;
     /* calloc されたメモリはクリアされている */
   }
 
@@ -1329,10 +1329,10 @@ char *s;
     if (!(wm = (wchar_t **)realloc(wsmemories,
 				 (nwsmemories + WSBLOCKSIZE)
 				 * sizeof(wchar_t *))))
-      return((wchar_t *)0);
+      return NULL;
     wsmemories = wm;
     for (; i < nwsmemories + WSBLOCKSIZE ; i++)
-      wsmemories[i] = (wchar_t *)0;
+      wsmemories[i] = NULL;
     i = nwsmemories;
     nwsmemories += WSBLOCKSIZE;
   }
@@ -1342,7 +1342,7 @@ char *s;
 
   len = strlen(s);
   if (!(temp = (wchar_t *)malloc((len + 1) * WCHARSIZE)))
-    return((wchar_t *)0);
+    return NULL;
   len = CANNA_mbstowcs(temp, s, len + 1);
   if (!(wsmemories[i] = (wchar_t *)malloc((len + 1) * WCHARSIZE))) {
     free(temp);
@@ -1363,7 +1363,7 @@ WStringClose()
     if (wsmemories[i])
       free(wsmemories[i]);
   free(wsmemories);
-  wsmemories = (wchar_t **)0;
+  wsmemories = NULL;
   nwsmemories = 0;
 }
 

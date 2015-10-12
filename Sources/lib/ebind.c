@@ -328,7 +328,7 @@ BYTE *arg;
       wks.mode = wbuf2;
     }
     else {
-      wks.mode = (wchar_t *)0;
+      wks.mode = NULL;
     }
     /* 下へ続く */
   case KC_DEFINEKANJI: /* echoStr と length を与えるタイプ */

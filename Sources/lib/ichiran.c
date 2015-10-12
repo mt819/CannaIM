@@ -391,7 +391,7 @@ int *nelem, *currentkouho;
       /* EMPTY */
       ;
   }
-  *bptr = (wchar_t *)0;
+  *bptr = NULL;
 
   if(RkwGetStat(context, &st) == -1) {
     jrKanjiError = "\245\271\245\306\245\244\245\277\245\271\244\362\274\350"
@@ -517,8 +517,8 @@ ichiranContext p;
   p->curIchar = 0;
   p->allkouho = 0;
   p->glinebufp = 0;
-  p->kouhoifp = (kouhoinfo *)0;
-  p->glineifp = (glineinfo *)0;
+  p->kouhoifp = NULL;
+  p->glineifp = NULL;
   p->flags = (unsigned char)0;
 }
 
@@ -819,11 +819,11 @@ uiContext d;
       d->list_func) {
     if (ic->flags & ICHIRAN_NEXT_EXIT) {
       d->list_func(d->client_data,
-                     CANNA_LIST_Select, (wchar_t **)0, 0, (int *)0);
+                     CANNA_LIST_Select, NULL, 0, NULL);
     }
     else {
       d->list_func(d->client_data,
-                     CANNA_LIST_Quit, (wchar_t **)0, 0, (int *)0);
+                     CANNA_LIST_Quit, NULL, 0, NULL);
     }
   }
 
@@ -847,7 +847,7 @@ uiContext d;
 
   if ((ic->flags & ICHIRAN_ALLOW_CALLBACK) && d->list_func) {
     (*d->list_func)
-      (d->client_data, CANNA_LIST_Query, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_Query, NULL, 0, NULL);
   }
 
   /* currentModeInfo でモード情報が必ず返るようにダミーのモードを入れておく */
@@ -929,7 +929,7 @@ uiContext d;
     int res;
 
     res = (*d->list_func)
-      (d->client_data, CANNA_LIST_Forward, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_Forward, NULL, 0, NULL);
     if (res) {
       return 0;
     }
@@ -983,7 +983,7 @@ uiContext d;
       d->list_func) {
     int res;
     res = (*d->list_func)
-      (d->client_data, CANNA_LIST_Backward, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_Backward, NULL, 0, NULL);
     if (res) {
       return 0;
     }
@@ -1036,7 +1036,7 @@ uiContext d;
 
   if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     (*d->list_func)
-      (d->client_data, CANNA_LIST_Convert, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_Convert, NULL, 0, NULL);
     return 0;
   }
   else {
@@ -1062,7 +1062,7 @@ uiContext d;
       d->list_func) {
     int res;
     res = (*d->list_func)
-      (d->client_data, CANNA_LIST_Prev, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_Prev, NULL, 0, NULL);
     if (res) {
       return 0;
     }
@@ -1141,7 +1141,7 @@ uiContext d;
       d->list_func) {
     int res;
     res = (*d->list_func)
-      (d->client_data, CANNA_LIST_Next, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_Next, NULL, 0, NULL);
     if (res) {
       return 0;
     }
@@ -1182,7 +1182,7 @@ uiContext d;
       d->list_func) {
     int res;
     res = (*d->list_func)
-      (d->client_data, CANNA_LIST_PageDown, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_PageDown, NULL, 0, NULL);
     if (res) {
       return 0;
     }
@@ -1213,7 +1213,7 @@ uiContext d;
       d->list_func) {
     int res;
     res = (*d->list_func)
-      (d->client_data, CANNA_LIST_PageUp, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_PageUp, NULL, 0, NULL);
     if (res) {
       return 0;
     }
@@ -1282,7 +1282,7 @@ uiContext d;
       d->list_func) {
     int res;
     res = (*d->list_func)
-      (d->client_data, CANNA_LIST_BeginningOfLine, (wchar_t **)0, 0,(int *)0);
+      (d->client_data, CANNA_LIST_BeginningOfLine, NULL, 0,NULL);
     if (res) {
       return 0;
     }
@@ -1322,7 +1322,7 @@ uiContext d;
       d->list_func) {
     int res;
     res = (*d->list_func)
-      (d->client_data, CANNA_LIST_EndOfLine, (wchar_t **)0, 0, (int *)0);
+      (d->client_data, CANNA_LIST_EndOfLine, NULL, 0, NULL);
     if (res) {
       return 0;
     }
@@ -1393,7 +1393,7 @@ uiContext d;
 #ifdef CANNA_LIST_Insert /* 絶対定義されているんだけどね */
     if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
       int res = (*d->list_func) /* list_func を呼び出す */
-	(d->client_data, CANNA_LIST_Insert, (wchar_t **)0, d->ch, (int *)0);
+	(d->client_data, CANNA_LIST_Insert, NULL, d->ch, NULL);
       if (res) { /* d->ch がアプリケーション側で処理された */
 	if (res == CANNA_FN_FunctionalInsert) {
 	  zflag = 1; /* 0 じゃなければいい */
@@ -1501,11 +1501,11 @@ uiContext d;
   if ((ic->flags & ICHIRAN_ALLOW_CALLBACK) && d->list_func) {
     if (ic->flags & ICHIRAN_STAY_LONG) {
       d->list_func(d->client_data,
-                     CANNA_LIST_Query, (wchar_t **)0, 0, (int *)0);
+                     CANNA_LIST_Query, NULL, 0, NULL);
     }
     else {
       d->list_func(d->client_data,
-                     CANNA_LIST_Select, (wchar_t **)0, 0, (int *)0);
+                     CANNA_LIST_Select, NULL, 0, NULL);
     }
   }
 

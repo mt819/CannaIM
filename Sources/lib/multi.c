@@ -111,15 +111,15 @@ uiContext d;
 
   strcpy((char *)showKey, (char *)showChar(d->ch));
   p = mapFromHash((KanjiMode)d->current_mode->keytbl,
-		  d->ch, (struct map ***)0);
-  if (p == (struct map *)NULL)
+		  d->ch, NULL);
+  if (p == NULL)
     return NothingChangedWithBeep(d);
   p->mode->ftbl = (struct funccfunc *)d->current_mode;
   keyHistory = (unsigned char *)malloc(strlen((char *)showKey) + 1);
   if (keyHistory) {
     strcpy((char *)keyHistory,(char *)showKey);
     makeGLineMessageFromString(d, (char *)keyHistory);
-    if (p->mode->keytbl == (BYTE *)NULL) {
+    if (p->mode->keytbl == NULL) {
       free(keyHistory);
       return NothingChangedWithBeep(d);
     }
@@ -139,17 +139,17 @@ BYTE key;
   int prevGEchoLen = -1, prevGRevPos = -1, prevGRevLen = -1;
   wchar_t *prevEcho = NULL, *prevGEcho = NULL;
   BYTE *p, *actFromHash();
-  wchar_t *malloc_echo = (wchar_t *)0, *malloc_gline = (wchar_t *)0;
+  wchar_t *malloc_echo = NULL, *malloc_gline = NULL;
 
   if (key == 0) {
     key = (BYTE)d->ch;
   }
-  if (keytbl == (BYTE *)NULL)
+  if (keytbl == NULL)
     keytbl = d->current_mode->keytbl;
 
   p = actFromHash(keytbl, key);
 
-  if (p == (BYTE *)NULL) {
+  if (p == NULL) {
     return 0;
   }
 
@@ -287,7 +287,7 @@ int fnum;
 
         makeGLineMessageFromString(d, (char *)keyHistory);
         if (*++p == CANNA_FN_UseOtherKeymap) { /* まだキーシケンスの続きが存在 */
-          m = mapFromHash(mode, key, (struct map ***)0);
+          m = mapFromHash(mode, key, NULL);
           m->mode->ftbl = mode->ftbl;
           d->current_mode = m->mode;
           return NothingForGLine(d);

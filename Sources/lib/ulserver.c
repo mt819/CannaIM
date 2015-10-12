@@ -193,8 +193,8 @@ uiContext d;
   if(defaultContext != -1) {
     char *servname;
     servname = RkwGetServerName();
-    if (servname && (w = WString(servname)) != (wchar_t *)0) {
-      RomajiStoreYomi(d, w, (wchar_t *)0);
+    if (servname && (w = WString(servname)) != NULL) {
+      RomajiStoreYomi(d, w, NULL);
       WSfree(w);
       yc->kRStartp = yc->kCurs = 0;
       yc->rStartp = yc->rCurs = 0;
@@ -243,7 +243,7 @@ int len;
           /* かな漢字変換エンジン %s は利用できません */
     makeGLineMessageFromString(d, xxxx);
 
-    RkSetServerName((char *)0);
+    RkSetServerName(NULL);
     currentModeInfo(d);
     killmenu(d);
     return 0;

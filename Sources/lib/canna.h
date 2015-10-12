@@ -755,7 +755,7 @@ typedef struct {
 #define ModeInfoStyleIsBaseNumeric      3
 #define MaxModeInfoStyle                ModeInfoStyleIsBaseNumeric
 
-#define killmenu(d) ((d)->prevMenu = (menustruct *)0)
+#define killmenu(d) ((d)->prevMenu = NULL)
 #define	defineEnd(d) killmenu(d)
 #define	deleteEnd(d) killmenu(d)
 

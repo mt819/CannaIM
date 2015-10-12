@@ -367,7 +367,7 @@ uiContext d;
   return 0;
 #else
   return(uuKigoMake(d, (wchar_t **)russia_data, UURD_SZ,
-           d->currussia, CANNA_MODE_RussianMode, uuKigoRExitCatch, (int *)0));
+           d->currussia, CANNA_MODE_RussianMode, uuKigoRExitCatch, NULL));
 #endif
 }
 
@@ -389,7 +389,7 @@ uiContext d;
   return 0;
 #else
   return(uuKigoMake(d, (wchar_t **)greek_data, UUGD_SZ,
-           d->curgreek, CANNA_MODE_GreekMode, uuKigoGExitCatch, (int *)0));
+           d->curgreek, CANNA_MODE_GreekMode, uuKigoGExitCatch, NULL));
 #endif
 }
 
@@ -411,7 +411,7 @@ uiContext d;
   return 0;
 #else
   return(uuKigoMake(d, (wchar_t **)keisen_data, UUKD_SZ,
-           d->curkeisen, CANNA_MODE_LineMode, uuKigoKExitCatch, (int *)0));
+           d->curkeisen, CANNA_MODE_LineMode, uuKigoKExitCatch, NULL));
 #endif
 }
 

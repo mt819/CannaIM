@@ -42,7 +42,7 @@ enum {
 };
 #endif
 
-static FILE *outstream = (FILE *)0;
+static FILE *outstream = NULL;
 
 static char *celltop, *cellbtm, *freecell;
 static char *memtop;
@@ -178,7 +178,7 @@ clisp_init()
   readptr = readbuf;
   *readptr = '\0';
   files[filep = 0].f = stdin;
-  files[filep].name = (char *)0;
+  files[filep].name = NULL;
   files[filep].line = 0;
 
   /* oblist initialization	*/
@@ -257,7 +257,7 @@ clisp_fin()
   if (untyisize) {
     free(untyibuf);
     untyisize = 0;
-    untyibuf = (char *)0;
+    untyibuf = NULL;
   }
 }
 
@@ -366,8 +366,8 @@ char *str;
   }
 
   jmpenvp--;
-  files[++filep].f = (FILE *)0;
-  files[filep].name = (char *)0;
+  files[++filep].f = NULL;
+  files[filep].name = NULL;
   files[filep].line = 0;
 
   setjmp(env[jmpenvp].jmp_env);
@@ -548,13 +548,13 @@ initIS()
   int i;
   seqlines seqTbls[1024];
 
-  seqTbl = (seqlines *)0;
+  seqTbl = NULL;
   seqline = 0;
   nseqtbl = 0;
   nseq = 0;
   longestkeywordlen = 0;
   for (i = 0 ; i < 1024 ; i++) {
-    seqTbls[i].tbl = (int *)0;
+    seqTbls[i].tbl = NULL;
     seqTbls[i].id = 0;
   }
   charToNumTbl = (int *)calloc('~' - ' ' + 1, sizeof(int));
@@ -617,15 +617,15 @@ initIS()
 
  initISerr:
   free(charToNumTbl);
-  charToNumTbl = (int *)0;
+  charToNumTbl = NULL;
   if (seqTbl) {
     free(seqTbl);
-    seqTbl = (seqlines *)0;
+    seqTbl = NULL;
   }
   for (i = 0 ; i < nseqtbl ; i++) {
     if (seqTbls[i].tbl) {
       free(seqTbls[i].tbl);
-      seqTbls[i].tbl = (int *)0;
+      seqTbls[i].tbl = NULL;
     }
   }
   return 0;
@@ -639,14 +639,14 @@ finIS() /* identifySequence に用いたメモリ資源を開放する */
   if (seqTbl) {
     for (i = 0 ; i < nseqtbl ; i++) {
       if (seqTbl[i].tbl) free(seqTbl[i].tbl);
-      seqTbl[i].tbl = (int *)0;
+      seqTbl[i].tbl = NULL;
     }
     free(seqTbl);
-    seqTbl = (seqlines *)0;
+    seqTbl = NULL;
   }
   if (charToNumTbl) {
     free(charToNumTbl);
-    charToNumTbl = (int *)0;
+    charToNumTbl = NULL;
   }
 }
 
@@ -694,7 +694,7 @@ alloccell()
 
   cellsize = ncells * sizeof(list);
   p = malloc(cellsize);
-  if (p == (char *)0) {
+  if (p == NULL) {
     return 0;
   }
   memtop = p;
@@ -1384,7 +1384,7 @@ tyi()
     int ret = untyibuf[--untyip];
     if (untyip == 0) {
       free(untyibuf);
-      untyibuf = (char *)0;
+      untyibuf = NULL;
       untyisize = 0;
     }
     return ret;
@@ -3123,7 +3123,7 @@ Ldefmode()
   list form, *sym, e, *p, fn, rd, md, us;
   extern extraFunc *extrafuncp;
   extern int nothermodes;
-  extraFunc *extrafunc = (extraFunc *)0;
+  extraFunc *extrafunc = NULL;
   int i, j;
   int ecode;
   list l, edata;
@@ -3175,13 +3175,13 @@ Ldefmode()
       extrafunc->fnum = CANNA_FN_MAX_FUNC + nothermodes;
 
     /* デフォルトの設定 */
-    extrafunc->display_name = (wchar_t *)NULL;
+    extrafunc->display_name = NULL;
     extrafunc->u.modeptr = (newmode *)malloc(sizeof(newmode));
     if (extrafunc->u.modeptr) {
       KanjiMode kanjimode;
 
-      extrafunc->u.modeptr->romaji_table = (char *)0;
-      extrafunc->u.modeptr->romdic = (struct RkRxDic *)0;
+      extrafunc->u.modeptr->romaji_table = NULL;
+      extrafunc->u.modeptr->romdic = NULL;
       extrafunc->u.modeptr->romdic_owner = 0;
       extrafunc->u.modeptr->flags = CANNA_YOMI_IGNORE_USERSYMBOLS;
       extrafunc->u.modeptr->emode = (KanjiMode)0;
@@ -3576,7 +3576,7 @@ Ldefselection()
   extern int nothermodes;
   int i, len, cs, nkigo_data = 0, kigolen = 0;
   wchar_t *p, *kigo_str, **akigo_data;
-  extraFunc *extrafunc = (extraFunc *)0;
+  extraFunc *extrafunc = NULL;
 
   form = sp[0];
 
@@ -3778,7 +3778,7 @@ Ldefselection()
     extrafunc->display_name = WString(xstring(md));
   }
   else {
-    extrafunc->display_name = (wchar_t *)0;
+    extrafunc->display_name = NULL;
   }
 
   extrafunc->keyword = EXTRA_FUNC_DEFSELECTION;
@@ -3804,7 +3804,7 @@ Ldefmenu()
   list form, sym, e;
   extern extraFunc *extrafuncp;
   extern int nothermodes;
-  extraFunc *extrafunc = (extraFunc *)0;
+  extraFunc *extrafunc = NULL;
   int i, n, clen, len;
   wchar_t foo[512];
   menustruct *men;
@@ -3863,7 +3863,7 @@ Ldefmenu()
       symbolpointer(sym)->fid =
 	extrafunc->fnum = CANNA_FN_MAX_FUNC + nothermodes;
       extrafunc->keyword = EXTRA_FUNC_DEFMENU;
-      extrafunc->display_name = (wchar_t *)0;
+      extrafunc->display_name = NULL;
       extrafunc->u.menuptr = men;
 
       extrafunc->next = extrafuncp;
@@ -4135,12 +4135,12 @@ list arg;
 	}
       }
       else {
-	*var = (char *)0;
+	*var = NULL;
 	return NIL;
       }
     }
     else {
-      lisp_strerr((char *)0, arg);
+      lisp_strerr(NULL, arg);
       /* NOTREACHED */
     }
   }
@@ -4166,7 +4166,7 @@ list arg;
       return arg;
     }
     else {
-      numerr((char *)0, arg);
+      numerr(NULL, arg);
       /* NOTREACHED */
     }
   }
@@ -4281,7 +4281,7 @@ static list VCodeInput(setp, arg) int setp; list arg;
       }
     }
     else {
-      lisp_strerr((char *)0, arg);
+      lisp_strerr(NULL, arg);
       /* NOTREACHED */
     }
   }

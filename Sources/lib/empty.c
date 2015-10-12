@@ -258,10 +258,10 @@ UserSelect(d, estruct)
 uiContext d;
 extraFunc *estruct;
 {
-  int curkigo = 0, *posp = (int *)0;
-  kigoIchiran *kigop = (kigoIchiran *)0;
+  int curkigo = 0, *posp = NULL;
+  kigoIchiran *kigop = NULL;
   extern int uuKigoGeneralExitCatch(), uuKigoMake();
-  selectinfo *selinfo = (selectinfo *)0, *info;
+  selectinfo *selinfo = NULL, *info;
   yomiContext yc = (yomiContext)d->modec;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {

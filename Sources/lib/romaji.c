@@ -332,7 +332,7 @@ static struct RkRxDic *
 OpenRoma(table)
 char *table;
 {
-  struct RkRxDic *retval = (struct RkRxDic *)0, *RkwOpenRoma();
+  struct RkRxDic *retval = NULL, *RkwOpenRoma();
   char *p, *getenv();
 #ifdef __HAIKU__
   extern char basepath[];
@@ -342,7 +342,7 @@ char *table;
 #else
   char *rdic = malloc(1024);
   if (!rdic) {
-    return (struct RkRxDic *)0;
+    return NULL;
   }
 #endif
 
@@ -473,7 +473,7 @@ char *table;
 		table);
 	/* ローマ字かな変換テーブル(%s)がオープンできません。 */
 	addWarningMesg(rdic);
-	retval = (struct RkRxDic *)0;
+	retval = NULL;
       }
     }
   }
@@ -608,7 +608,7 @@ RomkanaInit()
         }
       }
       else {
-        extrafunc1->u.modeptr->romdic = (struct RkRxDic *)0; /* nilですよ！ */
+        extrafunc1->u.modeptr->romdic = NULL; /* nilですよ！ */
         extrafunc1->u.modeptr->romdic_owner = 0;
       }
     }
@@ -686,7 +686,7 @@ newYomiContext(buf, bufsize, allowedc, chmodinhibit,
     ycxt->henkanInhibition = hinhibit;
     ycxt->n_susp_chars = 0;
     ycxt->retbufp = ycxt->retbuf = buf;
-    ycxt->romdic = (struct RkRxDic *)0;
+    ycxt->romdic = NULL;
     ycxt->myEmptyMode = (KanjiMode)0;
     ycxt->last_rule = 0;
     if ((ycxt->retbufsize = bufsize) == 0) {
@@ -700,7 +700,7 @@ newYomiContext(buf, bufsize, allowedc, chmodinhibit,
     ycxt->nbunsetsu = 0;  /* 文節の数、これで読みモードかどうかの判定もする */
     ycxt->context = -1;
     ycxt->kouhoCount = 0;
-    ycxt->allkouho = (wchar_t **)0;
+    ycxt->allkouho = NULL;
     ycxt->curbun = 0;
     ycxt->curIkouho = 0;  /* カレント候補 */
     ycxt->proctime = ycxt->rktime = 0;
@@ -742,7 +742,7 @@ GetKanjiString(d, buf, bufsize, allowedc, chmodinhibit,
   yomiContext yc;
 
   if ((pushCallback(d, d->modec, everyTimeCallback, exitCallback, quitCallback,
-		    NO_CALLBACK)) == (struct callback *)0) {
+		    NO_CALLBACK)) == NULL) {
     return (yomiContext)0;
   }
 
@@ -1072,8 +1072,8 @@ uiContext d;
       /* ローマ字の断片が残っていることはないので、yc->kRStartp でなくて、
 	 yc->kCurs が使える */
       d->nbytes += yc->kCurs;
-      romajiReplace(-yc->rCurs, (wchar_t *)0, 0, 0);
-      kanaReplace(-yc->kCurs, (wchar_t *)0, 0, 0);
+      romajiReplace(-yc->rCurs, NULL, 0, 0);
+      kanaReplace(-yc->kCurs, NULL, 0, 0);
 
       WStrncpy(d->buffer_return + d->nbytes, romanBuf, len);
       d->nbytes += len;
@@ -1363,7 +1363,7 @@ int flag, english;
 	  off = yc->kCurs - yc->kRStartp;
 	  yc->kRStartp = 0;
 	  yc->kCurs -= off;
-	  kanaReplace(-yc->kCurs, (wchar_t *)0, 0, 0);
+	  kanaReplace(-yc->kCurs, NULL, 0, 0);
 	  yc->kCurs += off;
 
 	  WStrncpy(d->buffer_return + d->nbytes, subp, sm);
@@ -1415,7 +1415,7 @@ int flag, english;
 	  yc->rStartp -= n;
 	  unchanged = yc->rCurs - yc->rStartp - n;
 	  yc->rCurs -= unchanged;
-	  romajiReplace(-n, (wchar_t *)0, 0, 0);
+	  romajiReplace(-n, NULL, 0, 0);
 	  yc->rCurs += unchanged;
 	  retval = 0; /* やっぱり区切りがついていない */
 	}
@@ -1423,7 +1423,7 @@ int flag, english;
 	  int offset = yc->rCurs - yc->rStartp;
 
 	  yc->rCurs -= offset;
-	  romajiReplace(-yc->rCurs, (wchar_t *)0, 0, 0);
+	  romajiReplace(-yc->rCurs, NULL, 0, 0);
 	  yc->rCurs += offset;
 	  retval = 0; /* やっぱり区切りがついていない */
 	}
@@ -1711,11 +1711,11 @@ uiContext d;
     }
     off = yc->kCurs - yc->kRStartp;
     yc->kCurs -= off;
-    kanaReplace(-yc->kCurs, (wchar_t *)0, 0, 0);
+    kanaReplace(-yc->kCurs, NULL, 0, 0);
     yc->kCurs += off;
     off = yc->rCurs - len;
     yc->rCurs -= off;
-    romajiReplace(-yc->rCurs, (wchar_t *)0, 0, 0);
+    romajiReplace(-yc->rCurs, NULL, 0, 0);
     yc->rCurs += off;
   }
   else {
@@ -2139,7 +2139,7 @@ uiContext d;
 {
   int len;
 
-  len = RomajiFlushYomi(d, (wchar_t *)0, 0);
+  len = RomajiFlushYomi(d, NULL, 0);
   if (len == 0) {
     return 1;
   }
@@ -2637,7 +2637,7 @@ int n;
       st = st->left;
     }
     d->nbytes = doKakutei(d, st, tan, d->buffer_return,
-			  d->buffer_return + d->n_buffer, (yomiContext *)0);
+			  d->buffer_return + d->n_buffer, NULL);
     d->modec = (mode_context)yc;
     tan->left = (tanContext)0;
     return 1;
@@ -3271,7 +3271,7 @@ uiContext d;
   cc->minorMode = CANNA_MODE_QuotedInsertMode;
   if (pushCallback(d, d->modec,
                    NO_CALLBACK, exitYomiQuotedInsert,
-                   NO_CALLBACK, NO_CALLBACK) == (struct callback *)0) {
+                   NO_CALLBACK, NO_CALLBACK) == NULL) {
     freeCoreContext(cc);
     NothingChangedWithBeep(d);
     return;
@@ -3422,7 +3422,7 @@ mapAsHex(d)
     int tmp = yc->kCurs;
     yc->kCurs = yc->cmark;
     yc->cmark = tmp;
-    kPos2rPos(yc, 0, yc->kCurs, (int *)0, &tmp);
+    kPos2rPos(yc, 0, yc->kCurs, NULL, &tmp);
     yc->rCurs = tmp;
   }
   else if (yc->kCurs == yc->cmark) {
@@ -3432,7 +3432,7 @@ mapAsHex(d)
 
   hexbuf = yc->romaji_buffer + yc->rCurs - 4;
 
-  kPos2rPos(yc, 0, yc->cmark, (int *)0, &pos);
+  kPos2rPos(yc, 0, yc->cmark, NULL, &pos);
 
   if (hexbuf < yc->romaji_buffer + pos) {
     if (!allowTwoByte || hexbuf + 2 < yc->romaji_buffer + pos) {
@@ -3928,7 +3928,7 @@ uiContext	d;
   }
   yc->minorMode = CANNA_MODE_TankouhoMode;
   yc->kouhoCount = 1;
-  if (doHenkan(d, 0, (wchar_t *)0) < 0) {
+  if (doHenkan(d, 0, NULL) < 0) {
     makeGLineMessageFromString(d, jrKanjiError);
     return TanMuhenkan(d);
   }
@@ -4379,7 +4379,7 @@ uiContext d;
   case JISHU_ZEN_ALPHA: /* 全角英数に変換する */
   case JISHU_HAN_ALPHA: /* 半角英数に変換する */
     p = yc->romaji_buffer;
-    kPos2rPos(yc, 0, yc->cmark, (int *)0, &pos);
+    kPos2rPos(yc, 0, yc->cmark, NULL, &pos);
 
     for (i = pos ; i < jishu_rEndp ; i++) {
       xxxx[i - pos] =
@@ -4822,7 +4822,7 @@ uiContext d;
   while (tan->left) {
     tan = tan->left;
   }
-  len = doKakutei(d, tan, (tanContext)yc, s, e, (yomiContext *)0);
+  len = doKakutei(d, tan, (tanContext)yc, s, e, NULL);
   d->modec = (mode_context)yc;
   yc->left = (tanContext)0;
 

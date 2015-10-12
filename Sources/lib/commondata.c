@@ -98,14 +98,14 @@ int (*jrBeepFunc)() = (int (*)())NULL;
  * KC_INITIALIZE 直後に実行する機能の列
  */
 
-BYTE *initfunc = (BYTE *)0;
+BYTE *initfunc = NULL;
 int howToReturnModeInfo = ModeInfoStyleIsString;
-char *RomkanaTable = (char *)NULL;
-char *EnglishTable = (char *)NULL;
+char *RomkanaTable = NULL;
+char *EnglishTable = NULL;
 /* char *Dictionary = (char *)NULL; */
-struct dicname *RengoGakushu = (struct dicname *)NULL;
-struct dicname *KatakanaGakushu = (struct dicname *)NULL;
-struct dicname *HiraganaGakushu = (struct dicname *)NULL;
+struct dicname *RengoGakushu = NULL;
+struct dicname *KatakanaGakushu = NULL;
+struct dicname *HiraganaGakushu = NULL;
 
 int nKouhoBunsetsu = 16;
 

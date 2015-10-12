@@ -95,7 +95,7 @@ yomiContext yc;
     yc->jishu_kEndp = yc->cmark;
     yc->cmark = yc->kCurs;
     yc->kRStartp = yc->kCurs = yc->jishu_kEndp;
-    kPos2rPos(yc, 0, yc->kCurs, (int *)0, &rpos);
+    kPos2rPos(yc, 0, yc->kCurs, NULL, &rpos);
     yc->jishu_rEndp = yc->rStartp = yc->rCurs = rpos;
   }
   else {
@@ -103,7 +103,7 @@ yomiContext yc;
     yc->jishu_rEndp = yc->rCurs;
   }
 /*  yc->majorMode = d->majorMode; */
-  kPos2rPos(yc, 0, (int)yc->cmark, (int *)0, &pos);
+  kPos2rPos(yc, 0, (int)yc->cmark, NULL, &pos);
   yc->rmark = (short)pos;
   d->current_mode = yc->curMode = &jishu_mode;
 }

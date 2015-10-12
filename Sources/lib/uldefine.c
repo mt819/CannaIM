@@ -144,12 +144,12 @@ tourokuContext p;
   p->yomi_buffer[0] = 0;
   p->yomi_len = 0;
   p->curHinshi = 0;
-  p->newDic = (struct dicname *)0;
+  p->newDic = NULL;
   p->hcode[0] = 0;
   p->katsuyou = 0;
-  p->workDic2 = (deldicinfo *)0;
-  p->workDic3 = (deldicinfo *)0;
-  p->udic = (wchar_t **)0;
+  p->workDic2 = NULL;
+  p->workDic3 = NULL;
+  p->udic = NULL;
   p->delContext = 0;
 
   return(0);
@@ -541,7 +541,7 @@ uiContext d;
   if(defaultContext < 0) {
     if((KanjiInit() < 0) || (defaultContext < 0)) {
       jrKanjiError = KanjiInitError();
-      return (wchar_t **)0;
+      return NULL;
     }
   }
 
@@ -561,7 +561,7 @@ uiContext d;
     jrKanjiError = "malloc (getUserDicName) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
 #endif
-    return (wchar_t **)0;
+    return NULL;
   }
 
   for (tp = tourokup + nmudic, p = kanjidicnames ; p ; p = p->next) {
@@ -569,7 +569,7 @@ uiContext d;
       *--tp = WString(p->name);
     }
   }
-  tourokup[nmudic] = (wchar_t *)0;
+  tourokup[nmudic] = NULL;
 
   return (wchar_t **)tourokup;
 }
@@ -649,7 +649,7 @@ uiContext d;
 static struct dicname *
 findUsrDic()
 {
-  struct dicname *res = (struct dicname *)0, *p;
+  struct dicname *res = NULL, *p;
 
   for (p = kanjidicnames ; p ; p = p->next) {
     if (p->dictype == DIC_USER) {
@@ -731,7 +731,7 @@ canna_callback_t quitfunc;
   yomiContext yc, yc2;
   int retval = 0;
 
-  yc = GetKanjiString(d, (wchar_t *)0, 0,
+  yc = GetKanjiString(d, NULL, 0,
 		      CANNA_NOTHING_RESTRICTED,
 		      (int)CANNA_YOMI_CHGMODE_INHIBITTED,
 		      (int)CANNA_YOMI_END_IF_KAKUTEI,
@@ -744,7 +744,7 @@ canna_callback_t quitfunc;
     currentModeInfo(d);
     return NoMoreMemory();
   }
-  yc2 = GetKanjiString(d, (wchar_t *)0, 0,
+  yc2 = GetKanjiString(d, NULL, 0,
 		      CANNA_NOTHING_RESTRICTED,
 		      (int)CANNA_YOMI_CHGMODE_INHIBITTED,
 		      (int)!CANNA_YOMI_END_IF_KAKUTEI,
@@ -914,7 +914,7 @@ canna_callback_t quitfunc;
                          /* 単語を入力してください */
   }
 
-  yc = GetKanjiString(d, (wchar_t *)0, 0,
+  yc = GetKanjiString(d, NULL, 0,
 		      CANNA_NOTHING_RESTRICTED,
 		      (int)CANNA_YOMI_CHGMODE_INHIBITTED,
 		      (int)CANNA_YOMI_END_IF_KAKUTEI,

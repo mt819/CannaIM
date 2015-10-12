@@ -149,7 +149,7 @@ char *s;
       return dp;
     }
   }
-  return (struct dicname *)0;
+  return NULL;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -237,7 +237,7 @@ mode_context env;
 	      }
 	      else { /* malloc failed */
 		free(dp);
-		dp = (struct dicname *)0;
+		dp = NULL;
 	      }
 	    }
 	  }

@@ -81,8 +81,8 @@ ichiranContext p;
   p->curIchar = 0;
   p->allkouho = 0;
   p->glinebufp = 0;
-  p->kouhoifp = (kouhoinfo *)0;
-  p->glineifp = (glineinfo *)0;
+  p->kouhoifp = NULL;
+  p->glineifp = NULL;
   p->flags = (unsigned char)0;
 }
 

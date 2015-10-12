@@ -67,7 +67,7 @@ tourokuContext tc;
 {
   if (tc->workDic3) {
     free((char *)tc->workDic3);
-    tc->workDic3 = (deldicinfo *)0;
+    tc->workDic3 = NULL;
   }
 }
 
@@ -77,7 +77,7 @@ tourokuContext tc;
 {
   if (tc->workDic2) {
     free((char *)tc->workDic2);
-    tc->workDic2 = (deldicinfo *)0;
+    tc->workDic2 = NULL;
   }
   freeWorkDic3(tc);
 }
@@ -343,7 +343,7 @@ int *num_return;
       }
     }
   }
-  tourokup[nmmdic] = (wchar_t *)0;
+  tourokup[nmmdic] = NULL;
   *num_return = nmmdic;
 
   return tourokup;
@@ -562,7 +562,7 @@ tourokuContext tc;
     return NG;
   }
 
-  dic->name = (wchar_t *)0;
+  dic->name = NULL;
   tc->nworkDic2 = dic - tc->workDic2;
   return 0;
 }
@@ -867,7 +867,7 @@ mountContext mc;
         *dic++ = *srcp;
       }
     }
-    dic->name = (wchar_t *)0;
+    dic->name = NULL;
     tc->nworkDic3 = dic - tc->workDic3;
     return 0;
   }
@@ -954,10 +954,10 @@ uiContext d;
   if (upnelem == 1) {
     work
       = (deldicinfo *)malloc((1 /* upnelem(==1) */ + 1) * sizeof(deldicinfo));
-    if (work != (deldicinfo *)NULL) {
+    if (work != NULL) {
       tc->workDic3 = work;
       *work++ = *tc->workDic2; /* 構造体の代入 */
-      work->name = (wchar_t *)0;
+      work->name = NULL;
       tc->nworkDic3 = 1; /* work - tc->workDic3 == 1 */
       return dicSakujoDo(d);
     }

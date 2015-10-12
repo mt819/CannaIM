@@ -60,7 +60,7 @@ typedef struct engines{
   char *libname;
 };
 
-static struct engines *enginetable = (struct engines *)0;
+static struct engines *enginetable = NULL;
 static int NENGINES = 0;
 
 DSOHANDLE dlh = (DSOHANDLE)0;
@@ -98,13 +98,13 @@ char *s, **next_return;
   while ((ch = *p) && (ch == ' ' || ch == '\t')) p++;
   if (ch == '#') {
     *next_return = p;
-    return (char *)0;
+    return NULL;
   }
   res = p;
   while ((ch = *p) && ch != ' ' && ch != '\t' && ch != '\n' && ch != '#') p++;
   if (p == res) { /* case EOS or EOL */
     *next_return = p;
-    return (char *)0;
+    return NULL;
   }
   else {
     if (ch) *p = '\0';
@@ -120,7 +120,7 @@ int *nengines;
 {
   FILE *f;
   char *ename, *lib, *p;
-  struct engines *res = (struct engines *)0;
+  struct engines *res = NULL;
   int n = 0;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   extern jrUserInfoStruct *uinfo;
@@ -265,8 +265,8 @@ char *engine;
   return 0;
 }
 
-static char *server_host = (char *)0;
-static char *server_engine = (char *)0;
+static char *server_host = NULL;
+static char *server_engine = NULL;
 
 int
 RkSetServerName(s)
@@ -274,11 +274,11 @@ char *s;
 {
   if (server_host) {
     free(server_host);
-    server_host = (char *)0;
+    server_host = NULL;
   }
   if (server_engine) {
     free(server_engine);
-    server_engine = (char *)0;
+    server_engine = NULL;
   }
 
   if (s) {
@@ -286,7 +286,7 @@ char *s;
 
     at = index(s, ',');
     if (at) {
-      return switch_engine((char *)0);
+      return switch_engine(NULL);
     }
 
     at = index(s, '@');
@@ -306,12 +306,12 @@ char *s;
       if (server_host) {
 	strcpy(server_host, s);
       }
-      server_engine = (char *)0;
+      server_engine = NULL;
     }
   }
   else {
-    server_host = (char *)0;
-    server_engine = (char *)0;
+    server_host = NULL;
+    server_engine = NULL;
   }
   return switch_engine(server_engine);
 }
@@ -340,7 +340,7 @@ int *map, *mip;
 char *
 RkwGetServerName()
 {
-  return Rk ? (*Rk->GetServerName)() : (char *)0;
+  return Rk ? (*Rk->GetServerName)() : NULL;
 }
 
 int
@@ -731,7 +731,7 @@ close_engine()
     dlh = (DSOHANDLE)0;
   }
 #endif /* DL */
-  Rk = (struct rkfuncs *)0;
+  Rk = NULL;
   current_engine = -1;
 }
 
@@ -765,7 +765,7 @@ RkGetServerHost()
     return iroha_server_name;
   }
   else {
-    return (char *)0;
+    return NULL;
   }
 }
 #endif /* !ENGINE_SWITCH */

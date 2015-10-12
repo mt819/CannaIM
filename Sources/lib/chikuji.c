@@ -136,7 +136,7 @@ restoreChikujiYomi(uiContext d, int old)
       }
 
       /* かなバッファとかも削る */
-      kPos2rPos(yc, 0, ll, (int *)0, &j);
+      kPos2rPos(yc, 0, ll, NULL, &j);
 
       if (yomiInfoLevel > 0) {
 	d->kanji_status_return->info |= KanjiYomiInfo;
@@ -172,7 +172,7 @@ restoreChikujiYomi(uiContext d, int old)
       return -1;
     }
     if (yomilen < yc->kEndp) { /* 必ず真では？ */
-      kPos2rPos(yc, 0, yc->kEndp - yomilen, (int *)0, &j);
+      kPos2rPos(yc, 0, yc->kEndp - yomilen, NULL, &j);
       yc->cStartp = yc->kEndp - yomilen;
       yc->cRStartp = j;
     }
@@ -265,7 +265,7 @@ chikujiSubstYomi(uiContext d)
       abandonContext(d, yc);
       return(-1);
     }
-    if (RkwBgnBun(yc->context, (wchar_t *)0, 1,
+    if (RkwBgnBun(yc->context, NULL, 1,
                     RK_XFER << RK_XFERBITS | RK_KFER) == NG) {
     substError:
       jrKanjiError = "\303\340\274\241\274\253\306\260\312\321\264\271\244\313"
@@ -321,7 +321,7 @@ ChikujiTanDeletePrevious(uiContext d)
     return d->nbytes;
   }
   if (RkwSubstYomi(yc->context, 0, yc->ye - yc->cStartp,
-                                    (wchar_t *)0, 0) == NG) {
+                                    NULL, 0) == NG) {
     /* 読みで残っている分を逐次のデータから消す */
     (void)makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
 	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
@@ -334,7 +334,7 @@ ChikujiTanDeletePrevious(uiContext d)
     /* カレント文節から後ろを読みに戻すための準備 */
     if (RkwGoTo(yc->context, i) == NG
 	|| RkwGetStat(yc->context, &stat) == NG
-	|| RkwStoreYomi(yc->context, (wchar_t *)0, 0) == NG) {
+	|| RkwStoreYomi(yc->context, NULL, 0) == NG) {
       (void)makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
 	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
                            /* 読みに戻すことができません */
@@ -402,7 +402,7 @@ chikuji_restore_yomi(uiContext d)
                           /* 未決文節を取り出せませんでした */
   }
   if (l != yc->kEndp - yc->cStartp) { /* 変わったら */
-    kPos2rPos(yc, 0, yc->kEndp - l, (int *)0, &j);
+    kPos2rPos(yc, 0, yc->kEndp - l, NULL, &j);
     yc->cStartp = yc->kEndp - l;
     yc->cRStartp = j;
   }
@@ -529,7 +529,7 @@ ChikujiYomiDeletePrevious(uiContext d)
     }
     else {
       if (RkwSubstYomi(yc->context, 0, yc->ye - yc->cStartp,
-                                        (wchar_t *)0, 0) == NG) {
+                                        NULL, 0) == NG) {
 	(void)makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
 	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
                              /* 読みに戻すことができません */
@@ -541,7 +541,7 @@ ChikujiYomiDeletePrevious(uiContext d)
       for (i = yc->nbunsetsu - 1; i >= yc->curbun; i--) {
 	if (RkwGoTo(yc->context, i) == NG ||
 	    RkwGetStat(yc->context, &stat) == NG ||
-	    RkwStoreYomi(yc->context, (wchar_t *)0, 0) == NG) {
+	    RkwStoreYomi(yc->context, NULL, 0) == NG) {
 	  return makeRkError(d, "\306\311\244\337\244\313\314\341\244\271"
 	"\244\263\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
                                 /* 読みに戻すことができません */

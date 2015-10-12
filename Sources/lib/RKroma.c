@@ -121,12 +121,12 @@ char *romaji;
 #endif
 	if ( (dic = open((char *)romaji, open_flags)) < 0 ) {
 		free(rdic);
-		return((struct RkRxDic *)0);
+		return NULL;
 	}
 	if ( readHeader(rdic, dic) ) {
 		close(dic);
 		free(rdic);
-		return((struct RkRxDic *)0);
+		return NULL;
 	}
 	if (rdic->nr_strsz > 0) {
 	  rdic->nr_string =
@@ -135,7 +135,7 @@ char *romaji;
 	  if ( !rdic->nr_string ) {
 		close(dic);
 		free(rdic);
-		return((struct RkRxDic *)0);
+		return NULL;
 	  }
 
 	  sz = read(dic, (char *)rdic->nr_string, rdic->nr_strsz);
@@ -143,11 +143,11 @@ char *romaji;
 	  if ( sz != rdic->nr_strsz ) {
 	    free(rdic->nr_string);
 	    free(rdic);
-	    return((struct RkRxDic *)0);
+	    return NULL;
 	  }
 	}
 	else {
-	  rdic->nr_string = (unsigned char *)0;
+	  rdic->nr_string = NULL;
 	}
 
 	if (rdic->nr_nkey > 0) {
@@ -157,11 +157,11 @@ char *romaji;
 	  if ( !rdic->nr_keyaddr ) {
 	    free(rdic->nr_string);
 	    free(rdic);
-	    return((struct RkRxDic *)0);
+	    return NULL;
 	  }
 	}
 	else {
-	  rdic->nr_keyaddr = (unsigned char **)0;
+	  rdic->nr_keyaddr = NULL;
 	}
 
 	s = rdic->nr_string;
@@ -180,11 +180,11 @@ char *romaji;
                                                        sizeof(unsigned char));
 	  }
 	  else {
-	    rdic->nr_brules = (unsigned char *)0;
+	    rdic->nr_brules = NULL;
 	  }
 	}
 	else {
-	  rdic->nr_brules = (unsigned char *)0;
+	  rdic->nr_brules = NULL;
 	}
 
 	/* ルールの読み込み */
@@ -499,7 +499,7 @@ int		p;
   register unsigned char	*kana;
 
   if (rdic->dic == RX_RXDIC) {
-    return (unsigned char *)0;
+    return NULL;
   }
   kana = rdic->nr_keyaddr[p];
   while (*kana++)
