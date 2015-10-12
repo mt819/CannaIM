@@ -23,21 +23,21 @@
 
 class BackBox:public BBox{
 public:
-	BackBox(BRect frame, BLooper *looper);
+	BackBox(BRect frame);
 	virtual	void	MouseDown(BPoint point);
 	virtual			~BackBox();
-private:
+	virtual void	AttachedToWindow();
 	BPopUpMenu*		fMenu;
 };
 
 
-BackBox::BackBox(BRect frame, BLooper *looper)
+BackBox::BackBox(BRect frame)
 :BBox(frame, NULL,
 	B_FOLLOW_LEFT | B_FOLLOW_TOP,
 	B_WILL_DRAW | B_FRAME_EVENTS | B_NAVIGABLE_JUMP,
 	B_FANCY_BORDER)
 {
-	fMenu = new BPopUpMenu(B_EMPTY_STRING);
+	fMenu = new BPopUpMenu(B_EMPTY_STRING, false, false);
 	fMenu->AddItem(new BMenuItem("About CannaIM" B_UTF8_ELLIPSIS,
 		new BMessage( B_ABOUT_REQUESTED)));
 	fMenu->AddSeparatorItem();
@@ -45,7 +45,6 @@ BackBox::BackBox(BRect frame, BLooper *looper)
 		new BMessage(ARROW_KEYS_FLIPPED)));
 	fMenu->AddItem(new BMenuItem("Reload Init file",
 		new BMessage(RELOAD_INIT_FILE)));
-	fMenu->SetTargetForItems(looper);
 
 	if (gSettings.convert_arrowkey) {
 		BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
@@ -57,6 +56,12 @@ BackBox::~BackBox()
 	delete fMenu;
 }
 
+
+void
+BackBox::AttachedToWindow()
+{
+	fMenu->SetTargetForItems(this->Window());
+}
 
 void
 BackBox::MouseDown(BPoint point)
@@ -80,8 +85,8 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 	frame.OffsetTo( -1, -1 );
 	frame.bottom += 3;
 	frame.right += 3;
-	BackBox *back = new BackBox( frame , looper);
-	AddChild( back );
+	fBack = new BackBox( frame);
+	AddChild( fBack );
 
 	BRect largerect( 0, 0, HexOnwidth - 1, HexOnheight - 1 );
 	BRect smallrect( 0, 0, HiraOnwidth - 1, HiraOnheight - 1);
@@ -91,146 +96,145 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 	BPicture *onpict, *offpict;
 	BBitmap *smallimage, *largeimage;
 	BMessage *msg;
-//printf( "smallbytes = %d\n", smallbytes );
 	smallimage = new BBitmap( smallrect, cspace );
 	largeimage = new BBitmap( largerect, cspace );
 
-	back->MovePenTo( 0, 0 );
+	fBack->MovePenTo( 0, 0 );
 
 	smallimage->SetBits( HiraOnbits, smallbytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( smallimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( smallimage );
+	onpict = fBack->EndPicture();
 	smallimage->SetBits( HiraOffbits, smallbytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( smallimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( smallimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_HenkanMode );
 	HiraButton = new BPictureButton( BRect( 4, 4, 4 + HiraOnwidth - 1,
 		4 + HiraOnheight - 1), "hira", offpict, onpict,
 		msg, B_TWO_STATE_BUTTON );
-	back->AddChild( HiraButton );
+	fBack->AddChild( HiraButton );
 
 	smallimage->SetBits( KataOnbits, smallbytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( smallimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( smallimage );
+	onpict = fBack->EndPicture();
 	smallimage->SetBits( KataOffbits, smallbytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( smallimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( smallimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_ZenKataHenkanMode );
 	KataButton = new BPictureButton( BRect( 26, 4, 26 + HiraOnwidth - 1,
 		4 + HiraOnheight - 1 ), "kata", offpict, onpict,
 		msg, B_TWO_STATE_BUTTON );
-	back->AddChild( KataButton );
+	fBack->AddChild( KataButton );
 
 	smallimage->SetBits( ZenAlphaOnbits, smallbytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( smallimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( smallimage );
+	onpict = fBack->EndPicture();
 	smallimage->SetBits( ZenAlphaOffbits, smallbytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( smallimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( smallimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_ZenAlphaHenkanMode );
 	ZenAlphaButton = new BPictureButton( BRect( 48, 4, 48 + HiraOnwidth - 1,
 		4 + HiraOnheight - 1 ), "zenalpha", offpict, onpict,
 		msg, B_TWO_STATE_BUTTON );
-	back->AddChild( ZenAlphaButton );
+	fBack->AddChild( ZenAlphaButton );
 
 	smallimage->SetBits( HanAlphaOnbits, smallbytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( smallimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( smallimage );
+	onpict = fBack->EndPicture();
 	smallimage->SetBits( HanAlphaOffbits, smallbytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( smallimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( smallimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_HanAlphaHenkanMode );
 	HanAlphaButton = new BPictureButton( BRect( 70, 4, 70 + HiraOnwidth - 1,
 		4 + HiraOnheight - 1 ), "hanalpha", offpict, onpict,
 		msg, B_TWO_STATE_BUTTON );
-	back->AddChild( HanAlphaButton );
+	fBack->AddChild( HanAlphaButton );
 
 	largeimage->SetBits( ExtendOnbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	onpict = fBack->EndPicture();
 	largeimage->SetBits( ExtendOffbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_TourokuMode );
 	ExtendButton = new BPictureButton( BRect( 94, 4, 94 + HexOnwidth -1 ,
 		4 + HexOnheight - 1 ), "extend", offpict, onpict,
 		msg, B_TWO_STATE_BUTTON );
-	back->AddChild( ExtendButton );
+	fBack->AddChild( ExtendButton );
 
 	largeimage->SetBits( KigoOnbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	onpict = fBack->EndPicture();
 	largeimage->SetBits( KigoOffbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_KigoMode );
 	KigoButton = new BPictureButton( BRect( 4, 26, 4 + HexOnwidth -1,
 		26 + HexOnheight - 1 ), "kigo", offpict, onpict,
 		msg, B_TWO_STATE_BUTTON );
-	back->AddChild( KigoButton );
+	fBack->AddChild( KigoButton );
 
 	largeimage->SetBits( HexOnbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	onpict = fBack->EndPicture();
 	largeimage->SetBits( HexOffbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_HexMode );
 	HexButton = new BPictureButton( BRect( 34, 26, 34 + HexOnwidth -1,
 		26 + HexOnheight - 1 ), "hex", offpict, onpict,
 		msg, B_TWO_STATE_BUTTON );
-	back->AddChild( HexButton );
+	fBack->AddChild( HexButton );
 
 	largeimage->SetBits( BushuOnbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	onpict = fBack->EndPicture();
 	largeimage->SetBits( BushuOffbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_BushuMode );
 	BushuButton = new BPictureButton( BRect( 64, 26, 64 + HexOnwidth -1,
 		26 + HexOnheight - 1 ), "bushu", offpict, onpict,
 		msg, B_TWO_STATE_BUTTON );
-	back->AddChild( BushuButton );
+	fBack->AddChild( BushuButton );
 
 /*
 	largeimage->SetBits( TorokuOnbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	onpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	onpict = fBack->EndPicture();
 	largeimage->SetBits( TorokuOffbits, largebytes, 0, cspace );
-	back->BeginPicture( new BPicture );
-	back->DrawBitmap( largeimage );
-	offpict = back->EndPicture();
+	fBack->BeginPicture( new BPicture );
+	fBack->DrawBitmap( largeimage );
+	offpict = fBack->EndPicture();
 	msg = new BMessage( MODE_CHANGED_FROM_PALETTE );
 	msg->AddInt32( "mode", CANNA_MODE_ExtendMode );
 	TorokuButton = new BPictureButton( BRect( 87, 26, 110, 41 ), "toroku",
 						offpict, onpict, msg, B_TWO_STATE_BUTTON );
-	back->AddChild( TorokuButton );
+	fBack->AddChild( TorokuButton );
 */
 	HiraButton->SetValue( B_CONTROL_ON );
 	delete smallimage;
@@ -275,9 +279,11 @@ PaletteWindow::MessageReceived( BMessage *msg )
 			break;
 
 		case ARROW_KEYS_FLIPPED:
-			BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
+		{
 			gSettings.convert_arrowkey = !gSettings.convert_arrowkey;
+			BMenuItem* item = (fBack->fMenu)->FindItem(ARROW_KEYS_FLIPPED);
 			item->SetMarked(gSettings.convert_arrowkey);
+		}
 		case B_ABOUT_REQUESTED:
 		case RELOAD_INIT_FILE:
 		case MODE_CHANGED_FROM_PALETTE:
