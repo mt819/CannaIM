@@ -92,7 +92,7 @@ newKigoContext()
   ichiranContext kcxt;
 
   if((kcxt = (ichiranContext)malloc(sizeof(ichiranContextRec)))
-                                         == (ichiranContext)NULL) {
+                                         == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newKigoContext) できませんでした";
 #else
@@ -138,7 +138,7 @@ canna_callback_t quitCallback, auxCallback;
     return(NG);
   }
 
-  if((kc = newKigoContext()) == (ichiranContext)NULL) {
+  if((kc = newKigoContext()) == NULL) {
     popCallback(d);
     return(NG);
   }

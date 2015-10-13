@@ -219,7 +219,7 @@ char *romaji;
 	  if (rdic->nr_brules)
             free(rdic->nr_brules);
 	  free(rdic);
-	  return (struct RkRxDic *)NULL;
+	  return NULL;
 	}
 
         for (i = 0; i < rdic->nr_nkey; i++) {

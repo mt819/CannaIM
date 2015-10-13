@@ -161,14 +161,14 @@ newTourokuContext()
   tourokuContext tcxt;
 
   if ((tcxt = (tourokuContext)malloc(sizeof(tourokuContextRec)))
-                                          == (tourokuContext)NULL) {
+                                          == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newTourokuContext) できませんでした";
 #else
     jrKanjiError = "malloc (newTourokuContext) \244\307\244\255\244\336"
 	"\244\273\244\363\244\307\244\267\244\277";
 #endif
-    return (tourokuContext)NULL;
+    return NULL;
   }
   clearTourokuContext(tcxt);
 
@@ -193,7 +193,7 @@ uiContext d;
     return(NG);
   }
 
-  if((tc = newTourokuContext()) == (tourokuContext)NULL) {
+  if((tc = newTourokuContext()) == NULL) {
     popCallback(d);
     return(NG);
   }
@@ -553,7 +553,7 @@ uiContext d;
 
   /* return BUFFER の alloc */
   if ((tourokup = (wchar_t **)calloc(nmudic + 2, sizeof(wchar_t *)))
-                                                  == (wchar_t **)NULL) {
+                                                  == NULL) {
     /* + 2 なのは 1 個増える可能性があるのと打ち止めマークをいれるため */
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (getUserDicName) できませんでした";

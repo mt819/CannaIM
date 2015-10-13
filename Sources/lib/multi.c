@@ -244,7 +244,7 @@ int
 DoFuncSequence(d) /* 複数の機能の割り当て */
 uiContext d;
 {
-  return _DoFuncSequence(d, (BYTE *)NULL, (BYTE)0);
+  return _DoFuncSequence(d, NULL, (BYTE)0);
 }
 
 int

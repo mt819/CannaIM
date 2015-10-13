@@ -56,14 +56,14 @@ newMountContext()
   mountContext mcxt;
 
   if ((mcxt = (mountContext)calloc(1, sizeof(mountContextRec)))
-                                           == (mountContext)NULL) {
+                                           == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newMountContext) できませんでした";
 #else
     jrKanjiError = "malloc (newMountContext) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
 #endif
-    return (mountContext)NULL;
+    return NULL;
   }
   mcxt->id = MOUNT_CONTEXT;
 
@@ -113,7 +113,7 @@ uiContext d;
     return(NG);
   }
 
-  if((mc = newMountContext()) == (mountContext)NULL) {
+  if((mc = newMountContext()) == NULL) {
     popCallback(d);
     return(NG);
   }
@@ -345,7 +345,7 @@ uiContext d;
   int dicLc, dicMc, i;
   extern int defaultContext;
 
-  if((dicLbuf = malloc(ROMEBUFSIZE)) == (char *)NULL) {
+  if((dicLbuf = malloc(ROMEBUFSIZE)) == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (getDicList) できませんでした";
 #else
@@ -393,7 +393,7 @@ uiContext d;
     free(dicLbuf);
     return NG;
   }
-  if((dicLp = (char **)calloc(dicLc + 1, sizeof(char *))) == (char **)NULL) {
+  if((dicLp = (char **)calloc(dicLc + 1, sizeof(char *))) == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (getDicList) できませんでした";
 #else
@@ -403,7 +403,7 @@ uiContext d;
     free(dicLbuf);
     return(NG);
   }
-  if((soldp = (BYTE *)malloc(dicLc + 1)) == (BYTE *)NULL) {
+  if((soldp = (BYTE *)malloc(dicLc + 1)) == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (getDicList) できませんでした";
 #else
@@ -414,7 +414,7 @@ uiContext d;
     free(dicLp);
     return(NG);
   }
-  if((snewp = (BYTE *)malloc(dicLc + 1)) == (BYTE *)NULL) {
+  if((snewp = (BYTE *)malloc(dicLc + 1)) == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (getDicList) できませんでした";
 #else
@@ -432,7 +432,7 @@ uiContext d;
       /* EMPTY */
       ; /* NULL までスキップし、NULL の次までポインタを進める */
   }
-  dicLp[i] = (char *)NULL;
+  dicLp[i] = NULL;
 
   if(defaultContext == -1) {
     if((KanjiInit() != 0) || (defaultContext == -1)) {
@@ -478,7 +478,7 @@ uiContext d;
       /* EMPTY */
       ; /* NULL までスキップし、NULL の次までポインタを進める */
   }
-  dicMp[i] = (char *)NULL;
+  dicMp[i] = NULL;
 
   for(i=0, sop=soldp, snp=snewp; i<dicLc; i++, sop++, snp++) {
     *sop = 0;

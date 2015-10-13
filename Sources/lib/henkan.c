@@ -634,7 +634,7 @@ yomiContext yc;
 {
   int cur = yc->curbun, i, len, ylen = 0, rlen = 0, ret = 0;
   tanContext tan, prevLeft = yc->left, curtan = (tanContext)0;
-  tanContext st = (tanContext)NULL, et = (tanContext)NULL;
+  tanContext st = NULL, et = NULL;
   BYTE *p, *q, *r;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   wchar_t xxx[ROMEBUFSIZE];
@@ -1108,7 +1108,7 @@ KanjiMode prev;
 {
   yomiContext yc;
 
-  yc = newYomiContext((wchar_t *)NULL, 0, /* 結果は格納しない */
+  yc = newYomiContext(NULL, 0, /* 結果は格納しない */
 		      CANNA_NOTHING_RESTRICTED,
 		      (int)!CANNA_YOMI_CHGMODE_INHIBITTED,
 		      (int)!CANNA_YOMI_END_IF_KAKUTEI,
@@ -1181,7 +1181,7 @@ wchar_t *kanji;
     if (kanji) {
       if (doYomiHenkan(d, 0, kanji, yc)) {
 	freeYomiContext(yc);
-	return (yomiContext)NULL;
+	return NULL;
       }
       yc->curMode = &tankouho_mode;
       yc->minorMode = CANNA_MODE_TankouhoMode;
@@ -1239,7 +1239,7 @@ uiContext d;
   tanContext tan = (tanContext)d->modec;
   yomiContext yc;
 
-  yc = tanbunToYomi(d, tan, (wchar_t *)NULL);
+  yc = tanbunToYomi(d, tan, NULL);
   if (yc) {
     tanbunCommitYomi(d, tan, yc);
     currentModeInfo(d);

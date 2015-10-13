@@ -230,10 +230,10 @@ uiContext d;
   yomiContext		yc;
 
   if (pushCallback(d, (mode_context) NULL, NO_CALLBACK, NO_CALLBACK,
-		   NO_CALLBACK, NO_CALLBACK) == (struct callback *)NULL)
+		   NO_CALLBACK, NO_CALLBACK) == NULL)
     return NoMoreMemory();
 
-  yc = newYomiContext((wchar_t *)NULL, 0, /* 結果は格納しない */
+  yc = newYomiContext(NULL, 0, /* 結果は格納しない */
 		      CANNA_NOTHING_RESTRICTED,
 		      (int)!CANNA_YOMI_CHGMODE_INHIBITTED,
 		      (int)!CANNA_YOMI_END_IF_KAKUTEI,
@@ -664,7 +664,7 @@ freeBuffer()
   if(CANNA_initfilename) {
     free(CANNA_initfilename);
   }
-  CANNA_initfilename = (char *)NULL;
+  CANNA_initfilename = NULL;
 }
 
 static void
@@ -678,7 +678,7 @@ freeExtra()
     switch (p->keyword) {
       case EXTRA_FUNC_DEFMODE:
         if (p->u.modeptr->romdic_owner &&
-	    p->u.modeptr->romdic != (struct RkRxDic *)NULL) {
+	    p->u.modeptr->romdic != NULL) {
 	  RkwCloseRoma(p->u.modeptr->romdic);
 	}
         free(p->u.modeptr->emode);
@@ -1345,7 +1345,7 @@ wcKanjiStatusWithValue *arg;
   return 0;
 }
 
-char *initFileSpecified = (char *)NULL;
+char *initFileSpecified = NULL;
 
 static int
 KC_setInitFileName(d, arg)
@@ -1370,7 +1370,7 @@ KC_setInitFileName(d, arg)
     }
   }
   else {
-    initFileSpecified = (char *)NULL;
+    initFileSpecified = NULL;
   }
   return 0;
 }

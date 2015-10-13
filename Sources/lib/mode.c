@@ -152,7 +152,7 @@ uiContext d;
       gmodename = modestr(d->minorMode);
       d->majorMode = cc->majorMode;
       d->minorMode = cc->minorMode;
-      if (modename && (gmodename == (wchar_t *)NULL ||
+      if (modename && (gmodename == NULL ||
 		       WStrcmp(modename, gmodename))) {
 	d->kanji_status_return->mode = modename;
 	d->kanji_status_return->info |= KanjiModeInfo;

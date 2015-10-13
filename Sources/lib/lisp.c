@@ -2675,7 +2675,7 @@ int n;
     error("load: illegal file name  ",p);
     /* NOTREACHED */
   }
-  if ((instream = fopen(xstring(p), "r")) == (FILE *)NULL) {
+  if ((instream = fopen(xstring(p), "r")) == NULL) {
     error("load: file not found  ",p);
     /* NOTREACHED */
   }

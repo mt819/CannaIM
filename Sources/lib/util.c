@@ -112,7 +112,7 @@ GlineClear(d)
 uiContext d;
 {
   d->kanji_status_return->info |= KanjiGLineInfo;
-  d->kanji_status_return->gline.line = (wchar_t *)NULL;
+  d->kanji_status_return->gline.line = NULL;
   d->kanji_status_return->gline.length = 0;
   d->kanji_status_return->gline.revPos = 0;
   d->kanji_status_return->gline.revLen = 0;
@@ -143,7 +143,7 @@ void
 echostrClear(d)
 uiContext d;
 {
-  d->kanji_status_return->echoStr = (wchar_t *)NULL;
+  d->kanji_status_return->echoStr = NULL;
   d->kanji_status_return->length =
     d->kanji_status_return->revPos = d->kanji_status_return->revLen = 0;
 }
@@ -1296,7 +1296,7 @@ int destlen;
 
  */
 
-static wchar_t **wsmemories = (wchar_t **)NULL;
+static wchar_t **wsmemories = NULL;
 static int nwsmemories = 0;
 
 #define WSBLOCKSIZE 128
@@ -1314,7 +1314,7 @@ char *s;
   int i, len;
   wchar_t *temp, **wm;
 
-  if (wsmemories == (wchar_t **)NULL) {
+  if (wsmemories == NULL) {
     nwsmemories = WSBLOCKSIZE;
     if (!(wsmemories = (wchar_t **)calloc(nwsmemories, sizeof(wchar_t *))))
       return NULL ;

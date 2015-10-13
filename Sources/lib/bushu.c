@@ -270,13 +270,13 @@ newForIchiranContext()
   forichiranContext fcxt;
 
   if ((fcxt = (forichiranContext)malloc(sizeof(forichiranContextRec)))
-                                             == (forichiranContext)NULL) {
+                                             == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newForIchiranContext) できませんでした";
 #else
     jrKanjiError = "malloc (newForIchiranContext) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";  /* できませんでした */
 #endif
-    return (forichiranContext)NULL;
+    return NULL;
   }
   clearForIchiranContext(fcxt);
 

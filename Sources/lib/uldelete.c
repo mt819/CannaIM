@@ -204,7 +204,7 @@ uiContext d;
 
   d->status = 0;
 
-  yc = GetKanjiString(d, (wchar_t *)NULL, 0,
+  yc = GetKanjiString(d, NULL, 0,
 	       CANNA_NOTHING_RESTRICTED,
 	       (int)CANNA_YOMI_CHGMODE_INHIBITTED,
 	       (int)CANNA_YOMI_END_IF_KAKUTEI,
@@ -311,7 +311,7 @@ int *num_return;
 
   /* return BUFFER の alloc */
   if ((tourokup = (wchar_t **)calloc(nmmdic + 1, sizeof(wchar_t *)))
-                                                  == (wchar_t **)NULL) {
+                                                  == NULL) {
     /* + 1 なのは打ち止めマークをいれるため */
     jrKanjiError = "malloc (getMountDicName) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
@@ -428,7 +428,7 @@ tourokuContext tc;
   deldicinfo *dic;
 
   dic = (deldicinfo *)malloc((nelem + 1) * sizeof(deldicinfo));
-  if (dic == (deldicinfo *)NULL) {
+  if (dic == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (getEffectDic) できませんでした";
 #else
@@ -857,7 +857,7 @@ mountContext mc;
   }
 
   dic = (deldicinfo *)malloc((num + 1) * sizeof(deldicinfo));
-  if (dic != (deldicinfo *)NULL) {
+  if (dic != NULL) {
     tc->workDic3 = dic;
 
     /* どの辞書から単語を削除するか */
@@ -969,9 +969,9 @@ uiContext d;
     return GLineNGReturnTK(d);
   }
 
-  if ((dicLbuf = (char *)malloc(ROMEBUFSIZE)) != (char *)NULL) {
+  if ((dicLbuf = (char *)malloc(ROMEBUFSIZE)) != NULL) {
     if ((dicLp = (char **)calloc(upnelem + 1, sizeof(char *)))
-                                               != (char **)NULL) {
+                                               != NULL) {
       wptr = dicLbuf;
       for (work = tc->workDic2; work->name; work++) {
         i = CANNA_wcstombs(wptr, work->name, ROMEBUFSIZE);
@@ -984,13 +984,13 @@ uiContext d;
           /* EMPTY */
           ;
       }
-      dicLp[i] = (char *)NULL;
+      dicLp[i] = NULL;
 
       /* 現在の状態はすべて off にしておく */
       if ((soldp = (BYTE *)calloc(upnelem + 1, sizeof(BYTE)))
-                                               != (BYTE *)NULL) {
+                                               != NULL) {
         if ((snewp = (BYTE *)calloc(upnelem + 1, sizeof(BYTE)))
-                                                 != (BYTE *)NULL) {
+                                                 != NULL) {
           if ((retval = getMountContext(d)) != NG) {
             mc = (mountContext)d->modec;
             mc->mountOldStatus = soldp;

@@ -42,13 +42,13 @@ newYesNoContext()
   coreContext ccxt;
 
   if ((ccxt = (coreContext)malloc(sizeof(coreContextRec)))
-                                       == (coreContext)NULL) {
+                                       == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newcoreContext) できませんでした";
 #else
     jrKanjiError = "malloc (newcoreContext) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
 #endif
-    return (coreContext)NULL;
+    return NULL;
   }
   ccxt->id = CORE_CONTEXT;
 
@@ -83,7 +83,7 @@ canna_callback_t quitCallback, auxCallback;
     return(NG);
   }
 
-  if((qc = newYesNoContext()) == (coreContext)NULL) {
+  if((qc = newYesNoContext()) == NULL) {
     popCallback(d);
     return(NG);
   }

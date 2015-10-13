@@ -121,7 +121,7 @@ int nkeysup = 0;
  * ファイル名は","で区切られる。(拡張機能で使用)
  */
 
-char *CANNA_initfilename = (char *)NULL;
+char *CANNA_initfilename = NULL;
 
 /*
  * バージョン
@@ -129,7 +129,7 @@ char *CANNA_initfilename = (char *)NULL;
 
 int protocol_version = -1;
 int server_version = -1;
-char *server_name = (char *)NULL;
+char *server_name = NULL;
 
 int chikuji_debug = 0;
 int auto_define = 0;
@@ -138,13 +138,13 @@ void (*keyconvCallback)() = (void (*)())0;
 
 extraFunc *extrafuncp = (extraFunc *)NULL;
 struct dicname *kanjidicnames; /* .canna で指定している辞書リスト */
-char *kataautodic = (char *)NULL; /* カタカナ語自動登録用辞書 */
+char *kataautodic = NULL; /* カタカナ語自動登録用辞書 */
 #ifdef HIRAGANAAUTO
-char *hiraautodic = (char *)NULL; /* ひらがな語自動登録用辞書 */
+char *hiraautodic = NULL; /* ひらがな語自動登録用辞書 */
 #endif
 
 /* ユーザ情報 */
-jrUserInfoStruct *uinfo = (jrUserInfoStruct *)NULL;
+jrUserInfoStruct *uinfo = NULL;
 
  /* マウント処理を行っているかどうか */
 int mountnottry = 1;
@@ -198,7 +198,7 @@ freeUInfo()
     if (uinfo->romkanatable)
       free(uinfo->romkanatable);
     free((char *)uinfo);
-    uinfo = (jrUserInfoStruct *)NULL;
+    uinfo = NULL;
   }
 }
 
@@ -211,30 +211,30 @@ restoreBindings()
   InitCannaConfig(&cannaconf);
 
   if (initfunc) free(initfunc);
-  initfunc = (BYTE *)NULL;
+  initfunc = NULL;
 
   if (server_name) free(server_name);
-  server_name = (char *)NULL;
+  server_name = NULL;
 
   if (RomkanaTable) {
     free(RomkanaTable);
-    RomkanaTable = (char *)NULL;
+    RomkanaTable = NULL;
   }
   if (EnglishTable) {
     free(EnglishTable);
-    EnglishTable = (char *)NULL;
+    EnglishTable = NULL;
   }
-  romajidic = (struct RkRxDic *)NULL;
-  englishdic = (struct RkRxDic *)NULL;
-  RengoGakushu = (struct dicname *)NULL;
-  KatakanaGakushu = (struct dicname *)NULL;
-  HiraganaGakushu = (struct dicname *)NULL;
+  romajidic = NULL;
+  englishdic = NULL;
+  RengoGakushu = NULL;
+  KatakanaGakushu = NULL;
+  HiraganaGakushu = NULL;
   howToBehaveInCaseOfUndefKey = kc_normal;
-/*  kanjidicname[nkanjidics = 0] = (char *)NULL; 代わりのことをしなければ */
-  kanjidicnames = (struct dicname *)NULL;
-  kataautodic = (char *)NULL;
+/*  kanjidicname[nkanjidics = 0] = NULL; 代わりのことをしなければ */
+  kanjidicnames = NULL;
+  kataautodic = NULL;
 #ifdef HIRAGANAAUTO
-  hiraautodic = (char *)NULL;
+  hiraautodic = NULL;
 #endif
   auto_define = 0;
   saveapname[0] = '\0';

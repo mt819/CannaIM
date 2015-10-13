@@ -144,7 +144,7 @@ int major_mode;
 {
   yomiContext yc;
 
-  yc = GetKanjiString(d, (wchar_t *)NULL, 0,
+  yc = GetKanjiString(d, NULL, 0,
 		      CANNA_ONLY_HEX,
 		      (int)CANNA_YOMI_CHGMODE_INHIBITTED,
 		      (int)CANNA_YOMI_END_IF_KAKUTEI,

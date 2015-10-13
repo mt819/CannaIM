@@ -477,7 +477,7 @@ unsigned char key;
 	"\244\362\244\337\244\304\244\261\244\351\244\354\244\336\244\273"
 	"\244\363\244\307\244\267\244\277\241\243\n",0,0,0);
 #endif
-  return (unsigned char *)NULL; /* 該当するキーシーケンスは存在しない */
+  return NULL; /* 該当するキーシーケンスは存在しない */
 }
 
 /* ハッシュテーブルに登録 */
@@ -509,7 +509,7 @@ unsigned char *buff;
     p->kinou_seq = (unsigned char *)malloc(strlen((char *)buff)+1);
     if(p->kinou_seq)
       strcpy((char *)p->kinou_seq,(char *)buff);
-    p->next = (struct seq_struct *)NULL;
+    p->next = NULL;
   }
 }
 
@@ -722,7 +722,7 @@ int      depth;
                                                   /* は%dです。 */
 	p->mode->keytbl[2] = (BYTE)-1;
 
-        p->next = (struct map *)NULL;
+        p->next = NULL;
         if (p->mode->keytbl[1] == CANNA_FN_FuncSequence) {
           regist_act_hash((unsigned char *)p->mode, keybuff[depth+1], actbuff);
         }
@@ -764,7 +764,7 @@ struct map ***ppp;
   debug_message("mapFromHash:map\244\254\244\337\244\304\244\253\244\352"
 	"\244\336\244\273\244\363\241\243\n",0,0,0);
 #endif
-  return (struct map *)NULL;
+  return NULL;
 }
 
 static int
@@ -824,7 +824,7 @@ copyMultiSequence(key, old_tbl, new_tbl)
     if (p->mode) {
       p->mode->func = multiSequenceFunc;
       p->mode->flags = 0;
-      p->next = (struct map *)NULL;
+      p->next = NULL;
       p->mode->keytbl = (unsigned char *)malloc(sequencelen+1);
       if (p->mode->keytbl) {
 	for (i = 0, new_sequence = p->mode->keytbl; i <= sequencelen; i++) {

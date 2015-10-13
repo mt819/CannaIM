@@ -351,12 +351,12 @@ char *table;
     retval = RkwOpenRoma(table);
 
     if (ckverbose == CANNA_FULL_VERBOSE) {
-      if (retval != (struct RkRxDic *)NULL) { /* 辞書がオープンできた */
+      if (retval != NULL) { /* 辞書がオープンできた */
         printf("ローマ字かな変換テーブルは \"%s\" を用います。\n", table);
       }
     }
 
-    if (retval == (struct RkRxDic *)NULL) {
+    if (retval == NULL) {
       /* もし辞書がオープンできなければエラー */
       extern jrUserInfoStruct *uinfo;
 
@@ -380,12 +380,12 @@ char *table;
       }
 
       if (ckverbose == CANNA_FULL_VERBOSE) {
-	if (retval != (struct RkRxDic *)NULL) {
+	if (retval != NULL) {
           printf("ローマ字かな変換テーブルは \"%s\" を用います。\n", rdic);
 	}
       }
 
-      if (retval == (struct RkRxDic *)NULL) { /* これもオープンできない */
+      if (retval == NULL) { /* これもオープンできない */
         extern jrUserInfoStruct *uinfo;
 
         rdic[0] = '\0';
@@ -404,7 +404,7 @@ char *table;
 	retval = RkwOpenRoma(rdic);
 
 	if (ckverbose) {
-	  if (retval != (struct RkRxDic *)NULL) {
+	  if (retval != NULL) {
 	    if (ckverbose == CANNA_FULL_VERBOSE) {
               printf("ローマ字かな変換テーブルは \"%s\" を用います。\n", rdic);
 	    }
@@ -412,7 +412,7 @@ char *table;
 	}
       }
 
-      if (retval == (struct RkRxDic *)NULL) { /* added for Debian by ISHIKAWA Mutsumi <ishikawa@linux.or.jp> */
+      if (retval == NULL) { /* added for Debian by ISHIKAWA Mutsumi <ishikawa@linux.or.jp> */
         extern jrUserInfoStruct *uinfo;
 
         rdic[0] = '\0';
@@ -427,7 +427,7 @@ char *table;
 	retval = RkwOpenRoma(rdic);
 
 	if (ckverbose) {
-	  if (retval != (struct RkRxDic *)NULL) {
+	  if (retval != NULL) {
 	    if (ckverbose == CANNA_FULL_VERBOSE) {
               printf("ローマ字かな変換テーブルは \"%s\" を用います。\n", rdic);
 	    }
@@ -451,7 +451,7 @@ char *table;
 	retval = RkwOpenRoma(rdic);
 
 	if (ckverbose) {
-	  if (retval != (struct RkRxDic *)NULL) {
+	  if (retval != NULL) {
 	    if (ckverbose == CANNA_FULL_VERBOSE) {
               printf("ローマ字かな変換テーブルは \"%s\" を用います。\n", rdic);
 	    }
@@ -460,7 +460,7 @@ char *table;
       }
 #endif
 
-      if (retval == (struct RkRxDic *)NULL) { /* 全部オープンできない */
+      if (retval == NULL) { /* 全部オープンできない */
 	sprintf(rdic,
 #ifdef CODED_MESSAGE
 		"ローマ字かな変換テーブル(%s)がオープンできません。",
@@ -534,7 +534,7 @@ RomkanaInit()
  #endif
     romajidic = RkwOpenRoma(buf);
 
-    if (romajidic != (struct RkRxDic *)NULL) {
+    if (romajidic != NULL) {
       int len = strlen(buf);
       RomkanaTable = malloc(len + 1);
       if (RomkanaTable) {
@@ -630,31 +630,31 @@ RomkanaFin()
   int i;
 
   /* ローマ字かな変換テーブルのクローズ */
-  if (romajidic != (struct RkRxDic *)NULL) {
+  if (romajidic != NULL) {
     RkwCloseRoma(romajidic);
   }
   if (RomkanaTable) {
     free(RomkanaTable);
-    RomkanaTable = (char *)NULL;
+    RomkanaTable = NULL;
   }
 #ifndef NOT_ENGLISH_TABLE
-  if (englishdic != (struct RkRxDic *)NULL) {
+  if (englishdic != NULL) {
     RkwCloseRoma(englishdic);
   }
   if (EnglishTable) {
     free(EnglishTable);
-    EnglishTable = (char *)NULL;
+    EnglishTable = NULL;
   }
 #endif
   /* ローマ字かな変換ルールの補足のための領域の解放 */
   for (i = 0 ; i < nkeysup ; i++) {
     if (keysup[i].cand) {
       free(keysup[i].cand);
-      keysup[i].cand = (wchar_t **)NULL;
+      keysup[i].cand = NULL;
     }
     if (keysup[i].fullword) {
       free(keysup[i].fullword);
-      keysup[i].fullword = (wchar_t *)NULL;
+      keysup[i].fullword = NULL;
     }
   }
   nkeysup = 0;
@@ -1253,7 +1253,7 @@ int flag, english;
 	yc->kana_buffer[yc->kRStartp] =
 	  yc->romaji_buffer[yc->rStartp] = keysup[sup - 1].xkey;
       }
-      if (yc->romdic != (struct RkRxDic *)NULL
+      if (yc->romdic != NULL
 	  && !(yc->generalFlags & CANNA_YOMI_ROMAJI)) {
 	if (engflag &&
 	    RkwMapPhonogram(englishdic, kana_char, 1024,
@@ -2027,7 +2027,7 @@ uiContext d;
 
   if (yc->kCurs != yc->kRStartp) {
     d->nbytes = 0;
-    if (RomajiFlushYomi(d, (wchar_t *)NULL, 0) == 0) { /* empty mode */
+    if (RomajiFlushYomi(d, NULL, 0) == 0) { /* empty mode */
       d->more.todo = 1;
       d->more.ch = d->ch;
       d->more.fnum = 0;    /* 上の ch で示される処理をせよ */
@@ -2244,7 +2244,7 @@ yomiContext yc;
 {
   yomiContext res;
 
-  res = newYomiContext((wchar_t *)NULL, 0, /* 結果は格納しない */
+  res = newYomiContext(NULL, 0, /* 結果は格納しない */
 		       CANNA_NOTHING_RESTRICTED,
 		       (int)!CANNA_YOMI_CHGMODE_INHIBITTED,
 		       (int)!CANNA_YOMI_END_IF_KAKUTEI,
@@ -2882,7 +2882,7 @@ uiContext d;
     while ( yc->rStartp > 0 && !(yc->rAttr[yc->rStartp] & SENTOU) ) {
       yc->rStartp--;
     }
-    romajiReplace (-1, (wchar_t *)NULL, 0, 0);
+    romajiReplace (-1, NULL, 0, 0);
     yc->kRStartp = yc->kCurs - 1;
     while ( yc->kRStartp > 0 && !(yc->kAttr[yc->kRStartp] & SENTOU) )
       yc->kRStartp--;
@@ -2933,9 +2933,9 @@ uiContext d;
       }
     }
     else {
-      romajiReplace(-howManyDelete, (wchar_t *)NULL, 0, 0);
+      romajiReplace(-howManyDelete, NULL, 0, 0);
     }
-    kanaReplace(-howManyDelete, (wchar_t *)NULL, 0, 0);
+    kanaReplace(-howManyDelete, NULL, 0, 0);
     if ((yc->rAttr[yc->rCurs] & SENTOU) && yc->kRStartp == yc->kCurs) {
       /* 未変換のローマ字を消してしまったので、次に入力したローマ字は
        * SENTOUになる方が自然だろう
@@ -3023,7 +3023,7 @@ uiContext d;
       yc->kAttr[yc->kCurs + howManyDelete] |= SENTOU;
     }
   }
-  kanaReplace(howManyDelete, (wchar_t *)NULL, 0, 0);
+  kanaReplace(howManyDelete, NULL, 0, 0);
   /* ここまで削除処理 */
 
   if (yc->cStartp < yc->kEndp) { /* 読みがまだある */
@@ -3069,8 +3069,8 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  romajiReplace (yc->rEndp - yc->rCurs, (wchar_t *)NULL, 0, 0);
-  kanaReplace   (yc->kEndp - yc->kCurs, (wchar_t *)NULL, 0, 0);
+  romajiReplace (yc->rEndp - yc->rCurs, NULL, 0, 0);
+  kanaReplace   (yc->kEndp - yc->kCurs, NULL, 0, 0);
 
   fitmarks(yc);
 
@@ -4483,7 +4483,7 @@ int fn;
     yc->status |= CHIKUJI_OVERWRAP;
     moveToChikujiTanMode(d);
   }
-  else if (! RomajiFlushYomi(d, (wchar_t *)NULL, 0)) {
+  else if (! RomajiFlushYomi(d, NULL, 0)) {
     d->more.todo = 1;
     d->more.ch = d->ch;
     d->more.fnum = 0;    /* 上の ch で示される処理をせよ */
@@ -4768,14 +4768,14 @@ int sy, ey, sr, er;
   yc->kCurs = ey;
   yc->rCurs = er;
 
-  romajiReplace (yc->rEndp - er, (wchar_t *)NULL, 0, 0);
-  kanaReplace   (yc->kEndp - ey, (wchar_t *)NULL, 0, 0);
+  romajiReplace (yc->rEndp - er, NULL, 0, 0);
+  kanaReplace   (yc->kEndp - ey, NULL, 0, 0);
 
   yc->kCurs = sy;
   yc->rCurs = sr;
 
-  romajiReplace (-sr, (wchar_t *)NULL, 0, 0);
-  kanaReplace   (-sy, (wchar_t *)NULL, 0, 0);
+  romajiReplace (-sr, NULL, 0, 0);
+  kanaReplace   (-sy, NULL, 0, 0);
 }
 
 #if 0 /* unused */
@@ -4983,14 +4983,14 @@ int k, r;
 
   offs = yc->kCurs - k;
   yc->kCurs = k;
-  kanaReplace(-k, (wchar_t *)NULL, 0, 0);
+  kanaReplace(-k, NULL, 0, 0);
   if (offs > 0) {
     yc->kCurs = offs;
   }
   yc->cmark = yc->kRStartp = yc->kCurs;
   offs = yc->rCurs - r;
   yc->rCurs = r;
-  romajiReplace(-r, (wchar_t *)NULL, 0, 0);
+  romajiReplace(-r, NULL, 0, 0);
   if (offs > 0) {
     yc->rCurs = offs;
   }

@@ -340,13 +340,13 @@ int *nelem, *currentkouho;
 
   /* RkwGetKanjiList で得る、すべての候補のための領域を得る */
   if ((work = (wchar_t *)malloc(ROMEBUFSIZE * sizeof(wchar_t)))
-                                               == (wchar_t *)NULL) {
+                                               == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (getIchiranList) できませんでした";
 #else
     jrKanjiError = "malloc (getIchiranList) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
 #endif
-    return (wchar_t **)NULL;
+    return NULL;
   }
 
   /* すべての候補を得る。
@@ -357,7 +357,7 @@ int *nelem, *currentkouho;
 	"\244\336\244\267\244\277";
                    /* すべての候補の取り出しに失敗しました */
     free(work);
-    return (wchar_t **)NULL;
+    return NULL;
   }
 
 #ifdef	INHIBIT_DUPLICATION
@@ -378,12 +378,12 @@ int *nelem, *currentkouho;
 
   /* makeKouhoIchiran()に渡すデータ */
   if((buf = (wchar_t **)calloc
-      (*nelem + 1, sizeof(wchar_t *))) == (wchar_t **)NULL) {
+      (*nelem + 1, sizeof(wchar_t *))) == NULL) {
     jrKanjiError = "malloc (getIchiranList) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
                                             /* できませんでした */
     free(work);
-    return (wchar_t **)NULL;
+    return NULL;
   }
   for(wptr = work, bptr = buf, i = 0; *wptr && i++ < *nelem; bptr++) {
     *bptr = wptr;
@@ -400,7 +400,7 @@ int *nelem, *currentkouho;
                    /* ステイタスを取り出せませんでした */
     free(work);
     free(buf);
-    return (wchar_t **)NULL;
+    return NULL;
   }
   *currentkouho = st.candnum; /* カレント候補は何番目？ */
 
@@ -418,14 +418,14 @@ newIchiranContext()
   ichiranContext icxt;
 
   if ((icxt = (ichiranContext)malloc(sizeof(ichiranContextRec)))
-                                          == (ichiranContext)NULL) {
+                                          == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newIchiranContext) できませんでした";
 #else
     jrKanjiError = "malloc (newIchiranContext) \244\307\244\255\244\336"
 	"\244\273\244\363\244\307\244\267\244\277";
 #endif
-    return (ichiranContext)NULL;
+    return NULL;
   }
   clearIchiranContext(icxt);
 
@@ -458,7 +458,7 @@ selectOne(uiContext d, wchar_t **buf, int *ck, int nelem, int bangomax,
     return(NG);
   }
 
-  if((ic = newIchiranContext()) == (ichiranContext)NULL) {
+  if((ic = newIchiranContext()) == NULL) {
     popCallback(d);
     return(NG);
   }
@@ -534,7 +534,7 @@ uiContext d;
 
   /* サイズの分と番号の分の領域を得る*/
   size = ic->nIkouho * (d->ncolumns + 1) * WCHARSIZE; /* えいやっ */
-  if((ic->glinebufp = (wchar_t *)malloc(size)) ==  (wchar_t *)NULL) {
+  if((ic->glinebufp = (wchar_t *)malloc(size)) ==  NULL) {
     jrKanjiError = "malloc (allocIchiranBuf) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
                                              /* できませんでした */
@@ -543,7 +543,7 @@ uiContext d;
 
   /* kouhoinfoの領域を得る */
   size = (ic->nIkouho + 1) * sizeof(kouhoinfo);
-  if((ic->kouhoifp = (kouhoinfo *)malloc(size)) == (kouhoinfo *)NULL) {
+  if((ic->kouhoifp = (kouhoinfo *)malloc(size)) == NULL) {
     jrKanjiError = "malloc (allocIchiranBuf) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
                                              /* できませんでした */
@@ -553,7 +553,7 @@ uiContext d;
 
   /* glineinfoの領域を得る */
   size = (ic->nIkouho + 1) * sizeof(glineinfo);
-  if((ic->glineifp = (glineinfo *)malloc(size)) == (glineinfo *)NULL) {
+  if((ic->glineifp = (glineinfo *)malloc(size)) == NULL) {
     jrKanjiError = "malloc (allocIchiranBuf) \244\307\244\255\244\336\244\273"
 	"\244\363\244\307\244\267\244\277";
                                              /* できませんでした */
@@ -718,11 +718,11 @@ int currentkouho;
   /* 最後にNULLを入れる */
   ic->kouhoifp[ko].khretsu = 0;
   ic->kouhoifp[ko].khpoint = 0;
-  ic->kouhoifp[ko].khdata  = (wchar_t *)NULL;
+  ic->kouhoifp[ko].khdata  = NULL;
   ic->glineifp[line].glkosu  = 0;
   ic->glineifp[line].glhead  = 0;
   ic->glineifp[line].gllen   = 0;
-  ic->glineifp[line].gldata  = (wchar_t *)NULL;
+  ic->glineifp[line].gldata  = NULL;
 
 #if defined(DEBUG)
   if (iroha_debug) {

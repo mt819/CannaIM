@@ -100,7 +100,7 @@ int (*quitCallback)(), (*auxCallback)();
     return(NG);
   }
 
-  if ((oc = (ichiranContext)newIchiranContext()) == (ichiranContext)NULL) {
+  if ((oc = (ichiranContext)newIchiranContext()) == NULL) {
     popCallback(d);
     return(NG);
   }
@@ -252,11 +252,11 @@ unsigned char *status;
   /* 最後にNULLを入れる */
   oc->kouhoifp[ko].khretsu = 0;
   oc->kouhoifp[ko].khpoint = 0;
-  oc->kouhoifp[ko].khdata  = (wchar_t *)NULL;
+  oc->kouhoifp[ko].khdata  = NULL;
   oc->glineifp[line].glkosu  = 0;
   oc->glineifp[line].glhead  = 0;
   oc->glineifp[line].gllen   = 0;
-  oc->glineifp[line].gldata  = (wchar_t *)NULL;
+  oc->glineifp[line].gldata  = NULL;
 
 #if defined(DEBUG)
   if (iroha_debug) {

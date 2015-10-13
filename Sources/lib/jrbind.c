@@ -121,7 +121,7 @@ wcKanjiStatus *kanji_status_return;
      行われる。 */
 
   if (FirstTime) {
-    if (kanjiControl(KC_INITIALIZE, (uiContext)NULL, (char *)NULL) == -1) {
+    if (kanjiControl(KC_INITIALIZE, NULL, NULL) == -1) {
       return -1;
     }
     FirstTime = 0;
@@ -129,10 +129,10 @@ wcKanjiStatus *kanji_status_return;
 
   d = keyToContext(dpy, win);
 
-  if (d == (uiContext)NULL) {
+  if (d == NULL) {
     /* このウィンドウからイベントが来たのが始めてだったりするわけよ */
     d = newUiContext(dpy, win);
-    if (d == (uiContext)NULL) {
+    if (d == NULL) {
       return NoMoreMemory();
     }
   }
@@ -181,7 +181,7 @@ BYTE *arg;
       request == KC_SETVERBOSE || request == KC_KEYCONVCALLBACK ||
       request == KC_QUERYCONNECTION || request == KC_SETUSERINFO ||
       request == KC_QUERYCUSTOM) {
-    return kanjiControl(request, (uiContext)NULL, (char *)arg);
+    return kanjiControl(request, NULL, (char *)arg);
   }
   else if (/* 0 <= request && (必ず真) */ request < MAX_KC_REQUEST) {
     uiContext d;
@@ -190,7 +190,7 @@ BYTE *arg;
        行われる。 */
 
     if (FirstTime) {
-      if (kanjiControl(KC_INITIALIZE, (uiContext)NULL, (char *)NULL) == -1) {
+      if (kanjiControl(KC_INITIALIZE, NULL, NULL) == -1) {
 	return -1;
       }
       FirstTime = 0;
@@ -198,9 +198,9 @@ BYTE *arg;
 
     d = keyToContext((unsigned int)display, (unsigned int)window);
 
-    if (d == (uiContext)NULL) {
+    if (d == NULL) {
       d = newUiContext(display, window);
-      if (d == (uiContext)NULL) {
+      if (d == NULL) {
 	return NoMoreMemory();
       }
     }
