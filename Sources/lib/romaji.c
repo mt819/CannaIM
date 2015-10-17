@@ -498,9 +498,7 @@ RomkanaInit()
   /* ローマ字かな変換テーブルのオープン */
   if (uinfo) {
     if (uinfo->romkanatable) {
-      if (RomkanaTable) {
-        free(RomkanaTable);
-      }
+      free(RomkanaTable);
       RomkanaTable = malloc(strlen(uinfo->romkanatable) + 1);
       if (RomkanaTable) {
         strcpy(RomkanaTable, uinfo->romkanatable);
@@ -633,29 +631,21 @@ RomkanaFin()
   if (romajidic != NULL) {
     RkwCloseRoma(romajidic);
   }
-  if (RomkanaTable) {
-    free(RomkanaTable);
-    RomkanaTable = NULL;
-  }
+  free(RomkanaTable);
+  RomkanaTable = NULL;
 #ifndef NOT_ENGLISH_TABLE
   if (englishdic != NULL) {
     RkwCloseRoma(englishdic);
   }
-  if (EnglishTable) {
-    free(EnglishTable);
-    EnglishTable = NULL;
-  }
+  free(EnglishTable);
+  EnglishTable = NULL;
 #endif
   /* ローマ字かな変換ルールの補足のための領域の解放 */
   for (i = 0 ; i < nkeysup ; i++) {
-    if (keysup[i].cand) {
-      free(keysup[i].cand);
-      keysup[i].cand = NULL;
-    }
-    if (keysup[i].fullword) {
-      free(keysup[i].fullword);
-      keysup[i].fullword = NULL;
-    }
+    free(keysup[i].cand);
+    keysup[i].cand = NULL;
+    free(keysup[i].fullword);
+    keysup[i].fullword = NULL;
   }
   nkeysup = 0;
 }
@@ -1209,12 +1199,8 @@ int flag, english;
   kana_char = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
   sub_buf = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
   if (!kana_char || !sub_buf) {
-    if (kana_char) {
-      free(kana_char);
-    }
-    if (sub_buf) {
-      free(sub_buf);
-    }
+    free(kana_char);
+    free(sub_buf);
     return 0;
   }
 #endif
@@ -4720,13 +4706,9 @@ int fnum;
       kana = (wchar_t *)malloc(sizeof(wchar_t) * 128);
       roma = (wchar_t *)malloc(sizeof(wchar_t) * 128);
       if (!kana || !roma) {
-	if (kana) {
-	  free(kana);
-	}
-	if (roma) {
-	  free(roma);
-	}
-	return 0; /* ? suspicious */
+        free(kana);
+        free(roma);
+        return 0; /* ? suspicious */
       }
 #endif
 
