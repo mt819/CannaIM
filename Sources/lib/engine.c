@@ -131,15 +131,9 @@ int *nengines;
   ebuf = (struct engines *)malloc(sizeof(struct engines) * EBUFSIZE);
   winbuf = malloc(LINEBUFSIZE);
   if (!buf || !ebuf || !winbuf) {
-    if (buf) {
-      free(buf);
-    }
-    if (ebuf) {
-      free(ebuf);
-    }
-    if (winbuf) {
-      free(winbuf);
-    }
+    free(buf);
+    free(ebuf);
+    free(winbuf);
     return res;
   }
 #else
@@ -272,14 +266,11 @@ int
 RkSetServerName(s)
 char *s;
 {
-  if (server_host) {
-    free(server_host);
-    server_host = NULL;
-  }
-  if (server_engine) {
-    free(server_engine);
-    server_engine = NULL;
-  }
+  free(server_host);
+  server_host = NULL;
+
+  free(server_engine);
+  server_engine = NULL;
 
   if (s) {
     char *at, *index();

@@ -160,12 +160,8 @@ wchar_t *s, *e, **sr, **er;
   xxxx = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
   yyyy = (wchar_t *)malloc(sizeof(wchar_t) * 1024);
   if (!xxxx || !yyyy) {
-    if (xxxx) {
-      free(xxxx);
-    }
-    if (yyyy) {
-      free(yyyy);
-    }
+    free(xxxx);
+    free(yyyy);
     return 0;
   }
 #endif

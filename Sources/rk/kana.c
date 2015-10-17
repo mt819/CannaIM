@@ -994,8 +994,8 @@ RkwCvtHan(dst, maxdst, src, srclen)
   cbuf = (unsigned char *)malloc(CBUFSIZE);
   cbuf2 = (unsigned char *)malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) free(cbuf);
-    if (cbuf2) free(cbuf2);
+    free(cbuf);
+    free(cbuf2);
     return 0;
   }
 #endif
@@ -1032,8 +1032,8 @@ RkwCvtHira(dst, maxdst, src, srclen)
   cbuf = (unsigned char *)malloc(CBUFSIZE);
   cbuf2 = (unsigned char *)malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) free(cbuf);
-    if (cbuf2) free(cbuf2);
+    free(cbuf);
+    free(cbuf2);
     return 0;
   }
 #endif
@@ -1070,8 +1070,8 @@ RkwCvtKana(dst, maxdst, src, srclen)
   cbuf = (unsigned char *)malloc(CBUFSIZE);
   cbuf2 = (unsigned char *)malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) free(cbuf);
-    if (cbuf2) free(cbuf2);
+    free(cbuf);
+    free(cbuf2);
     return 0;
   }
 #endif
@@ -1108,8 +1108,8 @@ RkwCvtZen(dst, maxdst, src, srclen)
   cbuf = (unsigned char *)malloc(CBUFSIZE);
   cbuf2 = (unsigned char *)malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) free(cbuf);
-    if (cbuf2) free(cbuf2);
+    free(cbuf);
+    free(cbuf2);
     return 0;
   }
 #endif

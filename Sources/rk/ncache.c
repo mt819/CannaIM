@@ -80,10 +80,8 @@ _RkInitializeCache(size)
 void
 _RkFinalizeCache()
 {
-  register struct RkParam	*sx = &SX;
-  
-  if (sx->cache) 
-    free(sx->cache);
+  struct RkParam *sx = &SX;
+  free(sx->cache);
   sx->cache = NULL;
 }
 

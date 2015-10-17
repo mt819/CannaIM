@@ -62,23 +62,19 @@ static int dicSakujoYomi(uiContext),
            dicSakujoDo(uiContext);
 
 void
-freeWorkDic3(tc)
-tourokuContext tc;
+freeWorkDic3(tourokuContext tc)
 {
-  if (tc->workDic3) {
-    free((char *)tc->workDic3);
-    tc->workDic3 = NULL;
-  }
+  free(tc->workDic3);
+  tc->workDic3 = NULL;
 }
 
 void
-freeWorkDic(tc)
-tourokuContext tc;
+freeWorkDic(tourokuContext tc)
 {
-  if (tc->workDic2) {
-    free((char *)tc->workDic2);
-    tc->workDic2 = NULL;
-  }
+
+  free(tc->workDic2);
+  tc->workDic2 = NULL;
+
   freeWorkDic3(tc);
 }
 
@@ -92,7 +88,7 @@ tourokuContext tc;
     for ( ; *p; p++) {
       WSfree(*p);
     }
-    free((char *)tc->udic);
+    free(tc->udic);
   }
   freeWorkDic(tc);
 }
@@ -386,7 +382,7 @@ uiContext d;
     for ( p = mp; *p; p++) {
       WSfree(*p);
     }
-    free((char *)mp);
+    free(mp);
   }
   deleteEnd(d);
   return GLineNGReturn(d);
@@ -1049,11 +1045,11 @@ uiContext d;
 
             return(retval);
           }
-          free((char *)snewp);
+          free(snewp);
         }
-        free((char *)soldp);
+        free(soldp);
       }
-      free((char *)dicLp);
+      free(dicLp);
     }
     free(dicLbuf);
   }

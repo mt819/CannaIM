@@ -247,9 +247,7 @@ clisp_fin()
     if (files[filep].f && files[filep].f != stdin) {
       fclose(files[filep].f);
     }
-    if (files[filep].name) {
       free(files[filep].name);
-    }
     filep--;
   }
 
@@ -618,15 +616,12 @@ initIS()
  initISerr:
   free(charToNumTbl);
   charToNumTbl = NULL;
-  if (seqTbl) {
-    free(seqTbl);
-    seqTbl = NULL;
-  }
+  free(seqTbl);
+  seqTbl = NULL;
+
   for (i = 0 ; i < nseqtbl ; i++) {
-    if (seqTbls[i].tbl) {
       free(seqTbls[i].tbl);
       seqTbls[i].tbl = NULL;
-    }
   }
   return 0;
 }
@@ -638,16 +633,14 @@ finIS() /* identifySequence に用いたメモリ資源を開放する */
 
   if (seqTbl) {
     for (i = 0 ; i < nseqtbl ; i++) {
-      if (seqTbl[i].tbl) free(seqTbl[i].tbl);
+      free(seqTbl[i].tbl);
       seqTbl[i].tbl = NULL;
     }
     free(seqTbl);
     seqTbl = NULL;
   }
-  if (charToNumTbl) {
     free(charToNumTbl);
     charToNumTbl = NULL;
-  }
 }
 
 /* cvariable
@@ -756,13 +749,13 @@ allocarea()
 static void
 freearea()
 {
-  free((char *)memtop);
-  free((char *)stack);
-  free((char *)estack);
-  free((char *)oblist);
-  free((char *)files);
-  free((char *)env);
-  free((char *)readbuf);
+  free(memtop);
+  free(stack);
+  free(estack);
+  free(oblist);
+  free(files);
+  free(env);
+  free(readbuf);
   if (values) {
     free(values);
     values = 0;
@@ -940,10 +933,8 @@ int n;
     if (files[filep].f != stdin) {
       if (files[filep].f)
 	fclose(files[filep].f);
-      if (files[filep].name) {
 	free(files[filep].name);
-      }
-      filep--;
+    filep--;
     }
     values[0] = NIL;
     values[1] = NIL;
@@ -2613,7 +2604,7 @@ int n;
 	  retval = T;
 	  continue;
 	}
-	free((char *)kanjidicname);
+	free(kanjidicname);
       }
     }
   }
@@ -3293,11 +3284,11 @@ Ldefmode()
 	    }
 	  }
 	}
-	free((char *)kanjimode);
+	free(kanjimode);
       }
-      free((char *)extrafunc->u.modeptr);
+      free(extrafunc->u.modeptr);
     }
-    free((char *)extrafunc);
+    free(extrafunc);
   }
   switch (ecode) {
   case DEFMODE_MEMORY:
@@ -3750,16 +3741,16 @@ Ldefselection()
   /* 領域を確保する */
   extrafunc = (extraFunc *)malloc(sizeof(extraFunc));
   if (!extrafunc) {
-    free((char *)kigo_str);
-    free((char *)akigo_data);
+    free(kigo_str);
+    free(akigo_data);
     error("Insufficient memory", NON);
     /* NOTREACHED */
   }
   extrafunc->u.kigoptr = (kigoIchiran *)malloc(sizeof(kigoIchiran));
   if (!extrafunc->u.kigoptr) {
-    free((char *)kigo_str);
-    free((char *)akigo_data);
-    free((char *)extrafunc);
+    free(kigo_str);
+    free(akigo_data);
+    free(extrafunc);
     error("Insufficient memory", NON);
     /* NOTREACHED */
   }
@@ -3872,7 +3863,7 @@ Ldefmenu()
       (void)pop1();
       return sym;
     }
-    free((char *)extrafunc);
+    free(extrafunc);
   }
   error("Insufficient memory", NON);
   /* NOTREACHED */
@@ -3894,7 +3885,7 @@ int n;
   len = xfseq(S_SetInitFunc, sp[0], fseq, 256);
 
   if (len > 0) {
-    if (initfunc) free(initfunc);
+    free(initfunc);
     initfunc = (BYTE *)malloc(len + 1);
     if (!initfunc) {
       error("Insufficient memory", NON);
@@ -4084,8 +4075,7 @@ ObtainVersion()
   server_version = a * 1000 + b;
 
   /* サーバ名 */
-  if (server_name)
-    free(server_name);
+  free(server_name);
   server_name = malloc(strlen(DEFAULT_CANNA_SERVER_NAME) + 1);
   if (server_name) {
     strcpy(server_name, DEFAULT_CANNA_SERVER_NAME);
@@ -4120,9 +4110,7 @@ list arg;
 {
   if (setp == VALSET) {
     if (null(arg) || stringp(arg)) {
-      if (*var) {
 	free(*var);
-      }
       if (stringp(arg)) {
 	*var = malloc(strlen(xstring(arg)) + 1);
 	if (*var) {

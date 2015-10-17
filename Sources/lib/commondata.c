@@ -179,27 +179,17 @@ struct CannaConfig *cf;
   cf->auto_sync = 1;
 }
 
-static void freeUInfo(void);
-
 static void
-freeUInfo()
+freeUInfo(void)
 {
-  if (uinfo) {
-    if (uinfo->uname)
-      free(uinfo->uname);
-    if (uinfo->gname)
-      free(uinfo->gname);
-    if (uinfo->srvname)
-      free(uinfo->srvname);
-    if (uinfo->topdir)
-      free(uinfo->topdir);
-    if (uinfo->cannafile)
-      free(uinfo->cannafile);
-    if (uinfo->romkanatable)
-      free(uinfo->romkanatable);
-    free((char *)uinfo);
-    uinfo = NULL;
-  }
+  free(uinfo->uname);
+  free(uinfo->gname);
+  free(uinfo->srvname);
+  free(uinfo->topdir);
+  free(uinfo->cannafile);
+  free(uinfo->romkanatable);
+  free(uinfo);
+  uinfo = NULL;
 }
 
 /*
@@ -210,20 +200,18 @@ restoreBindings()
 {
   InitCannaConfig(&cannaconf);
 
-  if (initfunc) free(initfunc);
+  free(initfunc);
   initfunc = NULL;
 
-  if (server_name) free(server_name);
+  free(server_name);
   server_name = NULL;
 
-  if (RomkanaTable) {
-    free(RomkanaTable);
-    RomkanaTable = NULL;
-  }
-  if (EnglishTable) {
-    free(EnglishTable);
-    EnglishTable = NULL;
-  }
+  free(RomkanaTable);
+  RomkanaTable = NULL;
+  
+  free(EnglishTable);
+  EnglishTable = NULL;
+  
   romajidic = NULL;
   englishdic = NULL;
   RengoGakushu = NULL;
