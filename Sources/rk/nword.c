@@ -442,9 +442,9 @@ readWord(cx, yy, ys, ye, class, nword, maxword, doflush, douniq)
     malloc(sizeof(unsigned char *) * RK_CAND_NMAX);
   nread = (struct nread *)malloc(sizeof(struct nread) * READWORD_MAXCACHE);
   if (!permutation || !candidates || !nread) {
-    if (permutation) free(permutation);
-    if (candidates) free(candidates);
-    if (nread) free(nread);
+    free(permutation);
+    free(candidates);
+    free(nread);
     return nword;
   }
 #endif
