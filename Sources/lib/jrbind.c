@@ -98,7 +98,7 @@ unsigned int dpy, win;
       }
       freeRomeStruct(d);
     }
-    free((char *)d);
+    free(d);
   }
   return (uiContext)0;
 }

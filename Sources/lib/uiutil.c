@@ -178,10 +178,10 @@ void
 freeMenu(m)
 menustruct *m;
 {
-  free((char *)m->titles);
-  free((char *)m->titledata);
-  free((char *)m->body);
-  free((char *)m);
+  free(m->titles);
+  free(m->titledata);
+  free(m->body);
+  free(m);
 }
 
 menustruct *
@@ -205,11 +205,11 @@ int n, nc;
 	  res->body = menubody;
 	  return res;
 	}
-	free((char *)wcs);
+	free(wcs);
       }
-      free((char *)wctab);
+      free(wctab);
     }
-    free((char *)res);
+    free(res);
   }
   return NULL;
 }
@@ -263,7 +263,7 @@ struct _e_menu *eucmenu;
     res->modeid = CANNA_MODE_ExtendMode;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  (void)free((char *)buf);
+  free(buf);
 #endif
   return res;
 }
@@ -492,7 +492,7 @@ menuinfo *p;
 
   while (p) {
     q = p->next;
-    free((char *)p);
+    free(p);
     p = q;
   }
 }

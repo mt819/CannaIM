@@ -149,7 +149,7 @@ struct nword	*word;
     for (p = q = word; p; q = p, p = p->nw_next) {
       if (!p->nw_cache && p->nw_kanji) {
         _Rkpanic("killWord this would never happen addr ", 0, 0, 0);
-	free((char *)p->nw_kanji);
+	free(p->nw_kanji);
       };
       st->word_in_use--;
       SX.word_in_use--;
@@ -442,9 +442,9 @@ readWord(cx, yy, ys, ye, class, nword, maxword, doflush, douniq)
     malloc(sizeof(unsigned char *) * RK_CAND_NMAX);
   nread = (struct nread *)malloc(sizeof(struct nread) * READWORD_MAXCACHE);
   if (!permutation || !candidates || !nread) {
-    if (permutation) free((char *)permutation);
-    if (candidates) free((char *)candidates);
-    if (nread) free((char *)nread);
+    if (permutation) free(permutation);
+    if (candidates) free(candidates);
+    if (nread) free(nread);
     return nword;
   }
 #endif
@@ -568,9 +568,9 @@ readWord(cx, yy, ys, ye, class, nword, maxword, doflush, douniq)
     maxcache -= nc;
   };
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)permutation);
-  free((char *)candidates);
-  free((char *)nread);
+  free(permutation);
+  free(candidates);
+  free(nread);
 #endif
   return(wrds);
 }
@@ -832,8 +832,8 @@ cancelNVE(nv, p)
   nv->cnt--;
   p->right->left = p->left;
   p->left->right = p->right;
-  free((char *)s);
-  free((char *)p);
+  free(s);
+  free(p);
 }
 
 static
@@ -875,12 +875,12 @@ newNVE(nv, y, l, v)
       if (nv->csz >= (long)nv->sz) {
 	nv->csz -= l * 2 + 2;
 	nv->cnt--;
-	free((char *)nve->data);
-	free((char *)nve);
+	free(nve->data);
+	free(nve);
 	return NULL;
       }
     } else {
-      free((char *)nve);
+      free(nve);
       nve = NULL;
     }
   }
@@ -954,8 +954,8 @@ parseWord(cx, yy, ys, ye, class, xqh, maxclen, doflush, douniq)
   tail = (struct nword **)malloc(sizeof(struct nword *) * TAILSIZE);
   right = (struct nword *)malloc(sizeof(struct nword) * RIGHTSIZE);
   if (!tail || !right) {
-    if (tail) free((char *)tail);
-    if (right) free((char *)right);
+    free(tail);
+    free(right);
     return maxclen;
   }
 #endif
@@ -1036,8 +1036,8 @@ parseWord(cx, yy, ys, ye, class, xqh, maxclen, doflush, douniq)
   }
  done:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)tail);
-  free((char *)right);
+  free(tail);
+  free(right);
 #endif
   return maxclen;
 }
@@ -1205,7 +1205,7 @@ uniqWord(key, words, ylen, mode)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)heap);
+  free(heap);
 #endif
 }
 
@@ -1282,7 +1282,7 @@ sortWord(words)
     for (i = 1; i < (int)nwords; i++)
       wptr[i - 1].word->nw_next = wptr[i].word;
     words = wptr[0].word;
-    free((char *)wptr);
+    free(wptr);
   }
   return words;
 }
@@ -1618,7 +1618,7 @@ calcSplit(cx, yy, top, xq, maxclen, flush)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)ul2);
+  free(ul2);
 #endif
   return L1;
 }
@@ -2076,9 +2076,9 @@ doLearn(cx, thisW)
   permutation = (unsigned *)malloc(sizeof(unsigned) * RK_CAND_NMAX);
   tmp = (unsigned char *)malloc(RK_WREC_BMAX);
   if (!candidates || !permutation || !tmp) {
-    if (candidates) free((char *)candidates);
-    if (permutation) free((char *)permutation);
-    if (tmp) free((char *)tmp);
+    free(candidates);
+    free(permutation);
+    free(tmp);
     return;
   }
 #endif
@@ -2170,9 +2170,9 @@ doLearn(cx, thisW)
     }
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free((char *)candidates);
-  free((char *)permutation);
-  free((char *)tmp);
+  free(candidates);
+  free(permutation);
+  free(tmp);
 #endif
 }
 
@@ -2214,7 +2214,7 @@ _RkLearnBun(cx, cur, mode)
 	}
 	_RkRegisterNV(cx->nv, yomwrec, ylen, pos);
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-	free((char *)yomwrec);
+	free(yomwrec);
 #endif
       }
     }
