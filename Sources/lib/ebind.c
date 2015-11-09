@@ -92,7 +92,7 @@ int nbytes;
 
   if (inbufsize < totallen) {
     inbufsize = totallen; /* inbufsize will be greater than 0 */
-    if (inbuf) free(inbuf);
+    free(inbuf);
     inbuf = (wchar_t *)malloc(inbufsize * sizeof(wchar_t));
     if (!inbuf) {
       inbufsize = 0;
@@ -204,7 +204,7 @@ jrKanjiStatus *kanji_status_return;
   /* 内部バッファをアロケートする */
   if (inbufsize < bytes_buffer) {
     inbufsize = bytes_buffer; /* inbufsize will be greater than 0 */
-    if (inbuf) free(inbuf);
+    free(inbuf);
     inbuf = (wchar_t *)malloc(inbufsize * sizeof(wchar_t));
     if (!inbuf) {
       inbufsize = 0;
@@ -273,9 +273,8 @@ last:
 }
 
 int
-XKanjiControl2(display, window, request, arg)
-unsigned int display, window, request;
-BYTE *arg;
+XKanjiControl2(unsigned int display, unsigned int window, unsigned int request,
+	BYTE *arg)
 {
   int ret = -1, len1, len2;
   wcKanjiStatusWithValue wksv;
@@ -292,18 +291,10 @@ BYTE *arg;
   wbuf1 = (wchar_t *)malloc(sizeof(wchar_t) * 320);
   wbuf2 = (wchar_t *)malloc(sizeof(wchar_t) * 320);
   if (!arg2 || !wbuf || !wbuf1 || !wbuf2) {
-    if (arg2) {
-      free(arg2);
-    }
-    if (wbuf) {
-      free(wbuf);
-    }
-    if (wbuf1) {
-      free(wbuf1);
-    }
-    if (wbuf2) {
-      free(wbuf2);
-    }
+    free(arg2);
+    free(wbuf);
+    free(wbuf1);
+    free(wbuf2);
     return ret;
   }
 #endif

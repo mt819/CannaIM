@@ -71,8 +71,7 @@ newMountContext()
 }
 
 static void
-freeMountContext(mc)
-mountContext mc;
+freeMountContext(mountContext mc)
 {
   if (mc) {
     if (mc->mountList) {
@@ -81,12 +80,8 @@ mountContext mc;
       }
       free(mc->mountList);
     }
-    if (mc->mountOldStatus) {
-      free(mc->mountOldStatus);
-    }
-    if (mc->mountNewStatus) {
-      free(mc->mountNewStatus);
-    }
+    free(mc->mountOldStatus);
+    free(mc->mountNewStatus);
     free(mc);
   }
 }

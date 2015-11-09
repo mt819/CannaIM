@@ -734,9 +734,7 @@ int		format;
 #define CBUFSIZE     512
 
 int
-RkwCvtHan(dst, maxdst, src, srclen)
-wchar_t *dst, *src;
-int maxdst, srclen;
+RkwCvtHan(wchar_t *dst, int maxdst, wchar_t *src, int srclen)
 {
   int len = 0;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -747,12 +745,8 @@ int maxdst, srclen;
   cbuf = malloc(CBUFSIZE);
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) {
-      free(cbuf);
-    }
-    if (cbuf2) {
-      free(cbuf2);
-    }
+    free(cbuf);
+    free(cbuf2);
     return len;
   }
 #endif
@@ -771,9 +765,7 @@ int maxdst, srclen;
 }
 
 int
-RkwCvtHira(dst, maxdst, src, srclen)
-wchar_t *dst, *src;
-int maxdst, srclen;
+RkwCvtHira(wchar_t *dst, int maxdst, wchar_t *src, int srclen)
 {
   int len = 0;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -784,12 +776,8 @@ int maxdst, srclen;
   cbuf = malloc(CBUFSIZE);
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) {
-      free(cbuf);
-    }
-    if (cbuf2) {
-      free(cbuf2);
-    }
+    free(cbuf);
+    free(cbuf2);
     return len;
   }
 #endif
@@ -809,9 +797,7 @@ int maxdst, srclen;
 }
 
 int
-RkwCvtKana(dst, maxdst, src, srclen)
-wchar_t *dst, *src;
-int maxdst, srclen;
+RkwCvtKana(wchar_t *dst, int maxdst, wchar_t *src, int srclen)
 {
   int len = 0;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -822,12 +808,8 @@ int maxdst, srclen;
   cbuf = malloc(CBUFSIZE);
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) {
-      free(cbuf);
-    }
-    if (cbuf2) {
-      free(cbuf2);
-    }
+    free(cbuf);
+    free(cbuf2);
     return len;
   }
 #endif
@@ -847,9 +829,7 @@ int maxdst, srclen;
 }
 
 int
-RkwCvtZen(dst, maxdst, src, srclen)
-wchar_t *dst, *src;
-int maxdst, srclen;
+RkwCvtZen(wchar_t *dst, int maxdst, wchar_t *src, int srclen)
 {
   int len = 0;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -860,12 +840,8 @@ int maxdst, srclen;
   cbuf = malloc(CBUFSIZE);
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf || !cbuf2) {
-    if (cbuf) {
-      free(cbuf);
-    }
-    if (cbuf2) {
-      free(cbuf2);
-    }
+    free(cbuf);
+    free(cbuf2);
     return len;
   }
 #endif
@@ -885,9 +861,7 @@ int maxdst, srclen;
 }
 
 #ifndef __HAIKU__
-RkwCvtNone(dst, maxdst, src, srclen)
-wchar_t *dst, *src;
-int maxdst, srclen;
+RkwCvtNone(wchar_t *dst, int maxdst, wchar_t *src, int srclen)
 {
   int i;
   int len = (maxdst < srclen) ? maxdst : srclen;
@@ -901,10 +875,8 @@ int maxdst, srclen;
 #endif
 
 int
-RkwMapRoma(romaji, dst, maxdst, src, srclen, flags, status)
-struct RkRxDic *romaji;
-wchar_t *dst, *src;
-int maxdst, srclen, flags, *status;
+RkwMapRoma(struct RkRxDic *romaji, wchar_t *dst, int maxdst,
+	wchar_t *src, int srclen, int flags, int *status)
 {
   int len = 0, ret;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -915,12 +887,8 @@ int maxdst, srclen, flags, *status;
   cbuf1 = malloc(CBUFSIZE);
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf1 || !cbuf2) {
-    if (cbuf1) {
-      free(cbuf1);
-    }
-    if (cbuf2) {
-      free(cbuf2);
-    }
+    free(cbuf1);
+    free(cbuf2);
     return len;
   }
 #endif
@@ -962,15 +930,9 @@ RkwMapPhonogram(struct RkRxDic *romaji, wchar_t *dst, int maxdst,
   cbuf2 = malloc(CBUFSIZE);
   wbuf = (wchar_t *)malloc(sizeof(wchar_t) * CBUFSIZE);
   if (!cbuf1 || !cbuf2 || !wbuf) {
-    if (cbuf1) {
-      free(cbuf1);
-    }
-    if (cbuf2) {
-      free(cbuf2);
-    }
-    if (wbuf) {
-      free(wbuf);
-    }
+    free(cbuf1);
+    free(cbuf2);
+    free(wbuf);
     return status;
   }
 #endif
@@ -1004,10 +966,8 @@ RkwMapPhonogram(struct RkRxDic *romaji, wchar_t *dst, int maxdst,
 }
 
 int
-RkwCvtRoma(romaji, dst, maxdst, src, srclen, flags)
-struct RkRxDic *romaji;
-wchar_t *dst, *src;
-int maxdst, srclen, flags;
+RkwCvtRoma(struct RkRxDic *romaji, wchar_t *dst, int maxdst,
+	wchar_t *src, int srclen, int flags)
 {
   int ret = 0, len;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
@@ -1018,12 +978,8 @@ int maxdst, srclen, flags;
   cbuf1 = malloc(CBUFSIZE);
   cbuf2 = malloc(CBUFSIZE);
   if (!cbuf1 || !cbuf2) {
-    if (cbuf1) {
-      free(cbuf1);
-    }
-    if (cbuf2) {
-      free(cbuf2);
-    }
+    free(cbuf1);
+    free(cbuf2);
     return ret;
   }
 #endif
