@@ -26,6 +26,7 @@ static char rcsid[]="$Id: dd.c,v 1.5 2003/09/17 08:50:52 aida_s Exp $";
 /*LINTLIBRARY*/
 
 #include	"RKintern.h"
+#include	"IR.h"
 
 #ifdef __CYGWIN32__
 #include <fcntl.h> /* for O_BINARY */
@@ -750,11 +751,7 @@ _RkRealizeDD(dd)
   int ret = -1;
   int tmpres;
   int			fdes;
-#ifdef __HAIKU__
-  time_t		tloc;
-#else
-  long		tloc;
-#endif
+  ir_time_t		tloc;
 #ifdef __EMX__
   struct stat		statbuf;
 #endif
