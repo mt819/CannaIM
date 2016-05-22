@@ -211,11 +211,8 @@ _RkFreeDF(df)
   };
 }
 
-static
-struct DF	*
-_RkAllocDF(dd, lnk, type)
-     struct DD		*dd;
-     unsigned char	*lnk;
+static struct DF*
+_RkAllocDF(struct DD *dd, unsigned char *lnk, int type)
 {
   struct DF	*f;
   struct DF	*fh = &dd->dd_files;
