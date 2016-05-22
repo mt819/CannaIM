@@ -74,11 +74,9 @@ int wcKanjiControl(const int, const int, char *);
 int wcCloseKanjiContext(const int, owcKanjiStatusWithValue *);
 
 static size_t
-wc32stowc16s(wc16s, wc32s, len)
-cannawc16 *wc16s;
-const cannawc32 *wc32s;
+wc32stowc16s(cannawc16 *wc16s, const cannawc32 *wc32s, size_t len)
 {
-  unsigned int i;
+  size_t i;
   for (i = 0; i < len && wc32s[i]; i++) {
     cannawc32 wc32 = wc32s[i];
     cannawc32 wc16;
@@ -108,11 +106,9 @@ const cannawc32 *wc32s;
 }
 
 static size_t
-wc16stowc32s(wc32s, wc16s, len)
-cannawc32 *wc32s;
-const cannawc16 *wc16s;
+wc16stowc32s(cannawc32 *wc32s, const cannawc16 *wc16s, size_t len)
 {
-  unsigned int i;
+  size_t i;
   for (i = 0; i < len && wc16s[i]; i++) {
     cannawc32 wc16 = (cannawc32)wc16s[i];
     cannawc32 wc32;
