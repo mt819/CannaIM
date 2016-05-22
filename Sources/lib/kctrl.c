@@ -1499,9 +1499,9 @@ int fnum;
 {
   int res = 0, tmpres, ginfo = 0;
   int reallyThrough = 1;
-  wchar_t *prevEcho, *prevGEcho;
-  int prevEchoLen = -1, prevRevPos, prevRevLen;
-  int prevGEchoLen, prevGRevPos, prevGRevLen;
+  wchar_t *prevEcho = NULL, *prevGEcho = NULL;
+  int prevEchoLen = -1, prevRevPos = 0, prevRevLen = 0;
+  int prevGEchoLen = 0, prevGRevPos = 0, prevGRevLen = 0;
 
   d->status = 0; /* モードについて"処理中"のステータスを既定値とする */
   d->more.todo = 0;
