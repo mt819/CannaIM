@@ -642,10 +642,8 @@ int length;
  */
 
 static int
-bushuHenkan(d, flag, ext, cur, quitfunc)
-uiContext	d;
-int             flag, cur;
-int             (*quitfunc)(uiContext, int, mode_context);
+bushuHenkan(uiContext d, int flag, int ext, int cur,
+	(*)(uiContext, int, mode_context) quitfunc)
 {
   forichiranContext fc;
   ichiranContext ic;
