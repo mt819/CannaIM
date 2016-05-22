@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: mode.c,v 1.2 2003/01/10 13:08:45 aida_s Exp $";
-#endif /* lint */
-
 #include "canna.h"
 #include <canna/mfdef.h>
 

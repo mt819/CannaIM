@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[] = "$Id: lisp.c,v 1.11.2.1 2004/04/26 22:49:21 aida_s Exp $";
-#endif
-
 /*
 ** main program of lisp
 */

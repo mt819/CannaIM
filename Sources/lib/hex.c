@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: hex.c,v 1.2 2003/01/10 13:08:44 aida_s Exp $";
-#endif /* lint */
-
 #ifndef NO_EXTEND_MENU
 #include "canna.h"
 

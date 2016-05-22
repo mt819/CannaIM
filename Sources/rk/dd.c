@@ -20,11 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="$Id: dd.c,v 1.5 2003/09/17 08:50:52 aida_s Exp $";
-#endif
-/*LINTLIBRARY*/
-
 #include	"RKintern.h"
 #include	"IR.h"
 

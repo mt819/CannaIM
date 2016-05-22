@@ -20,10 +20,6 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[] = "$Id: obind.c,v 1.4.2.1 2004/04/26 22:49:21 aida_s Exp $";
-#endif
-
 #include "cannaconf.h"
 #define WARN_REFERENCES_EVAL(sym,msg) WARN_REFERENCES(sym,msg)
 

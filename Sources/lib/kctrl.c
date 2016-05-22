@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: kctrl.c,v 1.10 2003/09/21 09:08:17 aida_s Exp $";
-#endif /* lint */
-
 #include "canna.h"
 
 #include <errno.h>

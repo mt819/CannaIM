@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: keydef.c,v 1.2 2003/09/17 08:50:53 aida_s Exp $";
-#endif /* lint */
-
 #include "canna.h"
 #include <canna/mfdef.h>
 #include <canna/keydef.h>

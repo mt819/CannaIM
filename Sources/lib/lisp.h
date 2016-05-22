@@ -20,8 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/* $Id: lisp.h,v 1.3 2003/09/17 10:15:09 aida_s Exp $ */
-
 #include "canna.h"
 
 #include <stdio.h>

@@ -20,11 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* sccs_id[]="%Z% NEC UNIX( PC-UX/EWS-UX ) %M% %R%.%L% %E% %U%"; */
-/* $Id: IR.h,v 1.11 2003/09/23 07:11:31 aida_s Exp $ */
-
-/* 自動判別支援コメント: これはEUC-JPだぞ。幅という字があれば大丈夫。 */
-
 #include "cannaconf.h"
 #include "ccompat.h"
 #include <sys/types.h>

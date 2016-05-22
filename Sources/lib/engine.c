@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "$Id: engine.c,v 1.6 2003/09/21 10:16:49 aida_s Exp $";
-#endif
-
 #include "canna.h"
 
 #ifdef ENGINE_SWITCH

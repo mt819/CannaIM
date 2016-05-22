@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char alphamap_id[] = "@(#) 102.1 $Id: alphamap.h,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
-#endif /* lint */
-
 extern int JapaneseMode();
 extern int DoFuncSequence(),UseOtherKeymap();
 

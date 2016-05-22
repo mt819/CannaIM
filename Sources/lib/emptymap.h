@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char emptymap_id[] = "@(#) 102.1 $Id: emptymap.h,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
-#endif /* lint */
-
 extern int AlphaMode(), HenkanNyuryokuMode(), ZenHiraKakuteiMode();
 extern int ZenKataKakuteiMode(), HanKataKakuteiMode(), ZenAlphaKakuteiMode();
 extern int HanAlphaKakuteiMode(), KigoIchiran();

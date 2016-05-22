@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="$Id: fq.c,v 1.6 2003/09/17 08:50:52 aida_s Exp $";
-#endif
-
 #include	"RKintern.h"
 
 #ifdef __CYGWIN32__

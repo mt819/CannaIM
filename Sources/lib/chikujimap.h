@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char chikuji_id[] = "$Id: chikujimap.h,v 1.1.1.1 2002/10/19 08:27:48 aida_s Exp $";
-#endif
-
 #define BUNPOU_DISPLAY
 
 extern int TanKouhoIchiran(), TanKatakana();

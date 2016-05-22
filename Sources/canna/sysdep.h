@@ -20,8 +20,6 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/* $Id: sysdep.h,v 1.4 2003/10/02 07:40:29 aida_s Exp $ */
-
 #ifndef CANNA_SYSDEP_H
 #define CANNA_SYSDEP_H
 

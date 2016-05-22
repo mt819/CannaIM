@@ -20,11 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="$Id: nword.c,v 1.5 2003/07/31 19:03:51 aida_s Exp $";
-#endif
-
-/* LINTLIBRARY */
 #include	"RKintern.h"
 
 #if defined(DEBUG_NWORD) || defined(RK_DEBUG) || defined(TEST)

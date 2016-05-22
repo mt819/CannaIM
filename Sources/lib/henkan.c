@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static	char	rcs_id[] = "@(#) 102.1 $Id: henkan.c,v 1.8.2.2 2004/04/26 22:53:02 aida_s Exp $";
-#endif /* lint */
-
 #include	"canna.h"
 #include	"rkcapi.h"
 

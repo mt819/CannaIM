@@ -76,10 +76,6 @@
 
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: util.c,v 1.6 2003/09/17 08:50:53 aida_s Exp $";
-#endif	/* lint */
-
 #include "canna.h"
 #include <errno.h>
 

@@ -20,7 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/* $Id: RK.h,v 1.10 2003/09/21 10:16:49 aida_s Exp $ */
 #ifndef		_RK_h
 #define		_RK_h
 

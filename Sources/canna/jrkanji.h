@@ -24,8 +24,6 @@
  *
  *	8/16 bit String Manipulations.
  *
- *      "@(#)kanji.h	2.3    88/10/03 10:25:34"
- *      "@(#) 102.1 $Id: jrkanji.h,v 1.8.2.2 2003/12/27 17:15:20 aida_s Exp $"
  */
 
 #ifndef _JR_KANJI_H_

@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="@(#)$Id: util.c,v 1.8 2003/09/17 08:50:52 aida_s Exp $ $Author: aida_s $ $Revision: 1.8 $ $Data$";
-#endif
-
 #include "RKintern.h"
 #include <stdio.h>
 #include <stdarg.h>

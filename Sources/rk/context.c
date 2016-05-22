@@ -20,11 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="$Id: context.c,v 1.5 2003/09/17 08:50:52 aida_s Exp $";
-#endif
-/*LINTLIBRARY*/
-
 #include "RKintern.h"
 #include "patchlevel.h"
 #include <canna/jrkanji.h>

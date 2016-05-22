@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char t_reimap_id[] = "@(#) 102.1 $Id: t_reimap.h,v 1.1.1.1 2002/10/19 08:27:51 aida_s Exp $";
-#endif	/* lint */
-
 extern int DoFuncSequence(struct _uiContext *);
 extern int UseOtherKeymap(struct _uiContext *);
 

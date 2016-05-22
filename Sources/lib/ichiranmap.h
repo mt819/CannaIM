@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char ichiranmap_id[] = "@(#) 102.1 $Id: ichiranmap.h,v 1.2 2003/09/17 08:50:53 aida_s Exp $";
-#endif /* lint */
-
 extern int DoFuncSequence(),UseOtherKeymap();
 
 static struct funccfunc ichiran_funcs[] = {

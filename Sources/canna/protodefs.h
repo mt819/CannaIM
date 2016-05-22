@@ -20,8 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/* $Id: protodefs.h,v 1.6 2003/09/21 12:56:28 aida_s Exp $ */
-
 #define canna_version(majv, minv) ((majv) * 1024 + (minv))
 
 typedef canna_uint16_t Ushort;

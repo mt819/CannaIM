@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "$Id: permdic.c,v 1.8 2003/09/17 08:50:52 aida_s Exp $";
-#endif
-
 #include	"RKintern.h"
 
 

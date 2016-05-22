@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "$Id: chikuji.c,v 1.3 2003/09/17 08:50:53 aida_s Exp $";
-#endif
-
 #include	"canna.h"
 
 #ifdef MEASURE_TIME

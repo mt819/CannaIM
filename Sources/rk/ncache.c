@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/*
-static char rcsid[]="$Id: ncache.c,v 1.2 2003/09/17 08:50:52 aida_s Exp $";
-*/
-
 #include	"RKintern.h"
 
 #define	NCHASH		101

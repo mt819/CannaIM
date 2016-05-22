@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[] = "$Id: ebind.c,v 1.6 2003/09/17 08:50:53 aida_s Exp $";
-#endif
-
 #include "canna.h"
 
 #define MAX_BYTE_PER_CHAR 4

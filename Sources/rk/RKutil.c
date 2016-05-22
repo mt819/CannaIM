@@ -24,10 +24,6 @@
 /* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
 /************************************************************************/
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcsid[]="@(#)$Id: RKutil.c 10525 2004-12-23 21:23:50Z korli $ $Author: korli $ $Revision: 1.1 $ $Data$";
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

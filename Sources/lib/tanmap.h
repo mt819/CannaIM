@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char tanmap_id[] = "@(#) 102.1 $Id: tanmap.h,v 1.1.1.1 2002/10/19 08:27:51 aida_s Exp $";
-#endif /* lint */
-
 extern int TanKouhoIchiran(uiContext), DoFuncSequence(uiContext);
 extern int UseOtherKeymap(uiContext);
 extern int YomiKakutei(uiContext), TanBubunKakutei(uiContext);

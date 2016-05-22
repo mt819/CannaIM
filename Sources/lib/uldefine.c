@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if !defined(lint) && !defined(__CODECENTER__)
-static char rcs_id[] = "@(#) 102.1 $Id: uldefine.c,v 1.6 2003/09/17 08:50:53 aida_s Exp $";
-#endif
-
 #include	<errno.h>
 #include 	"canna.h"
 

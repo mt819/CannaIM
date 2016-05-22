@@ -20,10 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-/*
- * @(#) 102.1 $Id: canna.h,v 1.11 2003/09/25 07:24:54 aida_s Exp $
- */
-
 #ifndef _CANNA_H_
 #define _CANNA_H_
 

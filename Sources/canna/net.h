@@ -20,9 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/* sccs_id[]="@(#) NEC UNIX( PC-UX/EWS-UX ) net.h 1.1 90/11/01 16:25:42"; */
-/* $Id: net.h,v 1.3.2.2 2003/12/27 17:15:20 aida_s Exp $ */
-
 #ifndef NET_H
 #define NET_H
 

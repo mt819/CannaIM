@@ -20,8 +20,6 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
  */
 
-/* $Id: rkcapi.h,v 1.2 2003/09/23 07:11:30 aida_s Exp $ */
-
 #ifndef RKCAPI_H
 #define RKCAPI_H
 
