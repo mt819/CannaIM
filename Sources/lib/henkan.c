@@ -1581,8 +1581,7 @@ yomiContext   yc;
  */
 
 static int
-enterTanHenkanMode(d, fnum)
-uiContext d;
+enterTanHenkanMode(uiContext d, int fnum)
 {
   tanContext tan = (tanContext)d->modec;
   yomiContext yc;
