@@ -643,7 +643,7 @@ int length;
 
 static int
 bushuHenkan(uiContext d, int flag, int ext, int cur,
-	(*)(uiContext, int, mode_context) quitfunc)
+	int (*quitfunc)(uiContext, int, mode_context))
 {
   forichiranContext fc;
   ichiranContext ic;
