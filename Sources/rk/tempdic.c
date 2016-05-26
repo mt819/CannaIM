@@ -36,12 +36,7 @@
 #include <sys/types.h>
 #endif
 
-#if defined(__STDC__) || defined(SVR4)
 #include <time.h>
-#define TIME_T time_t
-#else
-#define TIME_T long
-#endif
 
 #define	dm_td	dm_extdata.ptr
 
@@ -552,7 +547,7 @@ _Rktclose(dm, file, gram)
     if (fdes >= 0) {
       int	n;
 
-      TIME_T	tloc;
+      time_t	tloc;
 
       tloc = time(0);
       strcpy(whattime, ctime(&tloc));
@@ -820,7 +815,7 @@ _Rktsync(cx, dm, qm)
       ecount = 0;
       if (fdes >= 0) {
 	int	n;
-	TIME_T	tloc;
+	time_t	tloc;
 
 	tloc = time(0);
 	strcpy(whattime, ctime(&tloc));
