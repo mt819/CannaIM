@@ -254,7 +254,7 @@ unsigned char *actbuff, *keybuff;
 		"\260\334\306\260\72\244\263\244\316\244\310\244\255\244\316"
 		"\245\255\241\274\244\317%d\n",i,0,0);
                           /* テーブル移動:このときのキーは */
-            (void)copyMultiSequence(i, (KanjiMode)mode->keytbl,
+            copyMultiSequence(i, (KanjiMode)mode->keytbl,
                                        (KanjiMode)p);
           }
         }

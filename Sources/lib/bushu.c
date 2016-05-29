@@ -667,7 +667,7 @@ bushuHenkan(uiContext d, int flag, int ext, int cur,
 
   if((nbunsetsu = bushuBgnBun(&st, yomi, length)) == NG) {
     killmenu(d);
-    (void)GLineNGReturn(d);
+    GLineNGReturn(d);
     return -1;
   }
 
@@ -695,7 +695,7 @@ bushuHenkan(uiContext d, int flag, int ext, int cur,
   if((allBushuCands
       = getIchiranList(defaultBushuContext, &nelem, &currentkouho)) == 0) {
     killmenu(d);
-    (void)GLineNGReturn(d);
+    GLineNGReturn(d);
     return -1;
   }
 
@@ -707,14 +707,14 @@ bushuHenkan(uiContext d, int flag, int ext, int cur,
                    /* かな漢字変換の終了に失敗しました */
     freeGetIchiranList(allBushuCands);
     killmenu(d);
-    (void)GLineNGReturn(d);
+    GLineNGReturn(d);
     return -1;
   }
 
   if(getForIchiranContext(d) == NG) {
     freeGetIchiranList(allBushuCands);
     killmenu(d);
-    (void)GLineNGReturn(d);
+    GLineNGReturn(d);
     return -1;
   }
 
@@ -732,7 +732,7 @@ bushuHenkan(uiContext d, int flag, int ext, int cur,
 			 quitfunc, uiUtilIchiranTooSmall)) == NG) {
     freeGetIchiranList(allBushuCands);
     killmenu(d);
-    (void)GLineNGReturnFI(d);
+    GLineNGReturnFI(d);
     return -1;
   }
 

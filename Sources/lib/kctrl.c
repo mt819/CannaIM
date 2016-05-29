@@ -112,7 +112,7 @@ initRomeStruct(uiContext d, int flg)
 
   /* 初期 func を実行する */
 
-  (void)doInitializeFunctions(d);
+  doInitializeFunctions(d);
   return 0;
 }
 
@@ -1898,7 +1898,7 @@ ToggleChikuji(d, flg)
     RkwEndBun(yc->context, 0);
     abandonContext(d, yc);
   }
-  (void)escapeToBasicStat(d, CANNA_FN_Kakutei);
+  escapeToBasicStat(d, CANNA_FN_Kakutei);
   d->kanji_status_return->info &= ~KanjiThroughInfo;
 
   if (flg) {

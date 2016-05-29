@@ -156,8 +156,8 @@ _Rkpanic(char *fmt, int p, int q, int r)
   char	msg[RK_LINE_BMAX];
 
   sprintf(msg, fmt, p, q, r);
-  (void)fprintf(logfile ? logfile : stderr, "%s\n", msg);
-  (void)fflush(logfile);
+  fprintf(logfile ? logfile : stderr, "%s\n", msg);
+  fflush(logfile);
 #endif
   /* The following exit() must be removed.  1996.6.5 kon */
   exit(1);

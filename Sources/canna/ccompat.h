@@ -56,10 +56,10 @@ extern int  errno;
 #endif
 
 #if defined(HAVE_MEMSET) && !defined(HAVE_BZERO) && !defined(bzero)
-# define bzero(buf, size) ((void)memset((char *)(buf), 0x00, (size)))
+# define bzero(buf, size) (memset((char *)(buf), 0x00, (size)))
 #endif
 #if defined(HAVE_MEMCPY) && !defined(HAVE_BCOPY) && !defined(bcopy)
-# define bcopy(src, dst, size) ((void)memmove((char *)(dst), (char *)(src), (size)))
+# define bcopy(src, dst, size) (memmove((char *)(dst), (char *)(src), (size)))
 #elif !defined(HAVE_MEMCPY) && defined(HAVE_BCOPY) && !defined(memcpy)
 /* Don't use return value; bcopy() returns void */
 # define memcpy(dst, src, size) bcopy((char *)(src), (char *)(dst), (size))

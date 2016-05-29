@@ -2565,7 +2565,7 @@ yomiContext *yc_return;
       }
       else {
         if (cannaconf.auto_sync) {
-          (void)RkwSync(defaultContext, kataautodic);
+          RkwSync(defaultContext, kataautodic);
         }
       }
     } else {
@@ -2579,7 +2579,7 @@ yomiContext *yc_return;
       }
       else {
         if (cannaconf.auto_sync) {
-          (void)RkwSync(defaultContext, hiraautodic);
+          RkwSync(defaultContext, hiraautodic);
         }
       }
 #endif
@@ -3974,8 +3974,8 @@ static int
 YomiBaseHira(d)
 uiContext d;
 {
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
-  (void)EmptyBaseHira(d);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  EmptyBaseHira(d);
   makeYomiReturnStruct(d);
   return 0;
 }
@@ -3986,8 +3986,8 @@ static int
 YomiBaseKata(d)
 uiContext d;
 {
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
-  (void)EmptyBaseKata(d);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  EmptyBaseKata(d);
   makeYomiReturnStruct(d);
   return 0;
 }
@@ -3998,8 +3998,8 @@ static int
 YomiBaseEisu(d)
 uiContext d;
 {
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
-  (void)EmptyBaseEisu(d);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  EmptyBaseEisu(d);
   makeYomiReturnStruct(d);
   return 0;
 }
@@ -4010,8 +4010,8 @@ static int
 YomiBaseZen(d)
 uiContext d;
 {
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
-  (void)EmptyBaseZen(d);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  EmptyBaseZen(d);
   makeYomiReturnStruct(d);
   return 0;
 }
@@ -4022,8 +4022,8 @@ static int
 YomiBaseHan(d)
 uiContext d;
 {
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
-  (void)EmptyBaseHan(d);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  EmptyBaseHan(d);
   makeYomiReturnStruct(d);
   return 0;
 }
@@ -4034,8 +4034,8 @@ static int
 YomiBaseKana(d)
 uiContext d;
 {
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
-  (void)EmptyBaseKana(d);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  EmptyBaseKana(d);
   makeYomiReturnStruct(d);
   return 0;
 }
@@ -4046,8 +4046,8 @@ static int
 YomiBaseKakutei(d)
 uiContext d;
 {
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
-  (void)EmptyBaseKakutei(d);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  EmptyBaseKakutei(d);
   makeYomiReturnStruct(d);
   return 0;
 }
@@ -4058,8 +4058,8 @@ static int
 YomiBaseHenkan(d)
 uiContext d;
 {
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
-  (void)EmptyBaseHenkan(d);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  EmptyBaseHenkan(d);
   makeYomiReturnStruct(d);
   return 0;
 }
@@ -4072,13 +4072,13 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
 
   if (yc->generalFlags & CANNA_YOMI_KATAKANA) {
-    (void)EmptyBaseHira(d);
+    EmptyBaseHira(d);
   }
   else {
-    (void)EmptyBaseKata(d);
+    EmptyBaseKata(d);
   }
   makeYomiReturnStruct(d);
   return 0;
@@ -4092,13 +4092,13 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
 
   if (yc->generalFlags & CANNA_YOMI_BASE_HANKAKU) {
-    (void)EmptyBaseZen(d);
+    EmptyBaseZen(d);
   }
   else {
-    (void)EmptyBaseHan(d);
+    EmptyBaseHan(d);
   }
   makeYomiReturnStruct(d);
   return 0;
@@ -4112,24 +4112,24 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
 
   if (!(yc->generalFlags & CANNA_YOMI_BASE_HANKAKU) &&
       ((yc->generalFlags & CANNA_YOMI_ROMAJI) ||
        ((yc->generalFlags & CANNA_YOMI_KATAKANA) &&
 	!cannaconf.InhibitHankakuKana) )) {
-    (void)EmptyBaseHan(d);
+    EmptyBaseHan(d);
   }
   else {
     yc->generalFlags &= ~CANNA_YOMI_BASE_HANKAKU;
     if (yc->generalFlags & CANNA_YOMI_ROMAJI) {
-      (void)EmptyBaseHira(d);
+      EmptyBaseHira(d);
     }
     else if (yc->generalFlags & CANNA_YOMI_KATAKANA) {
-      (void)EmptyBaseEisu(d);
+      EmptyBaseEisu(d);
     }
     else {
-      (void)EmptyBaseKata(d);
+      EmptyBaseKata(d);
     }
   }
   makeYomiReturnStruct(d);
@@ -4144,24 +4144,24 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
 
   if (yc->generalFlags & CANNA_YOMI_BASE_HANKAKU) {
-    (void)EmptyBaseZen(d);
+    EmptyBaseZen(d);
   }
   else if (yc->generalFlags & CANNA_YOMI_KATAKANA) {
-    (void)EmptyBaseHira(d);
+    EmptyBaseHira(d);
   }
   else if (yc->generalFlags & CANNA_YOMI_ROMAJI) {
     if (!cannaconf.InhibitHankakuKana) {
       yc->generalFlags |= CANNA_YOMI_BASE_HANKAKU;
     }
-    (void)EmptyBaseKata(d);
+    EmptyBaseKata(d);
   }
   else {
     yc->generalFlags &= ~CANNA_YOMI_ZENKAKU;
     yc->generalFlags |= CANNA_YOMI_BASE_HANKAKU;
-    (void)EmptyBaseEisu(d);
+    EmptyBaseEisu(d);
   }
   makeYomiReturnStruct(d);
   return 0;
@@ -4175,13 +4175,13 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
 
   if (yc->generalFlags & CANNA_YOMI_ROMAJI) {
-    (void)EmptyBaseKana(d);
+    EmptyBaseKana(d);
   }
   else {
-    (void)EmptyBaseEisu(d);
+    EmptyBaseEisu(d);
   }
   makeYomiReturnStruct(d);
   return 0;
@@ -4195,13 +4195,13 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  (void)RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
+  RomajiFlushYomi(d, d->genbuf, ROMEBUFSIZE);
 
   if (yc->generalFlags & CANNA_YOMI_KAKUTEI) {
-    (void)EmptyBaseHenkan(d);
+    EmptyBaseHenkan(d);
   }
   else { /* 本当は一筋縄では行かない */
-    (void)EmptyBaseKakutei(d);
+    EmptyBaseKakutei(d);
   }
   makeYomiReturnStruct(d);
   return 0;
@@ -4215,7 +4215,7 @@ uiContext d;
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  (void)saveFlags(yc);
+  saveFlags(yc);
   return NothingChanged(d);
 }
 
@@ -4774,7 +4774,7 @@ uiContext d;
   d->modec = (mode_context)tc;
   tc->left = (tanContext)0;
   s += len;
-  (void)TanMuhenkan(d);
+  TanMuhenkan(d);
   return len;
 }
 #endif
@@ -4864,7 +4864,7 @@ uiContext	d;
     }
     len = RkwGetKanji(con, ptr, (int)(eptr - ptr));
     if (len < 0) {
-      (void)makeRkError(d, "\264\301\273\372\244\316\274\350\244\352\275\320"
+      makeRkError(d, "\264\301\273\372\244\316\274\350\244\352\275\320"
 	"\244\267\244\313\274\272\307\324\244\267\244\336\244\267\244\277");
                            /* 漢字の取り出しに失敗しました */
       ret = TanMuhenkan(d);
@@ -4873,7 +4873,7 @@ uiContext	d;
     ptr += len;
     j = RkwGetYomi(yc->context, tmpbuf, ROMEBUFSIZE);
     if (j < 0) {
-      (void)makeRkError(d, "\245\271\245\306\245\244\245\277\245\271\244\362"
+      makeRkError(d, "\245\271\245\306\245\244\245\277\245\271\244\362"
 	"\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307"
 	"\244\267\244\277");
                            /* ステイタスを取り出せませんでした */

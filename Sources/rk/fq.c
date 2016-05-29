@@ -550,7 +550,7 @@ FQscan(df, codm, file, w)
     }
     off += hd.data[HD_HSZ].var;
     lseek(fd, off, 0);
-    (void)read(fd, (char *)ll, 4);
+    read(fd, (char *)ll, 4);
     off += 4;
     bitsiz = L4TOL(ll);
     bitoff = off;
@@ -630,7 +630,7 @@ FQopen(dm, qm, file, mode)
     if (!qm->dm_qbits)
       return -1;
     lseek(fd, xqm->ex_boff, 0);
-    (void)read(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
+    read(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
     qm->dm_rut = LoadRUC(fd);
     qm->dm_nv = readNV(fd);
     df->df_rcount++;
@@ -660,7 +660,7 @@ FQclose(cx, dm, qm, file)
     if (qm->dm_qbits) {
       if (qm->dm_flags & DM_UPDATED) {
 	lseek(fd, xqm->ex_boff, 0);
-	(void)write(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
+	write(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
       };
       free(qm->dm_qbits);
       qm->dm_qbits = NULL;

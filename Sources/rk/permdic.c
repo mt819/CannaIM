@@ -252,7 +252,7 @@ _Rkpclose(dm, dfnm, gram)
   if (dm->dm_gram) {
     dm->dm_gram->refcount--;
     if (dm->dm_gram->refcount == 0) {
-      (void)RkCloseGram(dm->dm_gram->gramdic);
+      RkCloseGram(dm->dm_gram->gramdic);
       free(dm->dm_gram);
     }
   }

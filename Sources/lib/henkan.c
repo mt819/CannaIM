@@ -2059,7 +2059,7 @@ yomiContext yc;
 {
   if ((yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE) &&
       (yc->cStartp < yc->kEndp)) {
-    (void)RomajiFlushYomi(d, (wchar_t *)0, 0);
+    RomajiFlushYomi(d, (wchar_t *)0, 0);
   }
 
   return 0;
@@ -2253,7 +2253,7 @@ uiContext d;
 	  return NothingChangedWithBeep(d);
 	}
 	if (nKouhoBunsetsu) {
-	  (void)cutOffLeftSide(d, yc, nKouhoBunsetsu);
+	  cutOffLeftSide(d, yc, nKouhoBunsetsu);
 	}
       }
     }

@@ -305,7 +305,7 @@ char *s;
       if (valuec > 1 && null(values[1])) {
 	break;
       }
-      (void)Leval(1);
+      Leval(1);
     }
     retval = 1;
   }
@@ -425,10 +425,10 @@ clisp_main()
     }
     push(Leval(1));
     if (sp[0] == LISPERROR) {
-      (void)pop1();
+      pop1();
     }
     else {
-      (void)Lprint(1);
+      Lprint(1);
       prins("\n");
     }
   }
@@ -1422,7 +1422,7 @@ static void tyo(c)
 int c;
 {
   if (outstream) {
-    (void)putc(c, outstream);
+    putc(c, outstream);
   }
 }
 
@@ -1647,7 +1647,7 @@ int n;
   list retval;
 
   retval = allocstring(n);
-  (void)Strncpy(xstring(retval), s, n);
+  Strncpy(xstring(retval), s, n);
   xstring(retval)[n] = '\0';
   return retval;
 }
@@ -1789,11 +1789,11 @@ int n;
 
       t = assq(e, *esp);
       if (t) {
-	(void)pop1();
+	pop1();
 	return(cdr(t));
       }
       else if ((sym = symbolpointer(e))->valfunc) {
-	(void)pop1();
+	pop1();
 	return (sym->valfunc)(VALGET, 0);
       }
       else {
@@ -2308,17 +2308,17 @@ Lcond()
 	/* if non NIL */
 	t = pop1();
 	if (null(t)) {	/* if cdr is NIL */
-	  (void)pop1();
+	  pop1();
 	  return (a);
 	}
 	else {
-	  (void)pop1();
+	  pop1();
 	  push(t);
 	  return(Lprogn());
 	}
       }
       else {
-	(void)pop1();
+	pop1();
       }
     }
   }
@@ -2961,7 +2961,7 @@ Llet()
   px = sp;
   *px = cdr(*px);
   if (atom(*px)) {
-    (void)pop1();
+    pop1();
     return(NIL);
   }
   else {
@@ -3003,7 +3003,7 @@ Llet()
     push(_LAMBDA);
     push(Lxcons(2));
     p = Lxcons(2);
-    (void)pop1();
+    pop1();
     return(p);
   }
 }
@@ -3017,7 +3017,7 @@ Lif()
 
   x = cdr(sp[0]);
   if (atom(x) || atom(cdr(x))) {
-    (void)pop1();
+    pop1();
     return NIL;
   }
   else {
@@ -3096,7 +3096,7 @@ int n;
   else {
     retval = NIL;
   }
-  (void)pop1();
+  pop1();
   return retval;
 }
 
@@ -3856,7 +3856,7 @@ Ldefmenu()
       extrafunc->next = extrafuncp;
       extrafuncp = extrafunc;
       nothermodes++;
-      (void)pop1();
+      pop1();
       return sym;
     }
     free(extrafunc);
@@ -3893,7 +3893,7 @@ int n;
     initfunc[i] = 0;
     ret = T;
   }
-  (void)pop1();
+  pop1();
   return ret;
 }
 
@@ -3982,7 +3982,7 @@ int n;
   else {
     retval = NIL;
   }
-  (void)pop1();
+  pop1();
   return retval;
 }
 

@@ -100,7 +100,7 @@ restoreChikujiYomi(uiContext d, int old)
       recalc = 1;
     }
     if (nKouhoBunsetsu) {
-      (void)cutOffLeftSide(d, yc, nKouhoBunsetsu - yc->nbunsetsu);
+      cutOffLeftSide(d, yc, nKouhoBunsetsu - yc->nbunsetsu);
       if (nKouhoBunsetsu < yc->nbunsetsu) {
 	n = yc->nbunsetsu - nKouhoBunsetsu;
 	if (n > old) {
@@ -319,10 +319,10 @@ ChikujiTanDeletePrevious(uiContext d)
   if (RkwSubstYomi(yc->context, 0, yc->ye - yc->cStartp,
                                     NULL, 0) == NG) {
     /* 読みで残っている分を逐次のデータから消す */
-    (void)makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
+    makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
 	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
                          /* 読みに戻すことができません */
-    (void)TanMuhenkan(d); /* これ要るの？ */
+    TanMuhenkan(d); /* これ要るの？ */
     return 0;
   }
   yc->ys = yc->ye = yc->cStartp;
@@ -331,7 +331,7 @@ ChikujiTanDeletePrevious(uiContext d)
     if (RkwGoTo(yc->context, i) == NG
 	|| RkwGetStat(yc->context, &stat) == NG
 	|| RkwStoreYomi(yc->context, NULL, 0) == NG) {
-      (void)makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
+      makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
 	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
                            /* 読みに戻すことができません */
       TanMuhenkan(d); /* これ、要るの？ */
@@ -421,7 +421,7 @@ chikuji_subst_yomi(uiContext d)
     jrKanjiError = "\312\321\264\271\244\313\274\272\307\324\244\267\244\336"
 	"\244\267\244\277";
                    /* 変換に失敗しました */
-    (void)TanMuhenkan(d);
+    TanMuhenkan(d);
     return -1;
   }
   yc->nbunsetsu = l;
@@ -447,7 +447,7 @@ ChikujiTanExtend(uiContext d)
       return TanMuhenkan(d);
     }
     if (RkwGoTo(yc->context, i) == -1) {
-      (void)makeRkError(d, "\312\270\300\341\244\316\260\334\306\260\244\313"
+      makeRkError(d, "\312\270\300\341\244\316\260\334\306\260\244\313"
 	"\274\272\307\324\244\267\244\336\244\267\244\277");
                            /* 文節の移動に失敗しました */
       return TanMuhenkan(d);
@@ -455,7 +455,7 @@ ChikujiTanExtend(uiContext d)
     yc->curbun = i;
   }
   if ((yc->nbunsetsu = RkwEnlarge(yc->context)) <= 0) {
-    (void)makeRkError(d, "\312\270\300\341\244\316\263\310\302\347\244\313"
+    makeRkError(d, "\312\270\300\341\244\316\263\310\302\347\244\313"
 	"\274\272\307\324\244\267\244\336\244\267\244\277");
                          /* 文節の拡大に失敗しました */
     return TanMuhenkan(d);
@@ -484,7 +484,7 @@ ChikujiTanShrink(uiContext d)
       return TanMuhenkan(d);
     }
     if (RkwGoTo(yc->context, i) == -1) {
-      (void)makeRkError(d, "\312\270\300\341\244\316\275\314\276\256\244\313"
+      makeRkError(d, "\312\270\300\341\244\316\275\314\276\256\244\313"
 	"\274\272\307\324\244\267\244\336\244\267\244\277");
                            /* 文節の縮小に失敗しました */
       return TanMuhenkan(d);
@@ -498,7 +498,7 @@ ChikujiTanShrink(uiContext d)
   }
   yc->nbunsetsu = RkwShorten(yc->context);
   if (yc->nbunsetsu <= 0) { /* 0 ってことあんのかなあ？ */
-    (void)makeRkError(d, "\312\270\300\341\244\316\275\314\276\256\244\313"
+    makeRkError(d, "\312\270\300\341\244\316\275\314\276\256\244\313"
 	"\274\272\307\324\244\267\244\336\244\267\244\277");
                          /* 文節の縮小に失敗しました */
     return TanMuhenkan(d);
@@ -526,10 +526,10 @@ ChikujiYomiDeletePrevious(uiContext d)
     else {
       if (RkwSubstYomi(yc->context, 0, yc->ye - yc->cStartp,
                                         NULL, 0) == NG) {
-	(void)makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
+	makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
 	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
                              /* 読みに戻すことができません */
-	(void)TanMuhenkan(d);
+	TanMuhenkan(d);
 	return 0;
       }
       yc->ys = yc->ye = yc->cStartp;
@@ -659,10 +659,10 @@ ChikujiHenkan(uiContext d)
     }
     n = RkwFlushYomi(yc->context);
     if (n == -1) {
-      (void)makeRkError(d, "\312\321\264\271\244\313\274\272\307\324\244\267"
+      makeRkError(d, "\312\321\264\271\244\313\274\272\307\324\244\267"
 	"\244\336\244\267\244\277");
                            /* 変換に失敗しました */
-      (void)TanMuhenkan(d);
+      TanMuhenkan(d);
       return 0;
     }
     yc->cStartp = yc->kEndp;

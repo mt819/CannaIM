@@ -435,7 +435,7 @@ RkwCloseContext(cx_num)
     if (mh) {
       for (m = mh->md_next; m != mh; m = n) {
 	n = m->md_next;
-	(void)_RkUmountMD(cx, m);
+	_RkUmountMD(cx, m);
       };
       free(mh);
       cx->md[i] = NULL;
@@ -462,7 +462,7 @@ RkwCloseContext(cx_num)
   if (cx->cx_gwt) {
     struct _rec	*gwt = (struct _rec *)cx->cx_gwt;
     if (gwt) {
-      (void)RkwCloseContext(gwt->gwt_cx);
+      RkwCloseContext(gwt->gwt_cx);
       if (gwt->gwt_dicname)
 	free(gwt->gwt_dicname);
       free(gwt);
@@ -508,7 +508,7 @@ RkwDuplicateContext(cx_num)
 	/* should mount dictionaries in reverse order */
 	mh = sx->md[i];
 	for (md = mh->md_prev; md != mh; md = md->md_prev)
-	  (void)_RkMountMD(dx, md->md_dic, md->md_freq,
+	  _RkMountMD(dx, md->md_dic, md->md_freq,
 			   md->md_flags & MD_WRITE, 0);
       };
       dx->ddpath = _RkCopyDDP(sx->ddpath);

@@ -403,7 +403,7 @@ int  size;
     return NOTALC;
   }
   dicscnt = RkwGetDicList(new_cx_num, buf, size);
-  (void)RkwCloseContext(new_cx_num);
+  RkwCloseContext(new_cx_num);
   return (dicscnt);
 }
 
@@ -468,7 +468,7 @@ int mode;
     return ACCES;
   dum_direct = dm->dm_file->df_direct;
   DMremove(dm);
-  (void)_RkRealizeDD(dum_direct);
+  _RkRealizeDD(dum_direct);
   return 0;
 }
 
@@ -549,7 +549,7 @@ RkwRenameDic(cx_num, old, new, mode)
     free(path);
     DMremove(dm2);
     DMrename(dm1, new);
-    (void)_RkRealizeDD(dd);
+    _RkRealizeDD(dd);
     return 1;
   } else {
 #ifndef WINDOWS_STYLE_FILENAME
@@ -565,7 +565,7 @@ RkwRenameDic(cx_num, old, new, mode)
       return NOENT; /* なんなんだか良く分からない (1993.11 今) */
     /* ためしにやってみているのかな？ (1993.11 今) */
     DMrename(dm1, new);
-    (void)_RkRealizeDD(dd);
+    _RkRealizeDD(dd);
     return 0;
   }
 }
@@ -730,7 +730,7 @@ int mode;
 		  if (dm2) {
 		    res = ACCES;
 		    if (copyFile(dm1, dm2) == 0) {
-		      (void)_RkRealizeDD(userDDP[0]);
+		      _RkRealizeDD(userDDP[0]);
 		      res = 0;
 		    }
 		    else {
@@ -809,7 +809,7 @@ int mode;
 
 	    res = DMchmod(dm, mode);
 	    if (res >= 0) {
-	      (void)_RkRealizeDD(dd);
+	      _RkRealizeDD(dd);
 	    }
 	    else {
 	      res = ACCES;

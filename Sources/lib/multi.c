@@ -267,7 +267,7 @@ int fnum;
       d->kanji_status_return->info |= KanjiEmptyInfo;
     }
     /* Nop を行う */
-    (void)doFunc(d, CANNA_FN_Nop);
+    doFunc(d, CANNA_FN_Nop);
     d->flags |= MULTI_SEQUENCE_EXECUTED;
     return 0;
   }

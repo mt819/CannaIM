@@ -135,7 +135,7 @@ uiContext d;
   else if (cannaconf.CursorWrap) {
     return BunFullShrink(d);
   }
-  (void)NothingChangedWithBeep(d);
+  NothingChangedWithBeep(d);
   return 0;
 }
 
@@ -161,7 +161,7 @@ uiContext d;
       return BunFullExtend(d);
     }
   }
-  (void)NothingChangedWithBeep(d);
+  NothingChangedWithBeep(d);
   return 0;
 }
 

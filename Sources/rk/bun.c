@@ -430,7 +430,7 @@ RkwEndBun(int cx_num, int mode)
   }
 #endif
   for (i = 0; i < (int)store->maxbun; i++)
-    (void)_RkLearnBun(cx, i, mode);
+    _RkLearnBun(cx, i, mode);
   if (cx->flags & CTX_XAUT)
     _RkFreeQue(store, 0, store->maxxq + 1);
   cx->concmode &= ~(RK_CONNECT_WORD | RK_MAKE_WORD |
@@ -1378,7 +1378,7 @@ RkeGetLex(int cx_num, RkLex *dst, int maxdst)
   }
 
   yomi = store->yomi + store->bunq[store->curbun].nb_yoff;
-  (void)RkwGetKanji(cx_num, kanji, RK_LEN_WMAX + 1);
+  RkwGetKanji(cx_num, kanji, RK_LEN_WMAX + 1);
   kp = kanji;
   nwords = RkwGetLex(cx_num, dst, maxdst);
   if (dst) {

@@ -714,7 +714,7 @@ close_engine()
 {
 #ifdef DL
   if (dlh) {
-    (void)dlclose(dlh);
+    dlclose(dlh);
     dlh = (DSOHANDLE)0;
   }
 #endif /* DL */

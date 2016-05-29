@@ -316,19 +316,19 @@ int		flags;
     klen = strlen((char *)kana);
     switch(flags&RK_XFERMASK) {
     default:
-	(void)RkCvtNone(tmp, sizeof(tmp), kana, klen);
+	RkCvtNone(tmp, sizeof(tmp), kana, klen);
 	return tmp;
     case RK_XFER:
-	(void)RkCvtHira(tmp, sizeof(tmp), kana, klen);
+	RkCvtHira(tmp, sizeof(tmp), kana, klen);
 	return tmp;
     case RK_HFER:
-	(void)RkCvtHan(tmp, sizeof(tmp), kana, klen);
+	RkCvtHan(tmp, sizeof(tmp), kana, klen);
 	return tmp;
     case RK_KFER:
-	(void)RkCvtKana(tmp, sizeof(tmp), kana, klen);
+	RkCvtKana(tmp, sizeof(tmp), kana, klen);
 	return tmp;
     case RK_ZFER:
-	(void)RkCvtZen(tmp, sizeof(tmp), kana, klen);
+	RkCvtZen(tmp, sizeof(tmp), kana, klen);
 	return tmp;
     };
 }

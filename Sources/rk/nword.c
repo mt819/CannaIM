@@ -129,7 +129,7 @@ derefWord(word)			/* decrease the reference counter */
 {
   for (; word; word = word->nw_next)
     if (word->nw_cache)
-      (void)_RkDerefCache(word->nw_cache);
+      _RkDerefCache(word->nw_cache);
 }
 
 /*ARGSUSED*/
@@ -1272,7 +1272,7 @@ sortWord(words)
       }
     /* positive list no sakusei */
     if (pos > 1)
-	(void)qsort((char *)wptr, (int)pos, sizeof(struct compRec),
+	qsort((char *)wptr, (int)pos, sizeof(struct compRec),
                     (int (*)(const void *, const void *))compword);
     for (i = 1; i < (int)nwords; i++)
       wptr[i - 1].word->nw_next = wptr[i].word;

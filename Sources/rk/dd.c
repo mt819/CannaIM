@@ -249,7 +249,7 @@ _RkRealizeDF(df)
     /* create a file */
     t = close(creat(pathname, CREAT_MODE));
     free(pathname);
-    (void)umask(oldmask);
+    umask(oldmask);
     if (t >= 0) {
       return 0;
     }
@@ -715,7 +715,7 @@ _RkCreateUniquePath(dd, proto)
       if (close(creat(filename, CREAT_MODE)) < 0)
 	count++;
       free(filename);
-      (void)umask(oldmask);
+      umask(oldmask);
       if (!count)
 	return newLinkName;
     };
@@ -1627,7 +1627,7 @@ _RkUmountMD(cx, md)
       dd = df->df_direct;
       file  = _RkCreatePath(dd, df->df_link);
       if (file) {
-	(void)DST_CLOSE(dm, file, cx->gram->gramdic);
+	DST_CLOSE(dm, file, cx->gram->gramdic);
 	if (df->df_rcount == 0) {
 	  if (dd->dd_rcount > 0 && --dd->dd_rcount == 0)
 	    _RkFreeDD(dd);

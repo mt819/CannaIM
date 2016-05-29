@@ -878,7 +878,7 @@ int func;
   }
   retval = IchiranKakutei(d);
   if (ifl & ICHIRAN_STAY_LONG) {
-    (void)IchiranQuit(d);
+    IchiranQuit(d);
   }
   d->more.todo = 1;
   d->more.ch = d->ch;
@@ -1414,7 +1414,7 @@ uiContext d;
       BYTE ifl = ic->flags;
       retval = IchiranKakutei(d);
       if (ifl & ICHIRAN_STAY_LONG) {
-	(void)IchiranQuit(d);
+	IchiranQuit(d);
       }
       d->more.todo = 1;
       d->more.ch = d->ch;
