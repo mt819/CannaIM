@@ -781,10 +781,10 @@ typedef struct _extra_func {
   { extern KanjiModeRec tankouho_mode; (d)->current_mode = &tankouho_mode; \
     (d)->modec = (mode_context)(tan); currentModeInfo(d); }
 
-#define freeForIchiranContext(fc) free((char *)fc)
-#define freeIchiranContext(ic) free((char *)ic)
-#define freeYomiContext(yc) free((char *)yc)
-#define freeCoreContext(cc) free((char *)cc)
+#define freeForIchiranContext(fc) free(fc)
+#define freeIchiranContext(ic) free(ic)
+#define freeYomiContext(yc) free(yc)
+#define freeCoreContext(cc) free(cc)
 
 #ifndef DICHOME
 #define DICHOME "/usr/lib/canna/dic"

@@ -213,7 +213,7 @@ BYTE key;
   if (malloc_echo) {
     WStrncpy(d->genbuf, prevEcho, prevEchoLen);
     d->genbuf[prevEchoLen] = (wchar_t)0;
-    free((char *)malloc_echo); /* 多分 malloc_echo が prevEcho かも */
+    free(malloc_echo); /* 多分 malloc_echo が prevEcho かも */
     prevEcho = d->genbuf;
   }
   d->kanji_status_return->echoStr = prevEcho;
@@ -224,7 +224,7 @@ BYTE key;
     if (malloc_gline) {
       WStrncpy(d->genbuf, prevGEcho, prevGEchoLen);
       d->genbuf[prevGEchoLen] = (wchar_t)0;
-      free((char *)malloc_gline); /* 多分 malloc_gline が prevGEcho かも */
+      free(malloc_gline); /* 多分 malloc_gline が prevGEcho かも */
       prevGEcho = d->genbuf;
     }
     d->kanji_status_return->gline.line    = prevGEcho;
