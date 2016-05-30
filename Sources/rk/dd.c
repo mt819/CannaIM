@@ -64,20 +64,6 @@ static struct DD	*_RkOpenDD();
 static int		_RkCountDDP();
 static struct DD	**_RkAppendDDP();
 
-char *
-allocStr(s)
-     char	*s;
-{
-  char	*d = NULL;
-  int	len;
-
-  if ((len = strlen(s)) && (d = malloc(len + 1))) {
-    strncpy(d, s, len);
-    d[len] = (char)0;
-  }
-  return(d);
-}
-
 /*
  * DM
  */
@@ -95,9 +81,9 @@ _RkCreateDM(df, dicname, nickname, class)
   if (dm) {
     dm->dm_next = dm->dm_prev = dm;
     dm->dm_file = df;
-    dm->dm_dicname  = allocStr((char *)dicname);
+    dm->dm_dicname  = strdup((char *)dicname);
     if (dm->dm_dicname) {
-      dm->dm_nickname = allocStr((char *)nickname);
+      dm->dm_nickname = strdup((char *)nickname);
       if (dm->dm_nickname) {
 	dm->dm_class = class;
 	dm->dm_flags = dm->dm_packbyte = dm->dm_rcount = 0;
@@ -175,7 +161,7 @@ _RkCreateDF(dd, lnk, type)
     df->df_direct = dd;
     dm->dm_next = dm->dm_prev = dm;
 
-    if (!(df->df_link = allocStr((char *)lnk))) {
+    if (!(df->df_link = strdup((char *)lnk))) {
       free(df);
       return(0);
     };
@@ -402,9 +388,9 @@ _RkCreateDD(path, name)
   dd = (struct DD *)calloc(1, sizeof(struct DD));
   if (dd) {
     dd->dd_next = dd->dd_prev = dd;
-    dd->dd_path = allocStr((char *)path);
+    dd->dd_path = strdup((char *)path);
     if (dd->dd_path) {
-      dd->dd_name = allocStr((char *)name);
+      dd->dd_name = strdup((char *)name);
       if (dd->dd_name) {
 	dd->dd_rcount = 0;
 	dd->dd_files.df_next = dd->dd_files.df_prev = &dd->dd_files;
@@ -1385,7 +1371,7 @@ DMrename(dm, nickname)
     goto return_ret;
   }
   strcpy(new_spec, spec);
-  if (!(new_nick = allocStr((char *)nickname))) {
+  if (!(new_nick = strdup((char *)nickname))) {
     free(new_spec);
     goto return_ret;
   };

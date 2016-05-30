@@ -999,7 +999,6 @@ Wchar			*RkUparseGramNum();
 Wchar			*RkParseGramNum();
 
 /* Context */
-char			*allocStr();
 void			_RkEndBun();
 void			freeDF();
 

@@ -117,7 +117,7 @@ _RkInitialize(ddhome, numCache)
 
 	      sx->word = NULL;
 	      dd->dd_next = dd->dd_prev = dd;
-	      sx->ddhome = allocStr(ddhome);
+	      sx->ddhome = strdup(ddhome);
 	      if (sx->ddhome) {
 		SG.P_BB  = RkGetGramNum(SG.gramdic, "BB");
 		SG.P_NN  = RkGetGramNum(SG.gramdic, "NN");
