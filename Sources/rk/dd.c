@@ -21,7 +21,6 @@
  */
 
 #include	"RKintern.h"
-#include	"IR.h"
 
 #ifdef __CYGWIN32__
 #include <fcntl.h> /* for O_BINARY */
