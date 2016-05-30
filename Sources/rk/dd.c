@@ -743,7 +743,7 @@ _RkRealizeDD(dd)
   int ret = -1;
   int tmpres;
   int			fdes;
-  ir_time_t		tloc;
+  time_t		tloc;
 #ifdef __EMX__
   struct stat		statbuf;
 #endif
