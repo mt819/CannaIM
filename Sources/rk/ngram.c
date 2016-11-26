@@ -610,7 +610,7 @@ RkParseWrec(gram, src, left, dst, maxdst)
   }
   else {
     dst = fil_wc2wrec_flag(dst, &wreclen, nc, src, ylen, left);
-    memcpy((char *)dst, (char *)localbuffer, wlen);
+    memcpy(dst, localbuffer, wlen);
     ret = dst + wlen;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
@@ -645,7 +645,7 @@ RkParseOWrec(gram, src, dst, maxdst, lucks)
     wreclen = 2 + (ylen * sizeof(Wchar)) + wlen;
     if (2 + wreclen <= maxdst) {
       dst = fil_wc2wrec_flag(dst, &wreclen, nc, src, ylen, ylen);
-      memcpy((char *)dst, (char *)localbuffer, wlen);
+      memcpy(dst, localbuffer, wlen);
       ret = dst + wlen;
     }
   }
@@ -1019,7 +1019,7 @@ RkWcand2Wrec(key, wc, nc, lucks)
       if (dst) {
 	wrec = (Wrec *)malloc((unsigned)(sz));
 	if (wrec) {
-	  memcpy((char *)wrec, (char *)localbuffer,
+	  memcpy(wrec, localbuffer,
 		       (size_t)(dst - localbuffer));
 	  dst = wrec + (dst - localbuffer);
 	  for ( i = 0; i < nc; i++ ) {
