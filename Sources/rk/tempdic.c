@@ -316,7 +316,7 @@ deleteTD(dm, tab, n, newW)
 	if (!key || yomi_equal(newW, oldW, n)) {
 	  struct ncache	*cache = _RkFindCache(dm, (long)oldTW);
 
-	  if (!cache || cache->nc_count <= 0) {
+	  if (!cache || cache->nc_count == 0) {
 	    struct TW	*subW, newTW;
 
 	    newTW.word = newW;
