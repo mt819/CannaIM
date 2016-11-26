@@ -231,7 +231,7 @@ char *romaji;
 	  if (rdic->nr_brules)
 	    rdic->nr_brules[i]  = tmp_rdic[i].bang;
 	}
-	free ((char *)tmp_rdic);
+	free (tmp_rdic);
 #endif /* JAPANESE_SORT */
     }
     return((struct RkRxDic *)rdic);
