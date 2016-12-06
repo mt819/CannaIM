@@ -341,7 +341,7 @@ deleteTD(dm, tab, n, newW)
       } else
 	if (deleteTD(dm, &tn->tn_tree, n, newW))
 	  shrinkTD(td, key);
-      if (td->td_n <= 0) {
+      if (td->td_n == 0) {
 	free((td->td_node));
 	free(td);
 	*tab = NULL;
