@@ -159,7 +159,7 @@ _RkDerefCache(cache)
   fprintf(stderr, "_RkDeref(0x%08x), %d\n", cache, ++count);
 */
 
-  if (cache->nc_count <= 0) {
+  if (cache->nc_count == 0) {
     _Rkpanic("wrong cache count %s %d#%d",
 	     dm ? dm->dm_dicname : "-", cache->nc_address, cache->nc_count);
   };
