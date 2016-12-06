@@ -1150,7 +1150,7 @@ uniqWord(key, words, ylen, mode)
   }
 #endif
 
-  if (!(!key || ylen <= 0)) {
+  if (!(!key || !ylen)) {
     /* clear hash table */
     uniq[ 0] = uniq[ 1] = uniq[ 2] = uniq[ 3] =
       uniq[ 4] = uniq[ 5] = uniq[ 6] = uniq[ 7] =
@@ -1253,7 +1253,7 @@ sortWord(words)
     else
       neg++;
   nwords = pos + neg;
-  if (nwords <= 0)
+  if (nwords == 0)
     return words;
   /* sort word list using work space if possible */
   wptr = (struct compRec *)malloc(sizeof(struct compRec)*nwords);
