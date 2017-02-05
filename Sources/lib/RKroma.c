@@ -207,12 +207,9 @@ char *romaji;
 	tmp_rdic = (struct romaRec *)calloc((unsigned)rdic->nr_nkey,
                                               sizeof(struct romaRec));
 	if (!tmp_rdic) {
-          if (rdic->nr_string)
-            free(rdic->nr_string);
-          if (rdic->nr_keyaddr)
-            free(rdic->nr_keyaddr);
-	  if (rdic->nr_brules)
-            free(rdic->nr_brules);
+      free(rdic->nr_string);
+      free(rdic->nr_keyaddr);
+      free(rdic->nr_brules);
 	  free(rdic);
 	  return NULL;
 	}
@@ -244,11 +241,11 @@ RkwCloseRoma(rdic)
 struct RkRxDic	*rdic;
 {
     if ( rdic ) {
-        if (rdic->nr_string) free(rdic->nr_string);
-        if (rdic->nr_keyaddr) free(rdic->nr_keyaddr);
-	if (rdic->nr_brules) free(rdic->nr_brules);
-	free(rdic);
-    };
+        free(rdic->nr_string);
+        free(rdic->nr_keyaddr);
+        free(rdic->nr_brules);
+        free(rdic);
+    }
 }
 
 struct RkRxDic *
@@ -747,12 +744,9 @@ unsigned	flags;
     xxxx = (unsigned char *)malloc(64);
     yyyy = (unsigned char *)malloc(64);
     if (!xxxx || !yyyy) {
-      if (xxxx) {
-	free(xxxx);
-      }
-      if (yyyy) {
-	free(yyyy);
-      }
+        free(xxxx);
+        free(yyyy);
+    }
       return count;
     }
 #endif

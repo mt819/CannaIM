@@ -287,11 +287,8 @@ void
 freeIchiranBuf(ic)
 ichiranContext ic;
 {
-  if(ic->glinebufp)
     free(ic->glinebufp);
-  if(ic->kouhoifp)
     free(ic->kouhoifp);
-  if(ic->glineifp)
     free(ic->glineifp);
 }
 
@@ -299,13 +296,11 @@ void
 freeGetIchiranList(buf)
 wchar_t **buf;
 {
-  /* 候補一覧表示行用のエリアをフリーする */
-  if(buf) {
-    if(*buf) {
-      free(*buf);
+    /* 候補一覧表示行用のエリアをフリーする */
+    if(buf) {
+        free(*buf);
+        free(buf);
     }
-    free(buf);
-  }
 }
 
 static void

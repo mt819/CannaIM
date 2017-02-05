@@ -233,7 +233,7 @@ int nbytes;
 
   if (inbufsize < totallen) {
     inbufsize = totallen; /* inbufsize will be greater than 0 */
-    if (inbuf) free(inbuf);
+    free(inbuf);
     inbuf = (wchar_t *)malloc(inbufsize * sizeof(wchar_t));
     if (!inbuf) {
       inbufsize = 0;

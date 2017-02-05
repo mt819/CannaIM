@@ -517,12 +517,12 @@ void
 freeTanContext(tan)
 tanContext tan;
 {
-  if (tan->kanji) free(tan->kanji);
-  if (tan->yomi) free(tan->yomi);
-  if (tan->roma) free(tan->roma);
-  if (tan->kAttr) free(tan->kAttr);
-  if (tan->rAttr) free(tan->rAttr);
-  free(tan);
+    free(tan->kanji);
+    free(tan->yomi);
+    free(tan->roma);
+    free(tan->kAttr);
+    free(tan->rAttr);
+    free(tan);
 }
 
 static wchar_t *

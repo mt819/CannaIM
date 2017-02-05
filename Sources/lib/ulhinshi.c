@@ -988,8 +988,7 @@ int (*quitfunc)();
 		 BANGOMAX, inhibit, 0, WITHOUT_LIST_CALLBACK,
 		 NO_CALLBACK, exitfunc, quitfunc, uiUtilIchiranTooSmall))
                  == NG) {
-    if(fc->allkouho)
-      free(fc->allkouho);
+    free(fc->allkouho);
     popForIchiranMode(d);
     popCallback(d);
     defineEnd(d);
