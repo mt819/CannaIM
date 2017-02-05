@@ -210,9 +210,8 @@ uiContext d;
   }
     if (d->attr) {
         free(d->attr->u.attr);
-    }
     free(d->attr);
-  }
+    }
   free(d);
 }
 
