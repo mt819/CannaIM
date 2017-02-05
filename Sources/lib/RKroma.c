@@ -746,7 +746,6 @@ unsigned	flags;
     if (!xxxx || !yyyy) {
         free(xxxx);
         free(yyyy);
-    }
       return count;
     }
 #endif
