@@ -36,6 +36,16 @@ CannaLooper::CannaLooper(CannaMethod* method)
 	fKouhoWindow(NULL),
 	fPaletteWindow(NULL)
 {
+	fMenu = new BMenu(B_EMPTY_STRING);
+	fMenu->SetFont(be_plain_font);
+	fMenu->AddItem(new BMenuItem("About CannaIM" B_UTF8_ELLIPSIS,
+		new BMessage( B_ABOUT_REQUESTED)));
+	fMenu->AddSeparatorItem();
+	fMenu->AddItem(new BMenuItem("Convert arrow keys",
+		new BMessage(ARROW_KEYS_FLIPPED)));
+	fMenu->AddItem(new BMenuItem("Reload Init file",
+		new BMessage(RELOAD_INIT_FILE)));
+
 	font_family family;
 	font_style style;
 	strcpy(family, "VL PGothic");
@@ -43,6 +53,11 @@ CannaLooper::CannaLooper(CannaMethod* method)
 
 	fKouhoFont.SetFamilyAndStyle(family, style);
 	fKouhoFont.SetSize(12);
+
+	if (gSettings.convert_arrowkey) {
+		BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
+		item->SetMarked(true);
+	}
 
 	Run();
 }
@@ -84,6 +99,7 @@ CannaLooper::Quit()
 	}
 
 	fOwner->SetMenu(NULL, BMessenger());
+	delete fMenu;
 	BLooper::Quit();
 }
 
@@ -248,6 +264,12 @@ CannaLooper::MessageReceived(BMessage* msg)
 
 		case ARROW_KEYS_FLIPPED:
 		{
+<<<<<<< HEAD
+=======
+			BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
+			gSettings.convert_arrowkey = !gSettings.convert_arrowkey;
+			item->SetMarked(gSettings.convert_arrowkey);
+>>>>>>> parent of c70e1ba... Move menu to palette window.
 			fCanna->SetConvertArrowKey(gSettings.convert_arrowkey);
 			break;
 		}
@@ -492,7 +514,7 @@ CannaLooper::_HandleMethodActivated(bool active)
 		}
 
 		fPaletteWindow->PostMessage(PALETTE_WINDOW_SHOW);
-//		fOwner->SetMenu(fMenu, this);
+		fOwner->SetMenu(fMenu, this);
 	} else {
 		_ForceKakutei();
 		fCanna->ChangeMode(CANNA_MODE_HenkanMode);

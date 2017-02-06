@@ -29,7 +29,6 @@ private:
 	BPictureButton*		HexButton;
 	BPictureButton*		BushuButton;
 	BPictureButton*		TorokuButton;
-	BackBox*			fBack;
 	void				AllButtonOff();
 public:
 	PaletteWindow( BRect rect, BLooper* looper );

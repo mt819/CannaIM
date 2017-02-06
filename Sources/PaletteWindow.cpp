@@ -278,6 +278,7 @@ PaletteWindow::MessageReceived( BMessage *msg )
 			}
 			break;
 
+<<<<<<< HEAD
 		case ARROW_KEYS_FLIPPED:
 		{
 			gSettings.convert_arrowkey = !gSettings.convert_arrowkey;
@@ -286,6 +287,8 @@ PaletteWindow::MessageReceived( BMessage *msg )
 		}
 		case B_ABOUT_REQUESTED:
 		case RELOAD_INIT_FILE:
+=======
+>>>>>>> parent of c70e1ba... Move menu to palette window.
 		case MODE_CHANGED_FROM_PALETTE:
 			cannaLooper->PostMessage( msg );
 			break;

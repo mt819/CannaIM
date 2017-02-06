@@ -52,7 +52,7 @@ private:
 			BFont			fKouhoFont;
 			KouhoWindow*	fKouhoWindow;
 			PaletteWindow*	fPaletteWindow;
-
+			BMenu*			fMenu;
 };
 
 #endif	// CANNA_LOOPER_H
