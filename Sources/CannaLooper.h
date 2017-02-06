@@ -10,6 +10,7 @@
 #define CANNA_LOOPER_H
 
 
+#include <Messenger.h>
 #include <Font.h>
 #include <Looper.h>
 #include "CannaInterface.h"
@@ -17,6 +18,7 @@
 class CannaMethod;
 class KouhoWindow;
 class PaletteWindow;
+class BMenu;
 class BMessenger;
 class BPath;
 
@@ -56,3 +58,4 @@ private:
 };
 
 #endif	// CANNA_LOOPER_H
+

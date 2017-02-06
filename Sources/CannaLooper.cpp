@@ -14,6 +14,8 @@
 #include <File.h>
 #include <FindDirectory.h>
 #include <Input.h>
+#include <Menu.h>
+#include <MenuItem.h>
 #include <Messenger.h>
 #include <Path.h>
 #include <PathFinder.h>
@@ -111,7 +113,6 @@ CannaLooper::_CopyData(const BPath &srcPath, const BPath &dstPath)
 	sprintf(buf, "cp -a %s %s",srcPath.Path(), dstPath.Path());
 	system(buf);
 }
-
 
 void
 CannaLooper::_ChkVersion(const BPath &srcPath, const BPath &dstPath)
