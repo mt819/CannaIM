@@ -264,12 +264,9 @@ CannaLooper::MessageReceived(BMessage* msg)
 
 		case ARROW_KEYS_FLIPPED:
 		{
-<<<<<<< HEAD
-=======
 			BMenuItem* item = fMenu->FindItem(ARROW_KEYS_FLIPPED);
 			gSettings.convert_arrowkey = !gSettings.convert_arrowkey;
 			item->SetMarked(gSettings.convert_arrowkey);
->>>>>>> parent of c70e1ba... Move menu to palette window.
 			fCanna->SetConvertArrowKey(gSettings.convert_arrowkey);
 			break;
 		}

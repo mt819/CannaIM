@@ -12,9 +12,6 @@
 #include <Window.h>
 
 extern Preferences gSettings;
-class BackBox;
-class BLooper;
-class BPictureButton;
 
 class PaletteWindow : public BWindow
 {
