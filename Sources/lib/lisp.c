@@ -4616,7 +4616,6 @@ static struct cannafndefs cannafns[] = {
   {S_FN_ChangeServerMode	,CANNA_FN_ChangeServerMode},
   {S_FN_ShowServer		,CANNA_FN_ShowServer},
   {S_FN_ShowGakushu		,CANNA_FN_ShowGakushu},
-  {S_FN_ShowVersion		,CANNA_FN_ShowVersion},
   {S_FN_ShowPhonogramFile	,CANNA_FN_ShowPhonogramFile},
   {S_FN_ShowCannaFile		,CANNA_FN_ShowCannaFile},
   {S_FN_PageUp			,CANNA_FN_PageUp},

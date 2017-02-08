@@ -566,31 +566,6 @@ uiContext d;
 }
 
 static int
-showVersion(d)
-uiContext d;
-{
-  int retval = 0;
-  char s[512];
-  yomiContext yc = (yomiContext)d->modec;
-
-  if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
-    return NothingChangedWithBeep(d);
-  }
-  d->status = 0;
-  killmenu(d);
-
-  sprintf(s, "\306\374\313\334\270\354\306\376\316\317\245\267\245\271\245\306"
-	"\245\340\241\330\244\253\244\363\244\312\241\331Version %d.%d",
-	  cannaconf.CannaVersion / 1000, cannaconf.CannaVersion % 1000);
-             /* 日本語入力システム『かんな』 */
-  strcat(s, CANNA_PATCH_LEVEL);
-  makeGLineMessageFromString(d, s);
-  currentModeInfo(d);
-
-  return (retval);
-}
-
-static int
 showServer(d)
 uiContext d;
 {
