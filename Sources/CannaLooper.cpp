@@ -492,7 +492,6 @@ CannaLooper::_HandleMethodActivated(bool active)
 		}
 
 		fPaletteWindow->PostMessage(PALETTE_WINDOW_SHOW);
-//		fOwner->SetMenu(fMenu, this);
 	} else {
 		_ForceKakutei();
 		fCanna->ChangeMode(CANNA_MODE_HenkanMode);
@@ -501,7 +500,6 @@ CannaLooper::_HandleMethodActivated(bool active)
 		fPaletteWindow->PostMessage(&m);
 		fPaletteWindow->PostMessage(PALETTE_WINDOW_HIDE);
 		fKouhoWindow->PostMessage(KOUHO_WINDOW_HIDE);
-		fOwner->SetMenu(NULL, this);
 	}
 }
 
