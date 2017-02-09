@@ -22,6 +22,7 @@
 
 #include <CopyEngine.h>
 
+#include "canna/patchlevel.h"
 #include "CannaCommon.h"
 #include "CannaMethod.h"
 #include "KouhoWindow.h"
@@ -228,14 +229,18 @@ CannaLooper::MessageReceived(BMessage* msg)
 
 		case B_ABOUT_REQUESTED:
 		{
-			SERIAL_PRINT(("CannaLooper: B_ABOUT_REQUESTED received\n"));
-
-			BAlert* panel = new BAlert( "", "Canna Input Method\n"
+			char m[1024];
+			sprintf(m,
+				"Canna Input Method\n"
 				"  by Masao Kawamura 1999\n\n"
-				"Canna\n"
+				"Canna %d.%d %s\n"
 				"  Copyright 1992 NEC Corporation, Tokyo, Japan\n"
 				"  Special thanks to T.Murai for porting\n",
-				"OK");
+				CANNA_MAJOR_MINOR / 1000,
+				CANNA_MAJOR_MINOR % 1000,
+				CANNA_PATCH_LEVEL);
+				
+			BAlert* panel = new BAlert( "", m, "OK");
 			panel->SetFlags(panel->Flags() | B_CLOSE_ON_ESCAPE);
 			panel->Go();
 			break;
