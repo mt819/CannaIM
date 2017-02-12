@@ -147,7 +147,6 @@
 #define S_FN_DisconnectServer	"disconnect-server"
 #define S_FN_ChangeServerMode	"switch-server"
 #define S_FN_ShowServer		"show-server-name"
-#define S_FN_ShowGakushu	"show-gakushu"
 #define S_FN_ShowPhonogramFile	"show-romkana-table"
 #define S_FN_ShowCannaFile	"show-canna-file"
 #define S_FN_KanaRotate		"kana-rotate-forward"

@@ -71,7 +71,6 @@ static e_menuitem e_uusonotatable[] = {
   {"サーバ操作",     MENU_NEXT_MENU, MT_SERV},
 #endif
   {"辞書マウント／アンマウント", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
-  {"学習状態表示",   MENU_FUNC_NUM,  CANNA_FN_ShowGakushu},
   {"ファイル表示",   MENU_NEXT_MENU, MT_FILE},
 #else
   /* 変換方式 */
@@ -82,8 +81,6 @@ static e_menuitem e_uusonotatable[] = {
 #endif
   /* 辞書マウント／アンマウント */
   {"\274\255\275\361\245\336\245\246\245\363\245\310\241\277\245\242\245\363\245\336\245\246\245\363\245\310", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
-  /* 学習状態表示 */
-  {"\263\330\275\254\276\365\302\326\311\275\274\250",   MENU_FUNC_NUM,  CANNA_FN_ShowGakushu},
   /* ファイル表示 */
   {"\245\325\245\241\245\244\245\353\311\275\274\250",   MENU_NEXT_MENU, MT_FILE},
 #endif

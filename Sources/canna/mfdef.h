@@ -249,7 +249,6 @@
 #define CANNA_FN_ChangeServerMode	62 /* サーバ選択モード */
 #define CANNA_FN_DisconnectServer	63 /* サーバ切り離し */
 #define CANNA_FN_ShowServer		64 /* サーバ表示 */
-#define CANNA_FN_ShowGakushu		65 /* 学習状況表示 */
 #define CANNA_FN_ShowPhonogramFile	67 /* ローマ字ファイル表示 */
 #define CANNA_FN_ShowCannaFile		68 /* カスタマイズファイル表示 */
 #define CANNA_FN_DefineDicMode		69 /* 単語登録 */

@@ -86,7 +86,6 @@ static struct funccfunc empty_funcs[] = {
   {CANNA_FN_ChangeServerMode	,serverChange		},
   {CANNA_FN_DisconnectServer	,serverFin		},
   {CANNA_FN_ShowServer		,showServer		},
-  {CANNA_FN_ShowGakushu		,showGakushu		},
   {CANNA_FN_ShowPhonogramFile	,showRomkanaFile	},
   {CANNA_FN_ShowCannaFile	,showInitFile		},
   {CANNA_FN_EnterChikujiMode	,chikujiInit		},

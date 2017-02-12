@@ -603,34 +603,6 @@ uiContext d;
 }
 
 static int
-showGakushu(d)
-uiContext d;
-{
-  int retval = 0;
-  yomiContext yc = (yomiContext)d->modec;
-
-  if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
-    return NothingChangedWithBeep(d);
-  }
-  d->status = 0;
-  killmenu(d);
-
-  if (cannaconf.Gakushu == 1) {
-    makeGLineMessageFromString(d, "\263\330\275\254\244\254\243\317\243\316"
-	"\244\316\276\365\302\326\244\307\244\271");
-                                  /* 学習がＯＮの状態です */
-  }
-  else {
-    makeGLineMessageFromString(d, "\263\330\275\254\244\254\243\317\243\306"
-	"\243\306\244\316\276\365\302\326\244\307\244\271");
-                                  /* 学習がＯＦＦの状態です */
-  }
-    currentModeInfo(d);
-
-  return (retval);
-}
-
-static int
 showInitFile(d)
 uiContext d;
 {
