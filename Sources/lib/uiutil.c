@@ -45,14 +45,12 @@ typedef struct {
 #ifdef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
 #define MT_HELP   0
 #define MT_SONOTA 1
-#define MT_KIGO   2
 #define MT_TANGO  3
 #define MT_HENKAN 4
 #define MT_FILE   5
 #else
 #define MT_HELP   0
 #define MT_SONOTA 1
-#define MT_KIGO   2
 #define MT_SERV   3
 #define MT_TANGO  4
 #define MT_HENKAN 5
@@ -60,8 +58,6 @@ typedef struct {
 #endif
 
 static e_menuitem e_helptable[] = {
-  /* 記号入力 */
-  {"\265\255\271\346\306\376\316\317",   MENU_NEXT_MENU, MT_KIGO},
   /* コード入力 */
   {"\245\263\241\274\245\311\306\376\316\317", MENU_FUNC_NUM,  CANNA_FN_HexMode},
   /* 部首入力 */
@@ -151,7 +147,6 @@ static struct _e_menu {
 } e_me[] = {                                    /* MT_ の順と合わせること */
   {e_helptable,     numitems(e_helptable)},     /* MT_HELP */
   {e_uusonotatable, numitems(e_uusonotatable)}, /* MT_SONOTA */
-  {e_uukigotable,   numitems(e_uukigotable)},   /* MT_KIGO */
 #ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
   {e_uuservertable, numitems(e_uuservertable)}, /* MT_SERV */
 #endif /* STANDALONE */
