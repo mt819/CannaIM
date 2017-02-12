@@ -58,8 +58,6 @@ typedef struct {
 #endif
 
 static e_menuitem e_helptable[] = {
-  /* 部首入力 */
-  {"\311\364\274\363\306\376\316\317",   MENU_FUNC_NUM,  CANNA_FN_BushuMode},
   /* 単語登録 */
   {"\303\261\270\354\305\320\317\277",   MENU_NEXT_MENU, MT_TANGO},
   /* 環境設定 */
