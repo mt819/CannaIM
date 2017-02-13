@@ -23,6 +23,7 @@
 #include <CopyEngine.h>
 
 #include "canna/patchlevel.h"
+#include "lib/canna.h"
 #include "CannaCommon.h"
 #include "CannaMethod.h"
 #include "KouhoWindow.h"
@@ -235,10 +236,13 @@ CannaLooper::MessageReceived(BMessage* msg)
 				"  by Masao Kawamura 1999\n\n"
 				"Canna %d.%d %s\n"
 				"  Copyright 1992 NEC Corporation, Tokyo, Japan\n"
-				"  Special thanks to T.Murai for porting\n",
+				"  Special thanks to T.Murai for porting\n"
+				" \n"
+				"  Gakusuu: %d\n",
 				CANNA_MAJOR_MINOR / 1000,
 				CANNA_MAJOR_MINOR % 1000,
-				CANNA_PATCH_LEVEL);
+				CANNA_PATCH_LEVEL,
+				cannaconf.Gakushu);
 				
 			BAlert* panel = new BAlert( "", m, "OK");
 			panel->SetFlags(panel->Flags() | B_CLOSE_ON_ESCAPE);
