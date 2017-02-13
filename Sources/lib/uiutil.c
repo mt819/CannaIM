@@ -47,14 +47,12 @@ typedef struct {
 #define MT_SONOTA 1
 #define MT_TANGO  3
 #define MT_HENKAN 4
-#define MT_FILE   5
 #else
 #define MT_HELP   0
 #define MT_SONOTA 1
 #define MT_SERV   3
 #define MT_TANGO  4
 #define MT_HENKAN 5
-#define MT_FILE   6
 #endif
 
 static e_menuitem e_helptable[] = {
@@ -71,7 +69,6 @@ static e_menuitem e_uusonotatable[] = {
   {"サーバ操作",     MENU_NEXT_MENU, MT_SERV},
 #endif
   {"辞書マウント／アンマウント", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
-  {"ファイル表示",   MENU_NEXT_MENU, MT_FILE},
 #else
   /* 変換方式 */
   {"\312\321\264\271\312\375\274\260",       MENU_NEXT_MENU, MT_HENKAN},
@@ -81,8 +78,6 @@ static e_menuitem e_uusonotatable[] = {
 #endif
   /* 辞書マウント／アンマウント */
   {"\274\255\275\361\245\336\245\246\245\363\245\310\241\277\245\242\245\363\245\336\245\246\245\363\245\310", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
-  /* ファイル表示 */
-  {"\245\325\245\241\245\244\245\353\311\275\274\250",   MENU_NEXT_MENU, MT_FILE},
 #endif
 };
 
@@ -124,13 +119,6 @@ static e_menuitem e_uuhenkantable[] = {
   {"\303\340\274\241\274\253\306\260\312\321\264\271", MENU_FUNC_NUM, CANNA_FN_EnterChikujiMode},
 };
 
-static e_menuitem e_uufiletable[] = {
-  /* ローマ字かな変換テーブル */
-  {"\245\355\241\274\245\336\273\372\244\253\244\312\312\321\264\271\245\306\241\274\245\326\245\353", MENU_FUNC_NUM, CANNA_FN_ShowPhonogramFile},
-  /* カスタマイズファイル */
-  {"\245\253\245\271\245\277\245\336\245\244\245\272\245\325\245\241\245\244\245\353", MENU_FUNC_NUM, CANNA_FN_ShowCannaFile},
-};
-
 
 #define numitems(x) ((sizeof(x)) / sizeof(e_menuitem))
 
@@ -145,7 +133,6 @@ static struct _e_menu {
 #endif /* STANDALONE */
   {e_uutangotable,  numitems(e_uutangotable)},  /* MT_TANGO */
   {e_uuhenkantable, numitems(e_uuhenkantable)}, /* MT_HENKAN */
-  {e_uufiletable,   numitems(e_uufiletable)},   /* MT_FILE */
 };
 
 #define N_BUILTIN_MENU (sizeof(e_me) / sizeof(struct _e_menu))
