@@ -42,18 +42,10 @@ typedef struct {
 #define MENU_NEXT_MENU 0 /* エントリはメニューである */
 #define MENU_FUNC_NUM  1 /* エントリは『かんな』の機能番号である */
 
-#ifdef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
 #define MT_HELP   0
 #define MT_SONOTA 1
 #define MT_TANGO  3
 #define MT_HENKAN 4
-#else
-#define MT_HELP   0
-#define MT_SONOTA 1
-#define MT_SERV   3
-#define MT_TANGO  4
-#define MT_HENKAN 5
-#endif
 
 static e_menuitem e_helptable[] = {
   /* 単語登録 */
@@ -65,17 +57,10 @@ static e_menuitem e_helptable[] = {
 static e_menuitem e_uusonotatable[] = {
 #ifdef CODED_MESSAGE
   {"変換方式",       MENU_NEXT_MENU, MT_HENKAN},
-#ifndef STANDALONE /* This is not used in Windows environment */
-  {"サーバ操作",     MENU_NEXT_MENU, MT_SERV},
-#endif
   {"辞書マウント／アンマウント", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
 #else
   /* 変換方式 */
   {"\312\321\264\271\312\375\274\260",       MENU_NEXT_MENU, MT_HENKAN},
-#ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
-  /* サーバ操作 */
-  {"\245\265\241\274\245\320\301\340\272\356",     MENU_NEXT_MENU, MT_SERV},
-#endif
   /* 辞書マウント／アンマウント */
   {"\274\255\275\361\245\336\245\246\245\363\245\310\241\277\245\242\245\363\245\336\245\246\245\363\245\310", MENU_FUNC_NUM, CANNA_FN_DicMountMode},
 #endif
@@ -91,17 +76,6 @@ static e_menuitem e_uukigotable[] = {
   /* 罫線 */
   {"\267\323\300\376",         MENU_FUNC_NUM, CANNA_FN_LineMode},
 };
-
-#ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
-static e_menuitem e_uuservertable[] = {
-  /* サーバの切り離し */
-  {"\245\265\241\274\245\320\244\316\300\332\244\352\316\245\244\267", MENU_FUNC_NUM, CANNA_FN_DisconnectServer},
-  /* サーバの切り替え */
-  {"\245\265\241\274\245\320\244\316\300\332\244\352\302\330\244\250", MENU_FUNC_NUM, CANNA_FN_ChangeServerMode},
-  /* サーバの表示 */
-  {"\245\265\241\274\245\320\244\316\311\275\274\250",     MENU_FUNC_NUM, CANNA_FN_ShowServer},
-};
-#endif /* STANDALONE */
 
 static e_menuitem e_uutangotable[] = {
   /* 単語登録 */
@@ -128,9 +102,6 @@ static struct _e_menu {
 } e_me[] = {                                    /* MT_ の順と合わせること */
   {e_helptable,     numitems(e_helptable)},     /* MT_HELP */
   {e_uusonotatable, numitems(e_uusonotatable)}, /* MT_SONOTA */
-#ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
-  {e_uuservertable, numitems(e_uuservertable)}, /* MT_SERV */
-#endif /* STANDALONE */
   {e_uutangotable,  numitems(e_uutangotable)},  /* MT_TANGO */
   {e_uuhenkantable, numitems(e_uuhenkantable)}, /* MT_HENKAN */
 };
