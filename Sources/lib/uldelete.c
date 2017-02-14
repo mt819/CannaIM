@@ -934,7 +934,6 @@ uiContext d;
   mountContext mc;
   ichiranContext ic;
   deldicinfo *work;
-  BYTE inhibit = 0;
   int retval, i, upnelem = tc->nworkDic2;
   char *dicLbuf, **dicLp, *wptr;
   BYTE *soldp, *snewp;
@@ -992,10 +991,6 @@ uiContext d;
             /* selectOnOff を呼ぶための準備 */
 
             mc->curIkouho = 0;
-            if (!cannaconf.HexkeySelect)
-              inhibit |= ((BYTE)NUMBERING | (BYTE)CHARINSERT);
-            else
-              inhibit |= (BYTE)CHARINSERT;
 
             retval = setWStrings(xxxx, mc->mountList, 0);
             if (retval == NG) {
@@ -1151,7 +1146,7 @@ mode_context env;
     WStrcpy(d->genbuf + l, dic->name);
     l += WStrlen(dic->name);
   }
-  l += CANNA_mbstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
+  CANNA_mbstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
 	"\244\336\244\267\244\277", ROMEBUFSIZE - l);
 			/* から削除しました */
 
@@ -1229,7 +1224,7 @@ uiContext d;
     WStrcpy(d->genbuf + l, dic->name);
     l += WStrlen(dic->name);
   }
-  l += CANNA_mbstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
+  CANNA_mbstowcs(d->genbuf + l, " \244\253\244\351\272\357\275\374\244\267"
 	"\244\336\244\271\244\253?(y/n)", ROMEBUFSIZE - l);
 		/* から削除しますか */
   if (getYesNoContext(d,
