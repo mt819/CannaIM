@@ -336,7 +336,6 @@ owcKanjiStatus *kanji_status_return;
   inbufsize = n_buffer; /* inbufsize will be greater than 0 */
   inbuf = (cannawc *)malloc(inbufsize * sizeof(cannawc));
   if (!inbuf) {
-    inbufsize = 0;
     jrKanjiError = "\245\341\245\342\245\352\244\254\302\255\244\352\244\336\244\273\244\363";
 		   /* メモリが足りません */
     return -1;
