@@ -1338,7 +1338,6 @@ yomiContext yc;
 #endif
 
   /* 連文節変換を開始する *//* 辞書にない カタカナ ひらがな を付加する */
-  mode = 0;
   mode = (RK_XFER<<RK_XFERBITS) | RK_KFER;
   if (kanji) {
     mode |= RK_HENKANMODE(RK_TANBUN |
