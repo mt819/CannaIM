@@ -940,7 +940,7 @@ uiContext d;
   BYTE *soldp, *snewp;
   wchar_t *xxxx[100];
 
-  retval = d->nbytes = 0;
+  d->nbytes = 0;
   d->status = 0;
 
   if (upnelem == 1) {
