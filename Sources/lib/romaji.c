@@ -1654,12 +1654,6 @@ uiContext d;
     /* ひらがなにする */
     len = RkwCvtHira(nextbufp, KANAYOMIINSERT_BUFLEN, bufp, len);
     bufp = nextbufp;
-    if (bufp == buf1) {
-      nextbufp = buf2;
-    }
-    else {
-      nextbufp = buf1;
-    }
   }
 
   spos = yc->kCurs + replacelen;
@@ -4435,7 +4429,6 @@ uiContext d;
     break;
 
   default:/* どれでもなかったら変換出来ないので何もしない */
-    jishu_rEndp = jishu_kEndp = 0;
     break;
   }
   yc->kCurs = yc->kRStartp = yc->kEndp;
