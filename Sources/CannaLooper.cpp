@@ -230,6 +230,8 @@ CannaLooper::MessageReceived(BMessage* msg)
 
 		case B_ABOUT_REQUESTED:
 		{
+			extern char *CANNA_initfilename;
+			extern char *RomkanaTable;
 			char m[1024];
 			sprintf(m,
 				"Canna Input Method\n"
@@ -238,11 +240,15 @@ CannaLooper::MessageReceived(BMessage* msg)
 				"  Copyright 1992 NEC Corporation, Tokyo, Japan\n"
 				"  Special thanks to T.Murai for porting\n"
 				" \n"
-				"  Gakusuu: %d\n",
+				"  Gakusuu: %d\n"
+				"  Costomize file: %s\n"
+				"  Roma-ji Kana table:  %s\n",
 				CANNA_MAJOR_MINOR / 1000,
 				CANNA_MAJOR_MINOR % 1000,
 				CANNA_PATCH_LEVEL,
-				cannaconf.Gakushu);
+				cannaconf.Gakushu,
+				CANNA_initfilename,
+				RomkanaTable);
 				
 			BAlert* panel = new BAlert( "", m, "OK");
 			panel->SetFlags(panel->Flags() | B_CLOSE_ON_ESCAPE);
