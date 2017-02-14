@@ -176,7 +176,6 @@ unsigned char *status;
   */
 
   kkptr = oc->allkouho;
-  kptr = *(oc->allkouho);
   gptr = oc->glinebufp;
 
   /* line -- 何列目か
@@ -223,7 +222,6 @@ unsigned char *status;
 	  && *kptr) {
 	if (lnko) {
 	  gptr = svgptr;
-	  cn = svcn;
 	  dn = svdn;
 	}
 	else {
