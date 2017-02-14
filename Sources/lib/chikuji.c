@@ -90,10 +90,9 @@ restoreChikujiYomi(uiContext d, int old)
   yomiContext yc = (yomiContext)d->modec;
   wchar_t *s = d->buffer_return, *e = s + d->n_buffer;
   RkStat stat;
-  int len, i, j, yomilen, ll = 0, m = 0, n = 0, recalc = 0;
+  int len, i, j, ll = 0, m = 0, n = 0, recalc = 0;
 
   d->nbytes = 0;
-  yomilen = yc->kEndp - yc->cStartp;
   if (yc->nbunsetsu) {
     yc->status |= CHIKUJI_ON_BUNSETSU;
     if (yc->nbunsetsu > old) {
@@ -163,7 +162,7 @@ restoreChikujiYomi(uiContext d, int old)
   }
 
   if (recalc) {
-    yomilen = RkwGetLastYomi(yc->context, d->genbuf, ROMEBUFSIZE);
+    int yomilen = RkwGetLastYomi(yc->context, d->genbuf, ROMEBUFSIZE);
     if (yomilen == -1) {
       return -1;
     }
