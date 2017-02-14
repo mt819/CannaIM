@@ -961,7 +961,7 @@ int (*quitfunc)();
   unsigned inhibit = 0;
   int retval, upnelem = 0;
 
-  retval = d->nbytes = 0;
+  d->nbytes = 0;
   d->status = 0;
 
   for(work = tc->udic; *work; work++)
