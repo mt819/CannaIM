@@ -396,7 +396,6 @@ int		*status;
 		  /* EMPTY */
 		  ;
 		if(m == match) { /* table ni nakatta tokino shori */
-		    kana = src;
 		    count = (maxsrc <= 0)? 0 : (*src & 0x80)? 2 : 1;
 		    if( (flags & RK_SOKON) &&
 			(match[1].start < rdic->nr_nkey) &&
