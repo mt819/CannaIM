@@ -617,7 +617,6 @@ int currentkouho;
   */
 
   kkptr = ic->allkouho;
-  kptr = *(ic->allkouho);
   gptr = ic->glinebufp;
 
   /* line -- 何列目か
@@ -684,7 +683,6 @@ int currentkouho;
       if (dn >= netwidth) {
 	if (lnko) {
 	  gptr = svgptr;
-	  cn = svcn;
 	  dn = svdn;
 	}
 	else {
