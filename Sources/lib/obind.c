@@ -79,7 +79,7 @@ wc32stowc16s(cannawc16 *wc16s, const cannawc32 *wc32s, size_t len)
   size_t i;
   for (i = 0; i < len && wc32s[i]; i++) {
     cannawc32 wc32 = wc32s[i];
-    cannawc32 wc16;
+    cannawc32 wc16 = 0;
     switch (wc32 >> 28) {
     case 0:
       /* ASCII */
@@ -111,7 +111,7 @@ wc16stowc32s(cannawc32 *wc32s, const cannawc16 *wc16s, size_t len)
   size_t i;
   for (i = 0; i < len && wc16s[i]; i++) {
     cannawc32 wc16 = (cannawc32)wc16s[i];
-    cannawc32 wc32;
+    cannawc32 wc32 = 0;
     switch (wc16 & 0x8080) {
     case 0x0000:
       /* ASCII */
