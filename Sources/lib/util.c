@@ -606,7 +606,7 @@ uiContext d;
 yomiContext yc;
 {
   int len = 0;
-  wchar_t *s = d->genbuf, *e = s + ROMEBUFSIZE, *sr = NULL, *er = NULL, *sk, *ek;
+  wchar_t *s = d->genbuf, *e = s + ROMEBUFSIZE, *sr = NULL, *er = NULL, *sk = NULL, *ek;
   tanContext tan = (tanContext)yc;
   long truecaret = -1;
 
