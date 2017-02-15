@@ -44,8 +44,8 @@ typedef struct {
 
 #define MT_HELP   0
 #define MT_SONOTA 1
-#define MT_TANGO  3
-#define MT_HENKAN 4
+#define MT_TANGO  2
+#define MT_HENKAN 3
 
 static e_menuitem e_helptable[] = {
   /* 単語登録 */
