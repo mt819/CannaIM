@@ -2293,7 +2293,7 @@ int n;
 static list
 Lcond()
 {
-  list *pp, t, a, c;
+  list *pp, t, a = 0, c;
 
   pp = sp;
   for (; consp(*pp) ; *pp = cdr(*pp)) {
