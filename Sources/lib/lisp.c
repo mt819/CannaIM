@@ -754,7 +754,7 @@ freearea()
   free(readbuf);
   if (values) {
     free(values);
-    values = 0;
+    values = NULL;
   }
 }
 
@@ -3373,12 +3373,12 @@ Ldefsym()
     *p++ = (wchar_t)0;
     mcandsize = p - cand;
     mcand = (wchar_t *)calloc(mcandsize * sizeof(wchar_t));
-    if (mcand == 0) {
+    if (mcand == NULL) {
       error("Insufficient memory", NON);
       /* NOTREACHED */
     }
     acand = (wchar_t **)calloc(ncand + 1, sizeof(wchar_t *));
-    if (acand == 0) {
+    if (acand == NULL) {
       free(mcand);
       error("Insufficient memory", NON);
       /* NOTREACHED */
@@ -3721,7 +3721,7 @@ Ldefselection()
   }
 
   akigo_data = (wchar_t **)calloc(nkigo_data + 1, sizeof(wchar_t *));
-  if (akigo_data == 0) {
+  if (akigo_data == NULL) {
     free(kigo_str);
     error("Insufficient memory", NON);
     /* NOTREACHED */
