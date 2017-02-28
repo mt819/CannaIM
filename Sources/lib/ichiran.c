@@ -572,7 +572,7 @@ int currentkouho;
 {
   ichiranContext ic = (ichiranContext)d->modec;
   wchar_t **kkptr, *kptr, *gptr, *svgptr;
-  int           ko, lnko, cn = 0, svcn, line = 0, dn = 0, svdn;
+  int           ko, lnko, cn = 0, line = 0, dn = 0, svdn;
   int netwidth;
 
   netwidth = d->ncolumns -
@@ -637,7 +637,6 @@ int currentkouho;
       ic->kouhoifp[ko].khpoint = cn + (lnko ? 1 : 0);
       ic->kouhoifp[ko].khdata = kptr;  /* その文字列へのポインタ */
       svgptr = gptr;
-      svcn = cn;
       svdn = dn;
       /* ２種類の表示を分ける */
       if(!(inhibit & (unsigned char)NUMBERING)) {
