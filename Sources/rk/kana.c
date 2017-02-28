@@ -150,15 +150,13 @@ int maxdst, count, length;
 unsigned long code;
 {
   if ((unsigned long)length <= (unsigned long)maxdst) {
-    maxdst -= length;
-    count += length;
     if (dst) {
       dst += length;
       switch (length) {
       case 4:	*--dst = (unsigned char)code; code >>= 8;
       case 3:	*--dst = (unsigned char)code; code >>= 8;
       case 2:	*--dst = (unsigned char)code; code >>= 8;
-      case 1:	*--dst = (unsigned char)code; code >>= 8;
+      case 1:	*--dst = (unsigned char)code;
       }
     }
     return length;
