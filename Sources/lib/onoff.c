@@ -135,7 +135,7 @@ unsigned char *status;
 {
   ichiranContext oc = (ichiranContext)d->modec;
   wchar_t **kkptr, *kptr, *gptr, *svgptr;
-  int ko, lnko, cn = 0, svcn, line = 0, dn = 0, svdn;
+  int ko, lnko, cn = 0, line = 0, dn = 0, svdn;
 
   oc->nIkouho = nelem;	/* 候補の数 */
 
@@ -197,7 +197,6 @@ unsigned char *status;
       oc->kouhoifp[ko].khpoint = cn + (lnko ? 1 : 0);
       oc->kouhoifp[ko].khdata = kptr;  /* その文字列へのポインタ */
       svgptr = gptr;
-      svcn = cn;
       svdn = dn;
 
       /* ◎か○をコピーする */
