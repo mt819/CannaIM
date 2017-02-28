@@ -8,7 +8,6 @@
  /* for lib/canna */
 #define SUPPORT_OLD_WCHAR 1
 /* others */
-#define CANNA_LIGHT 1
 #define USE_MALLOC_FOR_BIG_ARRAY
 #define STANDALONE
 #undef CODED_MESSAGE
