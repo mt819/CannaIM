@@ -960,7 +960,7 @@ uiContext d;
     return GLineNGReturnTK(d);
   }
 
-  if ((dicLbuf = (char *)calloc(ROMEBUFSIZE)) != NULL) {
+  if ((dicLbuf = (char *)calloc(ROMEBUFSIZE, sizeof(char))) != NULL) {
     if ((dicLp = (char **)calloc(upnelem + 1, sizeof(char *)))
                                                != NULL) {
       wptr = dicLbuf;

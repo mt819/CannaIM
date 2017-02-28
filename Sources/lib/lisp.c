@@ -3372,7 +3372,7 @@ Ldefsym()
     }
     *p++ = (wchar_t)0;
     mcandsize = p - cand;
-    mcand = (wchar_t *)calloc(mcandsize * sizeof(wchar_t));
+    mcand = (wchar_t *)calloc(mcandsize, sizeof(wchar_t));
     if (mcand == NULL) {
       error("Insufficient memory", NON);
       /* NOTREACHED */
