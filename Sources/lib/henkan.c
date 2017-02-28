@@ -703,6 +703,7 @@ yomiContext yc;
 	    makeRkError(d, KanjiInitError());
 	  }
 	  free(tan->kanji);
+	  tan->kanji = NULL;
 	}
       }
       else {
