@@ -2067,7 +2067,7 @@ doLearn(cx, thisW)
   unsigned char **candidates, *tmp;
   unsigned *permutation;
   candidates = (unsigned char **)
-    malloc(sizeof(unsigned char *) * RK_CAND_NMAX);
+    calloc(RK_CAND_NMAX, sizeof(unsigned char *));
   permutation = (unsigned *)malloc(sizeof(unsigned) * RK_CAND_NMAX);
   tmp = (unsigned char *)malloc(RK_WREC_BMAX);
   if (!candidates || !permutation || !tmp) {
