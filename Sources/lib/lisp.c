@@ -3678,7 +3678,7 @@ Ldefselection()
   while (!atom(kigo_list)) {
     if (!atom(cdr(kigo_list)) && (car(cdr(kigo_list)) == HYPHEN)) {
     /* 範囲指定のとき */
-      int sku, sten, codeset, num;
+      int sku, sten, codeset = 0, num;
       char *ww, *sww, *eww, ss[4], ee[4], bak;
 
       e = car(kigo_list);
