@@ -953,6 +953,7 @@ RkwMapPhonogram(struct RkRxDic *romaji, wchar_t *dst, int maxdst,
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(cbuf2);
   free(cbuf1);
+  free(wbuf);
 #endif
   return status;
 }
