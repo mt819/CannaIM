@@ -1003,10 +1003,14 @@ RkWcand2Wrec(key, wc, nc, lucks)
     ; /* return tw; */
   else {
     for (i = sz = 0; i < nc; i++) {
-      if (wc[i].rcnum > 511)
-	return(tw);
-      if (wc[i].klen > NW_LEN)
-	return(tw);
+      if (wc[i].rcnum > 511) {
+        free(localbuffer);
+        return(tw);
+      }
+      if (wc[i].klen > NW_LEN) {
+        free(localbuffer);
+        return(tw);
+      }
       sz += (wc[i].klen * 2) + NW_PREFIX;
     };
     if (*key & 0x80)
