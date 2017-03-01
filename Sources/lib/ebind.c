@@ -250,7 +250,7 @@ int nitems, *cur_item;
     buflen += WStrlen(items[i]) * 3 + 1;
   }
   ebuf = (char *)malloc(buflen);
-  eitems = (char **)malloc((nitems + 1) * sizeof(char **));
+  eitems = (char **)malloc((nitems + 1) * sizeof(char *));
   if (!ebuf || !eitems)
     goto last;	/* XXX: 単に-1を返していいのか？ */
   ep = ebuf;

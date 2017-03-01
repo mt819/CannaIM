@@ -383,7 +383,7 @@ int nitems, *cur_item;
   for (i = 0; i < nitems; i++)
     buflen += WStrlen(items[i]) + 1;
   owbuf = (wchar_t *)malloc(buflen * sizeof(wchar_t));
-  owitems = (wchar_t **)malloc((nitems + 1) * sizeof(wchar_t **));
+  owitems = (wchar_t **)malloc((nitems + 1) * sizeof(wchar_t *));
   if (!owbuf || !owitems)
     goto last;	/* XXX: 単に-1を返していいのか？ */
   owp = owbuf;
