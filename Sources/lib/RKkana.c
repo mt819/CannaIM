@@ -193,7 +193,6 @@ int		maxhan;
 	return count;
     while ( h < H ) {
 	hi = *h++;
-	byte = 2;
 	if ( hi == 0x8e ) {	/* hankaku katakana */
 	    if ( !(code = hiragana[lo = *h++]) )
 	    	code = (hi<<8)|lo;
