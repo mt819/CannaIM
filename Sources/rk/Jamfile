@@ -1,6 +1,5 @@
 SubDir TOP Sources rk ;
 
-#SubDirCcFlags -x c++ -ansi -trigraphs -funsigned-char -funsigned-bitfields -w -Wno-multichar -Wno-ctor-dtor-privacy -pedantic -Wno-long-long -Woverloaded-virtual -D_BUILDING_CANNALIB -D_WCHAR_T ;
 SubDirCcFlags  -Wall -O2 -fno-strict-aliasing ;
 
 SubDirHdrs [ FDirName $(SUBDIR) $(DOTDOT) canna ] ;
