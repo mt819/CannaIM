@@ -66,17 +66,6 @@ static e_menuitem e_uusonotatable[] = {
 #endif
 };
 
-static e_menuitem e_uukigotable[] = {
-  /* 記号全般 */
-  {"\265\255\271\346\301\264\310\314",     MENU_FUNC_NUM, CANNA_FN_KigouMode},
-  /* ロシア文字 */
-  {"\245\355\245\267\245\242\312\270\273\372",   MENU_FUNC_NUM, CANNA_FN_RussianMode},
-  /* ギリシャ文字 */
-  {"\245\256\245\352\245\267\245\343\312\270\273\372", MENU_FUNC_NUM, CANNA_FN_GreekMode},
-  /* 罫線 */
-  {"\267\323\300\376",         MENU_FUNC_NUM, CANNA_FN_LineMode},
-};
-
 static e_menuitem e_uutangotable[] = {
   /* 単語登録 */
   {"\303\261\270\354\305\320\317\277", MENU_FUNC_NUM, CANNA_FN_DefineDicMode},
