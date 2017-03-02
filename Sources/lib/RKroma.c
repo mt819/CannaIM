@@ -519,7 +519,7 @@ int		*used_len_return, *dst_len_return, *tmp_len_return;
 int		*rule_id_inout;
 {
   register int	i;
-  unsigned char	*roma, *temp;
+  unsigned char	*roma, *temp = NULL;
   unsigned char	*kana = src;
   int			count = 0;
   int			byte;
