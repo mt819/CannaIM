@@ -30,12 +30,7 @@ KouhoWindow::KouhoWindow(BFont *font, BLooper *looper)
 
 	cannaLooper = looper;
 	kouhoFont = font;
-
-	font_family family;
-	font_style style;
-	strcpy(family, "VL PGothic");
-	strcpy(style, "regular");
-	indexfont.SetFamilyAndStyle(family, style);
+	indexfont = font;
 	indexfont.SetSize(10);
 
 #ifdef DEBUG
