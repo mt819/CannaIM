@@ -297,10 +297,12 @@ freeGetIchiranList(buf)
 wchar_t **buf;
 {
     /* 候補一覧表示行用のエリアをフリーする */
-    if(buf) {
-        free(*buf);
-        free(buf);
+  if(buf) {
+    if(*buf) {
+      free(*buf);
     }
+    free(buf);
+  }
 }
 
 static void
