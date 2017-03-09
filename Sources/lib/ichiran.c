@@ -396,7 +396,6 @@ int *nelem, *currentkouho;
     return NULL;
   }
   *currentkouho = st.candnum; /* カレント候補は何番目？ */
-  free(work);
 
   return(buf);
 }
