@@ -624,160 +624,161 @@ tanContext et;
  */
 
 int
-doTanConvertTb(d, yc)
-uiContext d;
-yomiContext yc;
+doTanConvertTb(uiContext d, yomiContext yc)
 {
-  int cur = yc->curbun, i, len, ylen = 0, rlen = 0, ret = 0;
-  tanContext tan, prevLeft = yc->left, curtan = (tanContext)0;
-  tanContext st = NULL, et = NULL;
-  BYTE *p, *q, *r;
+	int cur = yc->curbun, i, len, ylen = 0, rlen = 0, ret = 0;
+	tanContext tan, prevLeft = yc->left, curtan = (tanContext)0;
+	tanContext st = NULL, et = NULL;
+	BYTE *p, *q, *r;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
-  wchar_t xxx[ROMEBUFSIZE];
+	wchar_t xxx[ROMEBUFSIZE];
 #else
-  wchar_t *xxx = (wchar_t *)malloc(sizeof(wchar_t) * ROMEBUFSIZE);
-  if (!xxx) {
-    return ret;
-  }
-#endif
-
-  yc->kouhoCount = 0;
-
-/*  jrKanjiError = "メモリが足りません"; */
-  jrKanjiError = "malloc (doTanBubunMuhenkan) \244\307\244\255\244\336\244\273"
-	"\244\363\244\307\244\267\244\277\241\243";
-                 /* malloc (doTanBubunMuhenkan) できませんでした */
-  for (i = 0 ; i < yc->nbunsetsu ; i++) {
-    tan = newTanContext(yc->majorMode, CANNA_MODE_TankouhoMode);
-    if (tan) {
-      copyYomiinfo2Tan(yc, tan);
-      RkwGoTo(yc->context, i);
-      len = RkwGetKanji(yc->context, xxx, ROMEBUFSIZE);
-      if (len >= 0) {
-	tan->kanji = DUpwstr(xxx, len);
-	if (tan->kanji) {
-	  len = RkwGetYomi(yc->context, xxx, ROMEBUFSIZE);
-	  if (len >= 0) {
-	    tan->yomi = DUpwstr(xxx, len);
-	    if (tan->yomi) {
-	      tan->kAttr = DUpattr(yc->kAttr + ylen, len);
-	      if (tan->kAttr) {
-		r = yc->rAttr + rlen;
-		for (p = yc->kAttr + ylen, q = p + len ; p < q ; p++) {
-		  if (*p & SENTOU) {
-		    r++;
-		    while (!(*r & SENTOU)) {
-		      r++;
-		    }
-		  }
-		}
-		ylen += len;
-		len = r - yc->rAttr - rlen; /* ローマ字の長さ */
-		tan->roma = DUpwstr(yc->romaji_buffer + rlen, len);
-		if (tan->roma) {
-		  tan->rAttr = DUpattr(yc->rAttr + rlen, len);
-		  if (tan->rAttr) {
-		    rlen += len;
-		    /* とりあえず左につなげる */
-		    tan->right = (tanContext)yc;
-		    tan->left = yc->left;
-		    if (yc->left) {
-		      yc->left->right = tan;
-		    }
-		    yc->left = tan;
-		    if (i == 0)
-		      st = tan;
-		    if (i == cur) {
-		      curtan = tan;
-		    }
-		    continue;
-		  }
-		  free(tan->roma);
-		}
-		free(tan->kAttr);
-	      }
-	      free(tan->yomi);
-	    }
-	  }
-	  else {
-	    makeRkError(d, KanjiInitError());
-	  }
-	  free(tan->kanji);
-	  tan->kanji = NULL;
+	wchar_t *xxx = (wchar_t *)malloc(sizeof(wchar_t) * ROMEBUFSIZE);
+	if (!xxx) {
+		return ret;
 	}
-      }
-      else {
-	makeRkError(d, KanjiInitError());
-      }
-      freeTanContext(tan);
-    }
-    /* エラー処理をする */
-  procerror:
-    while ((tan = yc->left) != prevLeft) {
-      yc->left = tan->left;
-      freeTanContext(tan);
-    }
-    ret = -1;
-    goto return_ret;
-  }
-
-  if (chikujip(yc) && chikujiyomiremain(yc)) {
-    int rpos;
-    yomiContext lyc = dupYomiContext(yc);
-
-    if (!lyc) { /* エラー処理をする */
-      goto procerror;
-    }
-
-    if (yc->right) { /* 逐次の場合ないはずだが念のため */
-      yc->right->left = (tanContext)lyc;
-    }
-    lyc->right = yc->right;
-    yc->right = (tanContext)lyc;
-    lyc->left = (tanContext)yc;
-
-    kPos2rPos(lyc, 0, yc->cStartp, NULL, &rpos);
-    d->modec = (mode_context)lyc;
-    moveToChikujiYomiMode(d);
-    trimYomi(d, yc->cStartp, yc->kEndp, rpos, yc->rEndp);
-    d->modec = (mode_context)yc;
-    yc->status = lyc->status;
-    lyc->cStartp = lyc->cRStartp = lyc->ys = lyc->ye = 0;
-  }
-
-  RkwGoTo(yc->context, cur);
-  if (RkwEndBun(yc->context, 0) == -1) {
-    jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\316"
-	"\275\252\316\273\244\313\274\272\307\324\244\267\244\336\244\267"
-	"\244\277";
-                   /* かな漢字変換の終了に失敗しました */
-    if (errno == EPIPE) {
-      jrKanjiPipeError();
-    }
-  }
-
-  d->modec = (mode_context)curtan;
-  setMode(d, curtan, 1);
-  makeKanjiStatusReturn(d, (yomiContext)curtan);
-
-  et = yc->right;
-  /* yc をリンクから抜く */
-  if (yc->left) {
-    yc->left->right = yc->right;
-  }
-  if (yc->right) {
-    yc->right->left = yc->left;
-  }
-  abandonContext(d, yc);
-  freeYomiContext(yc);
-  tanbunToYomiAll(d, st, et);
-
- return_ret:
-#ifdef USE_MALLOC_FOR_BIG_ARRAY
-  free(xxx);
 #endif
 
-  return ret;
+	yc->kouhoCount = 0;
+
+/*	jrKanjiError = "メモリが足りません"; */
+	jrKanjiError = "malloc (doTanBubunMuhenkan) \244\307\244\255\244\336\244\273"
+	"\244\363\244\307\244\267\244\277\241\243";
+	/* malloc (doTanBubunMuhenkan) できませんでした */
+	for (i = 0 ; i < yc->nbunsetsu ; i++) {
+		tan = newTanContext(yc->majorMode, CANNA_MODE_TankouhoMode);
+		if (tan) {
+			copyYomiinfo2Tan(yc, tan);
+			RkwGoTo(yc->context, i);
+			len = RkwGetKanji(yc->context, xxx, ROMEBUFSIZE);
+			if (len >= 0) {
+				tan->kanji = DUpwstr(xxx, len);
+			if (tan->kanji) {
+				len = RkwGetYomi(yc->context, xxx, ROMEBUFSIZE);
+			if (len >= 0) {
+				tan->yomi = DUpwstr(xxx, len);
+			if (tan->yomi) {
+				tan->kAttr = DUpattr(yc->kAttr + ylen, len);
+				if (tan->kAttr) {
+					r = yc->rAttr + rlen;
+					for (p = yc->kAttr + ylen, q = p + len ; p < q ; p++) {
+						if (*p & SENTOU) {
+							r++;
+							while (!(*r & SENTOU)) {
+							r++;
+							}
+						}
+					}
+					ylen += len;
+					len = r - yc->rAttr - rlen; /* ローマ字の長さ */
+					tan->roma = DUpwstr(yc->romaji_buffer + rlen, len);
+					if (tan->roma) {
+						tan->rAttr = DUpattr(yc->rAttr + rlen, len);
+						if (tan->rAttr) {
+							rlen += len;
+							/* とりあえず左につなげる */
+							tan->right = (tanContext)yc;
+							tan->left = yc->left;
+							if (yc->left) {
+								yc->left->right = tan;
+							}
+							yc->left = tan;
+							if (i == 0)
+								st = tan;
+							if (i == cur) {
+								curtan = tan;
+							}
+							continue;
+						}
+						free(tan->roma);
+						tan->roma = NULL;
+					}
+					free(tan->kAttr);
+					tan->kAttr = NULL;
+				}
+				free(tan->yomi);
+				tan->yomi = NULL;
+				}
+			}
+			else {
+				makeRkError(d, KanjiInitError());
+			}
+			free(tan->kanji);
+			tan->kanji = NULL;
+			}
+		}
+		else {
+				makeRkError(d, KanjiInitError());
+			}
+			freeTanContext(tan);
+		}
+		/* エラー処理をする */
+procerror:
+		while ((tan = yc->left) != prevLeft) {
+			yc->left = tan->left;
+			freeTanContext(tan);
+		}
+		ret = -1;
+		goto return_ret;
+	}
+
+	if (chikujip(yc) && chikujiyomiremain(yc)) {
+		int rpos;
+		yomiContext lyc = dupYomiContext(yc);
+
+		if (!lyc) { /* エラー処理をする */
+			goto procerror;
+		}
+
+		if (yc->right) { /* 逐次の場合ないはずだが念のため */
+			yc->right->left = (tanContext)lyc;
+		}
+		lyc->right = yc->right;
+		yc->right = (tanContext)lyc;
+		lyc->left = (tanContext)yc;
+
+		kPos2rPos(lyc, 0, yc->cStartp, NULL, &rpos);
+		d->modec = (mode_context)lyc;
+		moveToChikujiYomiMode(d);
+		trimYomi(d, yc->cStartp, yc->kEndp, rpos, yc->rEndp);
+		d->modec = (mode_context)yc;
+		yc->status = lyc->status;
+		lyc->cStartp = lyc->cRStartp = lyc->ys = lyc->ye = 0;
+	}
+
+	RkwGoTo(yc->context, cur);
+	if (RkwEndBun(yc->context, 0) == -1) {
+		jrKanjiError = 	"\244\253\244\312\264\301\273\372\312\321\264\271\244\316"
+						"\275\252\316\273\244\313\274\272\307\324\244\267\244\336\244\267"
+						"\244\277";
+						/* かな漢字変換の終了に失敗しました */
+		if (errno == EPIPE) {
+			jrKanjiPipeError();
+		}
+	}
+
+	d->modec = (mode_context)curtan;
+	setMode(d, curtan, 1);
+	makeKanjiStatusReturn(d, (yomiContext)curtan);
+
+	et = yc->right;
+	/* yc をリンクから抜く */
+	if (yc->left) {
+		yc->left->right = yc->right;
+	}
+	if (yc->right) {
+		yc->right->left = yc->left;
+	}
+	abandonContext(d, yc);
+	freeYomiContext(yc);
+	tanbunToYomiAll(d, st, et);
+
+	return_ret:
+#ifdef USE_MALLOC_FOR_BIG_ARRAY
+	free(xxx);
+#endif
+
+	return ret;
 }
 
 static int
