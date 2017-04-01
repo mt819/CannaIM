@@ -16,5 +16,11 @@ AddOn canna :
 	PaletteWindow.cpp
 	: be textencoding /boot/system/servers/input_server libcanna.a librk.a $(STDC++LIB) ;
 
+Application mkdic :
+	bin/can.c
+	bin/RKdelline.c
+	bin/rutil.c
+	: be textencoding libcanna.a librk.a ;
+
 SubInclude TOP Sources lib ;
 SubInclude TOP Sources rk ;
