@@ -37,6 +37,7 @@ static char rcs[] = "@(#) 112.1 $Id: can.c,v 1.4 2003/02/01 19:34:20 aida_s Exp 
 #include <pwd.h>
 #include <sys/types.h>
 #include <grp.h>
+#include <unistd.h>
 #include "ccompat.h"
 #ifdef __EMX__
 #include <netdb.h>
@@ -78,9 +79,26 @@ extern  void Message();
 #endif
 
 
-extern	int RkDeleteLine();
+extern	int CopyDic();
+extern	int DownLoadDic();
+extern	int PrintMessage();
+extern	int RkChmodDic();
+extern	int RkCopyDic();
+extern	int RkCreateDic();
 extern	int RkDefineLine();
-extern	int rmDitionary();
+extern	int RkDeleteLine();
+extern	int RkGetWordTextDic();
+extern	int RkKillServer();
+extern	int RkListDic();
+extern	int RkRemoveDic();
+extern	int RkRenameDic();
+extern	int RkwGetProtocolVersion();
+extern	int makeDictionary();
+extern	int renameDictionary();
+extern	int rmDictionary();
+
+int scan_opt();
+void shrink_opt();
 
 char            init[RECSZ], *Progname;
 unsigned char	*r_dic;
@@ -1996,7 +2014,7 @@ char    **p ;
 }
 
 /*  argv のオプションを n 個分前に詰める */
-int
+void
 shrink_opt(int argc, char *argv[], int n)
 {
     int  i ; 
