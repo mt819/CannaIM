@@ -1133,8 +1133,8 @@ wchar_t *dest;
 char *src;
 size_t destlen;
 {
-  register int i, j;
-  register unsigned ec;
+  int i, j;
+  unsigned ec;
 
 #ifdef CANNA_WCHAR16
     for (i = 0, j = 0 ;
@@ -1201,7 +1201,7 @@ wchar_t *src;
 char *dest;
 int srclen, destlen;
 {
-  register int i, j;
+  int i, j;
 
 #ifdef CANNA_WCHAR16
     for (i = 0, j = 0 ; i < srclen && j + 2 < destlen ; i++) {

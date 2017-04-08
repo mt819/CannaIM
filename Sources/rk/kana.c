@@ -615,10 +615,10 @@ RkCvtWide(dst, maxdst, src, maxsrc)
 static int
 Wcstosjis(char *dst, int dstlen, Wchar *src, int srclen)
 {
-  register int i, j;
+  int i, j;
   unsigned char *sjise_kanjip, sjise_area[2];
   Wchar codeset;
-  register Wchar wc;
+  Wchar wc;
 
   sjise_kanjip = sjise_area;
 

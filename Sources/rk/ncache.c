@@ -52,7 +52,7 @@ int
 _RkInitializeCache(size)
      int	size;
 {
-  register struct RkParam	*sx = &SX;
+  struct RkParam	*sx = &SX;
   int				i;
 
   sx->maxcache = size;
@@ -99,10 +99,10 @@ flushCache(dm, cache)
 
 static
 struct ncache	*newCache(ndm, address)
-     register struct DM		*ndm;
-     register long		address;
+     struct DM		*ndm;
+     long		address;
 {
-  register struct ncache	*new;
+  struct ncache	*new;
 
   if ((new = Ncfree.nc_anext) != &Ncfree) {
     flushCache(new->nc_dic, new);
@@ -121,7 +121,7 @@ struct ncache	*newCache(ndm, address)
 int
 _RkRelease()
 {
-  register struct ncache	*new;
+  struct ncache	*new;
 
   for (new = Ncfree.nc_anext; new != &Ncfree; new = new->nc_anext) {
     if (!new->nc_word || (new->nc_flags & NC_NHEAP))
@@ -204,7 +204,7 @@ _RkDoInvalidateCache(addr, size)
      long	addr;
      unsigned long	size;
 {
-  register struct ncache	*head, *cache, *tmp;
+  struct ncache	*head, *cache, *tmp;
   int i;
   int found = 0;
 
@@ -247,7 +247,7 @@ _RkFindCache(dm, addr)
      struct DM	*dm;
      long	addr;
 {
-  register struct ncache	*head, *cache;
+  struct ncache	*head, *cache;
 
   head = &Nchash[hash(addr)];
   for (cache = head->nc_hnext; cache != head; cache = cache->nc_hnext)
@@ -278,7 +278,7 @@ _RkReadCache(dm, addr)
      struct DM	*dm;
      long	addr;
 {
-  register struct ncache	*head, *cache;
+  struct ncache	*head, *cache;
 
   head = &Nchash[hash(addr)];
   for (cache = head->nc_hnext; cache != head; cache = cache->nc_hnext) {

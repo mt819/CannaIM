@@ -358,9 +358,9 @@ int		maxkana;
 unsigned char	*hira;
 int		maxhira;
 {
-    register unsigned char	*k = kana;
-    register unsigned char	*h = hira;
-    register unsigned char	*H = hira + maxhira;
+    unsigned char	*k = kana;
+    unsigned char	*h = hira;
+    unsigned char	*H = hira + maxhira;
     unsigned short	hi;
     unsigned short	byte;
     int 		count = 0;
@@ -404,9 +404,9 @@ int		maxhira;
 unsigned char	*kana;
 int		maxkana;
 {
-    register unsigned char	*h = hira;
-    register unsigned char	*k = kana;
-    register unsigned char	*K = kana + maxkana;
+    unsigned char	*h = hira;
+    unsigned char	*k = kana;
+    unsigned char	*K = kana + maxkana;
     unsigned short		hi;
     unsigned short		byte;
     int 			count = 0;
@@ -453,9 +453,9 @@ int		maxdst;
 unsigned char	*src;
 int		maxsrc;
 {
-    register unsigned char	*d = dst;
-    register unsigned char	*s = src;
-    register unsigned char	*S = src + maxsrc;
+    unsigned char	*d = dst;
+    unsigned char	*s = src;
+    unsigned char	*S = src + maxsrc;
     unsigned short		byte;
     int 			count = 0;
     unsigned long		code;

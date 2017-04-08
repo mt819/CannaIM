@@ -88,7 +88,7 @@ static char *
 extoken(s, next_return)
 char *s, **next_return;
 {
-  register char *p = s, ch;
+  char *p = s, ch;
   char *res;
 
   while ((ch = *p) && (ch == ' ' || ch == '\t')) p++;

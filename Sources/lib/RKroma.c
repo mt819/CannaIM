@@ -280,7 +280,7 @@ unsigned char	c;
 int		n;
 int		flg;
 {
-    register int	s, e;
+    int	s, e;
 
     if (flg && 'A' <= c && c <= 'Z') {
       c += 'a' - 'A';
@@ -302,7 +302,7 @@ struct RkRxDic	*rdic;
 int		p;
 int		flags;
 {
-    register unsigned char	*kana;
+    unsigned char	*kana;
     int				klen;
     static unsigned  char	tmp[256];
 
@@ -365,7 +365,7 @@ int		maxsrc;
 int		flags;
 int		*status;
 {
-    register int	i;
+    int	i;
     unsigned char	*roma;
     unsigned char	*kana = src;
     int			count = 0;
@@ -472,7 +472,7 @@ getrawKana(rdic, p)
 struct RkRxDic	*rdic;
 int		p;
 {
-  register unsigned char	*kana;
+  unsigned char	*kana;
 
   for (kana = rdic->nr_keyaddr[p] ; *kana++ ; )
     /* EMPTY */
@@ -487,7 +487,7 @@ getTemp(rdic, p)
 struct RkRxDic	*rdic;
 int		p;
 {
-  register unsigned char	*kana;
+  unsigned char	*kana;
 
   if (rdic->dic == RX_RXDIC) {
     return NULL;
@@ -518,7 +518,7 @@ int		flags;
 int		*used_len_return, *dst_len_return, *tmp_len_return;
 int		*rule_id_inout;
 {
-  register int	i;
+  int	i;
   unsigned char	*roma, *temp = NULL;
   unsigned char	*kana = src;
   int			count = 0;
@@ -730,9 +730,9 @@ unsigned char	*src;
 int		maxsrc;
 unsigned	flags;
 {
-    register unsigned char	*d = dst;
-    register unsigned char	*s = src;
-    register unsigned char	*S = src + maxsrc;
+    unsigned char	*d = dst;
+    unsigned char	*s = src;
+    unsigned char	*S = src + maxsrc;
     int count = 0;
     unsigned xp = 0;
     unsigned char key;
