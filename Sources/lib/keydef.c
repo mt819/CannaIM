@@ -525,6 +525,7 @@ int which_seq;
     if (p->to_tbl == tbl_ptr && p->as_key == key) {
       *pp = p->next;
       free(p);
+      p = NULL;
     }
   }
 }
