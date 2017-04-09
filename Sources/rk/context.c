@@ -25,6 +25,7 @@
 #include <canna/jrkanji.h>
 
 #include <errno.h>
+#include <sys/stat.h>
 
 static unsigned long now_context = 0L;
 
