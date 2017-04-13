@@ -178,6 +178,7 @@ struct CannaConfig *cf;
 static void
 freeUInfo(void)
 {
+  if (!uinfo) return;
   free(uinfo->uname);
   free(uinfo->gname);
   free(uinfo->srvname);
