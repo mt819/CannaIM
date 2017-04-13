@@ -254,21 +254,11 @@ int *num_return;
 
   if (defaultContext < 0) {
     if ((KanjiInit() < 0) || (defaultContext < 0)) {
-#ifdef STANDALONE
 #ifdef CODED_MESSAGE
       jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
 #endif
-#else
-#ifdef CODED_MESSAGE
-      jrKanjiError = "かな漢字変換サーバと通信できません";
-#else
-      jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
-	"\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336"
-	"\244\273\244\363";    /* かな漢字変換サーバと通信できません */
-#endif
-#endif /* STANDALONE */
       return 0;
     }
   }
@@ -445,7 +435,6 @@ tourokuContext tc;
     return NG;
   }
 
-#ifdef STANDALONE
   if ((RkwSetDicPath(workContext, "iroha")) == NG) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "辞書ディレクトリを設定できませんでした";
@@ -455,7 +444,6 @@ tourokuContext tc;
     CloseDeleteContext(tc);
     return NG;
   }
-#endif /* STANDALONE */
 
   for (mdic = tc->udic; *mdic; mdic++) {
     CANNA_wcstombs(dicname, *mdic, sizeof(dicname));
@@ -649,7 +637,6 @@ RkStat *st;
     return(NG);
   }
 
-#ifdef STANDALONE
   if ((RkwSetDicPath(tc->delContext, "iroha")) == NG) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "辞書ディレクトリを設定できませんでした";
@@ -659,7 +646,6 @@ RkStat *st;
     CloseDeleteContext(tc);
     return NG;
   }
-#endif /* STANDALONE */
 
   for (mdic = tc->udic; *mdic; mdic++) {
     CANNA_wcstombs(dicname, *mdic, sizeof(dicname));
@@ -1077,20 +1063,10 @@ mode_context env;
 
   if(defaultContext == -1) {
     if((KanjiInit() < 0) || (defaultContext == -1)) {
-#ifdef STANDALONE
 #ifdef CODED_MESSAGE
       jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
-#endif
-#else
-#ifdef CODED_MESSAGE
-      jrKanjiError = "かな漢字変換サーバと通信できません";
-#else
-      jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
-	"\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336"
-	"\244\273\244\363";
-#endif
 #endif
       freeAndPopTouroku(d);
       return(GLineNGReturn(d));

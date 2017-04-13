@@ -164,20 +164,10 @@ mode_context env;
 
   if(defaultContext == -1) {
     if((KanjiInit() != 0) || (defaultContext == -1)) {
-#ifdef STANDALONE
 #ifdef CODED_MESSAGE
       jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
-#endif
-#else
-#ifdef CODED_MESSAGE
-      jrKanjiError = "かな漢字変換サーバと通信できません";
-#else
-      jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
-	"\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336"
-	"\244\273\244\363";
-#endif
 #endif
       popMountMode(d);
       popCallback(d);
@@ -346,20 +336,10 @@ uiContext d;
   }
   if(defaultContext == -1) {
     if((KanjiInit() != 0) || (defaultContext == -1)) {
-#ifdef STANDALONE
 #ifdef CODED_MESSAGE
       jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
-#endif
-#else
-#ifdef CODED_MESSAGE
-      jrKanjiError = "かな漢字変換サーバと通信できません";
-#else
-      jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271"
-	"\245\265\241\274\245\320\244\310\304\314\277\256\244\307\244\255"
-	"\244\336\244\273\244\363";
-#endif
 #endif
       free(dicLbuf);
       return(NG);
@@ -427,20 +407,10 @@ uiContext d;
 
   if(defaultContext == -1) {
     if((KanjiInit() != 0) || (defaultContext == -1)) {
-#ifdef STANDALONE
 #ifdef CODED_MESSAGE
       jrKanjiError = "かな漢字変換できません";
 #else
       jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\244\307\244\255\244\336\244\273\244\363";
-#endif
-#else
-#ifdef CODED_MESSAGE
-      jrKanjiError = "かな漢字変換サーバと通信できません";
-#else
-      jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271"
-	"\245\265\241\274\245\320\244\310\304\314\277\256\244\307\244\255"
-	"\244\336\244\273\244\363";
-#endif
 #endif
       free(dicLbuf);
       free(dicLp);

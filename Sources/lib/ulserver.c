@@ -36,10 +36,6 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-#ifndef STANDALONE
-static int serverChangeDo();
-#endif
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * サーバの切り離し                                                          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -49,21 +45,7 @@ serverFin(d)
 uiContext d;
 {
   int retval = 0;
-#ifndef STANDALONE
-  yomiContext yc = (yomiContext)d->modec;
-
-  if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
-    return NothingChangedWithBeep(d);
-  }
-  d->status = 0;
-  killmenu(d);
-
-  jrKanjiPipeError();
-
-  makeGLineMessageFromString(d, "\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\310\244\316\300\334\302\263\244\362\300\332\244\352\244\336\244\267\244\277");
-            /* かな漢字変換サーバとの接続を切りました */
-  currentModeInfo(d);
-#endif /* STANDALONE */
+/* Don't use in STANDALONE */
 
   return(retval);
 }
@@ -72,209 +54,16 @@ uiContext d;
  * サーバの切り換え                                                          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef STANDALONE
-
-static int
-uuServerChangeEveryTimeCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
-/* ARGSUSED */
-{
-  int len, echoLen, revPos;
-  static int lmachinename;
-  static wchar_t *wmachinename;
-
-  if (!wmachinename) {
-    wchar_t xxx[30]; /* 30 ってのは "マシン名?[" よりは長いべということ */
-    lmachinename = CANNA_mbstowcs(xxx, "\245\336\245\267\245\363\314\276?[", 30);
-                              /* マシン名 */
-    wmachinename = (wchar_t *)malloc((lmachinename + 1)* sizeof(wchar_t));
-    if (!wmachinename) {
-      return -1;
-    }
-    WStrcpy(wmachinename, xxx);
-  }
-
-  if((echoLen = d->kanji_status_return->length) < 0)
-    return(retval);
-
-  if (echoLen == 0) {
-    d->kanji_status_return->revPos = 0;
-    d->kanji_status_return->revLen = 0;
-  }
-
-  WStrncpy(d->genbuf + lmachinename,
-	   d->kanji_status_return->echoStr, echoLen);
-  /* echoStr == d->genbuf だとまずいので先に動かす */
-  WStrncpy(d->genbuf, wmachinename, lmachinename);
-  revPos = len = lmachinename;
-  len += echoLen;
-  d->genbuf[len++] = (wchar_t)']';
-
-  d->kanji_status_return->gline.line = d->genbuf;
-  d->kanji_status_return->gline.length = len;
-  if (d->kanji_status_return->revLen) {
-    d->kanji_status_return->gline.revPos =
-      d->kanji_status_return->revPos + revPos;
-    d->kanji_status_return->gline.revLen = d->kanji_status_return->revLen;
-  }
-  else { /* 反転領域がない場合 */
-    d->kanji_status_return->gline.revPos = len - 1;
-    d->kanji_status_return->gline.revLen = 1;
-  }
-  d->kanji_status_return->info &= ~(KanjiThroughInfo | KanjiEmptyInfo);
-  d->kanji_status_return->info |= KanjiGLineInfo;
-  echostrClear(d);
-  checkGLineLen(d);
-
-  return retval;
-}
-
-static int
-uuServerChangeExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
-/* ARGSUSED */
-{
-  popCallback(d); /* 読みを pop */
-
-  return(serverChangeDo(d, retval));
-}
-
-static int
-uuServerChangeQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
-/* ARGSUSED */
-{
-  popCallback(d); /* 読みを pop */
-
-  return prevMenuIfExist(d);
-}
-
-extern char * RkwGetServerName();
-#endif /* STANDALONE */
-
 int
 serverChange(d)
 uiContext d;
 {
   int retval = 0;
-#ifndef STANDALONE
-  wchar_t *w;
-  extern KanjiModeRec yomi_mode;
-  extern int defaultContext;
-  yomiContext yc = (yomiContext)d->modec;
-
-  if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
-    return NothingChangedWithBeep(d);
-  }
-  d->status = 0;
-
-  if ((yc = GetKanjiString(d, NULL, 0,
-		     CANNA_ONLY_ASCII,
-		     (int)CANNA_YOMI_CHGMODE_INHIBITTED,
-		     (int)CANNA_YOMI_END_IF_KAKUTEI,
-		     CANNA_YOMI_INHIBIT_ALL,
-		     uuServerChangeEveryTimeCatch, uuServerChangeExitCatch,
-		     uuServerChangeQuitCatch))
-      == (yomiContext)0) {
-    killmenu(d);
-    return NoMoreMemory();
-  }
-  yc->minorMode = CANNA_MODE_ChangingServerMode;
-  if(defaultContext != -1) {
-    char *servname;
-    servname = RkwGetServerName();
-    if (servname && (w = WString(servname)) != NULL) {
-      RomajiStoreYomi(d, w, NULL);
-      WSfree(w);
-      yc->kRStartp = yc->kCurs = 0;
-      yc->rStartp = yc->rCurs = 0;
-      d->current_mode = &yomi_mode;
-      makeYomiReturnStruct(d);
-    }
-  }
-  currentModeInfo(d);
-#endif /* STANDALONE */
+/* Don't use in STANDALONE */
 
   return(retval);
 }
 
-#ifndef STANDALONE
-static int
-serverChangeDo(d, len)
-uiContext d;
-int len;
-{
-/* wchar_t で良いか？ 256 で良いか？ */
-  wchar_t newServerName[256];
-  wchar_t w1[512];
-  char tmpServName[256];
-  extern int defaultContext;
-  char *p;
-
-  d->status = 0;
-
-  if(!len)
-    return(serverChange(d));
-
-  WStrncpy(newServerName, d->buffer_return, len);
-  newServerName[len] = 0;
-#if defined(DEBUG)
-  if(iroha_debug)
-    printf("iroha_server_name = [%s]\n", newServerName);
-#endif
-
-  jrKanjiPipeError();
-  CANNA_wcstombs(tmpServName, newServerName, 256);
-  if (RkSetServerName(tmpServName) && (p = index((char *)tmpServName, '@'))) {
-    char xxxx[1024];
-    *p = '\0';
-    sprintf(xxxx, "\244\253\244\312\264\301\273\372\312\321\264\271\245\250\245\363\245\270\245\363 %s \244\317\315\370\315\321\244\307\244\255\244\336\244\273\244\363\n",
-	    tmpServName);
-          /* かな漢字変換エンジン %s は利用できません */
-    makeGLineMessageFromString(d, xxxx);
-
-    RkSetServerName(NULL);
-    currentModeInfo(d);
-    killmenu(d);
-    return 0;
-  }
-
-  if(defaultContext == -1) {
-    if((KanjiInit() != 0) || (defaultContext == -1)) {
-      jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\310\304\314\277\256\244\307\244\255\244\336\244\273\244\363";
-                   /* かな漢字変換サーバと通信できません */
-      killmenu(d);
-      return(GLineNGReturn(d));
-    }
-    d->contextCache = -1;
-  }
-
-  p = RkwGetServerName();
-  if (p) { /* 絶対成功するんだけどね */
-    if ((int)strlen(p) < 256) {
-      CANNA_mbstowcs(newServerName, p, 256);
-    }
-  }
-
-  CANNA_mbstowcs(w1, " \244\316\244\253\244\312\264\301\273\372\312\321\264\271\245\265\241\274\245\320\244\313\300\334\302\263\244\267\244\336\244\267\244\277", 512);
-              /* のかな漢字変換サーバに接続しました */
-  WStrcpy((wchar_t *)d->genbuf, (wchar_t *)newServerName);
-  WStrcat((wchar_t *)d->genbuf, (wchar_t *)w1);
-
-  makeGLineMessage(d, d->genbuf, WStrlen(d->genbuf));
-  killmenu(d);
-  currentModeInfo(d);
-
-  return(0);
-}
-
-#endif /* STANDALONE */
 #endif /* NO_EXTEND_MENU */
 
 #ifndef wchar_t

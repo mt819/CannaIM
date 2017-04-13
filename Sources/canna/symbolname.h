@@ -179,11 +179,6 @@
 #define S_VA_BackspaceBehavesAsQuit	"backspace-behaves-as-quit"
 #define S_VA_InhibitListCallback	"inhibit-list-callback"
 #define S_VA_CannaVersion	"canna-version"
-#ifndef STANDALONE
-#define S_VA_ProtocolVersion	"protocol-version"
-#define S_VA_ServerVersion	"server-version"
-#define S_VA_ServerName		"server-name"
-#endif
 #define S_VA_Abandon		"abandon-illegal-phonogram"
 #define S_VA_HexDirect		"hex-direct"
 #define S_VA_Kojin		"kojin"

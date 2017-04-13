@@ -4047,39 +4047,11 @@ int n;
 
 extern char *RkGetServerHost();
 
-#if !defined(STANDALONE) && !defined(WIN_CANLISP)
 static void
 ObtainVersion()
 {
-  int a, b;
-  char *serv;
-  extern int protocol_version, server_version;
-  extern char *server_name;
-
-  serv = RkGetServerHost();
-  if (!serv) {
-    serv = DICHOME;
-  }
-  RkwInitialize(serv);
-
-  /* プロトコルバージョン */
-  RkwGetProtocolVersion(&a, &b);
-  protocol_version = a * 1000 + b;
-
-  /* サーババージョン */
-  RkwGetServerVersion(&a, &b);
-  server_version = a * 1000 + b;
-
-  /* サーバ名 */
-  free(server_name);
-  server_name = malloc(strlen(DEFAULT_CANNA_SERVER_NAME) + 1);
-  if (server_name) {
-    strcpy(server_name, DEFAULT_CANNA_SERVER_NAME);
-  }
-
-  RkwFinalize();
 }
-#endif /* STANDALONE */
+/* don't use in STANDALONE */
 
 /* 変数アクセスのための関数 */
 
@@ -4184,38 +4156,6 @@ static list Vnkouhobunsetsu(setp, arg) int setp; list arg;
 #endif
   return arg;
 }
-
-#ifndef STANDALONE
-static list VProtoVer(setp, arg) int setp; list arg;
-{
-  extern protocol_version;
-
-  if (protocol_version < 0) {
-    ObtainVersion();
-  }
-  return NumAcc(&protocol_version, setp, arg);
-}
-
-static list VServVer(setp, arg) int setp; list arg;
-{
-  extern server_version;
-
-  if (server_version < 0) {
-    ObtainVersion();
-  }
-  return NumAcc(&server_version, setp, arg);
-}
-
-static list VServName(setp, arg) int setp; list arg;
-{
-  extern char *server_name;
-
-  if (!server_name) {
-    ObtainVersion();
-  }
-  return StrAcc(&server_name, setp, arg);
-}
-#endif /*STANDALONE*/
 
 static list
 VCannaDir(setp, arg) int setp; list arg;
@@ -4438,11 +4378,6 @@ static struct cannavardefs cannavars[] = {
   {S_VA_CannaVersion		,VCannaVersion},
   {S_VA_Abandon			,VAbandon},
   {S_VA_HexDirect		,VHexStyle},
-#ifndef STANDALONE
-  {S_VA_ProtocolVersion		,VProtoVer},
-  {S_VA_ServerVersion		,VServVer},
-  {S_VA_ServerName		,VServName},
-#endif
   {S_VA_CannaDir		,VCannaDir},
   {S_VA_Kojin			,VKojin},
   {S_VA_IndexHankaku	       	,VIndexHankaku},

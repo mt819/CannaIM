@@ -569,37 +569,8 @@ static int
 showServer(d)
 uiContext d;
 {
-#ifndef STANDALONE /* This is not used in Windows environment 1996.7.30 kon */
-  int retval = 0;
-  char s[512];
-  extern int defaultContext;
-  yomiContext yc = (yomiContext)d->modec;
-
-  if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
-    return NothingChangedWithBeep(d);
-  }
-  d->status = 0;
-  killmenu(d);
-
-  if(defaultContext == -1) {
-    sprintf(s, "\244\253\244\312\264\301\273\372\312\321\264\271\245\265"
-	"\241\274\245\320\244\310\244\316\300\334\302\263\244\254\300\332"
-	"\244\354\244\306\244\244\244\336\244\271");
-               /* かな漢字変換サーバとの接続が切れています */
-  }
-  else {
-    sprintf(s, "%s \244\316\244\253\244\312\264\301\273\372\312\321\264\271"
-	"\245\265\241\274\245\320\244\313\300\334\302\263\244\267\244\306"
-	"\244\244\244\336\244\271", RkwGetServerName());
-               /* のかな漢字変換サーバに接続しています */
-  }
-  makeGLineMessageFromString(d, s);
-  currentModeInfo(d);
-
-  return (retval);
-#else
   return (0);
-#endif /* STANDALONE */
+/* don't use in STANDALONE */
 }
 
 static int

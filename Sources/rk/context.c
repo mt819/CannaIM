@@ -946,7 +946,7 @@ RkwDeleteDic(cx_num, name, word)
   return(-1);
 }
 
-#ifdef STANDALONE /* The following code is as simulating the code in
+/* The following code is as simulating the code in
  lib/RKC API.  In case STANDALONE, it becomes possible for libRK to be
  linked with libcanna directly. */
 
@@ -997,4 +997,3 @@ char *user, *group, *topdir;
   return 1;
 }
 
-#endif /* STANDALONE */

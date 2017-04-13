@@ -160,13 +160,6 @@ int     mode;
     ret = BADCONT;
     goto return_ret;
   }
-#ifndef STANDALONE /* Is it true ? */
-  if ( cx->ddpath[0] == sx->ddpath[0] ) {
-    ret = BADCONT;
-    goto return_ret;
-  }
-#endif
-
   if (locatepath(userDDP, cx->ddpath, mode) < 0) {
     ret = ACCES;
     goto return_ret;
