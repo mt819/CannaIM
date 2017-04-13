@@ -343,7 +343,6 @@
 #define selectKeysup                        G350_selectKeysup
 #define selectOnOff                         G351_selectOnOff
 #define selectOne                           G352_selectOne
-#define serverFin                           G354_serverFin
 #define server_name                         G355_server_name
 #define server_version                      G356_server_version
 #define setMode                             G357_setMode

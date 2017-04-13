@@ -36,19 +36,6 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * サーバの切り離し                                                          *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-int
-serverFin(d)
-uiContext d;
-{
-  int retval = 0;
-/* Don't use in STANDALONE */
-
-  return(retval);
-}
 
 #endif /* NO_EXTEND_MENU */
 
