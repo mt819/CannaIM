@@ -34,7 +34,7 @@ extern int DoFuncSequence(),UseOtherKeymap(), YomiModeBackup();
 extern int dicTouroku(uiContext), dicSakujo(uiContext);
 #ifndef NO_EXTEND_MENU
 extern int kigoRussia(), kigoGreek(), kigoKeisen();
-extern int dicMount(), serverChange(), serverFin();
+extern int dicMount(), serverFin();
 extern int chikujiInit();
 #endif
 
@@ -83,7 +83,6 @@ static struct funccfunc empty_funcs[] = {
   {CANNA_FN_LineMode		,kigoKeisen		},
   {CANNA_FN_SyncDic		,dicSync		},
   {CANNA_FN_DicMountMode	,dicMount		},
-  {CANNA_FN_ChangeServerMode	,serverChange		},
   {CANNA_FN_DisconnectServer	,serverFin		},
   {CANNA_FN_ShowServer		,showServer		},
   {CANNA_FN_EnterChikujiMode	,chikujiInit		},

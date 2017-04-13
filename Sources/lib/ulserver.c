@@ -50,20 +50,6 @@ uiContext d;
   return(retval);
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * サーバの切り換え                                                          *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-int
-serverChange(d)
-uiContext d;
-{
-  int retval = 0;
-/* Don't use in STANDALONE */
-
-  return(retval);
-}
-
 #endif /* NO_EXTEND_MENU */
 
 #ifndef wchar_t
