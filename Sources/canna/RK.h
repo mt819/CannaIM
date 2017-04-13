@@ -281,64 +281,6 @@ int	RkQueryDic(int, char *, char *, struct DicInfo *);
 }
 #endif
 
-#if defined(ENGINE_SWITCH)
-struct rkfuncs {
-  int (*GetProtocolVersion)(int *, int *);
-  char *(*GetServerName)(void);
-  int (*GetServerVersion)(int *, int *);
-  int (*Initialize)(char *);
-  void (*Finalize)(void);
-  int (*CreateContext)(void);
-  int (*DuplicateContext)(int);
-  int (*CloseContext)(int);
-  int (*SetDicPath)(int, char *);
-  int (*CreateDic)(int, unsigned char *, int);
-  int (*SyncDic)(int, char *);
-  int (*GetDicList)(int, char *, int);
-  int (*GetMountList)(int, char *, int);
-  int (*MountDic)(int, char *, int);
-  int (*RemountDic)(int, char *, int);
-  int (*UnmountDic)(int, char *);
-  int (*DefineDic)(int, char *, wchar_t *);
-  int (*DeleteDic)(int, char *, wchar_t *);
-  int (*GetHinshi)(int, wchar_t *, int);
-  int (*GetKanji)(int, wchar_t *, int);
-  int (*GetYomi)(int, wchar_t *, int);
-  int (*GetLex)(int, RkLex *, int);
-  int (*GetStat)(int, RkStat *);
-  int (*GetKanjiList)(int, wchar_t *, int);
-  int (*FlushYomi)(int);
-  int (*GetLastYomi)(int, wchar_t *, int);
-  int (*RemoveBun)(int, int);
-  int (*SubstYomi)(int, int, int, wchar_t *, int);
-  int (*BgnBun)(int, wchar_t *, int, int);
-  int (*EndBun)(int, int);
-  int (*GoTo)(int, int);
-  int (*Left)(int);
-  int (*Right)(int);
-  int (*Next)(int);
-  int (*Prev)(int);
-  int (*Nfer)(int);
-  int (*Xfer)(int, int);
-  int (*Resize)(int, int);
-  int (*Enlarge)(int);
-  int (*Shorten)(int);
-  int (*StoreYomi)(int, wchar_t *, int);
-  int (*SetAppName)(int, char *);
-  int (*SetUserInfo)(char *, char *, char *);
-  int (*QueryDic)(int, char *, char *, struct DicInfo *);
-  int (*CopyDic)(int, char *, char *, char *, int);
-  int (*ListDic)(int, char *, char *, int);
-  int (*RemoveDic)(int, char *, int);
-  int (*RenameDic)(int, char *, char *, int);
-  int (*ChmodDic)(int, char *, int);
-  int (*GetWordTextDic)(int, unsigned char	*, unsigned char *,
-			     wchar_t *, int);
-  int (*GetSimpleKanji)(int, char *, wchar_t *, int, wchar_t *, int,
-			     wchar_t *, int);
-};
-#endif /* ENGINE_SWITCH */
-
 #ifdef CANNA_EXP_PREDEFINED
 #undef CANNA_EXP_PREDEFINED
 #else

@@ -501,13 +501,6 @@ KC_initialize(d, arg)
   extern int FirstTime;
 
   if (FirstTime) {
-#ifdef ENGINE_SWITCH
-    extern char *RkGetServerEngine(void);
-    if (!RkGetServerEngine()) {
-      RkSetServerName(NULL);
-    }
-#endif
-
     InitCannaConfig(&cannaconf);
 
     debug_message("KC_INITIALIZE \244\362\313\334\305\366\244\313\244\271\244\353\244\276\n",0,0,0);
@@ -613,11 +606,6 @@ KC_initialize(d, arg)
 
     /* サーバ名保持用メモリの開放 */
     /* RkSetServerName((char *)0); してはいけないのでは？ */
-
-#ifdef ENGINE_SWITCH
-    /* エンジンのクローズ */
-    close_engine();
-#endif
 
     return -1;
   }
@@ -763,11 +751,6 @@ KC_finalize(d, arg)
 
     /* デフォルト以外のモード用メモリの開放 */
     freeExtra();
-
-#ifdef ENGINE_SWITCH
-    /* エンジンのクローズ */
-    close_engine();
-#endif
 
     if (arg) {
       *(char ***)arg = nWarningMesg ? WarningMesg : NULL;
