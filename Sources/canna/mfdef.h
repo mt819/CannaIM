@@ -248,7 +248,6 @@
 #define CANNA_FN_DicMountMode		61 /* 辞書選択モード */
 #define CANNA_FN_ChangeServerMode	62 /* サーバ選択モード */
 #define CANNA_FN_DisconnectServer	63 /* サーバ切り離し */
-#define CANNA_FN_ShowServer		64 /* サーバ表示 */
 #define CANNA_FN_DefineDicMode		69 /* 単語登録 */
 #define CANNA_FN_DeleteDicMode		70 /* 単語削除 */
 #define CANNA_FN_SyncDic		71 /* 辞書書き込み */

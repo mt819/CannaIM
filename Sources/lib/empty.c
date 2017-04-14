@@ -566,14 +566,6 @@ uiContext d;
 }
 
 static int
-showServer(d)
-uiContext d;
-{
-  return (0);
-/* don't use in STANDALONE */
-}
-
-static int
 dicSync(d)
 uiContext d;
 {

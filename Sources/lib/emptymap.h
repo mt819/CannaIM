@@ -83,7 +83,6 @@ static struct funccfunc empty_funcs[] = {
   {CANNA_FN_LineMode		,kigoKeisen		},
   {CANNA_FN_SyncDic		,dicSync		},
   {CANNA_FN_DicMountMode	,dicMount		},
-  {CANNA_FN_ShowServer		,showServer		},
   {CANNA_FN_EnterChikujiMode	,chikujiInit		},
   {CANNA_FN_EnterRenbunMode	,renbunInit		},
 #endif
