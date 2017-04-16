@@ -16,7 +16,6 @@ StaticLibrary libcanna.a :
 	defaultmap.c
 	ebind.c
 	empty.c
-	engine.c
 	henkan.c
 	hex.c
 	ichiran.c
@@ -38,7 +37,6 @@ StaticLibrary libcanna.a :
 	ulhinshi.c
 	ulkigo.c
 	ulmount.c
-	ulserver.c
 	util.c
 	yesno.c
 ;
