@@ -4540,7 +4540,6 @@ static struct cannafndefs cannafns[] = {
   {S_FN_DicMountMode		,CANNA_FN_DicMountMode},
   {S_FN_EnterChikujiMode	,CANNA_FN_EnterChikujiMode},
   {S_FN_EnterRenbunMode		,CANNA_FN_EnterRenbunMode},
-  {S_FN_ChangeServerMode	,CANNA_FN_ChangeServerMode},
   {S_FN_PageUp			,CANNA_FN_PageUp},
   {S_FN_PageDown		,CANNA_FN_PageDown},
   {S_FN_Edit			,CANNA_FN_Edit},
