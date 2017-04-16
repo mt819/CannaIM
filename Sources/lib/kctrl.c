@@ -1233,15 +1233,6 @@ KC_queryConnection(d, arg)
 }
 
 static int
-KC_setServerName(d, arg)
-     uiContext d;
-     unsigned char *arg;
-     /* ARGSUSED */
-{
-  return RkSetServerName((char *)arg);
-}
-
-static int
 KC_parse(d, arg)
      uiContext d;
      char **arg;
@@ -2133,9 +2124,6 @@ jrUserInfoStruct *arg;
                   uinfo->cannafile = cannafile;
                   uinfo->romkanatable = romkanatable;
 
-                  if (uinfo->srvname) {
-		    KC_setServerName(d, (unsigned char *)uinfo->srvname);
-		  }
                   if (uinfo->cannafile) {
                     char *p = uinfo->cannafile;
 
@@ -2274,7 +2262,6 @@ static int (*kctlfunc[MAX_KC_REQUEST])() = {
   KC_modekeys,
   KC_queryMode,
   KC_queryConnection,
-  KC_setServerName,
   KC_parse,
   KC_yomiInfo,
   KC_storeYomi,
