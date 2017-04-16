@@ -2093,62 +2093,6 @@ char *arg;
 }
 
 static int
-KC_changeServer(d, arg)
-uiContext d;
-char *arg;
-/* ARGSUSED */
-{
-  extern int defaultContext;
-  char *p;
-
-  if (!arg) {
-    RkSetServerName(NULL);
-    return 0;
-  }
-
-  jrKanjiPipeError();
-  if (RkSetServerName((char *)arg) && (p = index((char *)arg, '@'))) {
-#ifndef USE_MALLOC_FOR_BIG_ARRAY
-    char xxxx[512];
-#else
-    char *xxxx = malloc(512);
-    if (!xxxx) {
-      return 0;
-    }
-#endif
-
-    *p = '\0';
-#ifdef CODED_MESSAGE
-    sprintf(xxxx, "かな漢字変換エンジン %s は利用できません", (char *)arg);
-#else
-    sprintf(xxxx, "\244\253\244\312\264\301\273\372\312\321\264\271\245\250\245\363\245\270\245\363 %s \244\317\315\370\315\321\244\307\244\255\244\336\244\273\244\363\n",
-	    (char *)arg);
-#endif
-    makeGLineMessageFromString(d, xxxx);
-
-    RkSetServerName(NULL);
-#ifdef USE_MALLOC_FOR_BIG_ARRAY
-    free(xxxx);
-#endif
-    return 0;
-  }
-
-  if (defaultContext == -1) {
-    if ((KanjiInit() != 0) || (defaultContext == -1)) {
-#ifdef CODED_MESSAGE
-      jrKanjiError = "かな漢字変換サーバと通信できません";
-#else
-      jrKanjiError = "\244\253\244\312\264\301\273\372\312\321\264\271"
-                     "\245\265\241\274\245\320\244\310\304\314\277\256"
-                     "\244\307\244\255\244\336\244\273\244\363";
-#endif
-      return 0;
-    }
-  }
-  return (int)RkwGetServerName();
-}
-
-static int
 KC_setUserInfo(d, arg)
 uiContext d;
 jrUserInfoStruct *arg;
@@ -2350,7 +2294,6 @@ static int (*kctlfunc[MAX_KC_REQUEST])() = {
   KC_debugyomi,
   KC_keyconvCallback,
   KC_queryPhono,
-  KC_changeServer,
   KC_setUserInfo,
   KC_queryCustom,
   KC_closeAllContext,

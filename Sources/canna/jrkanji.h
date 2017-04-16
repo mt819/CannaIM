@@ -94,7 +94,6 @@
 #define KC_DEBUGYOMI	        32
 #define KC_KEYCONVCALLBACK	33
 #define KC_QUERYPHONO		34
-#define KC_CHANGESERVER		35
 #define KC_SETUSERINFO          36
 #define KC_QUERYCUSTOM          37
 #define KC_CLOSEALLCONTEXT      38
