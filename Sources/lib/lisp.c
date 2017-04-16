@@ -4045,13 +4045,6 @@ int n;
 
 /* lispfuncend */
 
-extern char *RkGetServerHost();
-
-static void
-ObtainVersion()
-{
-}
-/* don't use in STANDALONE */
 
 /* 変数アクセスのための関数 */
 
