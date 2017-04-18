@@ -21,7 +21,6 @@
  */
 
 #include	"canna.h"
-#include	"rkcapi.h"
 
 #include	<errno.h>
 #include	<fcntl.h>
