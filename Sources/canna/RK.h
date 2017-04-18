@@ -281,11 +281,5 @@ int	RkQueryDic(int, char *, char *, struct DicInfo *);
 }
 #endif
 
-#ifdef CANNA_EXP_PREDEFINED
-#undef CANNA_EXP_PREDEFINED
-#else
-#undef canna_export
-#endif
-
 #endif	/* _RK_h */
 /* don't add stuff after this line */
