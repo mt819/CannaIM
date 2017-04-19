@@ -602,7 +602,7 @@ int length;
   extern int defaultBushuContext;
 
   /* 連文節変換を開始する *//* 辞書にある候補のみ取り出す */
-  if ((defaultBushuContext == -1)) {
+  if (defaultBushuContext == -1) {
     if (KanjiInit() == -1 || defaultBushuContext == -1) {
       jrKanjiError = KanjiInitError();
       return(NG);
