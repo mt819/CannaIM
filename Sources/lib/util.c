@@ -954,8 +954,7 @@ int n;
  */
 
 int
-WStrlen(ws)
-wchar_t *ws;
+WStrlen(const wchar_t *ws)
 {
   int res = 0;
   while (*ws++) {
@@ -1128,10 +1127,7 @@ WIsG3(wchar_t wc)
 }
 
 size_t
-CANNA_mbstowcs(dest, src, destlen)
-wchar_t *dest;
-char *src;
-size_t destlen;
+CANNA_mbstowcs(wchar_t *dest, const char *src, size_t destlen)
 {
   int i, j;
   unsigned ec;
@@ -1196,10 +1192,7 @@ size_t destlen;
 }
 
 int
-CNvW2E(src, srclen, dest, destlen)
-wchar_t *src;
-char *dest;
-int srclen, destlen;
+CNvW2E(const wchar_t *src, int srclen, char *dest, int destlen)
 {
   int i, j;
 
@@ -1263,10 +1256,7 @@ int srclen, destlen;
 }
 
 int
-CANNA_wcstombs(dest, src, destlen)
-char *dest;
-wchar_t *src;
-int destlen;
+CANNA_wcstombs(char *dest, const wchar_t *src, int destlen)
 {
   return CNvW2E(src, WStrlen(src), dest, destlen);
 }
