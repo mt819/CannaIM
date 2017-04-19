@@ -1528,8 +1528,8 @@ wchar_t ch;
 }
 
 struct NormalizePair {
-    const unsigned char* s1;
-    const unsigned char* s2;
+    const char* s1;
+    const char* s2;
 };
 
 const struct NormalizePair norm_pair[] = {
