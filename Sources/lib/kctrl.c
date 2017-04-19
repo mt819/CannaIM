@@ -2128,8 +2128,8 @@ jrUserInfoStruct *arg;
                     char *p = uinfo->cannafile;
 
                     if (strlen(p) >= 3 && (p[0] == '\\' || p[0] == '/' ||
-                        p[1] == ':' && p[2] == '\\' ||
-                        p[1] == ':' && p[2] == '/'))
+                        (p[1] == ':' && p[2] == '\\') ||
+                        (p[1] == ':' && p[2] == '/')))
                       strcpy(buf, p);
                     else if (uinfo->uname)
                       sprintf(buf, "%s/%s/%s/%s/%s",
