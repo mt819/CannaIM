@@ -1019,7 +1019,7 @@ uiContext d;
 
   fitmarks(yc);
 
-    if (d->ch >= 0xa1 && d->ch <= 0xdf || d->ch >= 0xa1a1) {
+    if ((d->ch >= 0xa1 && d->ch <= 0xdf) || d->ch >= 0xa1a1) {
 #ifdef USE_ROMKANATABLE_FOR_KANAKEY
     key = d->buffer_return[0];
 #else
@@ -1033,7 +1033,7 @@ uiContext d;
   }
 
   /*   (d->ch & ~0x1f) == 0x1f < (unsigned char)d->ch */
-  if (!(d->ch & ~0x1f) && yc->allowedChars != CANNA_NOTHING_RESTRICTED
+  if ((!(d->ch & ~0x1f) && yc->allowedChars != CANNA_NOTHING_RESTRICTED)
       || (d->ch < 0x80 ? charKind[d->ch - 0x20] : 1) < yc->allowedChars) {
     /* 前の行、USE_ROMKANATABLE_FOR_KANAKEY のときにまずい */
     /* 0x20 はコントロールキャラクタの分 */
