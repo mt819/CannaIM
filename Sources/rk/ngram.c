@@ -514,7 +514,7 @@ fil_wc2wrec_flag(wrec, wreclen, ncand, yomi, ylen, left)
   *wrec++ |= (Wrec)(((left << 1) & 0x7e) | ((wlen >> 5) & 0x01));
   *wrec++ = (Wrec)(((wlen << 3) & 0xf8) | (ncand & 0x07));
   if (*owrec & 0x80) {
-    *wrec++ = (Wrec)(((wlen >> 5) & 0xfe) | (ncand >> 11) & 0x01);
+    *wrec++ = (Wrec)(((wlen >> 5) & 0xfe) | ((ncand >> 11) & 0x01));
     *wrec++ = (Wrec)((ncand >> 3) & 0xff);
   }
   if (left) {
@@ -559,7 +559,7 @@ fil_wrec_flag(wrec, wreclen, ncand, yomi, ylen, left)
   *wrec++ |= (Wrec)(((left << 1) & 0x7e) | ((wlen >> 5) & 0x01));
   *wrec++ = (Wrec)(((wlen << 3) & 0xf8) | (ncand & 0x07));
   if (*owrec & 0x80) {
-    *wrec++ = (Wrec)(((wlen >> 5) & 0xfe) | (ncand >> 11) & 0x01);
+    *wrec++ = (Wrec)(((wlen >> 5) & 0xfe) | ((ncand >> 11) & 0x01));
     *wrec++ = (Wrec)((ncand >> 3) & 0xff);
   }
   if (left) {
@@ -875,7 +875,7 @@ _RkUparseWrec(gram, src, dst, maxdst, lucks, add)
       endt = dst;
   }
 
-  if (add && i == ncnd || !add && endt && endt < endp - 1) {
+  if ((add && i == ncnd) || (!add && endt && endt < endp - 1)) {
     *endt = (Wchar)0;
     return(endt);
   }
