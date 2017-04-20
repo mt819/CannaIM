@@ -1715,7 +1715,7 @@ list *addr;
     }
     markcopycell(&newatom->plist);
     if (newatom->ftype == EXPR || newatom->ftype == MACRO) {
-      markcopycell((int *)&newatom->func);
+      markcopycell((list *)&newatom->func);
     }
     addr = &newatom->hlink;
     goto redo;
