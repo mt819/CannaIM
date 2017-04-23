@@ -2248,7 +2248,7 @@ char *arg;
 static int
 KC_syncDictionary(uiContext d, char *arg)
 {
-  RkSync(0, NULL);
+  RkwSync(0, NULL);
   return 0;
 }
 /* KanjiControlの個々の制御関数へのポインタ */

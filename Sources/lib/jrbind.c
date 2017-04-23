@@ -176,7 +176,7 @@ BYTE *arg;
       request == KC_SETSERVERNAME || request == KC_SETINITFILENAME ||
       request == KC_SETVERBOSE || request == KC_KEYCONVCALLBACK ||
       request == KC_QUERYCONNECTION || request == KC_SETUSERINFO ||
-      request == KC_QUERYCUSTOM) {
+      request == KC_QUERYCUSTOM || request == KC_SYNCDICTIONARY) {
     return kanjiControl(request, NULL, (char *)arg);
   }
   else if (/* 0 <= request && (必ず真) */ request < MAX_KC_REQUEST) {
