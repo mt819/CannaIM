@@ -2244,6 +2244,13 @@ char *arg;
   return -1;
 }
 
+/* 学習辞書に書き込む */
+static int
+KC_syncDictionary(uiContext d, char *arg)
+{
+  RkSync(0, NULL);
+  return 0;
+}
 /* KanjiControlの個々の制御関数へのポインタ */
 
 static int (*kctlfunc[MAX_KC_REQUEST])() = {
@@ -2285,6 +2292,7 @@ static int (*kctlfunc[MAX_KC_REQUEST])() = {
   KC_queryCustom,
   KC_closeAllContext,
   KC_attributeInfo,
+  KC_syncDictionary,
 };
 
 int

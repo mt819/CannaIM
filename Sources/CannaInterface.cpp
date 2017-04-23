@@ -716,6 +716,7 @@ uint32 CannaInterface::Kakutei()
 #ifdef DEBUG
 		SERIAL_PRINT(( "CannaInterface: Kakutei() processed. kakL = %d, mikL = %d, info = 0x%x\n", kakuteiLen, kanji_status.length, kanji_status.info ));
 #endif
+	jrKanjiControl( context_id, KC_SYNCDICTIONARY, (char *)(int32) 0);
 	return UpdateKanjiStatus();
 }
 

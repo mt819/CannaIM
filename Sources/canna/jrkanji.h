@@ -98,8 +98,9 @@
 #define KC_QUERYCUSTOM          37
 #define KC_CLOSEALLCONTEXT      38
 #define KC_ATTRIBUTEINFO	39
+#define KC_SYNCDICTIONARY	40
 
-#define MAX_KC_REQUEST          (KC_ATTRIBUTEINFO + 1)
+#define MAX_KC_REQUEST          (KC_SYNCDICTIONARY + 1)
 
 #define kc_normal	0
 #define kc_through	1
