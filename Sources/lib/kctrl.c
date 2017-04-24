@@ -2249,7 +2249,7 @@ static int
 KC_syncDictionary(uiContext d, char *arg)
 {
   yomiContext	yc = (yomiContext)d->modec;
-  RkwSync(yc->context, "");
+  RkwSync(yc->context, NULL);
   return 0;
 }
 /* KanjiControlの個々の制御関数へのポインタ */
