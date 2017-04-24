@@ -173,7 +173,7 @@ unsigned int display, window, request;
 BYTE *arg;
 {
   if (request == KC_INITIALIZE || request == KC_FINALIZE ||
-      request == KC_SETSERVERNAME || request == KC_SETINITFILENAME ||
+      request == KC_SETINITFILENAME ||
       request == KC_SETVERBOSE || request == KC_KEYCONVCALLBACK ||
       request == KC_QUERYCONNECTION || request == KC_SETUSERINFO ||
       request == KC_QUERYCUSTOM || request == KC_SYNCDICTIONARY) {
