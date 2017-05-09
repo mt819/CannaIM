@@ -76,12 +76,7 @@ CannaInterface::~CannaInterface()
 #ifdef DEBUG
 		SERIAL_PRINT(( "CannaInterface: Destructor called.\n" ));
 #endif
-	jrKanjiStatusWithValue	ks;
-	ks.val = 0;
-	ks.buffer = (unsigned char *)kakuteiStr;
-	ks.bytes_buffer = CONVERT_BUFFER_SIZE;
-	ks.ks = &kanji_status;
-	jrKanjiControl(context_id, KC_FINALIZE, (char *)&ks);
+	jrKanjiControl(context_id, KC_FINALIZE, 0);
 }
 
 status_t CannaInterface::InitCheck()
