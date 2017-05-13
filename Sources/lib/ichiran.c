@@ -648,7 +648,7 @@ int currentkouho;
 	    *gptr++ = *bango; cn ++; dn +=2;
 	  } else {
 	    WStrncpy(gptr, bango + 1 + BANGOSIZE * (lnko - 1), BANGOSIZE);
-	    cn += BANGOSIZE; gptr += BANGOSIZE, dn += BANGOSIZE*2;
+	    cn += BANGOSIZE; gptr += BANGOSIZE; dn += BANGOSIZE*2;
 	  }
 	}
 	else{ /* 半角 */

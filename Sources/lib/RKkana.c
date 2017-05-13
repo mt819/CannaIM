@@ -204,18 +204,20 @@ int		maxhan;
 		    lo = h[1];
 		    switch(code&255) {
 	    /* u */ case 0xa6:
-			if ( lo == 0xde ) code = 0xa5f4, h += 2;
-			break;
+			if ( lo == 0xde ) {
+				code = 0xa5f4; h += 2;
+				break;
+			}
 	    /* ha */case 0xcf: case 0xd2: case 0xd5: case 0xd8: case 0xdb:
 			if ( lo == 0xdf ) {
-			    code += 2, h += 2;
+			    code += 2; h += 2;
 			    break;
 			};
 	    /* ka */case 0xab: case 0xad: case 0xaf: case 0xb1: case 0xb3:
 	    /* sa */case 0xb5: case 0xb7: case 0xb9: case 0xbb: case 0xbd:
 	    /* ta */case 0xbf: case 0xc1: case 0xc4: case 0xc6: case 0xc8:
 			if ( lo == 0xde ) {
-			    code += 1, h += 2;
+			    code += 1; h += 2;
 			    break;
 			};
 		    };
@@ -300,8 +302,9 @@ int		maxzen;
 	    if ( 0xc1 <= lo && lo <= 0xda ) code = (lo - 0xc1) + 'A';
 	    else
 	    if ( 0xe1 <= lo && lo <= 0xfa ) code = (lo - 0xe1) + 'a';
-	    else
-					    code = (hi<<8)|lo, byte = 2;
+	    else {
+			code = (hi<<8)|lo; byte = 2;
+		}
 	    break;
 	case	0xa4:	/* hiragana */
 	case	0xa5:	/* katakana */
@@ -317,8 +320,9 @@ int		maxzen;
 		    byte = 2;
 		};
 	    }
-	    else
-		code = (hi<<8)|lo, byte = 2;
+	    else {
+			code = (hi<<8)|lo; byte = 2;
+		}
 	    break;
 	default:
 	    if (hi == 0x8f) {
@@ -389,8 +393,9 @@ int		maxhira;
 		h += 2;
 	    };
 	}
-	else
-	    code = hi, byte = 1;
+	else {
+		code = hi; byte = 1;
+	}
 	ADDCODE(k, maxkana, count, code, byte);
     };
     if ( k )
@@ -437,8 +442,9 @@ int		maxkana;
 	    if ( code == 0xa4f6 )
 		code = 0xa4b1;
 	}
-	else
-	    code = hi, byte = 1;
+	else {
+		code = hi; byte = 1;
+	}
 	ADDCODE(h, maxhira, count, code, byte);
     };
     if ( h )
@@ -504,12 +510,12 @@ int		maxsj;
 
     while ( s < S ) {
 	hi = *s++;
-	if ( hi <= 0x7f )  			/* ascii */
-	    code = hi, byte = 1;
-	else
-	if ( 0xa0 <= hi && hi <= 0xdf ) 	/* hankaku katakana */
-	    code = 0x8e00|hi, byte = 2;
-        else
+	if ( hi <= 0x7f ) {	/* ascii */
+	    code = hi; byte = 1;
+	} else
+	if ( 0xa0 <= hi && hi <= 0xdf ) {	/* hankaku katakana */
+		code = 0x8e00|hi; byte = 2;
+	} else
         if (0xf0 <= hi && hi <= 0xfc) {		/* gaiji */
             hi -= 0xf0;
             hi = 2*hi + 0x21;
@@ -522,7 +528,7 @@ int		maxsj;
                 hi++;
                 lo -= 0x7e;
             }
-            code = 0x8f8080 | (hi<<8) | lo, byte = 3;
+            code = 0x8f8080 | (hi<<8) | lo; byte = 3;
         }
 	else {
 	    hi -= (hi <= 0x9f) ?  0x80 : 0xc0;
@@ -534,7 +540,7 @@ int		maxsj;
 	    }
 	    else 			/* guusuu ku */
 		lo -= (0x9f - 0x21);
-	    code = 0x8080|(hi<<8)|lo, byte = 2;
+	    code = 0x8080|(hi<<8)|lo; byte = 2;
 	};
 	ADDCODE(e, maxeuc, count, code, byte);
     };

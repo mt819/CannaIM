@@ -482,8 +482,9 @@ RkCvtNone(dst, maxdst, src, maxsrc)
       ADDCODE(d, maxdst, count, code, 1);
       code = (((Wchar) s[0]) << 8) | ((Wchar) s[1]); s += 2;
       byte = 2;
-    } else if ( code & 0x80 ) 
-      code = (code<<8)|(*s++), byte = 2;
+    } else if ( code & 0x80 ) { 
+		code = (code<<8)|(*s++); byte = 2;
+	}
     ADDCODE(d, maxdst, count, code, byte);
   };
   if ( d )
