@@ -71,7 +71,7 @@ extern int clisp_init();
 #define NAMEBUFSIZE 1024
 #define RCFILENAME  ".canna"
 #define FILEENVNAME "CANNAFILE"
-#define HOSTENVNAME "CANNAHOST"
+
 
 
 static int
