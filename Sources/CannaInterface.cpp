@@ -711,10 +711,6 @@ uint32 CannaInterface::Kakutei()
 #ifdef DEBUG
 		SERIAL_PRINT(( "CannaInterface: Kakutei() processed. kakL = %d, mikL = %d, info = 0x%x\n", kakuteiLen, kanji_status.length, kanji_status.info ));
 #endif
-// 本来、デストラクタでKC_FINALIZEが呼ばれて、学習辞書が更新されるはずであるが、
-// デストラクタが呼ばれていないようなので、変換確定後に学習辞書に書き込むように
-// する。
-	jrKanjiControl( context_id, KC_SYNCDICTIONARY, (char *)(int32) 0);
 	return UpdateKanjiStatus();
 }
 
