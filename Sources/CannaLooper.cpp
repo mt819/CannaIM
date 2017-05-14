@@ -76,22 +76,27 @@ CannaLooper::Quit()
 	// delete palette here
 	SERIAL_PRINT(("CannaLooper: destructor called.\n"));
 	delete fCanna;
+	fCanna = NULL;
 
 	if (fKouhoWindow != NULL) {
 		SERIAL_PRINT(("CannaLooper: Sending QUIT to kouho window...\n"));
 
-		fKouhoWindow->Lock();
-		fKouhoWindow->Quit();
+		if (fKouhoWindow->Lock()){
+			fKouhoWindow->Quit();
+			fKouhoWindow = NULL;
+		}
+
 	}
 
 	if (fPaletteWindow) {
 		SERIAL_PRINT(("CannaLooper: Sending QUIT to palette...\n"));
 
-		fPaletteWindow->Lock();
-		fPaletteWindow->Quit();
+		if (fPaletteWindow->Lock()){
+			fPaletteWindow->Quit();
+			fPaletteWindow = NULL;
+		}
 	}
 
-	fOwner->SetMenu(NULL, BMessenger());
 	BLooper::Quit();
 }
 
