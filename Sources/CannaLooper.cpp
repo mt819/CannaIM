@@ -415,6 +415,11 @@ CannaLooper::_ProcessResult(uint32 result)
 
 		// if both kakutei and mikakutei exist, do not send B_INPUT_STOPPED
 		if (!(result & MIKAKUTEI_EXISTS))
+			// 本来、デストラクタでKC_FINALIZEが呼ばれて、
+			// 学習辞書が更新されるはずであるが、
+			// デストラクタが呼ばれていないようなので、
+			// 変換確定後学習辞書に書き込むようにする。
+			fCanna->Reset();
 			SendInputStopped();
 	}
 
@@ -519,6 +524,11 @@ CannaLooper::_HandleMethodActivated(bool active)
 
 		fPaletteWindow->PostMessage(PALETTE_WINDOW_SHOW);
 	} else {
+		// 本来、デストラクタでKC_FINALIZEが呼ばれて、
+		// 学習辞書が更新されるはずであるが、
+		// デストラクタが呼ばれていないようなので、
+		// ここでも学習辞書に書き込むようにする。
+		fCanna->Reset();
 		_ForceKakutei();
 		fCanna->ChangeMode(CANNA_MODE_HenkanMode);
 		BMessage m(PALETTE_WINDOW_BUTTON_UPDATE);
