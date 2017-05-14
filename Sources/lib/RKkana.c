@@ -206,8 +206,8 @@ int		maxhan;
 	    /* u */ case 0xa6:
 			if ( lo == 0xde ) {
 				code = 0xa5f4; h += 2;
-				break;
 			}
+			break;
 	    /* ha */case 0xcf: case 0xd2: case 0xd5: case 0xd8: case 0xdb:
 			if ( lo == 0xdf ) {
 			    code += 2; h += 2;
