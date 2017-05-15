@@ -20,8 +20,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef _CANNA_H_
-#define _CANNA_H_
+#ifndef CANNA_H_
+#define CANNA_H_
 
 #include "cannaconf.h"
 #include "ccompat.h"
@@ -792,9 +792,8 @@ typedef struct _extra_func {
 
 #define DEFAULT_CANNA_SERVER_NAME "cannaserver"
 
-#ifndef	_UTIL_FUNCTIONS_DEF_
-
-#define	_UTIL_FUNCTIONS_DEF_
+#ifndef	UTIL_FUNCTIONS_DEF
+#define	UTIL_FUNCTIONS_DEF
 
 /* かんなのバージョンを調べる */
 #define canna_version(majv, minv) ((majv) * 1024 + (minv))
@@ -1113,7 +1112,7 @@ extern int EUCListCallback(char *, int, wchar_t **, int, int *);
 extern int owcListCallback(char *, int, wchar_t **, int, int *);
 #endif
 
-#endif /* _UTIL_FUNCTIONS_DEF_ */
+#endif /* UTIL_FUNCTIONS_DEF */
 
 #ifndef wchar_t
 # error "wchar_t is already undefined"
@@ -1122,4 +1121,4 @@ extern int owcListCallback(char *, int, wchar_t **, int, int *);
 /*********************************************************************
  *                       wchar_t replace end                         *
  *********************************************************************/
-#endif /* !_CANNA_H_ */
+#endif /* !CANNA_H_ */

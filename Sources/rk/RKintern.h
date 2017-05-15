@@ -20,8 +20,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef		_RKintern_h
-#define		_RKintern_h
+#ifndef		RKintern_h
+#define		RKintern_h
 
 #define BUNMATU
 
@@ -1130,8 +1130,8 @@ void			_RkRehashCache();
 
 #define RK_OLD_MAX_HDRSIZ	1024
 
-#ifndef	_RK_INTERN_FUNCTIONS_DEF_
-#define	_RK_INTERN_FUNCTIONS_DEF_
+#ifndef	RK_INTERN_FUNCTIONS_DEF
+#define	RK_INTERN_FUNCTIONS_DEF
 
 struct DM *_RkSearchDicWithFreq(struct DD **, char *, struct DM **);
 void _Rkpanic(const char *, ...);
@@ -1188,8 +1188,8 @@ int HowManyBytes(Wchar *, int);
 int _RkFlushYomi(struct RkContext *);
 int parse_string(char *);
 
-#endif /* _RK_INTERN_FUNCTIONS_DEF_ */
+#endif /* RK_INTERN_FUNCTIONS_DEF */
 
-#endif /* _RKintern_h */
+#endif /* RKintern_h */
 /* vim: set sw=2: */
 /* don't add stuff after this line */
