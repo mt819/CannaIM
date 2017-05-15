@@ -38,20 +38,6 @@ CannaLooper::CannaLooper(CannaMethod* method)
 	fKouhoWindow(NULL),
 	fPaletteWindow(NULL)
 {
-	font_family family;
-	font_style style;
-
-/* After hrev50997, VL PGothic was removed. */
-#if 1
-	strcpy(family, "Noto Sans CJK JP");
-	strcpy(style, "Regular");
-#else
-	strcpy(family, "VL PGothic");
-	strcpy(style, "regular");
-#endif
-	fKouhoFont.SetFamilyAndStyle(family, style);
-	fKouhoFont.SetSize(12);
-
 	Run();
 }
 
@@ -518,7 +504,7 @@ CannaLooper::_HandleMethodActivated(bool active)
 			BRect frame(x, y, x + 114, y + 44);
 			fPaletteWindow = new PaletteWindow(frame, this);
 			fPaletteWindow->Show();
-			fKouhoWindow = new KouhoWindow(&fKouhoFont, this);
+			fKouhoWindow = new KouhoWindow(this);
 			fKouhoWindow->Run();
 		}
 

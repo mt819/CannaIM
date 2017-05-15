@@ -73,14 +73,13 @@ private:
 	KouhoView*			kouhoView;
 	KouhoIndexView*		indexView;
 	KouhoInfoView*		infoView;
-	BFont*				kouhoFont;
 	float				indexWidth; //width of index pane
 	float				minimumWidth;
 	void				ShowAt( BPoint revpoint, float height );
 	bool				standalone_mode;
 	void				ShowWindow(); //beta 2 fix
 public:
-						KouhoWindow( BFont *font, BLooper *looper );
+						KouhoWindow(BLooper *looper );
 	virtual void		MessageReceived( BMessage *msg );
 	virtual void		FrameMoved( BPoint screenPoint );
 };

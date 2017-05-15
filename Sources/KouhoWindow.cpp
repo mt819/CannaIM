@@ -16,26 +16,39 @@
 #include "KouhoWindow.h"
 
 
-KouhoWindow::KouhoWindow(BFont *font, BLooper *looper)
+KouhoWindow::KouhoWindow(BLooper *looper)
 	:BWindow(	DUMMY_RECT,
 				"kouho", B_MODAL_WINDOW_LOOK,
 				B_FLOATING_ALL_WINDOW_FEEL,
 				B_NOT_RESIZABLE | B_NOT_CLOSABLE |
 				B_NOT_ZOOMABLE | B_NOT_MINIMIZABLE | B_AVOID_FOCUS |
-				B_NOT_ANCHORED_ON_ACTIVATE)
+				B_NOT_ANCHORED_ON_ACTIVATE),
+				cannaLooper(looper)
 {
-	float fontHeight;
-	BRect frame;
-	BFont indexfont;
-
-	cannaLooper = looper;
-	kouhoFont = font;
-	indexfont = font;
-	indexfont.SetSize(10);
-
 #ifdef DEBUG
 SERIAL_PRINT(("kouhoWindow: Constructor called.\n"));
 #endif
+
+	float fontHeight;
+	BRect frame;
+	BFont kouhoFont, indexfont;
+	font_family family;
+	font_style style;
+
+/* After hrev50997, VL PGothic was removed. */
+#if 1
+	strcpy(family, "Noto Sans CJK JP");
+	strcpy(style, "Regular");
+#else
+	strcpy(family, "VL PGothic");
+	strcpy(style, "regular");
+#endif
+
+	indexfont.SetFamilyAndStyle(family, style);
+	indexfont.SetSize(10);
+	kouhoFont = indexfont;
+	kouhoFont.SetSize(12);
+
 
 	//setup main pane
 	indexWidth = indexfont.StringWidth("W") + INDEXVIEW_SIDE_MARGIN * 2;
@@ -47,7 +60,7 @@ SERIAL_PRINT(("kouhoWindow: Constructor called.\n"));
 	kouhoView = new KouhoView(frame);
 	BRect screenrect = BScreen(this).Frame();
 	kouhoView->SetTextRect(screenrect); //big enough
-	kouhoView->SetFontAndColor(kouhoFont);
+	kouhoView->SetFontAndColor(&kouhoFont);
 	kouhoView->SetWordWrap(false);
 	AddChild(kouhoView);
 	fontHeight = kouhoView->LineHeight();
