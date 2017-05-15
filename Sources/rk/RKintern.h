@@ -962,50 +962,55 @@ extern struct RkDST	_RkDST[];
 
 
 /* Internal Functions */
-struct RkParam		*RkGetSystem();
-struct DD		*RkGetSystemDD();
-struct DD		*RkGetUserDD();
-struct RkContext	*RkGetContext();
-struct RkContext	*RkGetXContext();
+struct RkParam		*RkGetSystem(void);
+struct DD		*RkGetSystemDD(void);
+//struct DD		*RkGetUserDD();
+struct RkContext	*RkGetContext(int);
+struct RkContext	*RkGetXContext(int cx_num);
 struct RkKxGram		*RkReadGram(int, size_t);
-struct RkKxGram		*RkOpenGram();
-struct RkKxGram		*RkDuplicateGram();
-void			RkCloseGram();
+struct RkKxGram		*RkOpenGram(char *);
+struct RkKxGram		*RkDuplicateGram(struct RkKxGram *);
+void			RkCloseGram(struct RkKxGram *);
 
-int			_RkInitializeCache();
-void			_RkFinalizeCache();
-struct ncache		*_RkFindCache();
-struct ncache		*_RkReadCache();
-void			_RkFreeCache();
-void		 	_RkKillCache();
-void		 	_RkPurgeCache();
-void			_RkDerefCache();
+int			_RkInitializeCache(int);
+void			_RkFinalizeCache(void);
+struct ncache		*_RkFindCache(struct DM *, long);
+struct ncache		*_RkReadCache(struct DM *, long);
+//void			_RkFreeCache();
+void		 	_RkKillCache(struct DM *);
+void		 	_RkPurgeCache(struct ncache *);
+void			_RkDerefCache(struct ncache *);
 
-int			_RkRenbun2();
-void			_RkLearnBun();
+int			_RkRenbun2(struct RkContext *, int);
+void			_RkLearnBun(struct RkContext *, int, int);
 
-int			RkScanWcand();
-int			RkUniqWcand();
-int			RkUnionWcand();
-int			RkSubtractWcand();
+int			RkScanWcand(Wrec *, struct RkWcand *, int);
+int			RkUniqWcand(struct RkWcand *, int);
+int			RkUnionWcand(struct RkWcand *, int, int, struct RkWcand *, int);
+int			RkSubtractWcand(struct RkWcand *, int, struct RkWcand *, int,
+							 unsigned long *);
 
-unsigned char		*RkGetGramName();
-int			RkGetGramNum();
-Wchar			*RkUparseWrec();
-Wchar			*_RkUparseWrec();
-Wrec			*RkParseWrec();
-Wrec			*RkParseOWrec();
-Wchar			*RkUparseGramNum();
-Wchar			*RkParseGramNum();
+unsigned char		*RkGetGramName(struct RkKxGram *, int);
+int			RkGetGramNum(struct RkKxGram *, char *);
+Wchar			*RkUparseWrec( struct RkKxGram *, Wrec *, Wchar *, int,
+								unsigned long *);
+Wchar			*_RkUparseWrec(struct RkKxGram *, Wrec *, Wchar *, int,
+								unsigned long *, int);
+Wrec			*RkParseWrec(struct RkKxGram *, Wchar *, unsigned,
+							unsigned char *, unsigned );
+Wrec			*RkParseOWrec(struct RkKxGram *, Wchar *, unsigned char *,
+								unsigned, unsigned long *);
+Wchar			*RkUparseGramNum(struct RkKxGram *, int, Wchar *, int);
+Wchar			*RkParseGramNum(struct RkKxGram *, Wchar *, int *);
 
 /* Context */
-void			_RkEndBun();
-void			freeDF();
+void			_RkEndBun(struct RkContext *cx);
+//void			freeDF();
 
-int			_RkCandNumber();
-int			_RkWordLength();
-int			_RkCalcLog2(int);
-int			_RkCalcUnlog2();
+int			_RkCandNumber(unsigned char *wrec);
+int			_RkWordLength(unsigned char *wrec);
+int			_RkCalcLog2(int n);
+int			_RkCalcUnlog2(int x);
 
 /* etc. */
 
@@ -1026,40 +1031,41 @@ int			_RkCalcUnlog2();
 
 #endif
 
-
+
 /* lang dep part */
 #define IS_WC_G1_HYPHEN(wc)	((wc) == 0xa1bc)
 #define IS_HYPHEN(wc)		(IS_WC_G1_HYPHEN(wc) || ((wc) == '-'))
 /* space も候補として使いたいが今の所は space */
 #define IS_DIC_PUNCT(euc)	isspace(euc)
 
-	int		_RkRealizeDF();
+	int		_RkRealizeDF(struct DF *df);
 
-	struct DM	*_RkSearchDDQ();
-	struct DM	*_RkSearchDDP();
-	struct DM	*_RkSearchUDDP();
-	struct DM	*_RkSearchDDMEM();
+	struct DM	*_RkSearchDDQ(struct DD **ddp, char *name, int type);
+	struct DM	*_RkSearchDDP(struct DD **ddp, char *name);
+	struct DM	*_RkSearchUDDP(struct DD **ddp, unsigned char *name);
+	struct DM	*_RkSearchDDMEM(struct DD **ddp, char *name);
 
-	int		_RkIsinDDP();
-struct DD		**_RkCopyDDP();
-struct DD		**_RkCreateDDP();
-void			_RkFreeDDP();
+	int		_RkIsinDDP(struct DD **ddp, struct DD *dd);
+struct DD		**_RkCopyDDP(struct DD **ddp);
+struct DD		**_RkCreateDDP(char *ddpath);
+void			_RkFreeDDP(struct DD **ddp);
 
-struct DM		*DMcreate();
-int			DMremove();
-int			DMrename();
+struct DM		*DMcreate(struct DD *dd, char *spec);
+int			DMremove(struct DM *dm);
+int			DMrename(struct DM *dm, unsigned char *nickname);
 
-int			_RkMountMD();
-void			_RkUmountMD();
+int			_RkMountMD(struct RkContext *cx, struct DM *dm, struct DM *qm,
+						int mode, int firsttime);
+void			_RkUmountMD(struct RkContext *cx, struct MD *md);
 
-char			*_RkCreatePath();
-char			*_RkCreateUniquePath();
-char			*_RkMakePath();
+char			*_RkCreatePath(struct DD *dd, char *name);
+char			*_RkCreateUniquePath(struct DD *dd, char *proto);
+char			*_RkMakePath(struct DF *df);
 
 unsigned char		*_RkCreateHeader(struct HD *, size_t *size);
 int			_RkReadHeader(int, struct HD *, off_t);
 void			_RkClearHeader(struct HD *);
-void			_RkRehashCache();
+void			_RkRehashCache(struct ncache *cache, long addr);
 
 /*
  * limits
