@@ -7,8 +7,7 @@ AddonDir=/boot/home/config/non-packaged/add-ons/input_server/methods
 SettingsDir=/boot/home/config/settings
 JOBS=$(nproc)
 
-jam clean
-jam -q -j${JOBS}
+jam -a -q -j${JOBS}
 
 mkdir -p ${DataDir}/Canna
 cp -a data/default ${DataDir}/Canna
@@ -21,6 +20,8 @@ then
 	cp -a data/default ${SettingsDir}/Canna
 	cp -a data/dic ${SettingsDir}/Canna
 fi
+
+sync;sync;sync
 
 cp generated/distro/canna ${AddonDir}
 
