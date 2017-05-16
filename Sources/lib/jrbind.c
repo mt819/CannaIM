@@ -32,8 +32,6 @@
 #endif
 #define wchar_t cannawc
 
-#define ACTHASHTABLESIZE 64
-#define KEYHASHTABLESIZE 16
 
 /*
 
