@@ -140,8 +140,7 @@ hankaku[] = {
 };
 
 static int
-_ADDCODE(unsigned char *dst, int maxdst, int /*count*/,
-		unsigned long code, int length)
+_ADDCODE(unsigned char *dst, int maxdst, unsigned long code, int length)
 {
   if ((unsigned long)length <= (unsigned long)maxdst) {
     if (dst) {
@@ -159,7 +158,7 @@ _ADDCODE(unsigned char *dst, int maxdst, int /*count*/,
 }
 
 #define ADDCODE(dst, maxdst, count, code, length) \
-{ int llen = _ADDCODE(dst, maxdst, count, (unsigned long)code, length); \
+{ int llen = _ADDCODE(dst, maxdst, (unsigned long)code, length); \
   if (llen > 0 && (dst)) { (dst) += llen; (maxdst) -= llen; (count) += llen; }}
 
 struct NormalizePair {
