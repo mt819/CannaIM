@@ -34,7 +34,6 @@
 #define	OVERRUN_MARGIN	0
 #endif
 
-#define	STRCMP(d, s)	strcmp((char *)(d), (char *)(s))
 extern	void	usncopy();
 
 #ifdef RK_LOG
