@@ -653,7 +653,6 @@ bushuHenkan(uiContext d, int flag, int ext, int cur,
   int nelem, currentkouho, nbunsetsu, length, retval = 0;
   extern int defaultBushuContext;
 
-  wchar_t **getIchiranList();
 
   if(flag) {
     yomi = (wchar_t *)bushu_key[cur];
