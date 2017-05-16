@@ -22,7 +22,6 @@
 
 #include "canna.h"
 
-#define MAX_BYTE_PER_CHAR 4
 
 /*********************************************************************
  *                      wchar_t replace begin                        *
