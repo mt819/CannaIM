@@ -140,10 +140,8 @@ hankaku[] = {
 };
 
 static int
-_ADDCODE(dst, maxdst, count, code, length)
-unsigned char *dst;
-int maxdst, count, length;
-unsigned long code;
+_ADDCODE(unsigned char *dst, int maxdst, int /*count*/,
+		unsigned long code, int length)
 {
   if ((unsigned long)length <= (unsigned long)maxdst) {
     if (dst) {
