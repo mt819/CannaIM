@@ -35,12 +35,12 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-extern wchar_t *WString();
+static int bushuHenkan(uiContext d, int flag, int ext, int cur,
+	int (*quitfunc)(uiContext, int, mode_context));
+static int makeBushuIchiranQuit(uiContext d, int flag);
 
-extern int uuslQuitCatch();
-extern int uuslIchiranQuitCatch();
-static int bushuHenkan(), makeBushuIchiranQuit();
-static int vBushuExitCatch(), bushuQuitCatch();
+static int vBushuExitCatch(uiContext d, int retval, mode_context env);
+static int bushuQuitCatch(uiContext d, int retval, mode_context env);
 
 
 #define	BUSHU_SZ	150
