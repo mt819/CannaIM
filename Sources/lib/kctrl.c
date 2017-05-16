@@ -778,7 +778,6 @@ KC_setBunsetsuKugiri(d, arg)
   return 0;
 }
 
-#define CHANGEBUFSIZE 1024
 
 static long gflags[] = {
   0L,
