@@ -714,7 +714,7 @@ moveToChikujiYomiMode(uiContext d)
 }
 
 static int
-generalNaive(uiContext d, int (*fn)())
+generalNaive(uiContext d, int (*fn)(uiContext d))
 {
   if ((((yomiContext)d->modec)->generalFlags) &
       (CANNA_YOMI_HANKAKU | CANNA_YOMI_ROMAJI | CANNA_YOMI_BASE_HANKAKU)) {
@@ -725,7 +725,6 @@ generalNaive(uiContext d, int (*fn)())
   }
 }
 
-extern int YomiInsert();
 
 static int
 ChikujiHenkanNaive(uiContext d)
