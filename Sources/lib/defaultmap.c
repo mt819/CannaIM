@@ -38,7 +38,7 @@ unsigned char f;
       return p->cfunc;
     }
   }
-  return (int (*)())0;
+  return NULL;
 }
 
 static int
@@ -94,7 +94,7 @@ int whattodo;
 int key;
 int fnum;
 {
-  int (*func)();
+  int (*func)(struct funccfunc *, unsigned char);
 
   if (fnum == 0) {
       fnum = getFunction(mode, key);
@@ -176,7 +176,7 @@ int whattodo;
 int key;
 int fnum;
 {
-  int (*func)();
+  int (*func)(struct funccfunc *, unsigned char);
   extern KanjiModeRec yomi_mode;
 
   if (fnum == 0) {
