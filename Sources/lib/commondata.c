@@ -130,7 +130,7 @@ char *server_name = NULL;
 int chikuji_debug = 0;
 int auto_define = 0;
 
-void (*keyconvCallback)() = (void (*)())0;
+void (*keyconvCallback)() = NULL;
 
 extraFunc *extrafuncp = (extraFunc *)NULL;
 struct dicname *kanjidicnames; /* .canna で指定している辞書リスト */
@@ -230,6 +230,6 @@ restoreBindings()
   nKouhoBunsetsu = 16;
   nkeysup = 0;
   chikuji_debug = 0;
-  keyconvCallback = (void (*)())0;
+  keyconvCallback = NULL;
   freeUInfo();
 }
