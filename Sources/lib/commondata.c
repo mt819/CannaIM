@@ -38,7 +38,7 @@ int defaultBushuContext = -1;
  * の時はその時で考えましょう。
  */
      
-struct RkRxDic *romajidic, *englishdic, *RkwOpenRoma();
+struct RkRxDic *romajidic, *englishdic;
 
 /* 未定義キー打鍵時の処理のしかた */
 
@@ -88,7 +88,7 @@ char basepath[256];
  * ビープ音を鳴らす関数を格納するところ
  */
 
-int (*jrBeepFunc)() = (int (*)())NULL;
+int (*jrBeepFunc)(void) = NULL;
 
 /*
  * KC_INITIALIZE 直後に実行する機能の列
