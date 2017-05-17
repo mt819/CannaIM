@@ -22,17 +22,6 @@
 
 #define BUNPOU_DISPLAY
 
-extern int TanKouhoIchiran(), TanKatakana();
-extern int TanPrintBunpou();
-extern int TanMuhenkan(), TanBubunKakutei(), TanHankaku();
-extern int TanHiragana(), TanRomaji(), TanZenkaku();
-extern int TanForwardBunsetsu(), TanBackwardBunsetsu();
-extern int TanNextKouho(), TanPreviousKouho();
-extern int TanBeginningOfBunsetsu(), TanEndOfBunsetsu(), TanBubunMuhenkan();
-extern int TanUpper(), TanCapitalize(), TanDeletePrevious();
-extern int TanKanaRotate(uiContext), TanRomajiRotate(uiContext);
-extern int TanCaseRotateForward(uiContext);
-
 #define NONE CANNA_FN_Undefined
 
 /* CYsearchfunc が使われるので以下の表に加えて yomi_mode のマップも使われる */
@@ -47,7 +36,6 @@ static struct funccfunc cy_funcs[] = {
   {0				, 0				},
 };
 
-extern int searchfunc(), CYsearchfunc(), Yomisearchfunc();
 extern BYTE default_kmap[];
 
 KanjiModeRec cy_mode = {
