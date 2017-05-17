@@ -94,7 +94,7 @@ int whattodo;
 int key;
 int fnum;
 {
-  int (*func)(struct funccfunc *, unsigned char);
+  int (*func)();
 
   if (fnum == 0) {
       fnum = getFunction(mode, key);
@@ -176,7 +176,7 @@ int whattodo;
 int key;
 int fnum;
 {
-  int (*func)(struct funccfunc *, unsigned char);
+  int (*func)();
   extern KanjiModeRec yomi_mode;
 
   if (fnum == 0) {
