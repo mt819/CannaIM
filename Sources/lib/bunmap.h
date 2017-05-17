@@ -20,7 +20,6 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-extern int DoFuncSequence(),UseOtherKeymap();
 extern int TanNop(uiContext), YomiKakutei(uiContext);
 
 static struct funccfunc bun_funcs[] = {
