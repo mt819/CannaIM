@@ -34,10 +34,8 @@
 #endif
 #define wchar_t cannawc
 
-extern int convertAsHex(uiContext);
-extern int checkGLineLen(uiContext);
-extern int cvtAsHex(uiContext, wchar_t *, wchar_t *, int);
-static int quitHex();
+
+static int quitHex(uiContext d, int retval, mode_context env);
 
 /* cfuncdef
 
