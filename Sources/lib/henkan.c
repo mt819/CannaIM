@@ -20,10 +20,11 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include	"canna.h"
+#include "canna.h"
 
-#include	<errno.h>
-#include	<fcntl.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdlib.h>
 #ifdef MEASURE_TIME
 #include <sys/types.h>
 #include <sys/times.h>
@@ -155,7 +156,7 @@ KanjiInit()
 #ifdef __HAIKU__
   extern char		basepath[];
 #endif
-  char *ptr, *getenv(), *kodmesg = ""/* 辞書の種別毎のメッセージ */;
+  char *ptr, *kodmesg = ""/* 辞書の種別毎のメッセージ */;
   int con;
   struct dicname *stp;
   extern struct dicname *kanjidicnames;
