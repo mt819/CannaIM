@@ -35,13 +35,14 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-extern int TanNextKouho();
 
-static void clearIchiranContext();
-static int IchiranKakutei();
-static void getIchiranPreviousKouhoretsu();
-static void getIchiranNextKouhoretsu();
-
+static void clearIchiranContext(ichiranContext p);
+static int IchiranKakutei(uiContext);
+static void getIchiranPreviousKouhoretsu(uiContext d);
+static void getIchiranNextKouhoretsu(uiContext d);
+static int makeKouhoIchiran(uiContext d, int nelem, int bangomax,
+			unsigned char inhibit, int currentkouho);
+static int ichiranQuitCatch(uiContext, int, mode_context);
 
 #define ICHISIZE 9
 static char *sbango =
@@ -246,7 +247,6 @@ mode_context env;
   return(retval);
 }
 
-static int ichiranQuitCatch(uiContext, int, mode_context);
 
 static int
 ichiranQuitCatch(d, retval, env)
@@ -320,7 +320,6 @@ uiContext d;
  * すべての候補を取り出して、配列にする
  */
 
-static int makeKouhoIchiran();
 
 wchar_t **
 getIchiranList(context, nelem, currentkouho)
@@ -1478,7 +1477,6 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static int IchiranKakutei(uiContext);
 
 static int
 IchiranKakutei(d)
