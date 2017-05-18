@@ -129,8 +129,6 @@ quitHex(d, retval, env)
   return prevMenuIfExist(d);
 }
 
-yomiContext GetKanjiString();
-
 static int
 hexMode(d, major_mode)
 uiContext d;
