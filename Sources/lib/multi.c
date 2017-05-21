@@ -39,14 +39,6 @@ extern int NothingChangedWithBeep();
 
 static unsigned char *keyHistory;
 
-struct map {
-  KanjiMode tbl;
-  unsigned char key;
-  KanjiMode mode;
-  struct map *next;
-};
-
-extern struct map *mapFromHash();
 
 static unsigned char *
 showChar(c)
