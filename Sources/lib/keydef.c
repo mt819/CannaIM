@@ -58,12 +58,12 @@ struct  seq_struct{
 
 static struct seq_struct *seq_hash[ACTHASHTABLESIZE];
 
-struct map{
-  KanjiMode tbl;
-  unsigned char key;
-  KanjiMode  mode;
-  struct map *next;
-};
+//struct map{
+//  KanjiMode tbl;
+//  unsigned char key;
+//  KanjiMode  mode;
+//  struct map *next;
+//};
 
 static struct map *otherMap[KEYHASHTABLESIZE];
 
