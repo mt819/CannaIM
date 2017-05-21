@@ -52,7 +52,6 @@
 
 extern int FirstTime;
 
-extern BYTE *actFromHash();
 
 int
 wcKanjiString(const int context_id, const int ch, wchar_t *buffer_return,
@@ -108,7 +107,7 @@ wchar_t *buffer_return;
 int nbuffer;
 wcKanjiStatus *kanji_status_return;
 {
-  uiContext d, keyToContext();
+  uiContext d;
   int retval;
 
   /* 初めて XLookupKanjiString が呼ばれた時は辞書の初期化などの処理が
@@ -163,7 +162,6 @@ wcKanjiStatus *kanji_status_return;
   }
 }
 
-uiContext keyToContext();
 
 int
 XwcKanjiControl2(display, window, request, arg)
@@ -209,12 +207,6 @@ BYTE *arg;
   }
 }
 
-struct map {
-  KanjiMode tbl;
-  BYTE key;
-  KanjiMode mode;
-  struct map *next;
-} *mapFromHash();
 
 /* cfuncdef
 
