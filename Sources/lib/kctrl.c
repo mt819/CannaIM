@@ -210,7 +210,6 @@ insertEmptySlots(d)
 uiContext d;
 {
   extern KanjiModeRec	empty_mode;
-  struct callback	*pushCallback();
   yomiContext		yc;
 
   if (pushCallback(d, (mode_context) NULL, NO_CALLBACK, NO_CALLBACK,
@@ -480,7 +479,6 @@ char *arg;
   return 0;
 }
 
-extern void restoreBindings();
 
 static int
 KC_initialize(d, arg)
