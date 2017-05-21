@@ -40,16 +40,6 @@
 extern char *CANNA_initfilename;
 extern char saveapname[];
 
-extern int initExtMenu();
-extern int initBushuTable();
-extern int initGyouTable();
-extern int initHinshiTable();
-extern int initUlKigoTable();
-extern int initUlKeisenTable();
-extern int initOnoffTable();
-extern int initHinshiMessage();
-extern int dicTourokuControl(uiContext, wchar_t *, canna_callback_t);
-
 static int insertEmptySlots(uiContext);
 static int callCallback(uiContext, int);
 static void freeKeysup(void);
