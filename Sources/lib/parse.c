@@ -22,8 +22,9 @@
 
 #include "canna.h"
 
-#include <stdio.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -42,7 +43,7 @@ extern char *CANNA_initfilename;
 
 static char CANNA_rcfilename[BUF_LEN] = "";
 
-static void DISPLAY_to_hostname();
+static void DISPLAY_to_hostname(char *name, char *buf, int bufsize);
 
 /* cfuncdef
 
@@ -54,8 +55,6 @@ static void DISPLAY_to_hostname();
 
 extern int ckverbose;
 
-extern int YYparse_by_rcfilename();
-extern int clisp_init();
 
 /* cfuncdef
 
@@ -108,7 +107,7 @@ fit_initfilename()
 void
 parse()
 {
-  char *p, *getenv();
+  char *p;
   int n;
   int home_canna_exist = 0;
   extern char *initFileSpecified;
