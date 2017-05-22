@@ -33,13 +33,18 @@ extern KanjiModeRec tourokureibun_mode;
 extern KanjiModeRec bunsetsu_mode;
 extern KanjiModeRec cy_mode, cb_mode;
 
-extern int multiSequenceFunc
- (struct _uiContext *, struct _kanjiMode *, int, int, int);
 
 static void undefineKeyfunc(unsigned char *, unsigned);
-static int regist_key_hash(), copyMultiSequence();
-static void freeMultiSequence();
-static void clearAllFuncSequence(), clearAllKeySequence();
+static int regist_key_hash(unsigned char *tbl_ptr, unsigned char *keybuff,
+							unsigned char *actbuff);
+static void regist_act_hash(unsigned char *tbl_ptr, unsigned char key,
+							unsigned char *buff);
+static int copyMultiSequence(unsigned char key, KanjiMode old_tbl,
+							KanjiMode new_tbl);
+
+static void freeMultiSequence(unsigned char key, KanjiMode tbl);
+static void clearAllFuncSequence(void);
+static void clearAllKeySequence(void);
 
 #define NONE 0
 #define ACTHASHTABLESIZE 64
@@ -57,14 +62,6 @@ struct  seq_struct{
 };
 
 static struct seq_struct *seq_hash[ACTHASHTABLESIZE];
-
-//struct map{
-//  KanjiMode tbl;
-//  unsigned char key;
-//  KanjiMode  mode;
-//  struct map *next;
-//};
-
 static struct map *otherMap[KEYHASHTABLESIZE];
 
 static KanjiMode ModeTbl[CANNA_MODE_MAX_REAL_MODE] = {
@@ -82,8 +79,8 @@ static KanjiMode ModeTbl[CANNA_MODE_MAX_REAL_MODE] = {
   &cb_mode,           /* ChikujiHenkanMode  逐次の時の変換の部分         */
 };
 
-unsigned char *actFromHash();
-static void regist_act_hash();
+//unsigned char *actFromHash();
+//static void regist_act_hash();
 
 static unsigned char *
 duplicatekmap(kmap)
