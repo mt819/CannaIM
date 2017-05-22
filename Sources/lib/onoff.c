@@ -34,9 +34,9 @@
 #ifndef NO_EXTEND_MENU
 #define ICHISIZE 9
 
-extern int allocIchiranBuf(uiContext);
 
-static int makeOnOffIchiran();
+static int makeOnOffIchiran(uiContext d, int nelem, int bangomax,
+							int currentkouho, unsigned char *status);
 
 static wchar_t *black;
 static wchar_t *white;
