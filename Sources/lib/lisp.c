@@ -47,9 +47,6 @@ static char *memtop;
 
 static int ncells = CELLSIZE;
 
-extern int changeModeName(int, char *);
-extern int changeKeyfunc(int, int, int, unsigned char *, unsigned char *);
-extern int changeKeyfuncOfAll(int, int, unsigned char *, unsigned char *);
 
 static int initIS(void);
 static void finIS(void);
@@ -3799,7 +3796,6 @@ Ldefmenu()
   menustruct *men;
   menuitem *menubody;
   wchar_t *wp, **wpp;
-  extern menustruct *allocMenu();
 
   form = sp[0];
   if (atom(form) || atom(cdr(form))) {
