@@ -87,7 +87,6 @@ int (*quitCallback)(), (*auxCallback)();
   extern KanjiModeRec onoff_mode;
   ichiranContext oc;
   int retval = 0;
-  ichiranContext newIchiranContext();
 
   if(pushCallback(d, d->modec,
 	everyTimeCallback, exitCallback, quitCallback, auxCallback) == 0) {
