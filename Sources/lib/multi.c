@@ -126,7 +126,7 @@ BYTE key;
   int prevEchoLen = -1, prevRevPos = -1, prevRevLen = -1;
   int prevGEchoLen = -1, prevGRevPos = -1, prevGRevLen = -1;
   wchar_t *prevEcho = NULL, *prevGEcho = NULL;
-  BYTE *p, *actFromHash();
+  BYTE *p;
   wchar_t *malloc_echo = NULL, *malloc_gline = NULL;
 
   if (key == 0) {
