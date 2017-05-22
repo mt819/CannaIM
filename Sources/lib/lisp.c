@@ -27,9 +27,10 @@
 #include "patchlevel.h"
 
 #include <signal.h>
+#include <stdlib.h>
 #ifdef __HAIKU__
 #include <string.h>
-/*#include <InterfaceDefs.h>*/
+/* #include <InterfaceDefs.h> */
 /* We can't use InterfaceDefs.h in C. */
 enum {
 	B_BACKSPACE			= 0x08,
@@ -49,22 +50,30 @@ extern int changeModeName(int, char *);
 extern int changeKeyfunc(int, int, int, unsigned char *, unsigned char *);
 extern int changeKeyfuncOfAll(int, int, unsigned char *, unsigned char *);
 
-static int initIS();
-static void finIS();
-static int allocarea(), skipspaces(), zaplin(), isterm();
-static void prins();
-static list mkatm(), read1(), ratom(), ratom2(), rstring();
-static int tyipeek(), tyi();
+static int initIS(void);
+static void finIS(void);
+static int allocarea(void), skipspaces(void), zaplin(void), isterm(int c);
+static void prins(char *s);
+static list mkatm(char *name), read1(void), ratom(void), ratom2(int a), rstring(void);
+static int tyipeek(void), tyi(void);
 static void tyo(int);
-static void defatms(), epush();
-static void push(), pop();
-static int  evpsh();
-static void freearea(), print();
-static list getatm(), getatmz(), newsymbol(), copystring();
-static list assq(), pop1();
-static list Lprogn(), Lcons(), Lread();
-static list Leval(), Lprint(), Lmodestr(), Lputd(), Lxcons(), Lncons();
-static list NumAcc(), StrAcc();
+static void defatms(void), epush(list value);
+static void push(list value), pop(int x);
+static int  evpsh(list args);
+static void freearea(void), print(list l);
+static list getatm(char *name, int key), getatmz(char *name), newsymbol(char *name), copystring(char *s, int n);
+static list assq(list e, list a), pop1(void);
+static list Lprogn(void), Lcons(int n), Lread(int n);
+static list Leval(int n), Lprint(int n), Lmodestr(int n), Lputd(int n), Lxcons(int n), Lncons(int n);
+static list NumAcc(int *var, int setp, list arg), StrAcc(char **var, int setp, list arg);
+static void markcopycell(list *addr);
+static void patom(list atm);
+static list rcharacter(void);
+static int isnum(char *name);
+static void untyi(int c);
+static void gc(void);
+static char *Strncpy(char *x, char *y, int len);
+static int equal(list x, list y);
 
 /* parameter stack */
 
@@ -140,7 +149,6 @@ static jmp_buf fatal_env;
 
  */
 
-static list getatmz(char *);
 
 /*********************************************************************
  *                      wchar_t replace begin                        *
@@ -387,7 +395,6 @@ char *str;
   return 0;
 }
 
-static void intr();
 
 void
 clisp_main()
@@ -946,8 +953,6 @@ int n;
   /* NOTREACHED */
 }
 
-static void untyi(int);
-static list rcharacter(void);
 
 static list
 read1()
@@ -1078,7 +1083,6 @@ zaplin()
 	return(YES);
 }
 
-static void gc();
 
 static list
 newcons()
@@ -1116,7 +1120,6 @@ char *name;
   return retval;
 }
 
-static void patom();
 
 static void
 print(l)
@@ -1160,7 +1163,6 @@ ratom()
 /* read atom with the first one character -
 	check if the token is numeric or pure symbol & return proper value */
 
-static int isnum();
 
 static list
 ratom2(a)
@@ -1561,7 +1563,6 @@ list atm;
   }
 }
 
-static void markcopycell();
 
 static char *oldcelltop;
 static char *oldcellp;
@@ -1620,7 +1621,6 @@ gc() /* コピー方式のガーベジコレクションである */
   under_gc = 0;
 }
 
-static char *Strncpy();
 
 static list
 allocstring(n)
@@ -2134,7 +2134,6 @@ Lsetq()
   return(a);
 }
 
-static int equal();
 
 static list
 Lequal(n)
@@ -3962,7 +3961,7 @@ Lgetenv(n)
 int n;
 {
   list e;
-  char strbuf[256], *ret, *getenv();
+  char strbuf[256], *ret;
   list retval;
 
   argnchk("getenv",1);
