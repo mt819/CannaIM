@@ -474,7 +474,7 @@ char *arg;
     keyconvCallback = (void (*)())arg;
   }
   else {
-    keyconvCallback = (void (*)())0;
+    keyconvCallback = NULL;
   }
   return 0;
 }
