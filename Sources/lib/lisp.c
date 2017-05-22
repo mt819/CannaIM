@@ -27,6 +27,7 @@
 #include "patchlevel.h"
 
 #include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #ifdef __HAIKU__
 #include <string.h>
@@ -75,6 +76,12 @@ static void gc(void);
 static char *Strncpy(char *x, char *y, int len);
 static int equal(list x, list y);
 
+/* error functions	*/
+static void argnerr(char *msg) __attribute__((noreturn));
+static void numerr(char *fn, list arg) __attribute__((noreturn));
+static void error(char *msg, list v) __attribute__((noreturn));
+
+
 /* parameter stack */
 
 static list	*stack, *sp;
@@ -102,10 +109,6 @@ static int  filep;
 
 static char *readbuf;		/* read buffer	*/
 static char *readptr;		/* read pointer	*/
-
-/* error functions	*/
-
-static void	argnerr(), numerr(), error() __attribute__((noreturn));
 
 /* multiple values */
 
@@ -198,7 +201,7 @@ clisp_init()
 static void
 fillMenuEntry()
 {
-  extern extraFunc *FindExtraFunc(), *extrafuncp;
+  extern extraFunc *extrafuncp;
   extraFunc *p, *fp;
   int i, n, fid;
   menuitem *mb;
@@ -792,8 +795,8 @@ char *name;
   newatom->value = (*name == ':') ? (list)temp : (list)UNBOUND;
   newatom->plist = NIL;			/* set null plist	*/
   newatom->ftype = UNDEF;		/* set undef func-type	*/
-  newatom->func  = (list (*)())0;	/* Don't kill this line	*/
-  newatom->valfunc  = (list (*)())0;	/* Don't kill this line	*/
+  newatom->func  = NULL;	/* Don't kill this line	*/
+  newatom->valfunc  = NULL;	/* Don't kill this line	*/
   newatom->hlink = NIL;		/* no hash linking	*/
   newatom->mid = -1;
   newatom->fid = -1;
@@ -2653,7 +2656,7 @@ Lload(n)
 int n;
 {
   list p, t;
-  FILE *instream, *fopen();
+  FILE *instream;
 
   argnchk("load",1);
   p = pop1();
