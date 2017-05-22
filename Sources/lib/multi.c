@@ -33,9 +33,6 @@
 
 #define NONE CANNA_FN_Undefined
 
-extern int askQuitKey();
-extern int checkGLineLen();
-extern int NothingChangedWithBeep();
 
 static unsigned char *keyHistory;
 
