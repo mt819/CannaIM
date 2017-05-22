@@ -50,7 +50,6 @@ extern struct dicname *RengoGakushu, *KatakanaGakushu, *HiraganaGakushu;
 extern KanjiModeRec cy_mode, cb_mode, yomi_mode, tankouho_mode, empty_mode;
 extern char saveapname[];
 extern int mountnottry;
-extern int RkwGetServerVersion(int *, int *);
 
 #define DICERRORMESGLEN 78
 
@@ -162,7 +161,6 @@ KanjiInit()
   extern struct dicname *kanjidicnames;
   extern int FirstTime;
   extern jrUserInfoStruct *uinfo;
-  extern char *RkGetServerHost(void);
   int ret = -1;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   char buf[256];
@@ -589,10 +587,6 @@ yomiContext yc;
   yc->henkanInhibition = tan->henkanInhibition;
 }
 
-extern yomiContext dupYomiContext(yomiContext);
-extern void setMode(uiContext, tanContext, int);
-
-extern void trimYomi(uiContext, int, int, int, int);
 
 /*
  * 学習を可能にするためtanContextをyomiContextにする。
@@ -991,11 +985,6 @@ yomiContext yc;
   return ret;
 }
 
-extern void restoreChikujiIfBaseChikuji(yomiContext);
-extern void ReCheckStartp(yomiContext);
-extern void fitmarks(yomiContext);
-
-int YomiBubunKakutei(uiContext);
 
 int
 YomiBubunKakutei(d)
