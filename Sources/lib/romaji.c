@@ -23,6 +23,7 @@
 #include "canna.h"
 #include <ctype.h>
 #include <errno.h>
+#include <stdlib.h>
 #ifdef MEASURE_TIME
 #include <sys/types.h>
 #include <sys/times.h>
@@ -50,7 +51,8 @@ extern int errno;
 int forceRomajiFlushYomi(uiContext);
 static int KanaYomiInsert(uiContext);
 static int chikujiEndBun(uiContext);
-extern void EWStrcat(wchar_t *, char *);
+static int makePhonoOnBuffer(uiContext d, yomiContext yc, unsigned char key,
+								int flag, int english);
 
 extern int yomiInfoLevel;
 
@@ -328,8 +330,8 @@ static struct RkRxDic *
 OpenRoma(table)
 char *table;
 {
-  struct RkRxDic *retval = NULL, *RkwOpenRoma();
-  char *p, *getenv();
+  struct RkRxDic *retval = NULL;
+  char *p;
 #ifdef __HAIKU__
   extern char basepath[];
 #endif
@@ -963,7 +965,6 @@ static BYTE charKind[] = {
 
   */
 
-static int makePhonoOnBuffer();
 
 void
 restoreChikujiIfBaseChikuji(yc)
@@ -4257,7 +4258,6 @@ uiContext d;
   BYTE jishu, jishu_case, head = 1;
   int jishu_kEndp, jishu_rEndp;
   int (*func1)(), (*func2)();
-  int RkwCvtZen(), RkwCvtKana(), RkwCvtHira(), RkwCvtHan();
   long savedgf;
   wchar_t *buf, *p;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
