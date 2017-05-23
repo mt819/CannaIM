@@ -36,21 +36,6 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-extern int RkwGetServerVersion(int *, int *);
-extern int RkwChmodDic(int, char *, int);
-extern void popTourokuMode(uiContext);
-extern int checkGLineLen(uiContext);
-extern void clearYomi(uiContext);
-extern int getTourokuContext(uiContext);
-extern int GLineNGReturnTK(uiContext);
-extern int canna_alert(uiContext, char *, canna_callback_t);
-extern int getForIchiranContext(uiContext);
-extern int getMountContext(uiContext);
-extern int selectOnOff(uiContext, wchar_t **, int *, int, int, int, 
-	unsigned char *, int (*)(), int(*)(), int (*)(), int(*)());
-extern int getYesNoContext(uiContext, canna_callback_t, canna_callback_t,
-	canna_callback_t, canna_callback_t);
-
 static int dicSakujoYomi(uiContext),
            dicSakujoEndBun(uiContext),
            dicSakujoTango(uiContext),
@@ -404,7 +389,6 @@ tourokuContext tc;
 {
   int workContext, currentkouho, nbunsetsu, nelem = tc->nudic;
   wchar_t **mdic, **cands, **work;
-  wchar_t **getIchiranList();
   char dicname[1024], tmpbuf[64];
   RkLex lex[5];
   deldicinfo *dic;
@@ -716,7 +700,7 @@ uiContext d;
   tourokuContext tc = (tourokuContext)d->modec;
   forichiranContext fc;
   ichiranContext ic;
-  wchar_t **allDelCands, **getIchiranList();
+  wchar_t **allDelCands;
   BYTE inhibit = 0;
   int nbunsetsu, nelem, currentkouho, retval = 0;
   RkStat st;
@@ -1051,7 +1035,6 @@ mode_context env;
 {
   tourokuContext tc;
   char dicname[1024];
-  wchar_t *WStraddbcpy();
   deldicinfo *dic;
   int bufcnt, l;
   extern int defaultContext;
