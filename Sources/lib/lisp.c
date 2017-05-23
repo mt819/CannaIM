@@ -3175,7 +3175,6 @@ Ldefmode()
       /* モード構造体の作成 */
       kanjimode = (KanjiMode)malloc(sizeof(KanjiModeRec));
       if (kanjimode) {
-	int searchfunc();
 	extern KanjiModeRec empty_mode;
 	extern BYTE *emptymap;
 
