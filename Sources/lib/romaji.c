@@ -853,7 +853,6 @@ int retval;
   return retval;
 }
 
-void fitmarks(yomiContext);
 
 void
 fitmarks(yc)
