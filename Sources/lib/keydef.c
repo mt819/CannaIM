@@ -79,8 +79,6 @@ static KanjiMode ModeTbl[CANNA_MODE_MAX_REAL_MODE] = {
   &cb_mode,           /* ChikujiHenkanMode  逐次の時の変換の部分         */
 };
 
-//unsigned char *actFromHash();
-//static void regist_act_hash();
 
 static unsigned char *
 duplicatekmap(kmap)
