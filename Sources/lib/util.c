@@ -725,7 +725,6 @@ char **s;
 int sz;
 {
   int f = sz;
-  wchar_t *WString();
 
   for (; (f && sz) || (!f && *s); ws++, s++, sz--) {
     *ws = WString(*s);
@@ -901,7 +900,6 @@ int
 GLineNGReturnTK(d)
 uiContext d;
 {
-  extern void popTourokuMode(uiContext);
   popTourokuMode(d);
   popCallback(d);
   GLineNGReturn(d);
