@@ -34,7 +34,6 @@
 extern int getForIchiranContext(uiContext);
 
 #ifndef NO_EXTEND_MENU
-extern int uiUtilIchiranTooSmall();
 
 static
 char *srussia_data[] =
