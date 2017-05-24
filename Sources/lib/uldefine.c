@@ -36,23 +36,11 @@
 extern int errno;
 #endif
 
-extern int RkwCreateDic();
 
-extern int checkGLineLen(uiContext);
-extern int _do_func_slightly(uiContext, int, mode_context, KanjiMode);
-extern int dicTourokuTango(uiContext, canna_callback_t);
-extern int getYesNoContext(uiContext, canna_callback_t, canna_callback_t,
-	canna_callback_t, canna_callback_t);
-extern int dicTourokuHinshi(uiContext);
-extern int canna_alert(uiContext, char *, canna_callback_t);
-extern int getForIchiranContext(uiContext);
-extern int GLineNGReturnTK(uiContext);
-
-
-static int dicTourokuDo(uiContext),
-           checkUsrDic(uiContext),
-           dicTourokuYomi(uiContext),
-           dicTourokuYomiDo(uiContext, canna_callback_t);
+static int dicTourokuDo(uiContext);
+static int checkUsrDic(uiContext);
+static int dicTourokuYomi(uiContext);
+static int dicTourokuYomiDo(uiContext, canna_callback_t);
 
 
 static char *shinshitbl1[] =
@@ -609,7 +597,6 @@ uiContext d;
 {
   tourokuContext tc;
   wchar_t **up;
-  wchar_t **getUserDicName();
 
   d->status = 0;
 
