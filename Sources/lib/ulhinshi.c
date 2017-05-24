@@ -36,21 +36,13 @@
 extern int errno;
 #endif
 
-extern int dicTourokuHinshi(uiContext);
-extern int dicTourokuDictionary(uiContext, int (*)(), int (*)());
-extern int getYesNoContext(uiContext, canna_callback_t, canna_callback_t,
-	canna_callback_t, canna_callback_t);
-extern void clearYomi(uiContext);
-extern int dicTourokuTango(uiContext, canna_callback_t);
-extern int getForIchiranContext(uiContext);
-extern int GLineNGReturnTK(uiContext);
-
-static int tourokuYes(uiContext),
-           tourokuNo(uiContext),
-           makeDoushi(uiContext),
-           uuTDicExitCatch(uiContext, int, mode_context),
-           uuTDicQuitCatch(uiContext, int, mode_context),
-           tangoTouroku(uiContext);
+static int tourokuYes(uiContext);
+static int tourokuNo(uiContext);
+static int makeDoushi(uiContext);
+static int uuTDicExitCatch(uiContext, int, mode_context);
+static int uuTDicQuitCatch(uiContext, int, mode_context);
+static int tangoTouroku(uiContext);
+static int makeHinshi(uiContext d);
 
 static char *e_message[] = {
 #ifdef CODED_MESSAGE
@@ -454,7 +446,6 @@ mode_context env;
  * 単語登録の品詞選択                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static int makeHinshi();
 
 int
 dicTourokuHinshiDelivery(d)
@@ -1018,7 +1009,6 @@ uiContext	d;
   char dicname[1024];
   extern int defaultContext;
   int linecnt;
-  wchar_t *WStraddbcpy();
 
   defineEnd(d);
   if(tc->katsuyou || (EWStrncmp(tc->hcode, "#K5", 3) == 0)) {
