@@ -73,16 +73,10 @@ uiContext d;
  * 候補一覧行を作る
  */
 int
-selectOnOff(d, buf, ck, nelem, bangomax, currentkouho, status,
-	  everyTimeCallback, exitCallback, quitCallback, auxCallback)
-uiContext d;
-wchar_t **buf;
-int *ck;
-int nelem, bangomax;
-int currentkouho;
-unsigned char *status;
-int (*everyTimeCallback)(), (*exitCallback)();
-int (*quitCallback)(), (*auxCallback)();
+selectOnOff(uiContext d, wchar_t **buf, int *ck, int nelem,
+			int bangomax, int currentkouho, unsigned char *status,
+			canna_callback_t everyTimeCallback, canna_callback_t exitCallback,
+			canna_callback_t quitCallback, canna_callback_t auxCallback)
 {
   extern KanjiModeRec onoff_mode;
   ichiranContext oc;
