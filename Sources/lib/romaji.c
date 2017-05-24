@@ -2623,13 +2623,12 @@ int n;
 
 extern KanjiModeRec cy_mode;
 
-int YomiKakutei(uiContext);
 
 int
 YomiKakutei(d)
 uiContext d;
 {
-  yomiContext yc = (yomiContext)d->modec, newFilledYomiContext();
+  yomiContext yc = (yomiContext)d->modec;
   tanContext leftmost;
   int len, res;
   wchar_t *s = d->buffer_return, *e = s + d->n_buffer;
