@@ -933,8 +933,8 @@ mode_context env;
 int
 dicTourokuDictionary(d, exitfunc, quitfunc)
 uiContext d;
-int (*exitfunc)();
-int (*quitfunc)();
+canna_callback_t exitfunc;
+canna_callback_t quitfunc;
 {
   tourokuContext tc = (tourokuContext)d->modec;
   forichiranContext fc;
