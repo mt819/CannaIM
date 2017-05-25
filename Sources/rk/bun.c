@@ -34,7 +34,6 @@
 #define	OVERRUN_MARGIN	0
 #endif
 
-extern	void	usncopy();
 
 #ifdef RK_LOG
 #include	<stdio.h>
@@ -1050,7 +1049,7 @@ unsigned long mode;
 struct RkContext *cx;
 {
   struct nword	*lw;
-  Wchar		*y, *_RkGetKanji();
+  Wchar		*y;
   RkLex		lex;
 
   lw = cw->nw_left;
