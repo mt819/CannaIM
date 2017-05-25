@@ -500,7 +500,6 @@ fil_wc2wrec_flag(wrec, wreclen, ncand, yomi, ylen, left)
      Wchar	*yomi;
      unsigned	*wreclen, ylen, ncand, left;
 {
-  extern Wchar	uniqAlnum();
   Wrec		*owrec = wrec;
   Wchar		tmp;
   int		wlen = *wreclen, i;
@@ -545,7 +544,6 @@ fil_wrec_flag(wrec, wreclen, ncand, yomi, ylen, left)
      Wrec	*wrec, *yomi;
      unsigned	*wreclen, ylen, ncand, left;
 {
-  extern Wchar	uniqAlnum();
   Wrec		*owrec = wrec;
   Wchar		tmp;
   int		wlen = *wreclen, i;
