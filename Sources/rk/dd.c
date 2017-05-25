@@ -49,20 +49,21 @@
 /*
  * DD privates
  */
-static struct DM	*_RkCreateDM();
-static void		_RkFreeDM();
-static struct DM	*_RkAllocDM();
-static struct DF	*_RkCreateDF();
-static void		_RkFreeDF();
-static struct DF	*_RkAllocDF();
-
-static struct DD	*_RkCreateDD();
-static void		_RkFreeDD();
-static struct DD	*_RkLookupDD();
-static struct DD	*_RkReadDD();
-static struct DD	*_RkOpenDD();
-static int		_RkCountDDP();
-static struct DD	**_RkAppendDDP();
+static struct DM	*_RkCreateDM(struct DF *df, unsigned char *dicname,
+					unsigned char *nickname, int class);
+static void		_RkFreeDM(struct DM *dm);
+static struct DM	*_RkAllocDM(struct DF *df, unsigned char *dicname,
+					unsigned char *nickname, int class);
+static struct DF	*_RkCreateDF(struct DD *dd, unsigned char *lnk, int type);
+static void		_RkFreeDF(struct DF	*df);
+static struct DF	*_RkAllocDF(struct DD *dd, unsigned char *lnk, int type);
+static struct DD	*_RkCreateDD(unsigned char	*path, unsigned char *name);
+static void		_RkFreeDD(struct DD	*dd);
+static struct DD	*_RkLookupDD(struct DD *dd, unsigned char *name);
+static struct DD	*_RkReadDD(char	*name);
+static struct DD	*_RkOpenDD(char	*name);
+static int		_RkCountDDP(struct DD **ddp);
+static struct DD	**_RkAppendDDP(struct DD **ddp, struct DD *dd);
 
 /*
  * DM
