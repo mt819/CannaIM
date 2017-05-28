@@ -1194,6 +1194,54 @@ int HowManyBytes(Wchar *, int);
 int _RkFlushYomi(struct RkContext *);
 int parse_string(char *);
 
+/* bits.c */
+extern int _RkCalcFqSize(int n);
+
+/* bun.c */
+extern struct nstore *_RkReallocBunStorage(struct nstore *src, unsigned len);
+extern int _RkResize(int cx_num, int len, int t);
+extern int _RkwSync(struct RkContext *cx, char *dicname);
+extern int RkwSetLocale(int cx_num, unsigned char *locale);
+
+/* fq.c */
+extern struct RUT *allocRUT(unsigned long hn);
+extern unsigned long searchRut(struct RUT *ruc, unsigned long csn);
+extern int entryRut(struct RUT *ruc, unsigned long csn, unsigned long tick);
+extern struct RUT *LoadRUC(int fr);
+
+/* ncache.c */
+extern int _RkRelease(void);
+
+/* nword.c */
+extern Wchar * _RkGetKanji(struct nword *cw, Wchar *key, unsigned long mode);
+
+/* permdic.c */
+extern int _Rkpopen(struct DM *dm, char *dfnm, int mode, struct RkKxGram *gram);
+extern int _Rkpclose(struct DM	*dm, char *dfnm, struct RkKxGram *gram);
+extern int _Rkpsearch(struct RkContext *cx, struct DM *dm, Wchar *key, int n,
+						struct nread *nread, int mc, int *cf);
+extern int _Rkpio(struct DM *dm, struct ncache *cp, int io);
+extern int _Rkpctl(struct DM *dm, struct DM *qm, int what, Wchar *arg,
+					struct RkKxGram *gram);
+extern int _Rkpsync(struct RkContext *cx, struct DM *dm,struct DM *qm);
+
+/* RKutil.c */
+extern void usncopy(Wchar *dst, Wchar *src, int len);
+extern Wchar *euctous(unsigned char *src, int srclen, Wchar *dest, int destlen);
+extern Wchar uniqAlnum(Wchar c);
+extern int set_hdr_var(struct HD *hd, int n, unsigned long var);
+extern unsigned long _RkGetOffset(struct ND *dic, unsigned char *pos);
+
+/* tempdic.c */
+extern int _Rktopen(struct DM *dm, char *file, int mode, struct RkKxGram *gram);
+extern int _Rktclose(struct DM *dm, char *file, struct RkKxGram *gram);
+extern int _Rktsearch(struct RkContext *cx, struct DM *dm, Wchar *key, int n,
+						 struct nread *nread, int maxcache, int *cf);
+extern int _Rktio(struct DM *dm, struct ncache *cp, int io);
+extern int _Rktctl(struct DM *dm, struct DM *qm, int what, Wchar *arg,
+					struct RkKxGram *gram);
+extern int _Rktsync(struct RkContext *cx, struct DM *dm, struct DM *qm);
+
 #endif /* RK_INTERN_FUNCTIONS_DEF */
 
 #endif /* RKintern_h */
