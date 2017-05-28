@@ -56,7 +56,6 @@ struct RkKxGram {
 };
 #define is_row_num(g, n)	((0 <= (n)) && ((n) < ((g)->ng_rowcol)))
 
-extern unsigned char *ustoeuc();
 
 void
 RkCloseGram(struct RkKxGram *gram)
