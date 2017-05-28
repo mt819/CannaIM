@@ -34,7 +34,6 @@
 #define dm_xdm	dm_extdata.ptr
 #define df_fdes	df_extdata.var
 
-extern	unsigned	_RkCalcLVO();
 
 #ifdef MMAP
 /* If you compile with Visual C++, then please comment out the next 3 lines. */
