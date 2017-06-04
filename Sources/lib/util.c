@@ -289,10 +289,10 @@ wchar_t *s, *e, **sr, **er;
 wcKanjiAttributeInternal *pat;
 int focused;
 {
-  int len = yc->kEndp - yc->cStartp;
+  int len;
 
   if (yc->jishu_kEndp) {
-    int len = extractJishuString(yc, s, e, sr, er);
+    len = extractJishuString(yc, s, e, sr, er);
     char target = focused ?
       CANNA_ATTR_TARGET_NOTCONVERTED : CANNA_ATTR_CONVERTED;
     if (pat && pat->sp + len < pat->ep) {
@@ -311,6 +311,8 @@ int focused;
     }
     return len;
   }
+
+  len = yc->kEndp - yc->cStartp;
 
   if (s + len >= e) {
     len = (int)(e - s);
