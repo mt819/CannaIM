@@ -703,41 +703,41 @@ _Rkpctl(dm, qm, what, arg, gram)
 	  offset = thisRead->offset;
 	  if (fnum >= 0 && fnum < nk && 0 < thisRead->nk &&
 	      thisRead->nk <= ylen && thisRead->nk <= RK_KEY_WMAX)  {
-	    int	   ecount=0, cval=0, i, dn = -1, ndel = 0;
+	    int	   ecount=0, cval=0, j, dn = -1, ndel = 0;
 
 	    bitSize = _RkCalcLog2(nk + 1) + 1;
 	    _RkUnpackBits(permutation, qm->dm_qbits, offset, bitSize, nk);
 	    switch (what) {
 	    case DST_DoDefine:
-	      for (ecount = cval = i = 0; i < nk; i++) {
-		if ((int)permutation[i]/2 > nk) {
+	      for (ecount = cval = j = 0; j < nk; j++) {
+		if ((int)permutation[j]/2 > nk) {
 		  ecount++;
 		  break;
 		};
-		cval += permutation[i];
-		if ((unsigned)nk == permutation[i]/2 && dn < 0)
-		  dn = i;
-		if ((unsigned)fnum == permutation[i]/2) {
+		cval += permutation[j];
+		if ((unsigned)nk == permutation[j]/2 && dn < 0)
+		  dn = j;
+		if ((unsigned)fnum == permutation[j]/2) {
 		  ndel = -1;
-		  dn = i;
+		  dn = j;
 		}
 	      }
 	      break;
 	    case DST_DoDelete:
-	      for (ecount = cval = i = 0; i < nk; i++) {
-		if ((int)permutation[i]/2 >  nk) {
+	      for (ecount = cval = j = 0; j < nk; j++) {
+		if ((int)permutation[j]/2 >  nk) {
 		  ecount++;
 		  break;
 		};
-		cval += permutation[i];
-		if ((unsigned)fnum == permutation[i]/2)
-		  dn = i;
+		cval += permutation[j];
+		if ((unsigned)fnum == permutation[j]/2)
+		  dn = j;
 	      };
 	      break;
 	    }
 	    if (ecount || cval < (nk-1)*(nk-2)) {
-	      for (i = 0; i < nk; i++)
-		permutation[i] = 2*i;
+	      for (j = 0; j < nk; j++)
+		permutation[j] = 2*j;
 	      _RkPackBits(qm->dm_qbits, offset, bitSize, permutation, nk);
 	    } else {
 	      if (dn >= 0) {
