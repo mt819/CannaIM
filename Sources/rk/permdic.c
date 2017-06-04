@@ -205,14 +205,14 @@ _Rkpopen(dm, dfnm, mode, gram)
     return(-1);
   }
   if (dm->dm_class == ND_SWD && gramsz) {
-    struct RkKxGram *gram;
+    struct RkKxGram *g;
 
     lseek(fd, gramoff, 0);
-    gram = RkReadGram(fd, gramsz);
-    if (gram) {
+    g = RkReadGram(fd, gramsz);
+    if (g) {
       dm->dm_gram = (struct RkGram *)malloc(sizeof(struct RkGram));
       if (dm->dm_gram) {
-	dm->dm_gram->gramdic = gram;
+	dm->dm_gram->gramdic = g;
 	dm->dm_gram->P_BB  = RkGetGramNum(gram, "BB");
 	dm->dm_gram->P_NN  = RkGetGramNum(gram, "NN");
 	dm->dm_gram->P_T00 = RkGetGramNum(gram, "T00");
@@ -225,7 +225,7 @@ _Rkpopen(dm, dfnm, mode, gram)
 	dm->dm_gram->refcount = 1;
 	goto next;
       }
-      RkCloseGram(gram);
+      RkCloseGram(g);
     }
   }
 
