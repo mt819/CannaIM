@@ -798,11 +798,9 @@ int mode;
 	  dm = _RkSearchDDP(userDDP, dicname);
 	  res = NOENT;
 	  if (dm) {
-	    struct DD *dd = dm->dm_file->df_direct;
-
 	    res = DMchmod(dm, mode);
 	    if (res >= 0) {
-	      _RkRealizeDD(dd);
+	      _RkRealizeDD(dm->dm_file->df_direct);
 	    }
 	    else {
 	      res = ACCES;
