@@ -862,17 +862,29 @@ yomiContext yc;
 		    }
 		    continue;
 		  }
-		  if (tan) free(tan->roma);
+		  if (tan) {
+		    free(tan->roma);
+		    tan->roma = NULL;
+		  }
 		}
-		if (tan) free(tan->kAttr);
+		if (tan) {
+		  free(tan->kAttr);
+		  tan->kAttr = NULL;
+		}
 	      }
-	      if (tan) free(tan->yomi);
+	      if (tan) {
+		    free(tan->yomi);
+		    tan->yomi = NULL;
+		  }
 	    }
 	  }
 	  else {
 	    makeRkError(d, KanjiInitError());
 	  }
-	  if (tan) free(tan->kanji);
+	  if (tan) {
+	    free(tan->kanji);
+	    tan->kanji = NULL;
+	  }
 	}
       }
       else {
