@@ -63,7 +63,7 @@ _RkInitialize(ddhome, numCache)
      char	*ddhome;
      int	numCache;
 {
-  int			i = strlen(ddhome);
+  size_t		i = strlen(ddhome);
   struct RkParam	*sx = &SX;
   struct DD		*dd = &sx->dd;
   char			*gramdic, *path;
@@ -342,6 +342,7 @@ int cx_num;
 
       for (j = 0 ; j < i; j++) {
 	free(cx->md[i]);
+	cx->md[i] = NULL;
       }
       return -1;
     }
