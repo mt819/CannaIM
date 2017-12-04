@@ -129,7 +129,7 @@ derefWord(struct nword* word) /* decrease the reference counter */
 
 /*ARGSUSED*/
 static void
-killWord(struct nstore* st, struct nword* word)) /* dispose the unsed words */
+killWord(struct nstore* st, struct nword* word) /* dispose the unsed words */
 {
   struct nword *p, *q;
 
@@ -293,7 +293,7 @@ cvtNum(Wchar* dst, int maxdst, Wchar* src, int maxsrc, int format)
 }
 
 static int
-cvtAlpha(Wchar* dst, int maxdst, Wchar* src, int maxsrc, int forma)
+cvtAlpha(Wchar* dst, int maxdst, Wchar* src, int maxsrc, int format)
 {
   switch (format) {
 #ifdef ALPHA_CONVERSION
