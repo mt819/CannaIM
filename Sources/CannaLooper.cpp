@@ -28,6 +28,7 @@
 #include "CannaMethod.h"
 #include "KouhoWindow.h"
 #include "PaletteWindow.h"
+#include "TangoWindow.h"
 
 #include <syslog.h>
 
@@ -70,6 +71,16 @@ CannaLooper::Quit()
 		if (fKouhoWindow->Lock()){
 			fKouhoWindow->Quit();
 			fKouhoWindow = NULL;
+		}
+
+	}
+
+	if (fTangoWindow != NULL) {
+		SERIAL_PRINT(("CannaLooper: Sending QUIT to tango window...\n"));
+
+		if (fTangoWindow->Lock()){
+			fTangoWindow->Quit();
+			fTangoWindow = NULL;
 		}
 
 	}
@@ -506,6 +517,7 @@ CannaLooper::_HandleMethodActivated(bool active)
 			fPaletteWindow->Show();
 			fKouhoWindow = new KouhoWindow(this);
 			fKouhoWindow->Run();
+			fTangoWindow = new TangoWindow(frame, this);
 		}
 
 		fPaletteWindow->PostMessage(PALETTE_WINDOW_SHOW);

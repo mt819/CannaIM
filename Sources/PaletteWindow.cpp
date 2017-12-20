@@ -8,6 +8,7 @@
 
 #include "CannaCommon.h"
 #include "PaletteWindow.h"
+#include "TangoWindow.h"
 #include "canna/mfdef.h"
 #include "PaletteIconImages.h"
 #include <Bitmap.h>
@@ -221,7 +222,6 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 		msg, B_TWO_STATE_BUTTON );
 	fBack->AddChild( BushuButton );
 
-/*
 	largeimage->SetBits( TorokuOnbits, largebytes, 0, cspace );
 	fBack->BeginPicture( new BPicture );
 	fBack->DrawBitmap( largeimage );
@@ -235,7 +235,7 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 	TorokuButton = new BPictureButton( BRect( 87, 26, 110, 41 ), "toroku",
 						offpict, onpict, msg, B_TWO_STATE_BUTTON );
 	fBack->AddChild( TorokuButton );
-*/
+
 	HiraButton->SetValue( B_CONTROL_ON );
 	delete smallimage;
 	delete largeimage;
@@ -360,7 +360,7 @@ PaletteWindow::AllButtonOff()
 	KigoButton->SetValue( B_CONTROL_OFF );
 	HexButton->SetValue( B_CONTROL_OFF );
 	BushuButton->SetValue( B_CONTROL_OFF );
-//	TorokuButton->SetValue( B_CONTROL_OFF );
+	TorokuButton->SetValue( B_CONTROL_OFF );
 }
 
 

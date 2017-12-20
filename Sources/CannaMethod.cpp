@@ -36,6 +36,7 @@ CannaMethod::CannaMethod()
 #ifdef DEBUG
 	SERIAL_PRINT(( "CannaIM:Constructor called.\n" ));
 #endif
+	SetMenu(NULL, BMessenger());
 	ReadSettings();
 }
 

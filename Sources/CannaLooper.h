@@ -17,6 +17,7 @@
 class CannaMethod;
 class KouhoWindow;
 class PaletteWindow;
+class TangoWindow;
 class BMessenger;
 class BPath;
 
@@ -52,6 +53,7 @@ private:
 			BFont			fKouhoFont;
 			KouhoWindow*	fKouhoWindow;
 			PaletteWindow*	fPaletteWindow;
+			TangoWindow*	fTangoWindow;
 
 };
 
