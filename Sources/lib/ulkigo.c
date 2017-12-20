@@ -272,12 +272,8 @@ mode_context env;
 }
 
 int
-uuKigoMake(d, allkouho, size, cur, mode, exitfunc, posp)
-uiContext d;
-wchar_t **allkouho;
-int size, *posp;
-char cur, mode;
-canna_callback_t exitfunc;
+uuKigoMake(uiContext d, wchar_t **allkouho, int size, char cur, char mode,
+	canna_callback_t exitfunc, int *posp)
 {
   forichiranContext fc;
   ichiranContext ic;
