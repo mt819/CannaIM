@@ -1176,11 +1176,8 @@ findSup(wchar_t key)
  */
 
 static int
-makePhonoOnBuffer(d, yc, key, flag, english)
-uiContext d;
-yomiContext yc;
-unsigned char key;
-int flag, english;
+makePhonoOnBuffer(uiContext d, yomiContext yc, unsigned char key, int flag,
+	int english)
 {
   int i, n, m, t, sm, henkanflag, prevflag, cond;
   int retval = 0;
