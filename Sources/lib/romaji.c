@@ -922,6 +922,7 @@ tanContext tan;
   switch (tan->id) {
   case YOMI_CONTEXT:
     freeYomiContext((yomiContext)tan);
+    tan = NULL;
     break;
   case TAN_CONTEXT:
     freeTanContext(tan);
