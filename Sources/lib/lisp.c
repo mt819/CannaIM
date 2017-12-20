@@ -33,10 +33,11 @@
 #include <string.h>
 /* #include <InterfaceDefs.h> */
 /* We can't use InterfaceDefs.h in C. */
-enum {
-	B_BACKSPACE			= 0x08,
-	B_RETURN			= 0x0a,
-	B_TAB				= 0x09,
+enum
+{
+  B_BACKSPACE = 0x08,
+  B_RETURN = 0x0a,
+  B_TAB = 0x09,
 };
 #endif
 
@@ -47,7 +48,6 @@ static char *memtop;
 
 static int ncells = CELLSIZE;
 
-
 static int initIS(void);
 static void finIS(void);
 static int allocarea(void), skipspaces(void), zaplin(void), isterm(int c);
@@ -57,12 +57,14 @@ static int tyipeek(void), tyi(void);
 static void tyo(int);
 static void defatms(void), epush(list value);
 static void push(list value), pop(int x);
-static int  evpsh(list args);
+static int evpsh(list args);
 static void freearea(void), print(list l);
-static list getatm(char *name, int key), getatmz(char *name), newsymbol(char *name), copystring(char *s, int n);
+static list getatm(char *name, int key), getatmz(char *name), newsymbol(char *name),
+  copystring(char *s, int n);
 static list assq(list e, list a), pop1(void);
 static list Lprogn(void), Lcons(int n), Lread(int n);
-static list Leval(int n), Lprint(int n), Lmodestr(int n), Lputd(int n), Lxcons(int n), Lncons(int n);
+static list Leval(int n), Lprint(int n), Lmodestr(int n), Lputd(int n),
+ Lxcons(int n), Lncons(int n);
 static list NumAcc(int *var, int setp, list arg), StrAcc(char **var, int setp, list arg);
 static void markcopycell(list *addr);
 static void patom(list atm);
@@ -78,40 +80,40 @@ static void argnerr(char *msg) __attribute__((noreturn));
 static void numerr(char *fn, list arg) __attribute__((noreturn));
 static void error(char *msg, list v) __attribute__((noreturn));
 
-
 /* parameter stack */
 
-static list	*stack, *sp;
+static list *stack, *sp;
 
 /* environment stack	*/
 
-static list	*estack, *esp;
+static list *estack, *esp;
 
 /* oblist */
 
-static list	*oblist;	/* oblist hashing array		*/
+static list *oblist; /* oblist hashing array		*/
 
-#define LISPERROR	-1
+#define LISPERROR -1
 
-typedef struct {
+typedef struct
+{
   FILE *f;
   char *name;
   unsigned line;
 } lispfile;
 
 static lispfile *files;
-static int  filep;
+static int filep;
 
 /* lisp read buffer & read pointer */
 
-static char *readbuf;		/* read buffer	*/
-static char *readptr;		/* read pointer	*/
+static char *readbuf; /* read buffer	*/
+static char *readptr; /* read pointer	*/
 
 /* multiple values */
 
 #define MAXVALUES 16
-static list *values;	/* multiple values here	*/
-static int  valuec;	/* number of values here	*/
+static list *values; /* multiple values here	*/
+static int valuec;   /* number of values here	*/
 
 /* symbols */
 
@@ -120,12 +122,13 @@ static list BUSHU, GRAMMAR, RENGO, KATAKANA, HIRAGANA, HYPHEN;
 
 #include <setjmp.h>
 
-static struct lispcenv {
+static struct lispcenv
+{
   jmp_buf jmp_env;
-  int     base_stack;
-  int     base_estack;
-} *env; /* environment for setjmp & longjmp	*/
-static int  jmpenvp = MAX_DEPTH;
+  int base_stack;
+  int base_estack;
+} * env; /* environment for setjmp & longjmp	*/
+static int jmpenvp = MAX_DEPTH;
 
 static jmp_buf fatal_env;
 
@@ -149,26 +152,24 @@ static jmp_buf fatal_env;
 
  */
 
-
 /*********************************************************************
  *                      wchar_t replace begin                        *
  *********************************************************************/
 #ifdef wchar_t
-# error "wchar_t is already defined"
+#error "wchar_t is already defined"
 #endif
 #define wchar_t cannawc
-
 
 int
 clisp_init()
 {
-  int  i;
+  int i;
 
-  if ( !allocarea() ) {
+  if (!allocarea()) {
     return 0;
   }
 
-  if ( !initIS() ) {
+  if (!initIS()) {
     freearea();
     return 0;
   }
@@ -186,7 +187,7 @@ clisp_init()
   files[filep].line = 0;
 
   /* oblist initialization	*/
-  for (i = 0; i < BUFSIZE ; i++)
+  for (i = 0; i < BUFSIZE; i++)
     oblist[i] = 0;
 
   /* symbol definitions */
@@ -203,30 +204,28 @@ fillMenuEntry()
   int i, n, fid;
   menuitem *mb;
 
-  for (p = extrafuncp ; p ; p = p->next) {
+  for (p = extrafuncp; p; p = p->next) {
     if (p->keyword == EXTRA_FUNC_DEFMENU) {
       n = p->u.menuptr->nentries;
       mb = p->u.menuptr->body;
-      for (i = 0 ; i < n ; i++, mb++) {
-	if (mb->flag == MENU_SUSPEND) {
-	  list l = (list)mb->u.misc;
-	  fid = symbolpointer(l)->fid;
-	  if (fid < CANNA_FN_MAX_FUNC) {
-	    goto just_a_func;
-	  }
-	  else {
-	    fp = FindExtraFunc(fid);
-	    if (fp && fp->keyword == EXTRA_FUNC_DEFMENU) {
-	      mb->u.menu_next = fp->u.menuptr;
-	      mb->flag = MENU_MENU;
-	    }
-	    else {
-	    just_a_func:
-	      mb->u.fnum = fid;
-	      mb->flag = MENU_FUNC;
-	    }
-	  }
-	}
+      for (i = 0; i < n; i++, mb++) {
+        if (mb->flag == MENU_SUSPEND) {
+          list l = (list)mb->u.misc;
+          fid = symbolpointer(l)->fid;
+          if (fid < CANNA_FN_MAX_FUNC) {
+            goto just_a_func;
+          } else {
+            fp = FindExtraFunc(fid);
+            if (fp && fp->keyword == EXTRA_FUNC_DEFMENU) {
+              mb->u.menu_next = fp->u.menuptr;
+              mb->flag = MENU_MENU;
+            } else {
+            just_a_func:
+              mb->u.fnum = fid;
+              mb->flag = MENU_FUNC;
+            }
+          }
+        }
       }
     }
   }
@@ -251,7 +250,7 @@ clisp_fin()
     if (files[filep].f && files[filep].f != stdin) {
       fclose(files[filep].f);
     }
-      free(files[filep].name);
+    free(files[filep].name);
     filep--;
   }
 
@@ -264,8 +263,7 @@ clisp_fin()
 }
 
 int
-YYparse_by_rcfilename(s)
-char *s;
+YYparse_by_rcfilename(char *s)
 {
   extern int ckverbose;
   int retval = 0;
@@ -296,8 +294,7 @@ char *s;
     files[filep].name = malloc(strlen(s) + 1);
     if (files[filep].name) {
       strcpy(files[filep].name, s);
-    }
-    else {
+    } else {
       filep--;
       fclose(f);
       goto quit_parse_rcfile;
@@ -311,7 +308,7 @@ char *s;
     for (;;) {
       push(Lread(0));
       if (valuec > 1 && null(values[1])) {
-	break;
+        break;
       }
       Leval(1);
     }
@@ -323,7 +320,7 @@ char *s;
   }
 
   jmpenvp++;
- quit_parse_rcfile:
+quit_parse_rcfile:
   return retval;
 }
 
@@ -331,11 +328,10 @@ char *s;
 #ifdef WITH_MAIN
 
 static void
-intr(sig)
-int sig;
+intr(int sig)
 /* ARGSUSED */
 {
-  error("Interrupt:",NON);
+  error("Interrupt:", NON);
   /* NOTREACHED */
 }
 
@@ -346,8 +342,7 @@ int sig;
 */
 
 int
-parse_string(str)
-char *str;
+parse_string(char *str)
 {
   char *readbufbk;
 
@@ -382,24 +377,22 @@ char *str;
     t = Lread(0);
     if (valuec > 1 && null(values[1])) {
       break;
-    }
-    else {
+    } else {
       push(t);
       Leval(1);
     }
   }
   jmpenvp++;
- quit_parse_string:
+quit_parse_string:
   readbuf = readbufbk;
   clisp_fin();
   return 0;
 }
 
-
 void
 clisp_main()
 {
-  if (clisp_init() == 0) {	/* initialize data area	& etc..	*/
+  if (clisp_init() == 0) { /* initialize data area	& etc..	*/
     fprintf(stderr, "CannaLisp: initialization failed.\n");
     exit(1);
   }
@@ -413,9 +406,8 @@ clisp_main()
   }
   jmpenvp--;
 
-  fprintf(stderr,"CannaLisp listener %d.%d%s\n",
-	  CANNA_MAJOR_MINOR / 1000, CANNA_MAJOR_MINOR % 1000,
-	  CANNA_PATCH_LEVEL);
+  fprintf(stderr, "CannaLisp listener %d.%d%s\n", CANNA_MAJOR_MINOR / 1000,
+          CANNA_MAJOR_MINOR % 1000, CANNA_PATCH_LEVEL);
 
   outstream = stdout;
 
@@ -425,7 +417,7 @@ clisp_main()
 
   signal(SIGINT, intr);
   for (;;) {
-    prins("-> ");		/* prompt	*/
+    prins("-> "); /* prompt	*/
     push(Lread(0));
     if (valuec > 1 && null(values[1])) {
       break;
@@ -433,14 +425,13 @@ clisp_main()
     push(Leval(1));
     if (sp[0] == LISPERROR) {
       pop1();
-    }
-    else {
+    } else {
       Lprint(1);
       prins("\n");
     }
   }
   jmpenvp++;
- quit_clisp_main:
+quit_clisp_main:
   prins("\nGoodbye.\n");
   clisp_fin();
 }
@@ -449,95 +440,97 @@ clisp_main()
 
 static int longestkeywordlen;
 
-typedef struct {
+typedef struct
+{
   char *seq;
   int id;
 } SeqToID;
 
 static SeqToID keywordtable[] = {
-  {"Space"      ,' '},
-  {"Escape"     ,'\033'},
+  { "Space", ' ' },
+  { "Escape", '\033' },
 #ifdef __HAIKU__
-  {"Tab"        ,B_TAB},
+  { "Tab", B_TAB },
 #else
-  {"Tab"        ,'\t'},
+  { "Tab", '\t' },
 #endif
-  {"Nfer"       ,CANNA_KEY_Nfer},
-  {"Xfer"       ,CANNA_KEY_Xfer},
+  { "Nfer", CANNA_KEY_Nfer },
+  { "Xfer", CANNA_KEY_Xfer },
 #ifdef __HAIKU__
-  {"Backspace"  ,B_BACKSPACE},
+  { "Backspace", B_BACKSPACE },
 #else
-  {"Backspace"  ,'\b'},
+  { "Backspace", '\b' },
 #endif
-  {"Delete"     ,'\177'},
-  {"Insert"     ,CANNA_KEY_Insert},
-  {"Rollup"     ,CANNA_KEY_Rollup},
-  {"Rolldown"   ,CANNA_KEY_Rolldown},
-  {"Up"         ,CANNA_KEY_Up},
-  {"Left"       ,CANNA_KEY_Left},
-  {"Right"      ,CANNA_KEY_Right},
-  {"Down"       ,CANNA_KEY_Down},
-  {"Home"       ,CANNA_KEY_Home},
-  {"Clear"      ,'\013'},
-  {"Help"       ,CANNA_KEY_Help},
-  {"End"        ,CANNA_KEY_End},
+  { "Delete", '\177' },
+  { "Insert", CANNA_KEY_Insert },
+  { "Rollup", CANNA_KEY_Rollup },
+  { "Rolldown", CANNA_KEY_Rolldown },
+  { "Up", CANNA_KEY_Up },
+  { "Left", CANNA_KEY_Left },
+  { "Right", CANNA_KEY_Right },
+  { "Down", CANNA_KEY_Down },
+  { "Home", CANNA_KEY_Home },
+  { "Clear", '\013' },
+  { "Help", CANNA_KEY_Help },
+  { "End", CANNA_KEY_End },
 #ifdef __HAIKU__
-  {"Enter"      ,B_RETURN},
-  {"Return"     ,B_RETURN},
+  { "Enter", B_RETURN },
+  { "Return", B_RETURN },
 #else
-  {"Enter"      ,'\n'},
-  {"Return"     ,'\r'},
+  { "Enter", '\n' },
+  { "Return", '\r' },
 #endif
-/* "F1" is processed by program */
-  {"F2"         ,CANNA_KEY_F2},
-  {"F3"         ,CANNA_KEY_F3},
-  {"F4"         ,CANNA_KEY_F4},
-  {"F5"         ,CANNA_KEY_F5},
-  {"F6"         ,CANNA_KEY_F6},
-  {"F7"         ,CANNA_KEY_F7},
-  {"F8"         ,CANNA_KEY_F8},
-  {"F9"         ,CANNA_KEY_F9},
-  {"F10"        ,CANNA_KEY_F10},
-/* "Pf1" is processed by program */
-  {"Pf2"        ,CANNA_KEY_PF2},
-  {"Pf3"        ,CANNA_KEY_PF3},
-  {"Pf4"        ,CANNA_KEY_PF4},
-  {"Pf5"        ,CANNA_KEY_PF5},
-  {"Pf6"        ,CANNA_KEY_PF6},
-  {"Pf7"        ,CANNA_KEY_PF7},
-  {"Pf8"        ,CANNA_KEY_PF8},
-  {"Pf9"        ,CANNA_KEY_PF9},
-  {"Pf10"       ,CANNA_KEY_PF10},
-  {"Hiragana"   ,CANNA_KEY_HIRAGANA},
-  {"Katakana"   ,CANNA_KEY_KATAKANA},
-  {"Hankakuzenkaku" ,CANNA_KEY_HANKAKUZENKAKU},
-  {"Eisu"       ,CANNA_KEY_EISU},
-  {"S-Nfer"     ,CANNA_KEY_Shift_Nfer},
-  {"S-Xfer"     ,CANNA_KEY_Shift_Xfer},
-  {"S-Up"       ,CANNA_KEY_Shift_Up},
-  {"S-Down"     ,CANNA_KEY_Shift_Down},
-  {"S-Left"     ,CANNA_KEY_Shift_Left},
-  {"S-Right"    ,CANNA_KEY_Shift_Right},
-  {"C-Nfer"     ,CANNA_KEY_Cntrl_Nfer},
-  {"C-Xfer"     ,CANNA_KEY_Cntrl_Xfer},
-  {"C-Up"       ,CANNA_KEY_Cntrl_Up},
-  {"C-Down"     ,CANNA_KEY_Cntrl_Down},
-  {"C-Left"     ,CANNA_KEY_Cntrl_Left},
-  {"C-Right"    ,CANNA_KEY_Cntrl_Right},
-  {0            ,0},
+  /* "F1" is processed by program */
+  { "F2", CANNA_KEY_F2 },
+  { "F3", CANNA_KEY_F3 },
+  { "F4", CANNA_KEY_F4 },
+  { "F5", CANNA_KEY_F5 },
+  { "F6", CANNA_KEY_F6 },
+  { "F7", CANNA_KEY_F7 },
+  { "F8", CANNA_KEY_F8 },
+  { "F9", CANNA_KEY_F9 },
+  { "F10", CANNA_KEY_F10 },
+  /* "Pf1" is processed by program */
+  { "Pf2", CANNA_KEY_PF2 },
+  { "Pf3", CANNA_KEY_PF3 },
+  { "Pf4", CANNA_KEY_PF4 },
+  { "Pf5", CANNA_KEY_PF5 },
+  { "Pf6", CANNA_KEY_PF6 },
+  { "Pf7", CANNA_KEY_PF7 },
+  { "Pf8", CANNA_KEY_PF8 },
+  { "Pf9", CANNA_KEY_PF9 },
+  { "Pf10", CANNA_KEY_PF10 },
+  { "Hiragana", CANNA_KEY_HIRAGANA },
+  { "Katakana", CANNA_KEY_KATAKANA },
+  { "Hankakuzenkaku", CANNA_KEY_HANKAKUZENKAKU },
+  { "Eisu", CANNA_KEY_EISU },
+  { "S-Nfer", CANNA_KEY_Shift_Nfer },
+  { "S-Xfer", CANNA_KEY_Shift_Xfer },
+  { "S-Up", CANNA_KEY_Shift_Up },
+  { "S-Down", CANNA_KEY_Shift_Down },
+  { "S-Left", CANNA_KEY_Shift_Left },
+  { "S-Right", CANNA_KEY_Shift_Right },
+  { "C-Nfer", CANNA_KEY_Cntrl_Nfer },
+  { "C-Xfer", CANNA_KEY_Cntrl_Xfer },
+  { "C-Up", CANNA_KEY_Cntrl_Up },
+  { "C-Down", CANNA_KEY_Cntrl_Down },
+  { "C-Left", CANNA_KEY_Cntrl_Left },
+  { "C-Right", CANNA_KEY_Cntrl_Right },
+  { 0, 0 },
 };
 
 #define charToNum(c) charToNumTbl[(c) - ' ']
 
 static int *charToNumTbl;
 
-typedef struct {
+typedef struct
+{
   int id;
   int *tbl;
 } seqlines;
 
-static seqlines *seqTbl;	/* 内部の表(実際には表の表) */
-static int nseqtbl;		/* 状態の数。状態の数だけ表がある */
+static seqlines *seqTbl; /* 内部の表(実際には表の表) */
+static int nseqtbl;      /* 状態の数。状態の数だけ表がある */
 static int nseq;
 static int seqline;
 
@@ -554,25 +547,25 @@ initIS()
   nseqtbl = 0;
   nseq = 0;
   longestkeywordlen = 0;
-  for (i = 0 ; i < 1024 ; i++) {
+  for (i = 0; i < 1024; i++) {
     seqTbls[i].tbl = NULL;
     seqTbls[i].id = 0;
   }
   charToNumTbl = (int *)calloc('~' - ' ' + 1, sizeof(int));
-  if ( !charToNumTbl ) {
+  if (!charToNumTbl) {
     return 0;
   }
 
   /* まず何文字使われているかを調べる。
      nseq は使われている文字数より１大きい値である */
-  for (p = keywordtable ; p->id ; p++) {
+  for (p = keywordtable; p->id; p++) {
     int len = 0;
-    for (s = p->seq ; *s ; s++) {
-      if ( !charToNumTbl[*s - ' '] ) {
-	charToNumTbl[*s - ' '] = nseq; /* 各文字にシリアル番号を振る */
-	nseq++;
+    for (s = p->seq; *s; s++) {
+      if (!charToNumTbl[*s - ' ']) {
+        charToNumTbl[*s - ' '] = nseq; /* 各文字にシリアル番号を振る */
+        nseq++;
       }
-      len ++;
+      len++;
     }
     if (len > longestkeywordlen) {
       longestkeywordlen = len;
@@ -580,51 +573,50 @@ initIS()
   }
   /* 文字数分のテーブル */
   seqTbls[nseqtbl].tbl = (int *)calloc(nseq, sizeof(int));
-  if ( !seqTbls[nseqtbl].tbl ) {
+  if (!seqTbls[nseqtbl].tbl) {
     goto initISerr;
   }
   nseqtbl++;
-  for (p = keywordtable ; p->id ; p++) {
+  for (p = keywordtable; p->id; p++) {
     int line, nextline;
 
     line = 0;
-    for (s = p->seq ; *s ; s++) {
+    for (s = p->seq; *s; s++) {
       if (seqTbls[line].tbl == 0) { /* テーブルがない */
-	seqTbls[line].tbl = (int *)calloc(nseq, sizeof(int));
-	if ( !seqTbls[line].tbl ) {
-	  goto initISerr;
-	}
+        seqTbls[line].tbl = (int *)calloc(nseq, sizeof(int));
+        if (!seqTbls[line].tbl) {
+          goto initISerr;
+        }
       }
       nextline = seqTbls[line].tbl[charToNum(*s)];
       /* ちなみに、charToNum(*s) は絶対に０にならない */
-      if ( nextline ) {
-	line = nextline;
-      }
-      else { /* 最初にアクセスした */
-	line = seqTbls[line].tbl[charToNum(*s)] = nseqtbl++;
+      if (nextline) {
+        line = nextline;
+      } else { /* 最初にアクセスした */
+        line = seqTbls[line].tbl[charToNum(*s)] = nseqtbl++;
       }
     }
     seqTbls[line].id = p->id;
   }
   seqTbl = (seqlines *)calloc(nseqtbl, sizeof(seqlines));
-  if ( !seqTbl ) {
+  if (!seqTbl) {
     goto initISerr;
   }
-  for (i = 0 ; i < nseqtbl ; i++) {
-    seqTbl[i].id  = seqTbls[i].id;
+  for (i = 0; i < nseqtbl; i++) {
+    seqTbl[i].id = seqTbls[i].id;
     seqTbl[i].tbl = seqTbls[i].tbl;
   }
   return 1;
 
- initISerr:
+initISerr:
   free(charToNumTbl);
   charToNumTbl = NULL;
   free(seqTbl);
   seqTbl = NULL;
 
-  for (i = 0 ; i < nseqtbl ; i++) {
-      free(seqTbls[i].tbl);
-      seqTbls[i].tbl = NULL;
+  for (i = 0; i < nseqtbl; i++) {
+    free(seqTbls[i].tbl);
+    seqTbls[i].tbl = NULL;
   }
   return 0;
 }
@@ -635,15 +627,15 @@ finIS() /* identifySequence に用いたメモリ資源を開放する */
   int i;
 
   if (seqTbl) {
-    for (i = 0 ; i < nseqtbl ; i++) {
+    for (i = 0; i < nseqtbl; i++) {
       free(seqTbl[i].tbl);
       seqTbl[i].tbl = NULL;
     }
     free(seqTbl);
     seqTbl = NULL;
   }
-    free(charToNumTbl);
-    charToNumTbl = NULL;
+  free(charToNumTbl);
+  charToNumTbl = NULL;
 }
 
 /* cvariable
@@ -653,39 +645,34 @@ finIS() /* identifySequence に用いたメモリ資源を開放する */
  */
 
 #define CONTINUE 1
-#define END	 0
+#define END 0
 
 static int
-identifySequence(c, val)
-unsigned c;
-int *val;
+identifySequence(unsigned c, int *val)
 {
   int nextline;
 
   if (' ' <= c && c <= '~' && charToNum(c) &&
-      (nextline = seqTbl[seqline].tbl[charToNum(c)]) ) {
+      (nextline = seqTbl[seqline].tbl[charToNum(c)])) {
     seqline = nextline;
     *val = seqTbl[seqline].id;
     if (*val) {
       seqline = 0;
       return END;
-    }
-    else {
+    } else {
       return CONTINUE; /* continue */
     }
-  }
-  else {
+  } else {
     *val = -1;
     seqline = 0;
     return END;
   }
 }
 
-
 static int
 alloccell()
 {
-  int  cellsize, odd;
+  int cellsize, odd;
   char *p;
 
   cellsize = ncells * sizeof(list);
@@ -712,35 +699,35 @@ allocarea()
     if (stack) {
       estack = (list *)calloc(STKSIZE, sizeof(list));
       if (estack) {
-	/* oblist */
-	oblist = (list *)calloc(BUFSIZE, sizeof(list));
-	if (oblist) {
-	  /* I/O */
-	  filep = 0;
-	  files = (lispfile *)calloc(MAX_DEPTH, sizeof(lispfile));
-	  if (files) {
-	    readbuf = malloc(BUFSIZE);
-	    if (readbuf) {
-	      /* jump env */
-	      jmpenvp = MAX_DEPTH;
-	      env = (struct lispcenv *)
-		calloc(MAX_DEPTH, sizeof(struct lispcenv));
-	      if (env) {
-		/* multiple values returning buffer */
-		valuec = 1;
-		values = (list *)calloc(MAXVALUES, sizeof(list));
-		if (values) {
-		  return 1;
-		}
-		free(env);
-	      }
-	      free(readbuf);
-	    }
-	    free(files);
-	  }
-	  free(oblist);
-	}
-	free(estack);
+        /* oblist */
+        oblist = (list *)calloc(BUFSIZE, sizeof(list));
+        if (oblist) {
+          /* I/O */
+          filep = 0;
+          files = (lispfile *)calloc(MAX_DEPTH, sizeof(lispfile));
+          if (files) {
+            readbuf = malloc(BUFSIZE);
+            if (readbuf) {
+              /* jump env */
+              jmpenvp = MAX_DEPTH;
+              env =
+                (struct lispcenv *)calloc(MAX_DEPTH, sizeof(struct lispcenv));
+              if (env) {
+                /* multiple values returning buffer */
+                valuec = 1;
+                values = (list *)calloc(MAXVALUES, sizeof(list));
+                if (values) {
+                  return 1;
+                }
+                free(env);
+              }
+              free(readbuf);
+            }
+            free(files);
+          }
+          free(oblist);
+        }
+        free(estack);
       }
       free(stack);
     }
@@ -766,23 +753,21 @@ freearea()
 }
 
 static list
-getatmz(name)
-char *name;
+getatmz(char *name)
 {
-  int  key;
+  int key;
   char *p;
 
-  for (p = name, key = 0 ; *p ; p++)
+  for (p = name, key = 0; *p; p++)
     key += *p;
-  return getatm(name,key);
+  return getatm(name, key);
 }
 
 /* mkatm -
-	making symbol function	*/
+        making symbol function	*/
 
 static list
-mkatm(name)
-char *name;
+mkatm(char *name)
 {
   list temp;
   struct atomcell *newatom;
@@ -790,11 +775,11 @@ char *name;
   temp = newsymbol(name);
   newatom = symbolpointer(temp);
   newatom->value = (*name == ':') ? (list)temp : (list)UNBOUND;
-  newatom->plist = NIL;			/* set null plist	*/
-  newatom->ftype = UNDEF;		/* set undef func-type	*/
-  newatom->func  = NULL;	/* Don't kill this line	*/
-  newatom->valfunc  = NULL;	/* Don't kill this line	*/
-  newatom->hlink = NIL;		/* no hash linking	*/
+  newatom->plist = NIL;    /* set null plist	*/
+  newatom->ftype = UNDEF;  /* set undef func-type	*/
+  newatom->func = NULL;    /* Don't kill this line	*/
+  newatom->valfunc = NULL; /* Don't kill this line	*/
+  newatom->hlink = NIL;    /* no hash linking	*/
   newatom->mid = -1;
   newatom->fid = -1;
 
@@ -804,15 +789,13 @@ char *name;
 /* getatm -- get atom from the oblist if possible	*/
 
 static list
-getatm(name,key)
-char *name;
-int  key;
+getatm(char *name, int key)
 {
   list p;
   struct atomcell *atomp;
 
   key &= 0x00ff;
-  for (p = oblist[key] ; p ;) {
+  for (p = oblist[key]; p;) {
     atomp = symbolpointer(p);
     if (!strcmp(atomp->pname, name)) {
       return p;
@@ -829,9 +812,7 @@ int  key;
 #define MESSAGE_MAX 256
 
 static void
-error(msg,v)
-char *msg;
-list v;
+error(char *msg, list v)
 /* ARGSUSED */
 {
   char buf[MESSAGE_MAX];
@@ -841,27 +822,23 @@ list v;
     print(v);
   if (files[filep].f == stdin) {
     prins("\n");
-  }
-  else {
+  } else {
     if (files[filep].name) {
-      sprintf(buf, " (%s near line %d)\n",
-	      files[filep].name, files[filep].line);
-    }
-    else {
+      sprintf(buf, " (%s near line %d)\n", files[filep].name,
+              files[filep].line);
+    } else {
       sprintf(buf, " (near line %d)\n", files[filep].line);
     }
     prins(buf);
   }
   sp = &stack[env[jmpenvp].base_stack];
   esp = &estack[env[jmpenvp].base_estack];
-/*  epush(NIL); */
-  longjmp(env[jmpenvp].jmp_env,YES);
+  /*  epush(NIL); */
+  longjmp(env[jmpenvp].jmp_env, YES);
 }
 
 static void
-fatal(msg,v)
-char *msg;
-list v;
+fatal(char *msg, list v)
 /* ARGSUSED */
 {
   char buf[MESSAGE_MAX];
@@ -871,13 +848,11 @@ list v;
     print(v);
   if (files[filep].f == stdin) {
     prins("\n");
-  }
-  else {
+  } else {
     if (files[filep].name) {
-      sprintf(buf, " (%s near line %d)\n",
-	      files[filep].name, files[filep].line);
-    }
-    else {
+      sprintf(buf, " (%s near line %d)\n", files[filep].name,
+              files[filep].line);
+    } else {
       sprintf(buf, " (near line %d)\n", files[filep].line);
     }
     prins(buf);
@@ -886,8 +861,7 @@ list v;
 }
 
 static void
-argnerr(msg)
-char *msg;
+argnerr(char *msg)
 {
   prins("incorrect number of args to ");
   error(msg, NON);
@@ -895,157 +869,148 @@ char *msg;
 }
 
 static void
-numerr(fn,arg)
-char *fn;
-list arg;
+numerr(char *fn, list arg)
 {
   prins("Non-number ");
   if (fn) {
     prins("to ");
     prins(fn);
   }
-  error(": ",arg);
+  error(": ", arg);
   /* NOTREACHED */
 }
 
 static void
-lisp_strerr(fn,arg)
-char *fn;
-list arg;
+lisp_strerr(char *fn, list arg)
 {
   prins("Non-string ");
   if (fn) {
     prins("to ");
     prins(fn);
   }
-  error(": ",arg);
+  error(": ", arg);
   /* NOTREACHED */
 }
 
 static list
-Lread(n)
-int n;
+Lread(int n)
 {
   list t;
 
-  argnchk("read",0);
+  argnchk("read", 0);
   valuec = 1;
   if ((t = read1()) == (list)LISPERROR) {
     readptr = readbuf;
     *readptr = '\0';
     if (files[filep].f != stdin) {
       if (files[filep].f)
-	fclose(files[filep].f);
-	free(files[filep].name);
-    filep--;
+        fclose(files[filep].f);
+      free(files[filep].name);
+      filep--;
     }
     values[0] = NIL;
     values[1] = NIL;
     valuec = 2;
-    return(NIL);
-  }
-  else {
+    return (NIL);
+  } else {
     values[0] = t;
     values[1] = T;
     valuec = 2;
-    return(t);
+    return (t);
   }
   /* NOTREACHED */
 }
 
-
 static list
 read1()
 {
-  int  c;
+  int c;
   list p, *pp;
   list t;
   char *eofmsg = "EOF hit in reading a list : ";
 
- lab:
-  if ( !skipspaces() ) {
-    return((list)LISPERROR);
+lab:
+  if (!skipspaces()) {
+    return ((list)LISPERROR);
   }
   switch (c = tyi()) {
-  case '(':
-    push(NIL);
-    p = Lncons(1);	/* get a new cell	*/
-    car(p) = p;
-    push(p);
-    pp = sp;
+    case '(':
+      push(NIL);
+      p = Lncons(1); /* get a new cell	*/
+      car(p) = p;
+      push(p);
+      pp = sp;
 
-    for (;;) {
-    lab2:
-      if ( !skipspaces() ) {
-	error(eofmsg,cdr(*pp));
-	/* NOTREACHED */
+      for (;;) {
+      lab2:
+        if (!skipspaces()) {
+          error(eofmsg, cdr(*pp));
+          /* NOTREACHED */
+        }
+        switch (c = tyi()) {
+          case ';':
+            zaplin();
+            goto lab2;
+          case ')':
+            return (cdr(pop1()));
+          case '.':
+            if (!(c = tyipeek())) {
+              error(eofmsg, cdr(*pp));
+              /* NOTREACHED */
+            } else if (!isterm(c)) {
+              push(ratom2('.'));
+              push(NIL);
+              car(*pp) = cdar(*pp) = Lcons(2);
+              break;
+            } else {
+              cdar(*pp) = read1();
+              if (cdar(*pp) == (list)LISPERROR) {
+                error(eofmsg, cdr(*pp));
+                /* NOTREACHED */
+              }
+              while (')' != (c = tyi()))
+                if (!c) {
+                  error(eofmsg, cdr(*pp));
+                  /* NOTREACHED */
+                }
+              return (cdr(pop1()));
+            }
+          default:
+            untyi(c);
+            if ((t = read1()) == (list)LISPERROR) {
+              error(eofmsg, cdr(*pp));
+              /* NOTREACHED */
+            }
+            push(t);
+            push(NIL);
+            car(*pp) = cdar(*pp) = Lcons(2);
+        }
       }
-      switch (c = tyi()) {
-      case ';':
-	zaplin();
-	goto lab2;
-      case ')':
-	return(cdr(pop1()));
-      case '.':
-	if ( !(c = tyipeek()) ) {
-	  error(eofmsg,cdr(*pp));
-	  /* NOTREACHED */
-	}
-	else if ( !isterm(c) ) {
-	  push(ratom2('.'));
-	  push(NIL);
-	  car(*pp) = cdar(*pp) = Lcons(2);
-	  break;
-	}
-	else {
-	  cdar(*pp) = read1();
-	  if (cdar(*pp) == (list)LISPERROR) {
-	    error(eofmsg,cdr(*pp));
-	    /* NOTREACHED */
-	  }
-	  while (')' != (c = tyi()))
-	    if ( !c ) {
-	      error(eofmsg,cdr(*pp));
-	      /* NOTREACHED */
-	    }
-	  return(cdr(pop1()));
-	}
-      default:
-	untyi(c);
-	if ((t = read1()) == (list)LISPERROR) {
-	  error(eofmsg,cdr(*pp));
-	  /* NOTREACHED */
-	}
-	push(t);
-	push(NIL);
-	car(*pp) = cdar(*pp) = Lcons(2);
+    case '\'':
+      push(QUOTE);
+      if ((t = read1()) == (list)LISPERROR) {
+        error(eofmsg, NIL);
+        /* NOTREACHED */
       }
-    }
-  case '\'':
-    push(QUOTE);
-    if ((t = read1()) == (list)LISPERROR) {
-      error(eofmsg,NIL);
-      /* NOTREACHED */
-    }
-    push(t);
-    push(NIL);
-    push(Lcons(2));
-    return Lcons(2);
-  case '"':
-    return rstring();
-  case '?':
-    return rcharacter();
-  case ';':
-    zaplin();
-    goto lab;
-  default:
-    untyi(c);
-    return ratom();
+      push(t);
+      push(NIL);
+      push(Lcons(2));
+      return Lcons(2);
+    case '"':
+      return rstring();
+    case '?':
+      return rcharacter();
+    case ';':
+      zaplin();
+      goto lab;
+    default:
+      untyi(c);
+      return ratom();
   }
 }
 
 /* skipping spaces function -
-	if eof read then return NO	*/
+        if eof read then return NO	*/
 
 static int
 skipspaces()
@@ -1053,36 +1018,35 @@ skipspaces()
   int c;
 
   while ((c = tyi()) <= ' ') {
-    if ( !c ) {
-      return(NO);
+    if (!c) {
+      return (NO);
     }
 #ifdef QUIT_IF_BINARY_CANNARC
-/* 実は fatal() にしてしまうと read できなかったと思い、次のファイルを
-   探しに行くのであまり良くない。return を受けたところも変えなければな
-   らない。面倒なので、とりあえず外す */
-    if (c != '\033' && c != '\n' && c != '\r' && c!= '\t' && c < ' ') {
+    /* 実は fatal() にしてしまうと read できなかったと思い、次のファイルを
+       探しに行くのであまり良くない。return を受けたところも変えなければな
+       らない。面倒なので、とりあえず外す */
+    if (c != '\033' && c != '\n' && c != '\r' && c != '\t' && c < ' ') {
       fatal("read: Binary data read.", NON);
     }
 #endif
   }
   untyi(c);
-  return(YES);
+  return (YES);
 }
 
 /* skip reading until '\n' -
-	if eof read then return NO	*/
+        if eof read then return NO	*/
 
 static int
 zaplin()
 {
-	int c;
+  int c;
 
-	while ((c = tyi()) != '\n')
-		if ( !c )
-			return(NO);
-	return(YES);
+  while ((c = tyi()) != '\n')
+    if (!c)
+      return (NO);
+  return (YES);
 }
-
 
 static list
 newcons()
@@ -1098,8 +1062,7 @@ newcons()
 }
 
 static list
-newsymbol(name)
-char *name;
+newsymbol(char *name)
 {
   list retval;
   struct atomcell *temp;
@@ -1120,55 +1083,47 @@ char *name;
   return retval;
 }
 
-
 static void
-print(l)
-list l;
+print(list l)
 {
-	if ( !l )	/* case NIL	*/
-		prins("nil");
-	else if (atom(l))
-		patom(l);
-	else {
-		tyo('(');
-		print(car(l));
-		for (l = cdr(l) ; l ; l = cdr(l)) {
-			tyo(' ');
-			if (atom(l)) {
-				tyo('.');
-				tyo(' ');
-				patom(l);
-				break;
-			}
-			else
-				print(car(l));
-		}
-		tyo(')');
-	}
+  if (!l) /* case NIL	*/
+    prins("nil");
+  else if (atom(l))
+    patom(l);
+  else {
+    tyo('(');
+    print(car(l));
+    for (l = cdr(l); l; l = cdr(l)) {
+      tyo(' ');
+      if (atom(l)) {
+        tyo('.');
+        tyo(' ');
+        patom(l);
+        break;
+      } else
+        print(car(l));
+    }
+    tyo(')');
+  }
 }
-
-
 
 /*
 ** read atom
 */
 
-
 static list
 ratom()
 {
-	return(ratom2(tyi()));
+  return (ratom2(tyi()));
 }
 
 /* read atom with the first one character -
-	check if the token is numeric or pure symbol & return proper value */
-
+        check if the token is numeric or pure symbol & return proper value */
 
 static list
-ratom2(a)
-int  a;
+ratom2(int a)
 {
-  int  i, c, flag;
+  int i, c, flag;
   char atmbuf[BUFSIZE];
 
   flag = NO;
@@ -1177,8 +1132,8 @@ int  a;
     a = tyi();
   }
   atmbuf[0] = a;
-  for (i = 1, c = tyi(); !isterm(c) ; i++, c = tyi()) {
-    if ( !c ) {
+  for (i = 1, c = tyi(); !isterm(c); i++, c = tyi()) {
+    if (!c) {
       error("Eof hit in reading symbol.", NON);
       /* NOTREACHED */
     }
@@ -1187,8 +1142,7 @@ int  a;
     }
     if (i < BUFSIZE) {
       atmbuf[i] = c;
-    }
-    else {
+    } else {
       error("Too long symbol name read", NON);
       /* NOTREACHED */
     }
@@ -1196,18 +1150,15 @@ int  a;
   untyi(c);
   if (i < BUFSIZE) {
     atmbuf[i] = '\0';
-  }
-  else {
+  } else {
     error("Too long symbol name read", NON);
     /* NOTREACHED */
   }
-  if ( !flag && isnum(atmbuf)) {
-    return(mknum(atoi(atmbuf)));
-  }
-  else if ( !flag && !strcmp("nil",atmbuf) ) {
-    return(NIL);
-  }
-  else {
+  if (!flag && isnum(atmbuf)) {
+    return (mknum(atoi(atmbuf)));
+  } else if (!flag && !strcmp("nil", atmbuf)) {
+    return (NIL);
+  } else {
     return (getatmz(atmbuf));
   }
 }
@@ -1220,26 +1171,24 @@ rstring()
   int strp = 0;
 
   while ((c = tyi()) != '"') {
-    if ( !c ) {
+    if (!c) {
       error("Eof hit in reading a string.", NON);
       /* NOTREACHED */
     }
     if (strp < BUFSIZE) {
       if (c == '\\') {
-	untyi(c);
-	c = (char)(((canna_uintptr_t)rcharacter()) & 0xff);
+        untyi(c);
+        c = (char)(((canna_uintptr_t)rcharacter()) & 0xff);
       }
       strb[strp++] = (char)c;
-    }
-    else {
+    } else {
       error("Too long string read.", NON);
       /* NOTREACHED */
     }
   }
   if (strp < BUFSIZE) {
     strb[strp] = '\0';
-  }
-  else {
+  } else {
     error("Too long string read.", NON);
     /* NOTREACHED */
   }
@@ -1258,7 +1207,7 @@ rcharacter()
   int bufp;
 
   tempbuf = malloc(longestkeywordlen + 1);
-  if ( !tempbuf ) {
+  if (!tempbuf) {
     fatal("read: malloc failed in reading character.", NON);
     /* NOTREACHED */
   }
@@ -1274,38 +1223,32 @@ rcharacter()
     } while (res == CONTINUE);
     if (code != -1) { /* キーワードと一致した。 */
       retval = mknum(code);
-    }
-    else if (bufp > 2 && tempbuf[0] == 'C' && tempbuf[1] == '-') {
+    } else if (bufp > 2 && tempbuf[0] == 'C' && tempbuf[1] == '-') {
       while (bufp > 3) {
-	untyi(tempbuf[--bufp]);
+        untyi(tempbuf[--bufp]);
       }
       retval = mknum(tempbuf[2] & (' ' - 1));
-    }
-    else if (bufp == 3 && tempbuf[0] == 'F' && tempbuf[1] == '1') {
+    } else if (bufp == 3 && tempbuf[0] == 'F' && tempbuf[1] == '1') {
       untyi(tempbuf[2]);
       retval = mknum(CANNA_KEY_F1);
-    }
-    else if (bufp == 4 && tempbuf[0] == 'P' && tempbuf[1] == 'f' &&
-	     tempbuf[2] == '1') {
+    } else if (bufp == 4 && tempbuf[0] == 'P' && tempbuf[1] == 'f' &&
+               tempbuf[2] == '1') {
       untyi(tempbuf[3]);
       retval = mknum(CANNA_KEY_PF1);
-    }
-    else { /* 全然駄目 */
+    } else { /* 全然駄目 */
       while (bufp > 1) {
-	untyi(tempbuf[--bufp]);
+        untyi(tempbuf[--bufp]);
       }
       ch = (unsigned)(unsigned char)tempbuf[0];
       goto return_char;
     }
-  }
-  else {
+  } else {
   return_char:
     if (ch == 0x8f) { /* SS3 */
       ch <<= 8;
       ch += tyi();
       goto shift_more;
-    }
-    else if (ch & 0x80) { /* う〜ん、日本語に依存している */
+    } else if (ch & 0x80) { /* う〜ん、日本語に依存している */
     shift_more:
       ch <<= 8;
       ch += tyi();
@@ -1318,46 +1261,42 @@ rcharacter()
 }
 
 static int
-isnum(name)
-char *name;
+isnum(char *name)
 {
-	if (*name == '-') {
-		name++;
-		if ( !*name )
-			return(NO);
-	}
-	for(; *name ; name++) {
-		if (*name < '0' || '9' < *name) {
-			if (*name != '.' || *(name + 1)) {
-				return(NO);
-			}
-		}
-	}
-	return(YES);
+  if (*name == '-') {
+    name++;
+    if (!*name)
+      return (NO);
+  }
+  for (; *name; name++) {
+    if (*name < '0' || '9' < *name) {
+      if (*name != '.' || *(name + 1)) {
+        return (NO);
+      }
+    }
+  }
+  return (YES);
 }
 
 /* tyi -- input one character from buffered stream	*/
 
 static void
-untyi(c)
-int c;
+untyi(int c)
 {
   if (readbuf < readptr) {
     *--readptr = c;
-  }
-  else {
+  } else {
     if (untyip >= untyisize) {
       if (untyisize == 0) {
-	untyibuf = malloc(UNTYIUNIT);
-	if (untyibuf) {
-	  untyisize = UNTYIUNIT;
-	}
-      }
-      else {
-	untyibuf = realloc(untyibuf, UNTYIUNIT + untyisize);
-	if (untyibuf) {
-	  untyisize += UNTYIUNIT;
-	}
+        untyibuf = malloc(UNTYIUNIT);
+        if (untyibuf) {
+          untyisize = UNTYIUNIT;
+        }
+      } else {
+        untyibuf = realloc(untyibuf, UNTYIUNIT + untyisize);
+        if (untyibuf) {
+          untyisize += UNTYIUNIT;
+        }
       }
     }
     if (untyip < untyisize) { /* それでもチェックする */
@@ -1381,28 +1320,23 @@ tyi()
 
   if (readptr && *readptr) {
     return ((int)(unsigned char)*readptr++);
-  }
-  else if (!files[filep].f) {
+  } else if (!files[filep].f) {
     return NO;
-  }
-  else if (files[filep].f == stdin) {
+  } else if (files[filep].f == stdin) {
     readptr = fgets(readbuf, BUFSIZE, stdin);
     files[filep].line++;
-    if ( !readptr ) {
+    if (!readptr) {
       return NO;
-    }
-    else {
+    } else {
       return tyi();
     }
-  }
-  else {
-    readptr = fgets(readbuf,BUFSIZE,files[filep].f);
+  } else {
+    readptr = fgets(readbuf, BUFSIZE, files[filep].f);
     files[filep].line++;
     if (readptr) {
-      return(tyi());
-    }
-    else {
-      return(NO);
+      return (tyi());
+    } else {
+      return (NO);
     }
   }
   /* NOTREACHED */
@@ -1420,71 +1354,64 @@ tyipeek()
 
 /* tyo -- output one character	*/
 
-static void tyo(c)
-int c;
+static void
+tyo(int c)
 {
   if (outstream) {
     putc(c, outstream);
   }
 }
 
-
 /* prins -
-	print string	*/
+        print string	*/
 
-static void prins(s)
-char *s;
+static void
+prins(char *s)
 {
-	while (*s) {
-		tyo(*s++);
-	}
+  while (*s) {
+    tyo(*s++);
+  }
 }
 
-
 /* isterm -
-	check if the character is terminating the lisp expression	*/
+        check if the character is terminating the lisp expression	*/
 
 static int
-isterm(c)
-int  c;
+isterm(int c)
 {
-	if (c <= ' ')
-		return(YES);
-	else {
-		switch (c)
-		{
-		case '(':
-		case ')':
-		case ';':
-			return(YES);
-		default:
-			return(NO);
-		}
-	}
+  if (c <= ' ')
+    return (YES);
+  else {
+    switch (c) {
+      case '(':
+      case ')':
+      case ';':
+        return (YES);
+      default:
+        return (NO);
+    }
+  }
 }
 
 /* push down an S-expression to parameter stack	*/
 
 static void
-push(value)
-list value;
+push(list value)
 {
   if (sp <= stack) {
-    error("Stack over flow",NON);
+    error("Stack over flow", NON);
     /* NOTREACHED */
-  }
-  else
+  } else
     *--sp = value;
 }
 
 /* pop up n S-expressions from parameter stack	*/
 
 static void
-pop(x)
-int  x;
+pop(int x)
 {
   if (0 < x && sp >= &stack[STKSIZE]) {
-    error("Stack under flow",NON);
+    error("Stack under flow", NON);
     /* NOTREACHED */
   }
   sp += x;
@@ -1496,21 +1423,19 @@ static list
 pop1()
 {
   if (sp >= &stack[STKSIZE]) {
-    error("Stack under flow",NON);
+    error("Stack under flow", NON);
     /* NOTREACHED */
   }
-  return(*sp++);
+  return (*sp++);
 }
 
 static void
-epush(value)
-list value;
+epush(list value)
 {
   if (esp <= estack) {
-    error("Estack over flow",NON);
+    error("Estack over flow", NON);
     /* NOTREACHED */
-  }
-  else
+  } else
     *--esp = value;
 }
 
@@ -1518,17 +1443,15 @@ static list
 epop()
 {
   if (esp >= &estack[STKSIZE]) {
-    error("Lstack under flow",NON);
+    error("Lstack under flow", NON);
     /* NOTREACHED */
   }
-  return(*esp++);
+  return (*esp++);
 }
-
 
 /*
 ** output function for lisp S-Expression
 */
-
 
 /*
 **  print atom function
@@ -1537,32 +1460,28 @@ epop()
 */
 
 static void
-patom(atm)
-list atm;
+patom(list atm)
 {
   char namebuf[BUFSIZE];
 
   if (constp(atm)) {
     if (numberp(atm)) {
-      sprintf(namebuf,"%d",(int)xnum(atm));
+      sprintf(namebuf, "%d", (int)xnum(atm));
       prins(namebuf);
-    }
-    else {		/* this is a string */
+    } else { /* this is a string */
       int i, len = xstrlen(atm);
       char *s = xstring(atm);
 
       tyo('"');
-      for (i = 0 ; i < len ; i++) {
-	tyo(s[i]);
+      for (i = 0; i < len; i++) {
+        tyo(s[i]);
       }
       tyo('"');
     }
-  }
-  else {
+  } else {
     prins(symbolpointer(atm)->pname);
   }
 }
-
 
 static char *oldcelltop;
 static char *oldcellp;
@@ -1578,28 +1497,28 @@ gc() /* コピー方式のガーベジコレクションである */
 
   if (under_gc) {
     fatal("GC: memory exhausted.", NON);
-  }
-  else {
+  } else {
     under_gc = 1;
   }
 
-  oldcellp = memtop; oldcelltop = celltop;
+  oldcellp = memtop;
+  oldcelltop = celltop;
 
-  if ( !alloccell() ) {
+  if (!alloccell()) {
     fatal("GC: failed in allocating new cell area.", NON);
     /* NOTREACHED */
   }
 
-  for (i = 0 ; i < BUFSIZE ; i++) {
+  for (i = 0; i < BUFSIZE; i++) {
     markcopycell(oblist + i);
   }
-  for (p = sp ; p < &stack[STKSIZE] ; p++) {
+  for (p = sp; p < &stack[STKSIZE]; p++) {
     markcopycell(p);
   }
-  for (p = esp ; p < &estack[STKSIZE] ; p++) {
+  for (p = esp; p < &estack[STKSIZE]; p++) {
     markcopycell(p);
   }
-  for (i = 0 ; i < valuec ; i++) {
+  for (i = 0; i < valuec; i++) {
     markcopycell(values + i);
   }
   markcopycell(&T);
@@ -1615,21 +1534,19 @@ gc() /* コピー方式のガーベジコレクションである */
   markcopycell(&HIRAGANA);
   markcopycell(&HYPHEN);
   free(oldcellp);
-  if ((freecell - celltop) * 2 > cellbtm -celltop) {
+  if ((freecell - celltop) * 2 > cellbtm - celltop) {
     ncells = (freecell - celltop) * 2 / sizeof(list);
   }
   under_gc = 0;
 }
 
-
 static list
-allocstring(n)
-int n;
+allocstring(int n)
 {
   int namesize;
   list retval;
 
-  namesize = ((n + (sizeof(pointerint)) + 1 + 3)/ sizeof(list)) * sizeof(list);
+  namesize = ((n + (sizeof(pointerint)) + 1 + 3) / sizeof(list)) * sizeof(list);
   if (freecell + namesize >= cellbtm) { /* gc 中は起こり得ないはず */
     gc();
   }
@@ -1640,9 +1557,7 @@ int n;
 }
 
 static list
-copystring(s, n)
-char *s;
-int n;
+copystring(char *s, int n)
 {
   list retval;
 
@@ -1653,8 +1568,7 @@ int n;
 }
 
 static list
-copycons(l)
-struct cell *l;
+copycons(struct cell *l)
 {
   list newcell;
 
@@ -1665,34 +1579,29 @@ struct cell *l;
 }
 
 static void
-markcopycell(addr)
-list *addr;
+markcopycell(list *addr)
 {
   list temp;
- redo:
+redo:
   if (null(*addr) || numberp(*addr)) {
     return;
-  }
-  else if (alreadycopied(oldpointer(*addr))) {
+  } else if (alreadycopied(oldpointer(*addr))) {
     *addr = newaddr(gcfield(oldpointer(*addr)));
     return;
-  }
-  else if (stringp(*addr)) {
+  } else if (stringp(*addr)) {
     temp = copystring(((struct stringcell *)oldpointer(*addr))->str,
-		      ((struct stringcell *)oldpointer(*addr))->length);
+                      ((struct stringcell *)oldpointer(*addr))->length);
     gcfield(oldpointer(*addr)) = mkcopied(temp);
     *addr = temp;
     return;
-  }
-  else if (consp(*addr)) {
+  } else if (consp(*addr)) {
     temp = copycons((struct cell *)(oldpointer(*addr)));
     gcfield(oldpointer(*addr)) = mkcopied(temp);
     *addr = temp;
     markcopycell(&car(temp));
     addr = &cdr(temp);
     goto redo;
-  }
-  else { /* symbol */
+  } else { /* symbol */
     struct atomcell *newatom, *oldatom;
 
     oldatom = (struct atomcell *)(oldpointer(*addr));
@@ -1701,10 +1610,10 @@ list *addr;
     newatom->value = oldatom->value;
     newatom->plist = oldatom->plist;
     newatom->ftype = oldatom->ftype;
-    newatom->func  = oldatom->func;
-    newatom->fid   = oldatom->fid;
-    newatom->mid   = oldatom->mid;
-    newatom->valfunc  = oldatom->valfunc;
+    newatom->func = oldatom->func;
+    newatom->fid = oldatom->fid;
+    newatom->mid = oldatom->mid;
+    newatom->valfunc = oldatom->valfunc;
     newatom->hlink = oldatom->hlink;
 
     gcfield(oldpointer(*addr)) = mkcopied(temp);
@@ -1723,19 +1632,19 @@ list *addr;
 }
 
 static list
-bindall(var,par,a,e)
-list var, par, a, e;
+bindall(list var, list par, list a, list e)
 {
   list *pa, *pe, retval;
 
-  push(a); pa = sp;
-  push(e); pe = sp;
- retry:
+  push(a);
+  pa = sp;
+  push(e);
+  pe = sp;
+retry:
   if (constp(var)) {
     pop(2);
-    return(*pa);
-  }
-  else if (atom(var)) {
+    return (*pa);
+  } else if (atom(var)) {
     push(var);
     push(par);
     push(Lcons(2));
@@ -1743,14 +1652,13 @@ list var, par, a, e;
     retval = Lcons(2);
     pop(2);
     return retval;
-  }
-  else if (atom(par)) {
-    error("Bad macro form ",e);
+  } else if (atom(par)) {
+    error("Bad macro form ", e);
     /* NOTREACHED */
   }
   push(par);
   push(var);
-  *pa = bindall(car(var),car(par),*pa,*pe);
+  *pa = bindall(car(var), car(par), *pa, *pe);
   var = cdr(pop1());
   par = cdr(pop1());
   goto retry;
@@ -1760,208 +1668,202 @@ list var, par, a, e;
 static list
 Lquote()
 {
-	list p;
+  list p;
 
-	p = pop1();
-	if (atom(p))
-		return(NIL);
-	else
-		return(car(p));
+  p = pop1();
+  if (atom(p))
+    return (NIL);
+  else
+    return (car(p));
 }
 
 static list
-Leval(n)
-int n;
+Leval(int n)
 {
   list e, t, s, tmp, aa, *pe, *pt, *ps, *paa;
   list fn, (*cfn)(), *pfn;
   int i, j;
-  argnchk("eval",1);
+  argnchk("eval", 1);
   e = sp[0];
   pe = sp;
   if (atom(e)) {
     if (constp(e)) {
       pop1();
-      return(e);
-    }
-    else {
+      return (e);
+    } else {
       struct atomcell *sym;
 
       t = assq(e, *esp);
       if (t) {
-	pop1();
-	return(cdr(t));
-      }
-      else if ((sym = symbolpointer(e))->valfunc) {
-	pop1();
-	return (sym->valfunc)(VALGET, 0);
-      }
-      else {
-	if ((t = (sym->value)) != (list)UNBOUND) {
-	  pop1();
-	  return(t);
-	}
-	else {
-	  error("Unbound variable: ",*pe);
-	  /* NOTREACHED */
-	}
+        pop1();
+        return (cdr(t));
+      } else if ((sym = symbolpointer(e))->valfunc) {
+        pop1();
+        return (sym->valfunc)(VALGET, 0);
+      } else {
+        if ((t = (sym->value)) != (list)UNBOUND) {
+          pop1();
+          return (t);
+        } else {
+          error("Unbound variable: ", *pe);
+          /* NOTREACHED */
+        }
       }
     }
-  }
-  else if (constp((fn = car(e)))) {	/* not atom	*/
+  } else if (constp((fn = car(e)))) { /* not atom	*/
     error("eval: undefined function ", fn);
     /* NOTREACHED */
-  }
-  else if (atom(fn)) {
+  } else if (atom(fn)) {
     switch (symbolpointer(fn)->ftype) {
-    case UNDEF:
-      error("eval: undefined function ", fn);
-      /* NOTREACHED */
-      break;
-    case SUBR:
-      cfn = symbolpointer(fn)->func;
-      i = evpsh(cdr(e));
-      epush(NIL);
-      t = (*cfn)(i);
-      epop();
-      pop1();
-      return (t);
-    case SPECIAL:
-      push(cdr(e));
-      t = (*(symbolpointer(fn)->func))();
-      pop1();
-      return (t);
-    case EXPR:
-      fn = (list)(symbolpointer(fn)->func);
-      aa = NIL; /* previous env won't be used */
-    expr:
-      if (atom(fn) || car(fn) != _LAMBDA || atom(cdr(fn))) {
-	error("eval: bad lambda form ", fn);
-	/* NOTREACHED */
-      }
-/* Lambda binding begins here ...					*/
-      s = cdr(e);		/* actual parameter	*/
-      t = cadr(fn);		/* lambda list		*/
-      push(s); ps = sp;
-      push(t); pt = sp;
-      push(fn); pfn = sp;
-      push(aa); paa = sp;
-      i = 0;			/* count of variables	*/
-      for (; consp(*ps) && consp(*pt) ; *ps = cdr(*ps), *pt = cdr(*pt)) {
-	if (consp(car(*pt))) {
-	  tmp = cdar(*pt);	/* push the cdr of element */
-	  if (!(atom(tmp) || null(cdr(tmp)))) {
-	    push(cdr(tmp));
-	    push(T);
-	    push(Lcons(2));
-	    i++;
-	  }
-	  push(caar(*pt));
-	}
-	else {
-	  push(car(*pt));
-	}
-	push(car(*ps));
-	push(Leval(1));
-	push(Lcons(2));
-	i++;
-      }
-      for (; consp(*pt) ; *pt = cdr(*pt)) {
-	if (atom(car(*pt))) {
-	  error("Too few actual parameters ",*pe);
-	  /* NOTREACHED */
-	}
-	else {
-	  tmp = cdar(*pt);
-	  if (!(atom(tmp) || null(cdr(tmp)))) {
-	    push(cdr(tmp));
-	    push(NIL);
-	    push(Lcons(2));
-	    i++;
-	  }
-	  push(caar(*pt));
-	  tmp = cdar(*pt); /* restore for GC */
-	  if (atom(tmp))
-	    push(NIL);
-	  else {
-	    push(car(tmp));
-	    push(Leval(1));
-	  }
-	  push(Lcons(2));
-	  i++;
-	}
-      }
-      if (null(*pt) && consp(*ps)) {
-	error("Too many actual arguments ",*pe);
-	/* NOTREACHED */
-      }
-      else if (*pt) {
-	push(*pt);
-	for (j = 1 ; consp(*ps) ; j++) {
-	  push(car(*ps));
-	  push(Leval(1));
-	  *ps = cdr(*ps);
-	}
-	push(NIL);
-	for (; j ; j--) {
-	  push(Lcons(2));
-	}
-	i++;
-      }
-      push(*paa);
-      for (; i ; i--) {
-	push(Lcons(2));
-      }
-/* Lambda binding finished, and a new environment is established.	*/
-      epush(pop1());	/* set the new environment	*/
-      push(cddr(*pfn));
-      t = Lprogn();
-      epop();
-      pop(5);
-      return (t);
-    case MACRO:
-      fn = (list)(symbolpointer(fn)->func);
-      if (atom(fn) || car(fn) != _MACRO || atom(cdr(fn))) {
-	error("eval: bad macro form ",fn);
-	/* NOTREACHED */
-      }
-      s = cdr(e);	/* actual parameter	*/
-      t = cadr(fn);	/* lambda list	*/
-      push(fn);
-      epush(bindall(t,s,NIL,e));
-      push(cddr(pop1()));
-      t = Lprogn();
-      epop();
-      push(t);
-      push(t);
-      s = Leval(1);
-      t = pop1();
-      if (!atom(t)) {
-	car(*pe) = car(t);
-	cdr(*pe) = cdr(t);
-      }
-      pop1();
-      return (s);
-    case CMACRO:
-      push(e);
-      push(t = (*(symbolpointer(fn)->func))());
-      push(t);
-      s = Leval(1);
-      t = pop1();
-      if (!atom(t)) {
-	car(e) = car(t);
-	cdr(e) = cdr(t);
-      }
-      pop1();
-      return (s);
-    default:
-      error("eval: unrecognized ftype used in ", fn);
-      /* NOTREACHED */
-      break;
+      case UNDEF:
+        error("eval: undefined function ", fn);
+        /* NOTREACHED */
+        break;
+      case SUBR:
+        cfn = symbolpointer(fn)->func;
+        i = evpsh(cdr(e));
+        epush(NIL);
+        t = (*cfn)(i);
+        epop();
+        pop1();
+        return (t);
+      case SPECIAL:
+        push(cdr(e));
+        t = (*(symbolpointer(fn)->func))();
+        pop1();
+        return (t);
+      case EXPR:
+        fn = (list)(symbolpointer(fn)->func);
+        aa = NIL; /* previous env won't be used */
+      expr:
+        if (atom(fn) || car(fn) != _LAMBDA || atom(cdr(fn))) {
+          error("eval: bad lambda form ", fn);
+          /* NOTREACHED */
+        }
+        /* Lambda binding begins here ... */
+        s = cdr(e);   /* actual parameter	*/
+        t = cadr(fn); /* lambda list		*/
+        push(s);
+        ps = sp;
+        push(t);
+        pt = sp;
+        push(fn);
+        pfn = sp;
+        push(aa);
+        paa = sp;
+        i = 0; /* count of variables	*/
+        for (; consp(*ps) && consp(*pt); *ps = cdr(*ps), *pt = cdr(*pt)) {
+          if (consp(car(*pt))) {
+            tmp = cdar(*pt); /* push the cdr of element */
+            if (!(atom(tmp) || null(cdr(tmp)))) {
+              push(cdr(tmp));
+              push(T);
+              push(Lcons(2));
+              i++;
+            }
+            push(caar(*pt));
+          } else {
+            push(car(*pt));
+          }
+          push(car(*ps));
+          push(Leval(1));
+          push(Lcons(2));
+          i++;
+        }
+        for (; consp(*pt); *pt = cdr(*pt)) {
+          if (atom(car(*pt))) {
+            error("Too few actual parameters ", *pe);
+            /* NOTREACHED */
+          } else {
+            tmp = cdar(*pt);
+            if (!(atom(tmp) || null(cdr(tmp)))) {
+              push(cdr(tmp));
+              push(NIL);
+              push(Lcons(2));
+              i++;
+            }
+            push(caar(*pt));
+            tmp = cdar(*pt); /* restore for GC */
+            if (atom(tmp))
+              push(NIL);
+            else {
+              push(car(tmp));
+              push(Leval(1));
+            }
+            push(Lcons(2));
+            i++;
+          }
+        }
+        if (null(*pt) && consp(*ps)) {
+          error("Too many actual arguments ", *pe);
+          /* NOTREACHED */
+        } else if (*pt) {
+          push(*pt);
+          for (j = 1; consp(*ps); j++) {
+            push(car(*ps));
+            push(Leval(1));
+            *ps = cdr(*ps);
+          }
+          push(NIL);
+          for (; j; j--) {
+            push(Lcons(2));
+          }
+          i++;
+        }
+        push(*paa);
+        for (; i; i--) {
+          push(Lcons(2));
+        }
+        /* Lambda binding finished, and a new environment is established.
+         */
+        epush(pop1()); /* set the new environment	*/
+        push(cddr(*pfn));
+        t = Lprogn();
+        epop();
+        pop(5);
+        return (t);
+      case MACRO:
+        fn = (list)(symbolpointer(fn)->func);
+        if (atom(fn) || car(fn) != _MACRO || atom(cdr(fn))) {
+          error("eval: bad macro form ", fn);
+          /* NOTREACHED */
+        }
+        s = cdr(e);   /* actual parameter	*/
+        t = cadr(fn); /* lambda list	*/
+        push(fn);
+        epush(bindall(t, s, NIL, e));
+        push(cddr(pop1()));
+        t = Lprogn();
+        epop();
+        push(t);
+        push(t);
+        s = Leval(1);
+        t = pop1();
+        if (!atom(t)) {
+          car(*pe) = car(t);
+          cdr(*pe) = cdr(t);
+        }
+        pop1();
+        return (s);
+      case CMACRO:
+        push(e);
+        push(t = (*(symbolpointer(fn)->func))());
+        push(t);
+        s = Leval(1);
+        t = pop1();
+        if (!atom(t)) {
+          car(e) = car(t);
+          cdr(e) = cdr(t);
+        }
+        pop1();
+        return (s);
+      default:
+        error("eval: unrecognized ftype used in ", fn);
+        /* NOTREACHED */
+        break;
     }
     /* NOTREACHED */
-  }
-  else {	/* fn is list (lambda expression)	*/
+  } else {     /* fn is list (lambda expression)	*/
     aa = *esp; /* previous environment is also used */
     goto expr;
   }
@@ -1970,26 +1872,24 @@ int n;
 }
 
 static list
-assq(e,a)
-list e, a;
+assq(list e, list a)
 {
   list i;
 
-  for (i = a ; i ; i = cdr(i)) {
+  for (i = a; i; i = cdr(i)) {
     if (consp(car(i)) && e == caar(i)) {
-      return(car(i));
+      return (car(i));
     }
   }
-  return((list)NIL);
+  return ((list)NIL);
 }
 
 /* eval each argument and push down each value to parameter stack	*/
 
 static int
-evpsh(args)
-list args;
+evpsh(list args)
 {
-  int  counter;
+  int counter;
   list temp;
 
   counter = 0;
@@ -2028,7 +1928,7 @@ Lprogn()
 
   val = NIL;
   pf = sp;
-  for (; consp(*pf) ; *pf = cdr(*pf)) {
+  for (; consp(*pf); *pf = cdr(*pf)) {
     symbolpointer(T)->value = T;
     push(car(*pf));
     val = Leval(1);
@@ -2038,78 +1938,71 @@ Lprogn()
 }
 
 static list
-Lcons(n)
-int n;
+Lcons(int n)
 {
-	list temp;
+  list temp;
 
-	argnchk("cons",2);
-	temp = newcons();
-	cdr(temp) = pop1();
-	car(temp) = pop1();
-	return(temp);
+  argnchk("cons", 2);
+  temp = newcons();
+  cdr(temp) = pop1();
+  car(temp) = pop1();
+  return (temp);
 }
 
 static list
-Lncons(n)
-int n;
+Lncons(int n)
 {
-	list temp;
+  list temp;
 
-	argnchk("ncons",1);
-	temp = newcons();
-	car(temp) = pop1();
-	cdr(temp) = NIL;
-	return(temp);
+  argnchk("ncons", 1);
+  temp = newcons();
+  car(temp) = pop1();
+  cdr(temp) = NIL;
+  return (temp);
 }
 
 static list
-Lxcons(n)
-int n;
+Lxcons(int n)
 {
-	list temp;
+  list temp;
 
-	argnchk("cons",2);
-	temp = newcons();
-	car(temp) = pop1();
-	cdr(temp) = pop1();
-	return(temp);
+  argnchk("cons", 2);
+  temp = newcons();
+  car(temp) = pop1();
+  cdr(temp) = pop1();
+  return (temp);
 }
 
 static list
-Lprint(n)
-int n;
+Lprint(int n)
 {
-	print(sp[0]);
-	pop(n);
-	return (T);
+  print(sp[0]);
+  pop(n);
+  return (T);
 }
 
 static list
-Lset(n)
-int n;
+Lset(int n)
 {
   list val, t;
   list var;
   struct atomcell *sym;
 
-  argnchk("set",2);
+  argnchk("set", 2);
   val = pop1();
   var = pop1();
   if (!symbolp(var)) {
-    error("set/setq: bad variable type  ",var);
+    error("set/setq: bad variable type  ", var);
     /* NOTREACHED */
   }
   sym = symbolpointer(var);
-  t = assq(var,*esp);
+  t = assq(var, *esp);
   if (t) {
     return cdr(t) = val;
-  }
-  else if (sym->valfunc) {
+  } else if (sym->valfunc) {
     return (*(sym->valfunc))(VALSET, val);
-  }
-  else {
-    return sym->value = val;	/* global set	*/
+  } else {
+    return sym->value = val; /* global set	*/
   }
 }
 
@@ -2119,11 +2012,11 @@ Lsetq()
   list a, *pp;
 
   a = NIL;
-  for (pp = sp; consp(*pp) ; *pp = cdr(*pp)) {
+  for (pp = sp; consp(*pp); *pp = cdr(*pp)) {
     push(car(*pp));
     *pp = cdr(*pp);
-    if ( atom(*pp) ) {
-      error("Odd number of args to setq",NON);
+    if (atom(*pp)) {
+      error("Odd number of args to setq", NON);
       /* NOTREACHED */
     }
     push(car(*pp));
@@ -2131,31 +2024,27 @@ Lsetq()
     a = Lset(2);
   }
   pop1();
-  return(a);
+  return (a);
 }
 
-
 static list
-Lequal(n)
-int n;
+Lequal(int n)
 {
-  argnchk("equal (=)",2);
-  if (equal(pop1(),pop1()))
-    return(T);
+  argnchk("equal (=)", 2);
+  if (equal(pop1(), pop1()))
+    return (T);
   else
-    return(NIL);
+    return (NIL);
 }
 
 /* null 文字で終わらない strncmp */
 
 static int
-Strncmp(x, y, len)
-char *x, *y;
-int len;
+Strncmp(char *x, char *y, int len)
 {
   int i;
 
-  for (i = 0 ; i < len ; i++) {
+  for (i = 0; i < len; i++) {
     if (x[i] != y[i]) {
       return (x[i] - y[i]);
     }
@@ -2166,127 +2055,117 @@ int len;
 /* null 文字で終わらない strncpy */
 
 static char *
-Strncpy(x, y, len)
-char *x, *y;
-int len;
+Strncpy(char *x, char *y, int len)
 {
   int i;
 
-  for (i = 0 ; i < len ; i++) {
+  for (i = 0; i < len; i++) {
     x[i] = y[i];
   }
   return x;
 }
 
 static int
-equal(x,y)
-list x, y;
+equal(list x, list y)
 {
- equaltop:
+equaltop:
   if (x == y)
-    return(YES);
+    return (YES);
   else if (null(x) || null(y))
-    return(NO);
+    return (NO);
   else if (numberp(x) || numberp(y)) {
     return NO;
-  }
-  else if (stringp(x)) {
+  } else if (stringp(x)) {
     if (stringp(y)) {
-      return ((xstrlen(x) == xstrlen(y)) ?
-	      (!Strncmp(xstring(x), xstring(y), xstrlen(x))) : 0);
-    }
-    else {
+      return ((xstrlen(x) == xstrlen(y))
+                ? (!Strncmp(xstring(x), xstring(y), xstrlen(x)))
+                : 0);
+    } else {
       return NO;
     }
-  }
-  else if (symbolp(x) || symbolp(y)) {
-    return(NO);
-  }
-  else {
+  } else if (symbolp(x) || symbolp(y)) {
+    return (NO);
+  } else {
     if (equal(car(x), car(y))) {
       x = cdr(x);
       y = cdr(y);
       goto equaltop;
-    }
-    else
-      return(NO);
+    } else
+      return (NO);
   }
 }
 
 static list
-Lgreaterp(n)
-int n;
+Lgreaterp(int n)
 {
   list p;
   pointerint x, y;
 
-  if ( !n )
-    return(T);
+  if (!n)
+    return (T);
   else {
     p = pop1();
     if (!numberp(p)) {
-      numerr("greaterp",p);
+      numerr("greaterp", p);
       /* NOTREACHED */
     }
     x = xnum(p);
-    for (n-- ; n ; n--) {
+    for (n--; n; n--) {
       p = pop1();
       if (!numberp(p)) {
-	numerr("greaterp",p);
-	/* NOTREACHED */
+        numerr("greaterp", p);
+        /* NOTREACHED */
       }
       y = xnum(p);
-      if (y <= x)		/* !(y > x)	*/
-	return(NIL);
+      if (y <= x) /* !(y > x)	*/
+        return (NIL);
       x = y;
     }
-    return(T);
+    return (T);
   }
 }
 
 static list
-Llessp(n)
-int n;
+Llessp(int n)
 {
   list p;
   pointerint x, y;
 
-  if ( !n )
-    return(T);
+  if (!n)
+    return (T);
   else {
     p = pop1();
     if (!numberp(p)) {
-      numerr("lessp",p);
+      numerr("lessp", p);
       /* NOTREACHED */
     }
     x = xnum(p);
-    for (n-- ; n ; n--) {
+    for (n--; n; n--) {
       p = pop1();
       if (!numberp(p)) {
-	numerr("lessp",p);
-	/* NOTREACHED */
+        numerr("lessp", p);
+        /* NOTREACHED */
       }
       y = xnum(p);
-      if (y >= x)		/* !(y < x)	*/
-	return(NIL);
+      if (y >= x) /* !(y < x)	*/
+        return (NIL);
       x = y;
     }
-    return(T);
+    return (T);
   }
 }
 
 static list
-Leq(n)
-int n;
+Leq(int n)
 {
   list f;
 
-  argnchk("eq",2);
+  argnchk("eq", 2);
   f = pop1();
   if (f == pop1())
-    return(T);
+    return (T);
   else
-    return(NIL);
+    return (NIL);
 }
 
 static list
@@ -2295,29 +2174,26 @@ Lcond()
   list *pp, t, a = 0, c;
 
   pp = sp;
-  for (; consp(*pp) ; *pp = cdr(*pp)) {
+  for (; consp(*pp); *pp = cdr(*pp)) {
     t = car(*pp);
     if (atom(t)) {
       pop1();
       return (NIL);
-    }
-    else {
+    } else {
       push(cdr(t));
       if ((c = car(t)) == T || (push(c), (a = Leval(1)))) {
-	/* if non NIL */
-	t = pop1();
-	if (null(t)) {	/* if cdr is NIL */
-	  pop1();
-	  return (a);
-	}
-	else {
-	  pop1();
-	  push(t);
-	  return(Lprogn());
-	}
-      }
-      else {
-	pop1();
+        /* if non NIL */
+        t = pop1();
+        if (null(t)) { /* if cdr is NIL */
+          pop1();
+          return (a);
+        } else {
+          pop1();
+          push(t);
+          return (Lprogn());
+        }
+      } else {
+        pop1();
       }
     }
   }
@@ -2326,10 +2202,9 @@ Lcond()
 }
 
 static list
-Lnull(n)
-int n;
+Lnull(int n)
 {
-  argnchk("null",1);
+  argnchk("null", 1);
   if (pop1())
     return NIL;
   else
@@ -2341,16 +2216,16 @@ Lor()
 {
   list *pp, t;
 
-  for (pp = sp; consp(*pp) ; *pp = cdr(*pp)) {
+  for (pp = sp; consp(*pp); *pp = cdr(*pp)) {
     push(car(*pp));
     t = Leval(1);
     if (t) {
       pop1();
-      return(t);
+      return (t);
     }
   }
   pop1();
-  return(NIL);
+  return (NIL);
 }
 
 static list
@@ -2359,166 +2234,153 @@ Land()
   list *pp, t;
 
   t = T;
-  for (pp = sp; consp(*pp) ; *pp = cdr(*pp)) {
+  for (pp = sp; consp(*pp); *pp = cdr(*pp)) {
     push(car(*pp));
-    if ( !(t = Leval(1)) ) {
+    if (!(t = Leval(1))) {
       pop1();
-      return(NIL);
+      return (NIL);
     }
   }
   pop1();
-  return(t);
+  return (t);
 }
 
 static list
-Lplus(n)
-int n;
+Lplus(int n)
 {
   list t;
-  int  i;
+  int i;
   pointerint sum;
 
   i = n;
   sum = 0;
   while (i--) {
     t = sp[i];
-    if ( !numberp(t) ) {
-      numerr("+",t);
+    if (!numberp(t)) {
+      numerr("+", t);
       /* NOTREACHED */
-    }
-    else {
+    } else {
       sum += xnum(t);
     }
   }
   pop(n);
-  return(mknum(sum));
+  return (mknum(sum));
 }
 
 static list
-Ltimes(n)
-int n;
+Ltimes(int n)
 {
   list t;
-  int  i;
+  int i;
   pointerint sum;
 
   i = n;
   sum = 1;
   while (i--) {
     t = sp[i];
-    if ( !numberp(t) ) {
-      numerr("*",t);
+    if (!numberp(t)) {
+      numerr("*", t);
       /* NOTREACHED */
-    }
-    else
+    } else
       sum *= xnum(t);
   }
   pop(n);
-  return(mknum(sum));
+  return (mknum(sum));
 }
 
 static list
-Ldiff(n)
-int n;
+Ldiff(int n)
 {
   list t;
-  int  i;
+  int i;
   pointerint sum;
 
-  if ( !n )
-    return(mknum(0));
+  if (!n)
+    return (mknum(0));
   t = sp[n - 1];
-  if ( !numberp(t) ) {
-    numerr("-",t);
+  if (!numberp(t)) {
+    numerr("-", t);
     /* NOTREACHED */
   }
   sum = xnum(t);
   if (n == 1) {
     pop1();
-    return(mknum(-sum));
-  }
-  else {
+    return (mknum(-sum));
+  } else {
     i = n - 1;
     while (i--) {
       t = sp[i];
-      if ( !numberp(t) ) {
-	numerr("-",t);
-	/* NOTREACHED */
-      }
-      else
-	sum -= xnum(t);
+      if (!numberp(t)) {
+        numerr("-", t);
+        /* NOTREACHED */
+      } else
+        sum -= xnum(t);
     }
     pop(n);
-    return(mknum(sum));
+    return (mknum(sum));
   }
 }
 
 static list
-Lquo(n)
-int n;
+Lquo(int n)
 {
   list t;
-  int  i;
+  int i;
   pointerint sum;
 
-  if ( !n )
-    return(mknum(1));
+  if (!n)
+    return (mknum(1));
   t = sp[n - 1];
-  if ( !numberp(t) ) {
-    numerr("/",t);
+  if (!numberp(t)) {
+    numerr("/", t);
     /* NOTREACHED */
   }
   sum = xnum(t);
   i = n - 1;
   while (i--) {
     t = sp[i];
-    if ( !numberp(t) ) {
-      numerr("/",t);
+    if (!numberp(t)) {
+      numerr("/", t);
       /* NOTREACHED */
-    }
-    else if (xnum(t) != 0) {
+    } else if (xnum(t) != 0) {
       sum = sum / (pointerint)xnum(t); /* CP/M68K is bad...	*/
-    }
-    else { /* division by zero */
-      error("Division by zero",NON);
+    } else {                           /* division by zero */
+      error("Division by zero", NON);
     }
   }
   pop(n);
-  return(mknum(sum));
+  return (mknum(sum));
 }
 
 static list
-Lrem(n)
-int n;
+Lrem(int n)
 {
   list t;
-  int  i;
+  int i;
   pointerint sum;
 
-  if ( !n )
-    return(mknum(0));
+  if (!n)
+    return (mknum(0));
   t = sp[n - 1];
-  if ( !numberp(t) ) {
-    numerr("%",t);
+  if (!numberp(t)) {
+    numerr("%", t);
     /* NOTREACHED */
   }
   sum = xnum(t);
   i = n - 1;
   while (i--) {
     t = sp[i];
-    if ( !numberp(t) ) {
-      numerr("%",t);
+    if (!numberp(t)) {
+      numerr("%", t);
       /* NOTREACHED */
-    }
-    else if (xnum(t) != 0) {
+    } else if (xnum(t) != 0) {
       sum = sum % (pointerint)xnum(t); /* CP/M68K is bad ..	*/
-    }
-    else { /* division by zero */
-      error("Division by zero",NON);
+    } else {                           /* division by zero */
+      error("Division by zero", NON);
     }
   }
   pop(n);
-  return(mknum(sum));
+  return (mknum(sum));
 }
 
 /*
@@ -2526,17 +2388,15 @@ int n;
  */
 
 static list
-Lgc(n)
-int n;
+Lgc(int n)
 {
-  argnchk("gc",0);
+  argnchk("gc", 0);
   gc();
-  return(NIL);
+  return (NIL);
 }
 
 static list
-Lusedic(n)
-int n;
+Lusedic(int n)
 {
   int i;
   list retval = NIL, temp;
@@ -2549,57 +2409,53 @@ int n;
   extern char *hiraautodic;
 #endif
 
-  for (i = n ; i ; i--) {
+  for (i = n; i; i--) {
     temp = sp[i - 1];
     dictype = DIC_PLAIN;
     if (symbolp(temp) && i - 1 > 0) {
       if (temp == USER) {
-	dictype = DIC_USER;
-      }
-      else if (temp == BUSHU) {
-	dictype = DIC_BUSHU;
-      }
-      else if (temp == GRAMMAR) {
-	dictype = DIC_GRAMMAR;
-      }
-      else if (temp == RENGO) {
-	dictype = DIC_RENGO;
-      }
-      else if (temp == KATAKANA) {
-	dictype = DIC_KATAKANA;
+        dictype = DIC_USER;
+      } else if (temp == BUSHU) {
+        dictype = DIC_BUSHU;
+      } else if (temp == GRAMMAR) {
+        dictype = DIC_GRAMMAR;
+      } else if (temp == RENGO) {
+        dictype = DIC_RENGO;
+      } else if (temp == KATAKANA) {
+        dictype = DIC_KATAKANA;
         auto_define = 1;
+      } else if (temp == HIRAGANA) {
+        dictype = DIC_HIRAGANA;
       }
-      else if (temp == HIRAGANA) {
-	dictype = DIC_HIRAGANA;
-      }
-      i--; temp = sp[i - 1];
+      i--;
+      temp = sp[i - 1];
     }
     if (stringp(temp)) {
-      kanjidicname  = (struct dicname *)malloc(sizeof(struct dicname));
+      kanjidicname = (struct dicname *)malloc(sizeof(struct dicname));
       if (kanjidicname) {
-	kanjidicname->name = malloc(strlen(xstring(temp)) + 1);
-	if (kanjidicname->name) {
-	  strcpy(kanjidicname->name , xstring(temp));
-	  kanjidicname->dictype = dictype;
-	  kanjidicname->dicflag = DIC_NOT_MOUNTED;
-	  kanjidicname->next = kanjidicnames;
-	  kanjidicnames = kanjidicname;
-	  if (kanjidicname->dictype == DIC_KATAKANA) {
-	    if (!kataautodic) { /* only the first one is valid */
-	      kataautodic = kanjidicname->name;
-	    }
-	  }
+        kanjidicname->name = malloc(strlen(xstring(temp)) + 1);
+        if (kanjidicname->name) {
+          strcpy(kanjidicname->name, xstring(temp));
+          kanjidicname->dictype = dictype;
+          kanjidicname->dicflag = DIC_NOT_MOUNTED;
+          kanjidicname->next = kanjidicnames;
+          kanjidicnames = kanjidicname;
+          if (kanjidicname->dictype == DIC_KATAKANA) {
+            if (!kataautodic) { /* only the first one is valid */
+              kataautodic = kanjidicname->name;
+            }
+          }
 #ifdef HIRAGANAAUTO
-	  else if (kanjidicname->dictype == DIC_HIRAGANA) {
-	    if (!hiraautodic) { /* only the first one is valid */
-	      hiraautodic = kanjidicname->name;
-	    }
-	  }
+          else if (kanjidicname->dictype == DIC_HIRAGANA) {
+            if (!hiraautodic) { /* only the first one is valid */
+              hiraautodic = kanjidicname->name;
+            }
+          }
 #endif
-	  retval = T;
-	  continue;
-	}
-	free(kanjidicname);
+          retval = T;
+          continue;
+        }
+        free(kanjidicname);
       }
     }
   }
@@ -2608,24 +2464,22 @@ int n;
 }
 
 static list
-Llist(n)
-int n;
+Llist(int n)
 {
-	push(NIL);
-	for (; n ; n--) {
-		push(Lcons(2));
-	}
-	return (pop1());
+  push(NIL);
+  for (; n; n--) {
+    push(Lcons(2));
+  }
+  return (pop1());
 }
 
 static list
-Lcopysym(n)
-int n;
+Lcopysym(int n)
 {
   list src, dst;
   struct atomcell *dsta, *srca;
 
-  argnchk("copy-symbol",2);
+  argnchk("copy-symbol", 2);
   src = pop1();
   dst = pop1();
   if (!symbolp(dst)) {
@@ -2638,31 +2492,30 @@ int n;
   }
   dsta = symbolpointer(dst);
   srca = symbolpointer(src);
-  dsta->plist   = srca->plist;
-  dsta->value   = srca->value;
-  dsta->ftype   = srca->ftype;
-  dsta->func    = srca->func;
+  dsta->plist = srca->plist;
+  dsta->value = srca->value;
+  dsta->ftype = srca->ftype;
+  dsta->func = srca->func;
   dsta->valfunc = srca->valfunc;
-  dsta->mid     = srca->mid;
-  dsta->fid     = srca->fid;
+  dsta->mid = srca->mid;
+  dsta->fid = srca->fid;
   return src;
 }
 
 static list
-Lload(n)
-int n;
+Lload(int n)
 {
   list p, t;
   FILE *instream;
 
-  argnchk("load",1);
+  argnchk("load", 1);
   p = pop1();
-  if ( !stringp(p) ) {
-    error("load: illegal file name  ",p);
+  if (!stringp(p)) {
+    error("load: illegal file name  ", p);
     /* NOTREACHED */
   }
   if ((instream = fopen(xstring(p), "r")) == NULL) {
-    error("load: file not found  ",p);
+    error("load: file not found  ", p);
     /* NOTREACHED */
   }
   prins("[load ");
@@ -2688,25 +2541,23 @@ int n;
     t = Lread(0);
     if (valuec > 1 && null(values[1])) {
       break;
-    }
-    else {
+    } else {
       push(t);
       Leval(1);
     }
   }
   jmpenvp++;
-  return(T);
+  return (T);
 }
 
 static list
-Lmodestr(n)
-int n;
+Lmodestr(int n)
 {
   list p;
   int mode;
 
   argnchk(S_SetModeDisp, 2);
-  if ( !null(p = sp[0]) && !stringp(p) ) {
+  if (!null(p = sp[0]) && !stringp(p)) {
     lisp_strerr(S_SetModeDisp, p);
     /* NOTREACHED */
   }
@@ -2722,35 +2573,29 @@ int n;
 /* 機能シーケンスの取り出し */
 
 static int
-xfseq(fname, l, arr, arrsize)
-char *fname;
-list l;
-unsigned char *arr;
-int arrsize;
+xfseq(char *fname, list l, unsigned char *arr, int arrsize)
 {
   int i;
 
   if (atom(l)) {
     if (symbolp(l) &&
-	(arr[0] = (unsigned char)(symbolpointer(l)->fid)) != 255) {
+        (arr[0] = (unsigned char)(symbolpointer(l)->fid)) != 255) {
       arr[1] = 0;
-    }
-    else {
+    } else {
       prins(fname);
       error(": illegal function ", l);
       /* NOTREACHED */
     }
     return 1;
-  }
-  else {
-    for (i = 0 ; i < arrsize - 1 && consp(l) ; i++, l = cdr(l)) {
+  } else {
+    for (i = 0; i < arrsize - 1 && consp(l); i++, l = cdr(l)) {
       list temp = car(l);
 
       if (!symbolp(temp) ||
-	  (arr[i] = (unsigned char)(symbolpointer(temp)->fid)) == 255) {
-	prins(fname);
-	error(": illegal function ", temp);
-	/* NOTREACHED */
+          (arr[i] = (unsigned char)(symbolpointer(temp)->fid)) == 255) {
+        prins(fname);
+        error(": illegal function ", temp);
+        /* NOTREACHED */
       }
     }
     arr[i] = 0;
@@ -2759,8 +2604,7 @@ int arrsize;
 }
 
 static list
-Lsetkey(n)
-int n;
+Lsetkey(int n)
 {
   list p;
   int mode, slen;
@@ -2769,7 +2613,7 @@ int n;
   int retval;
 
   argnchk(S_SetKey, 3);
-  if ( !stringp(p = sp[1]) ) {
+  if (!stringp(p = sp[1])) {
     lisp_strerr(S_SetKey, p);
     /* NOTREACHED */
   }
@@ -2784,10 +2628,11 @@ int n;
     slen = xstrlen(p);
     Strncpy((char *)keyseq, xstring(p), slen);
     keyseq[slen] = 255;
-    retval = changeKeyfunc(mode, (unsigned)keyseq[0],
-		           slen > 1 ? CANNA_FN_UseOtherKeymap :
-                           (fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0]),
-                           fseq, keyseq);
+    retval =
+      changeKeyfunc(mode, (unsigned)keyseq[0],
+                    slen > 1 ? CANNA_FN_UseOtherKeymap
+                             : (fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0]),
+                    fseq, keyseq);
     if (retval == NG) {
       error("Insufficient memory.", NON);
       /* NOTREACHED */
@@ -2798,8 +2643,7 @@ int n;
 }
 
 static list
-Lgsetkey(n)
-int n;
+Lgsetkey(int n)
 {
   list p;
   int slen;
@@ -2808,7 +2652,7 @@ int n;
   int retval;
 
   argnchk(S_GSetKey, 2);
-  if ( !stringp(p = sp[1]) ) {
+  if (!stringp(p = sp[1])) {
     lisp_strerr(S_GSetKey, p);
     /* NOTREACHED */
   }
@@ -2816,54 +2660,51 @@ int n;
     slen = xstrlen(p);
     Strncpy((char *)keyseq, xstring(p), slen);
     keyseq[slen] = 255;
-    retval = changeKeyfuncOfAll((unsigned)keyseq[0],
-               slen > 1 ? CANNA_FN_UseOtherKeymap :
-               (fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0]),
-               fseq, keyseq);
+    retval = changeKeyfuncOfAll(
+      (unsigned)keyseq[0],
+      slen > 1 ? CANNA_FN_UseOtherKeymap
+               : (fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0]),
+      fseq, keyseq);
     if (retval == NG) {
       error("Insufficient memory.", NON);
       /* NOTREACHED */
     }
     pop(2);
     return p;
-  }
-  else {
+  } else {
     pop(2);
     return NIL;
   }
 }
 
 static list
-Lputd(n)
-int n;
+Lputd(int n)
 {
   list body, a;
   list sym;
   struct atomcell *symp;
 
-  argnchk("putd",2);
+  argnchk("putd", 2);
   a = body = pop1();
   sym = pop1();
   symp = symbolpointer(sym);
   if (constp(sym) || consp(sym)) {
-    error("putd: function name must be a symbol : ",sym);
+    error("putd: function name must be a symbol : ", sym);
     /* NOTREACHED */
   }
   if (null(body)) {
     symp->ftype = UNDEF;
-    symp->func = (list (*)())UNDEF;
-  }
-  else if (consp(body)) {
+    symp->func = (list(*)())UNDEF;
+  } else if (consp(body)) {
     if (car(body) == _MACRO) {
       symp->ftype = MACRO;
-      symp->func = (list (*)())body;
-    }
-    else {
+      symp->func = (list(*)())body;
+    } else {
       symp->ftype = EXPR;
-      symp->func = (list (*)())body;
+      symp->func = (list(*)())body;
     }
   }
-  return(a);
+  return (a);
 }
 
 static list
@@ -2873,7 +2714,7 @@ Ldefun()
 
   form = sp[0];
   if (atom(form)) {
-    error("defun: illegal form ",form);
+    error("defun: illegal form ", form);
     /* NOTREACHED */
   }
   push(car(form));
@@ -2892,7 +2733,7 @@ Ldefmacro()
 
   form = sp[0];
   if (atom(form)) {
-    error("defmacro: illegal form ",form);
+    error("defmacro: illegal form ", form);
     /* NOTREACHED */
   }
   push(res = car(form));
@@ -2905,51 +2746,48 @@ Ldefmacro()
 }
 
 static list
-Lcar(n)
-int n;
+Lcar(int n)
 {
   list f;
 
-  argnchk("car",1);
+  argnchk("car", 1);
   f = pop1();
   if (!f)
-    return(NIL);
+    return (NIL);
   else if (atom(f)) {
-    error("Bad arg to car ",f);
+    error("Bad arg to car ", f);
     /* NOTREACHED */
   }
-  return(car(f));
+  return (car(f));
 }
 
 static list
-Lcdr(n)
-int n;
+Lcdr(int n)
 {
   list f;
 
-  argnchk("cdr",1);
+  argnchk("cdr", 1);
   f = pop1();
   if (!f)
-    return(NIL);
+    return (NIL);
   else if (atom(f)) {
-    error("Bad arg to cdr ",f);
+    error("Bad arg to cdr ", f);
     /* NOTREACHED */
   }
-  return(cdr(f));
+  return (cdr(f));
 }
 
 static list
-Latom(n)
-int n;
+Latom(int n)
 {
   list f;
 
-  argnchk("atom",1);
+  argnchk("atom", 1);
   f = pop1();
   if (atom(f))
-    return(T);
+    return (T);
   else
-    return(NIL);
+    return (NIL);
 }
 
 static list
@@ -2961,37 +2799,38 @@ Llet()
   *px = cdr(*px);
   if (atom(*px)) {
     pop1();
-    return(NIL);
-  }
-  else {
+    return (NIL);
+  } else {
     push(NIL);
     args = Lncons(1);
-    push(args); pq = sp;
+    push(args);
+    pq = sp;
     push(NIL);
     lambda = p = Lncons(1);
     push(lambda);
 
-    push(p); pp = sp;
-    push(*pq); pq = sp;
-    push(NIL); pl = sp;
-    for (*pl = car(*px) ; consp(*pl) ; *pl = cdr(*pl)) {
+    push(p);
+    pp = sp;
+    push(*pq);
+    pq = sp;
+    push(NIL);
+    pl = sp;
+    for (*pl = car(*px); consp(*pl); *pl = cdr(*pl)) {
       if (atom(car(*pl))) {
-	push(car(*pl));
-	*pp = cdr(*pp) = Lncons(1);
-	push(NIL);
-	*pq = cdr(*pq) = Lncons(1);
-      }
-      else if (atom(cdar(*pl))) {
-	push(caar(*pl));
-	*pp = cdr(*pp) = Lncons(1);
-	push(NIL);
-	*pq = cdr(*pq) = Lncons(1);
-      }
-      else {
-	push(caar(*pl));
-	*pp = cdr(*pp) = Lncons(1);
-	push(cadr(car(*pl)));
-	*pq = cdr(*pq) = Lncons(1);
+        push(car(*pl));
+        *pp = cdr(*pp) = Lncons(1);
+        push(NIL);
+        *pq = cdr(*pq) = Lncons(1);
+      } else if (atom(cdar(*pl))) {
+        push(caar(*pl));
+        *pp = cdr(*pp) = Lncons(1);
+        push(NIL);
+        *pq = cdr(*pq) = Lncons(1);
+      } else {
+        push(caar(*pl));
+        *pp = cdr(*pp) = Lncons(1);
+        push(cadr(car(*pl)));
+        *pq = cdr(*pq) = Lncons(1);
       }
     }
     pop(3);
@@ -3003,7 +2842,7 @@ Llet()
     push(Lxcons(2));
     p = Lxcons(2);
     pop1();
-    return(p);
+    return (p);
   }
 }
 
@@ -3018,9 +2857,9 @@ Lif()
   if (atom(x) || atom(cdr(x))) {
     pop1();
     return NIL;
-  }
-  else {
-    push(x); px = sp;
+  } else {
+    push(x);
+    px = sp;
 
     push(COND);
 
@@ -3039,12 +2878,11 @@ Lif()
 }
 
 static list
-Lunbindkey(n)
-int n;
+Lunbindkey(int n)
 {
   unsigned char fseq[2];
-  static unsigned char keyseq[2] = {(unsigned char)CANNA_KEY_Undefine,
-				      (unsigned char)255};
+  static unsigned char keyseq[2] = { (unsigned char)CANNA_KEY_Undefine,
+                                     (unsigned char)255 };
   int mode;
   list retval;
 
@@ -3056,15 +2894,14 @@ int n;
   if (xfseq(S_UnbindKey, sp[0], fseq, 2)) {
     int ret;
     ret = changeKeyfunc(mode, CANNA_KEY_Undefine,
-                        fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0],
-                        fseq, keyseq);
+                        fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0], fseq,
+                        keyseq);
     if (ret == NG) {
       error("Insufficient memory.", NON);
       /* NOTREACHED */
     }
     retval = T;
-  }
-  else {
+  } else {
     retval = NIL;
   }
   pop(2);
@@ -3072,35 +2909,33 @@ int n;
 }
 
 static list
-Lgunbindkey(n)
-int n;
+Lgunbindkey(int n)
 {
   unsigned char fseq[2];
-  static unsigned char keyseq[2] = {(unsigned char)CANNA_KEY_Undefine,
-				      (unsigned char)255};
+  static unsigned char keyseq[2] = { (unsigned char)CANNA_KEY_Undefine,
+                                     (unsigned char)255 };
   list retval;
 
   argnchk(S_GUnbindKey, 1);
   if (xfseq(S_GUnbindKey, sp[0], fseq, 2)) {
     int ret;
     ret = changeKeyfuncOfAll(CANNA_KEY_Undefine,
-		       fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0],
-		       fseq, keyseq);
+                             fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0],
+                             fseq, keyseq);
     if (ret == NG) {
       error("Insufficient memory.", NON);
       /* NOTREACHED */
     }
     retval = T;
-  }
-  else {
+  } else {
     retval = NIL;
   }
   pop1();
   return retval;
 }
 
-#define DEFMODE_MEMORY      0
-#define DEFMODE_NOTSTRING   1
+#define DEFMODE_MEMORY 0
+#define DEFMODE_NOTSTRING 1
 #define DEFMODE_ILLFUNCTION 2
 
 static list
@@ -3127,10 +2962,10 @@ Ldefmode()
   }
 
   /* 引数をプッシュする */
-  for (i = 0, e = cdr(form) ; i < 4 ; i++, e = cdr(e)) {
+  for (i = 0, e = cdr(form); i < 4; i++, e = cdr(e)) {
     if (atom(e)) {
-      for (j = i ; j < 4 ; j++) {
-	push(NIL);
+      for (j = i; j < 4; j++) {
+        push(NIL);
       }
       break;
     }
@@ -3142,7 +2977,7 @@ Ldefmode()
   }
 
   /* 評価する */
-  for (i = 0, p = sym - 1 ; i < 4 ; i++, p--) {
+  for (i = 0, p = sym - 1; i < 4; i++, p--) {
     push(*p);
     push(Leval(1));
   }
@@ -3157,8 +2992,8 @@ Ldefmode()
   if (extrafunc) {
     /* シンボルの関数値としての定義 */
     symbolpointer(*sym)->mid = CANNA_MODE_MAX_IMAGINARY_MODE + nothermodes;
-    symbolpointer(*sym)->fid =
-      extrafunc->fnum = CANNA_FN_MAX_FUNC + nothermodes;
+    symbolpointer(*sym)->fid = extrafunc->fnum =
+      CANNA_FN_MAX_FUNC + nothermodes;
 
     /* デフォルトの設定 */
     extrafunc->display_name = NULL;
@@ -3175,122 +3010,120 @@ Ldefmode()
       /* モード構造体の作成 */
       kanjimode = (KanjiMode)malloc(sizeof(KanjiModeRec));
       if (kanjimode) {
-	extern KanjiModeRec empty_mode;
-	extern BYTE *emptymap;
+        extern KanjiModeRec empty_mode;
+        extern BYTE *emptymap;
 
-	kanjimode->func = searchfunc;
-	kanjimode->keytbl = emptymap;
-	kanjimode->flags =
-	  CANNA_KANJIMODE_TABLE_SHARED | CANNA_KANJIMODE_EMPTY_MODE;
-	kanjimode->ftbl = empty_mode.ftbl;
-	extrafunc->u.modeptr->emode = kanjimode;
+        kanjimode->func = searchfunc;
+        kanjimode->keytbl = emptymap;
+        kanjimode->flags =
+          CANNA_KANJIMODE_TABLE_SHARED | CANNA_KANJIMODE_EMPTY_MODE;
+        kanjimode->ftbl = empty_mode.ftbl;
+        extrafunc->u.modeptr->emode = kanjimode;
 
-	/* モード表示文字列 */
-	ecode = DEFMODE_NOTSTRING;
-	edata = md;
-	if (stringp(md) || null(md)) {
-	  if (stringp(md)) {
-	    extrafunc->display_name = WString(xstring(md));
-	  }
-	  ecode = DEFMODE_MEMORY;
-	  if (null(md) || extrafunc->display_name) {
-	    /* ローマ字かな変換テーブル */
-	    ecode = DEFMODE_NOTSTRING;
-	    edata = rd;
-	    if (stringp(rd) || null(rd)) {
-	      char *newstr = NULL;
-	      long f = extrafunc->u.modeptr->flags;
+        /* モード表示文字列 */
+        ecode = DEFMODE_NOTSTRING;
+        edata = md;
+        if (stringp(md) || null(md)) {
+          if (stringp(md)) {
+            extrafunc->display_name = WString(xstring(md));
+          }
+          ecode = DEFMODE_MEMORY;
+          if (null(md) || extrafunc->display_name) {
+            /* ローマ字かな変換テーブル */
+            ecode = DEFMODE_NOTSTRING;
+            edata = rd;
+            if (stringp(rd) || null(rd)) {
+              char *newstr = NULL;
+              long f = extrafunc->u.modeptr->flags;
 
-	      if (stringp(rd)) {
-		newstr = malloc(strlen(xstring(rd)) + 1);
-	      }
-	      ecode = DEFMODE_MEMORY;
-	      if (null(rd) || newstr) {
-		if (!null(rd)) {
-		  strcpy(newstr, xstring(rd));
-		  extrafunc->u.modeptr->romaji_table = newstr;
-		}
-		/* 実行機能 */
-		for (e = fn ; consp(e) ; e = cdr(e)) {
-		  l = car(e);
-		  if (symbolp(l) && symbolpointer(l)->fid) {
-		    switch (symbolpointer(l)->fid) {
-		    case CANNA_FN_Kakutei:
-		      f |= CANNA_YOMI_KAKUTEI;
-		      break;
-		    case CANNA_FN_Henkan:
-		      f |= CANNA_YOMI_HENKAN;
-		      break;
-		    case CANNA_FN_Zenkaku:
-		      f |= CANNA_YOMI_ZENKAKU;
-		      break;
-		    case CANNA_FN_Hankaku:
-		      f |= CANNA_YOMI_HANKAKU;
-		      break;
-		    case CANNA_FN_Hiragana:
-		      f |= CANNA_YOMI_HIRAGANA;
-		      break;
-		    case CANNA_FN_Katakana:
-		      f |= CANNA_YOMI_KATAKANA;
-		      break;
-		    case CANNA_FN_Romaji:
-		      f |= CANNA_YOMI_ROMAJI;
-		      break;
-		      /* 以下はそのうちやろう */
-		    case CANNA_FN_ToUpper:
-		      break;
-		    case CANNA_FN_Capitalize:
-		      break;
-		    case CANNA_FN_ToLower:
-		      break;
-		    default:
-		      goto defmode_not_function;
-		    }
-		  }
-		  else {
-		    goto defmode_not_function;
-		  }
-		}
-		extrafunc->u.modeptr->flags = f;
+              if (stringp(rd)) {
+                newstr = malloc(strlen(xstring(rd)) + 1);
+              }
+              ecode = DEFMODE_MEMORY;
+              if (null(rd) || newstr) {
+                if (!null(rd)) {
+                  strcpy(newstr, xstring(rd));
+                  extrafunc->u.modeptr->romaji_table = newstr;
+                }
+                /* 実行機能 */
+                for (e = fn; consp(e); e = cdr(e)) {
+                  l = car(e);
+                  if (symbolp(l) && symbolpointer(l)->fid) {
+                    switch (symbolpointer(l)->fid) {
+                      case CANNA_FN_Kakutei:
+                        f |= CANNA_YOMI_KAKUTEI;
+                        break;
+                      case CANNA_FN_Henkan:
+                        f |= CANNA_YOMI_HENKAN;
+                        break;
+                      case CANNA_FN_Zenkaku:
+                        f |= CANNA_YOMI_ZENKAKU;
+                        break;
+                      case CANNA_FN_Hankaku:
+                        f |= CANNA_YOMI_HANKAKU;
+                        break;
+                      case CANNA_FN_Hiragana:
+                        f |= CANNA_YOMI_HIRAGANA;
+                        break;
+                      case CANNA_FN_Katakana:
+                        f |= CANNA_YOMI_KATAKANA;
+                        break;
+                      case CANNA_FN_Romaji:
+                        f |= CANNA_YOMI_ROMAJI;
+                        break;
+                        /* 以下はそのうちやろう */
+                      case CANNA_FN_ToUpper:
+                        break;
+                      case CANNA_FN_Capitalize:
+                        break;
+                      case CANNA_FN_ToLower:
+                        break;
+                      default:
+                        goto defmode_not_function;
+                    }
+                  } else {
+                    goto defmode_not_function;
+                  }
+                }
+                extrafunc->u.modeptr->flags = f;
 
-		/* ユーザシンボルの使用の有無 */
-		if (us) {
-		  extrafunc->u.modeptr->flags &=
-		    ~CANNA_YOMI_IGNORE_USERSYMBOLS;
-		}
+                /* ユーザシンボルの使用の有無 */
+                if (us) {
+                  extrafunc->u.modeptr->flags &= ~CANNA_YOMI_IGNORE_USERSYMBOLS;
+                }
 
-		extrafunc->keyword = EXTRA_FUNC_DEFMODE;
-		extrafunc->next = extrafuncp;
-		extrafuncp = extrafunc;
-		nothermodes++;
-		return pop1();
+                extrafunc->keyword = EXTRA_FUNC_DEFMODE;
+                extrafunc->next = extrafuncp;
+                extrafuncp = extrafunc;
+                nothermodes++;
+                return pop1();
 
-	      defmode_not_function:
-		ecode = DEFMODE_ILLFUNCTION;
-		edata = l;
-		if (!null(rd)) {
-		  free(newstr);
-		}
-	      }
-	    }
-	    if (extrafunc->display_name) {
-	      WSfree(extrafunc->display_name);
-	    }
-	  }
-	}
-	free(kanjimode);
+              defmode_not_function:
+                ecode = DEFMODE_ILLFUNCTION;
+                edata = l;
+                if (!null(rd)) {
+                  free(newstr);
+                }
+              }
+            }
+            if (extrafunc->display_name) {
+              WSfree(extrafunc->display_name);
+            }
+          }
+        }
+        free(kanjimode);
       }
       free(extrafunc->u.modeptr);
     }
     free(extrafunc);
   }
   switch (ecode) {
-  case DEFMODE_MEMORY:
-    error("Insufficient memory", NON);
-  case DEFMODE_NOTSTRING:
-    error("String data expected ", edata);
-  case DEFMODE_ILLFUNCTION:
-    error("defmode: illegal subfunction ", edata);
+    case DEFMODE_MEMORY:
+      error("Insufficient memory", NON);
+    case DEFMODE_NOTSTRING:
+      error("String data expected ", edata);
+    case DEFMODE_ILLFUNCTION:
+      error("defmode: illegal subfunction ", edata);
   }
   /* NOTREACHED */
   return NIL; /* suppress warning: control reaches end of non-void function */
@@ -3308,33 +3141,32 @@ Ldefsym()
 
   form = sp[0];
   if (atom(form)) {
-    error("Illegal form ",form);
+    error("Illegal form ", form);
     /* NOTREACHED */
   }
   /* まず数をかぞえる */
-  for (ncand = 0 ; consp(form) ; ) {
+  for (ncand = 0; consp(form);) {
     e = car(form);
     if (!numberp(e)) {
       error("Key data expected ", e);
       /* NOTREACHED */
     }
     if (null(cdr(form))) {
-      error("Illegal form ",sp[0]);
+      error("Illegal form ", sp[0]);
       /* NOTREACHED */
     }
     if (numberp(car(cdr(form)))) {
       form = cdr(form);
     }
-    for (i = 0, form = cdr(form) ; consp(form) ; i++, form = cdr(form)) {
+    for (i = 0, form = cdr(form); consp(form); i++, form = cdr(form)) {
       e = car(form);
       if (!stringp(e)) {
-	break;
+        break;
       }
     }
     if (ncand == 0) {
       ncand = i;
-    }
-    else if (ncand != i) {
+    } else if (ncand != i) {
       error("Inconsist number for each key definition ", sp[0]);
       /* NOTREACHED */
     }
@@ -3342,7 +3174,7 @@ Ldefsym()
 
   group = nkeysup;
 
-  for (form = sp[0] ; consp(form) ;) {
+  for (form = sp[0]; consp(form);) {
     if (nkeysup >= MAX_KEY_SUP) {
       error("Too many symbol definitions", sp[0]);
       /* NOTREACHED */
@@ -3352,17 +3184,16 @@ Ldefsym()
     if (numberp(car(cdr(form)))) {
       xkey = (wchar_t)xnum(car(cdr(form)));
       form = cdr(form);
-    }
-    else {
+    } else {
       xkey = key;
     }
     p = cand;
-    for (form = cdr(form) ; consp(form) ; form = cdr(form)) {
+    for (form = cdr(form); consp(form); form = cdr(form)) {
       int len;
 
       e = car(form);
       if (!stringp(e)) {
-	break;
+        break;
       }
       len = CANNA_mbstowcs(p, xstring(e), 1024 - (p - cand));
       p += len;
@@ -3382,14 +3213,14 @@ Ldefsym()
       /* NOTREACHED */
     }
 
-    for (i = 0 ; i < p - cand ; i++) {
+    for (i = 0; i < p - cand; i++) {
       mcand[i] = cand[i];
     }
-    for (i = 0, p = mcand ; i < ncand ; i++) {
+    for (i = 0, p = mcand; i < ncand; i++) {
       acand[i] = p;
       while (*p++)
-	/* EMPTY */
-	;
+        /* EMPTY */
+        ;
     }
     acand[i] = 0;
     /* 実際に格納する */
@@ -3411,25 +3242,22 @@ Ldefsym()
    defselection で一覧の文字を取り出すために必要なので、以下を定義する
  */
 
-#define SS2	((char)0x8e)
-#define SS3	((char)0x8f)
+#define SS2 ((char)0x8e)
+#define SS3 ((char)0x8f)
 
-#define G0	0
-#define G1	1
-#define G2	2
-#define G3	3
+#define G0 0
+#define G1 1
+#define G2 2
+#define G3 3
 
-static int cswidth[4] = {1, 2, 2, 3};
-
+static int cswidth[4] = { 1, 2, 2, 3 };
 
 /*
    getKutenCode -- 文字の区点コードを取り出す
  */
 
 static int
-getKutenCode(data, ku, ten)
-char *data;
-int *ku, *ten;
+getKutenCode(char *data, int *ku, int *ten)
 {
   int codeset;
 
@@ -3438,16 +3266,13 @@ int *ku, *ten;
   if (*data == SS2) {
     codeset = G2;
     *ku = 0;
-  }
-  else if (*data == SS3) {
+  } else if (*data == SS3) {
     codeset = G3;
     *ku = *ten;
     *ten = (data[2] & 0x7f) - 0x20;
-  }
-  else if (*data & 0x80) {
+  } else if (*data & 0x80) {
     codeset = G1;
-  }
-  else {
+  } else {
     codeset = G0;
     *ten = *ku;
     *ku = 0;
@@ -3461,9 +3286,7 @@ int *ku, *ten;
  */
 
 static int
-howManyCharsAre(tdata, edata, tku, tten, codeset)
-char *tdata, *edata;
-int *tku, *tten, *codeset;
+howManyCharsAre(char *tdata, char *edata, int *tku, int *tten, int *codeset)
 {
   int eku, eten, kosdata, koedata;
 
@@ -3471,21 +3294,18 @@ int *tku, *tten, *codeset;
   koedata = getKutenCode(edata, &eku, &eten);
   if (kosdata != koedata) {
     return 0;
-  }
-  else {
+  } else {
     *codeset = kosdata;
     return ((eku - *tku) * 94 + eten - *tten + 1);
   }
 }
-
 
 /*
    pickupChars -- 範囲内の図形文字を取り出す
  */
 
 static char *
-pickupChars(tku, tten, num, kodata)
-int tku, tten, num, kodata;
+pickupChars(int tku, int tten, int num, int kodata)
 {
   char *dptr, *tdptr, *edptr;
 
@@ -3493,12 +3313,12 @@ int tku, tten, num, kodata;
   if (dptr) {
     tdptr = dptr;
     edptr = dptr + num * cswidth[kodata];
-    for (; dptr < edptr ; tten++) {
+    for (; dptr < edptr; tten++) {
       if (tten > 94) {
         tku++;
         tten = 1;
       }
-      switch(kodata) {
+      switch (kodata) {
         case G0:
           *dptr++ = (tten + 0x20);
           break;
@@ -3532,9 +3352,7 @@ int tku, tten, num, kodata;
  */
 
 static void
-numtostr(num, str)
-unsigned long num;
-char *str;
+numtostr(unsigned long num, char *str)
 {
   if (num & 0xff0000) {
     *str++ = (char)((num >> 16) & 0xff);
@@ -3566,7 +3384,7 @@ Ldefselection()
   form = sp[0];
 
   if (atom(form) || atom(cdr(form)) || atom(cdr(cdr(form)))) {
-    error("Illegal form ",form);
+    error("Illegal form ", form);
     /* NOTREACHED */
   }
 
@@ -3599,8 +3417,7 @@ Ldefselection()
       if (atom(cdr(cdr(buf)))) {
         error("Illegal form ", buf);
         /* NOTREACHED */
-      }
-      else {
+      } else {
         int sku, sten, num;
         char ss[4], ee[4];
 
@@ -3626,40 +3443,34 @@ Ldefselection()
         nkigo_data += num;
       }
       buf = cdr(cdr(cdr(buf)));
-    }
-    else {
-     /* 要素指定のとき */
+    } else {
+      /* 要素指定のとき */
       char xx[4], *xxp;
 
       e = car(buf);
       if (!numberp(e) && !stringp(e)) {
         error("Key or string data expected ", e);
         /* NOTREACHED */
-      }
-      else if (numberp(e)) {
+      } else if (numberp(e)) {
         numtostr(xnum(e), xx);
         xxp = xx;
-      }
-      else {
+      } else {
         xxp = xstring(e);
       }
 
-      for ( ; *xxp ; xxp += cswidth[cs] ) {
+      for (; *xxp; xxp += cswidth[cs]) {
         if (*xxp == SS2) {
           cs = G2;
-        }
-        else if (*xxp == SS3) {
+        } else if (*xxp == SS3) {
           cs = G3;
-        }
-        else if (*xxp & 0x80) {
+        } else if (*xxp & 0x80) {
           cs = G1;
-        }
-        else {
+        } else {
           cs = G0;
         }
         kigolen = kigolen + cswidth[cs];
       }
-      kigolen += 1;  /* 各要素の最後に \0 を入れる */
+      kigolen += 1; /* 各要素の最後に \0 を入れる */
       nkigo_data++;
       buf = cdr(buf);
     }
@@ -3675,7 +3486,7 @@ Ldefselection()
   /* 一覧を取り出す */
   while (!atom(kigo_list)) {
     if (!atom(cdr(kigo_list)) && (car(cdr(kigo_list)) == HYPHEN)) {
-    /* 範囲指定のとき */
+      /* 範囲指定のとき */
       int sku, sten, codeset = 0, num;
       char *ww, *sww, *eww, ss[4], ee[4], bak;
 
@@ -3698,8 +3509,7 @@ Ldefselection()
       }
       free(sww);
       kigo_list = cdr(cdr(cdr(kigo_list)));
-    }
-    else {
+    } else {
       /* 要素指定のとき */
       char xx[4], *xxp;
 
@@ -3707,8 +3517,7 @@ Ldefselection()
       if (numberp(e)) {
         numtostr(xnum(e), xx);
         xxp = xx;
-      }
-      else {
+      } else {
         xxp = xstring(e);
       }
       len = CANNA_mbstowcs(p, xxp, kigolen - (p - kigo_str));
@@ -3725,7 +3534,7 @@ Ldefselection()
     /* NOTREACHED */
   }
 
-  for (i = 0, p = kigo_str ; i < nkigo_data ; i++) {
+  for (i = 0, p = kigo_str; i < nkigo_data; i++) {
     akigo_data[i] = p;
     while (*p++)
       /* EMPTY */
@@ -3750,10 +3559,9 @@ Ldefselection()
   }
 
   /* シンボルの関数値としての定義 */
-  symbolpointer(sym)->mid = extrafunc->u.kigoptr->kigo_mode
-                          = CANNA_MODE_MAX_IMAGINARY_MODE + nothermodes;
-  symbolpointer(sym)->fid = extrafunc->fnum
-                          = CANNA_FN_MAX_FUNC + nothermodes;
+  symbolpointer(sym)->mid = extrafunc->u.kigoptr->kigo_mode =
+    CANNA_MODE_MAX_IMAGINARY_MODE + nothermodes;
+  symbolpointer(sym)->fid = extrafunc->fnum = CANNA_FN_MAX_FUNC + nothermodes;
 
   /* 実際に格納する */
   extrafunc->u.kigoptr->kigo_data = akigo_data;
@@ -3761,8 +3569,7 @@ Ldefselection()
   extrafunc->u.kigoptr->kigo_size = nkigo_data;
   if (stringp(md)) {
     extrafunc->display_name = WString(xstring(md));
-  }
-  else {
+  } else {
     extrafunc->display_name = NULL;
   }
 
@@ -3808,7 +3615,7 @@ Ldefmenu()
   }
 
   /* 引数を数える。ついでに表示文字列の文字数を数える */
-  for (n = 0, clen = 0, e = cdr(form) ; !atom(e) ; n++, e = cdr(e)) {
+  for (n = 0, clen = 0, e = cdr(form); !atom(e); n++, e = cdr(e)) {
     list l = car(e), d, fn;
     if (atom(l) || atom(cdr(l))) {
       error("Bad form ", form);
@@ -3830,22 +3637,22 @@ Ldefmenu()
     if (men) {
       menubody = men->body;
       /* タイトル文字をデータバッファにコピー */
-      for (i = 0, wp = men->titledata, wpp = men->titles, e = cdr(form) ;
-	   i < n ; i++, e = cdr(e)) {
-	len = CANNA_mbstowcs(wp, xstring(car(car(e))), 512);
-	*wpp++ = wp;
-	wp += len + 1;
+      for (i = 0, wp = men->titledata, wpp = men->titles, e = cdr(form); i < n;
+           i++, e = cdr(e)) {
+        len = CANNA_mbstowcs(wp, xstring(car(car(e))), 512);
+        *wpp++ = wp;
+        wp += len + 1;
 
-	menubody[i].flag = MENU_SUSPEND;
-	menubody[i].u.misc = (char *)car(cdr(car(e)));
+        menubody[i].flag = MENU_SUSPEND;
+        menubody[i].u.misc = (char *)car(cdr(car(e)));
       }
       men->nentries = n;
 
       /* シンボルの関数値としての定義 */
-      symbolpointer(sym)->mid =
-	men->modeid = CANNA_MODE_MAX_IMAGINARY_MODE + nothermodes;
-      symbolpointer(sym)->fid =
-	extrafunc->fnum = CANNA_FN_MAX_FUNC + nothermodes;
+      symbolpointer(sym)->mid = men->modeid =
+        CANNA_MODE_MAX_IMAGINARY_MODE + nothermodes;
+      symbolpointer(sym)->fid = extrafunc->fnum =
+        CANNA_FN_MAX_FUNC + nothermodes;
       extrafunc->keyword = EXTRA_FUNC_DEFMENU;
       extrafunc->display_name = NULL;
       extrafunc->u.menuptr = men;
@@ -3865,8 +3672,7 @@ Ldefmenu()
 #endif /* NO_EXTEND_MENU */
 
 static list
-Lsetinifunc(n)
-int n;
+Lsetinifunc(int n)
 {
   unsigned char fseq[256];
   int i, len;
@@ -3884,7 +3690,7 @@ int n;
       error("Insufficient memory", NON);
       /* NOTREACHED */
     }
-    for (i = 0 ; i < len ; i++) {
+    for (i = 0; i < len; i++) {
       initfunc[i] = fseq[i];
     }
     initfunc[i] = 0;
@@ -3895,74 +3701,65 @@ int n;
 }
 
 static list
-Lboundp(n)
-int n;
+Lboundp(int n)
 {
   list e;
   struct atomcell *sym;
 
-  argnchk("boundp",1);
+  argnchk("boundp", 1);
   e = pop1();
 
   if (!atom(e)) {
     error("boundp: bad arg ", e);
     /* NOTREACHED */
-  }
-  else if (constp(e)) {
+  } else if (constp(e)) {
     error("boundp: bad arg ", e);
     /* NOTREACHED */
   }
 
   if (assq(e, *esp)) {
     return T;
-  }
-  else if ((sym = symbolpointer(e))->valfunc) {
+  } else if ((sym = symbolpointer(e))->valfunc) {
     return T;
-  }
-  else {
+  } else {
     if (sym->value != (list)UNBOUND) {
       return T;
-    }
-    else {
+    } else {
       return NIL;
     }
   }
 }
 
 static list
-Lfboundp(n)
-int n;
+Lfboundp(int n)
 {
   list e;
 
-  argnchk("fboundp",1);
+  argnchk("fboundp", 1);
   e = pop1();
 
   if (!atom(e)) {
     error("fboundp: bad arg ", e);
     /* NOTREACHED */
-  }
-  else if (constp(e)) {
+  } else if (constp(e)) {
     error("fboundp: bad arg ", e);
     /* NOTREACHED */
   }
   if (symbolpointer(e)->ftype == UNDEF) {
     return NIL;
-  }
-  else {
+  } else {
     return T;
   }
 }
 
 static list
-Lgetenv(n)
-int n;
+Lgetenv(int n)
 {
   list e;
   char strbuf[256], *ret;
   list retval;
 
-  argnchk("getenv",1);
+  argnchk("getenv", 1);
   e = sp[0];
 
   if (!stringp(e)) {
@@ -3975,8 +3772,7 @@ int n;
   ret = getenv(strbuf);
   if (ret) {
     retval = copystring(ret, strlen(ret));
-  }
-  else {
+  } else {
     retval = NIL;
   }
   pop1();
@@ -3984,12 +3780,11 @@ int n;
 }
 
 static list
-LdefEscSeq(n)
-int n;
+LdefEscSeq(int n)
 {
   extern void (*keyconvCallback)();
 
-  argnchk("define-esc-sequence",3);
+  argnchk("define-esc-sequence", 3);
 
   if (!stringp(sp[2])) {
     error("define-esc-sequence: bad arg ", sp[2]);
@@ -4004,23 +3799,22 @@ int n;
     /* NOTREACHED */
   }
   if (keyconvCallback) {
-    (*keyconvCallback)(CANNA_CTERMINAL,
-		       xstring(sp[2]), xstring(sp[1]), xnum(sp[0]));
+    (*keyconvCallback)(CANNA_CTERMINAL, xstring(sp[2]), xstring(sp[1]),
+                       xnum(sp[0]));
   }
   pop(3);
   return NIL;
 }
 
 static list
-Lconcat(n)
-int n;
+Lconcat(int n)
 {
   list t, res;
-  int  i, len;
+  int i, len;
   char *p;
 
   /* まず長さを数える。 */
-  for (len= 0, i = n ; i-- ;) {
+  for (len = 0, i = n; i--;) {
     t = sp[i];
     if (!stringp(t)) {
       lisp_strerr("concat", t);
@@ -4029,7 +3823,7 @@ int n;
     len += xstrlen(t);
   }
   res = allocstring(len);
-  for (p = xstring(res), i = n ; i-- ;) {
+  for (p = xstring(res), i = n; i--;) {
     t = sp[i];
     len = xstrlen(t);
     Strncpy(p, xstring(t), len);
@@ -4042,50 +3836,39 @@ int n;
 
 /* lispfuncend */
 
-
 /* 変数アクセスのための関数 */
 
 static list
-VTorNIL(var, setp, arg)
-BYTE *var;
-int setp;
-list arg;
+VTorNIL(BYTE *var, int setp, list arg)
 {
   if (setp == VALSET) {
     *var = (arg == NIL) ? 0 : 1;
     return arg;
-  }
-  else { /* get */
+  } else { /* get */
     return *var ? T : NIL;
   }
 }
 
 static list
-StrAcc(var, setp, arg)
-char **var;
-int setp;
-list arg;
+StrAcc(char **var, int setp, list arg)
 {
   if (setp == VALSET) {
     if (null(arg) || stringp(arg)) {
-	free(*var);
+      free(*var);
       if (stringp(arg)) {
-	*var = malloc(strlen(xstring(arg)) + 1);
-	if (*var) {
-	  strcpy(*var, xstring(arg));
-	  return arg;
-	}
-	else {
-	  error("Insufficient memory.", NON);
-	  /* NOTREACHED */
-	}
+        *var = malloc(strlen(xstring(arg)) + 1);
+        if (*var) {
+          strcpy(*var, xstring(arg));
+          return arg;
+        } else {
+          error("Insufficient memory.", NON);
+          /* NOTREACHED */
+        }
+      } else {
+        *var = NULL;
+        return NIL;
       }
-      else {
-	*var = NULL;
-	return NIL;
-      }
-    }
-    else {
+    } else {
       lisp_strerr(NULL, arg);
       /* NOTREACHED */
     }
@@ -4093,25 +3876,20 @@ list arg;
   /* else { .. */
   if (*var) {
     return copystring(*var, strlen(*var));
-  }
-  else {
+  } else {
     return NIL;
   }
   /* end else .. } */
 }
 
 static list
-NumAcc(var, setp, arg)
-int *var;
-int setp;
-list arg;
+NumAcc(int *var, int setp, list arg)
 {
   if (setp == VALSET) {
     if (numberp(arg)) {
       *var = (int)xnum(arg);
       return arg;
-    }
-    else {
+    } else {
       numerr(NULL, arg);
       /* NOTREACHED */
     }
@@ -4123,15 +3901,24 @@ list arg;
 
 /* 実際のアクセス関数 */
 
-#define DEFVAR(fn, acc, ty, var) \
-static list fn(setp, arg) int setp; list arg; { \
-  extern ty var; return acc(&var, setp, arg); }
+#define DEFVAR(fn, acc, ty, var)                                               \
+  static list fn(setp, arg) int setp;                                          \
+  list arg;                                                                    \
+  {                                                                            \
+    extern ty var;                                                             \
+    return acc(&var, setp, arg);                                               \
+  }
 
-#define DEFVAREX(fn, acc, var) \
-static list fn(setp, arg) int setp; list arg; { \
-  extern struct CannaConfig cannaconf; return acc(&var, setp, arg); }
+#define DEFVAREX(fn, acc, var)                                                 \
+  static list fn(setp, arg) int setp;                                          \
+  list arg;                                                                    \
+  {                                                                            \
+    extern struct CannaConfig cannaconf;                                       \
+    return acc(&var, setp, arg);                                               \
+  }
 
-static list Vnkouhobunsetsu(setp, arg) int setp; list arg;
+static list
+Vnkouhobunsetsu(int setp, list arg)
 {
   extern int nKouhoBunsetsu;
 
@@ -4148,10 +3935,10 @@ static list Vnkouhobunsetsu(setp, arg) int setp; list arg;
 }
 
 static list
-VCannaDir(setp, arg) int setp; list arg;
+VCannaDir(int setp, list arg)
 {
 #ifdef __HAIKU__
-  extern char	basepath[];
+  extern char basepath[];
   char *canna_dir = basepath;
 #else
   char *canna_dir = CANNALIBDIR;
@@ -4159,42 +3946,39 @@ VCannaDir(setp, arg) int setp; list arg;
 
   if (setp == VALGET) {
     return StrAcc(&canna_dir, setp, arg);
-  }
-  else {
+  } else {
     return NIL;
   }
 }
 
-static list VCodeInput(setp, arg) int setp; list arg;
+static list
+VCodeInput(int setp, list arg)
 {
   extern struct CannaConfig cannaconf;
-  static char *input_code[CANNA_MAX_CODE] = {"jis", "sjis", "kuten"};
+  static char *input_code[CANNA_MAX_CODE] = { "jis", "sjis", "kuten" };
 
   if (setp == VALSET) {
     if (null(arg) || stringp(arg)) {
       if (stringp(arg)) {
-	int i;
-	char *s = xstring(arg);
+        int i;
+        char *s = xstring(arg);
 
-	for (i = 0 ; i < CANNA_MAX_CODE ; i++) {
-	  if (!strcmp(s, input_code[i])) {
-	    cannaconf.code_input = i;
-	    break;
-	  }
-	}
-	if (i < CANNA_MAX_CODE) {
-	  return arg;
-	}
-	else {
-	  return NIL;
-	}
+        for (i = 0; i < CANNA_MAX_CODE; i++) {
+          if (!strcmp(s, input_code[i])) {
+            cannaconf.code_input = i;
+            break;
+          }
+        }
+        if (i < CANNA_MAX_CODE) {
+          return arg;
+        } else {
+          return NIL;
+        }
+      } else {
+        cannaconf.code_input = 0; /* use default */
+        return copystring(input_code[0], strlen(input_code[0]));
       }
-      else {
-	cannaconf.code_input = 0; /* use default */
-	return copystring(input_code[0], strlen(input_code[0]));
-      }
-    }
-    else {
+    } else {
       lisp_strerr(NULL, arg);
       /* NOTREACHED */
     }
@@ -4203,60 +3987,58 @@ static list VCodeInput(setp, arg) int setp; list arg;
   if (/* 0 <= cannaconf.code_input &&  unsigned にしたので冗長になった */
       cannaconf.code_input <= CANNA_CODE_KUTEN) {
     return copystring(input_code[cannaconf.code_input],
-		      strlen(input_code[cannaconf.code_input]));
-  }
-  else {
+                      strlen(input_code[cannaconf.code_input]));
+  } else {
     return NIL;
   }
   /* end else .. } */
 }
 
+DEFVAR(Vromkana, StrAcc, char *, RomkanaTable)
+DEFVAR(Venglish, StrAcc, char *, EnglishTable)
 
-DEFVAR(Vromkana         ,StrAcc  ,char * ,RomkanaTable)
-DEFVAR(Venglish         ,StrAcc  ,char * ,EnglishTable)
+DEFVAREX(Vnhenkan, NumAcc, cannaconf.kouho_threshold)
+DEFVAREX(Vndisconnect, NumAcc, cannaconf.strokelimit)
+DEFVAREX(VCannaVersion, NumAcc, cannaconf.CannaVersion)
+DEFVAREX(VIndexSeparator, NumAcc, cannaconf.indexSeparator)
 
-DEFVAREX(Vnhenkan       ,NumAcc          ,cannaconf.kouho_threshold)
-DEFVAREX(Vndisconnect   ,NumAcc          ,cannaconf.strokelimit)
-DEFVAREX(VCannaVersion  ,NumAcc          ,cannaconf.CannaVersion)
-DEFVAREX(VIndexSeparator,NumAcc          ,cannaconf.indexSeparator)
-
-DEFVAREX(Vgakushu       ,VTorNIL         ,cannaconf.Gakushu)
-DEFVAREX(Vcursorw       ,VTorNIL         ,cannaconf.CursorWrap)
-DEFVAREX(Vselectd       ,VTorNIL         ,cannaconf.SelectDirect)
-DEFVAREX(Vnumeric       ,VTorNIL         ,cannaconf.HexkeySelect)
-DEFVAREX(Vbunsets       ,VTorNIL         ,cannaconf.BunsetsuKugiri)
-DEFVAREX(Vcharact       ,VTorNIL         ,cannaconf.ChBasedMove)
-DEFVAREX(Vreverse       ,VTorNIL         ,cannaconf.ReverseWidely)
-DEFVAREX(VreverseWord   ,VTorNIL         ,cannaconf.ReverseWord)
-DEFVAREX(Vquitich       ,VTorNIL         ,cannaconf.QuitIchiranIfEnd)
-DEFVAREX(Vkakutei       ,VTorNIL         ,cannaconf.kakuteiIfEndOfBunsetsu)
-DEFVAREX(Vstayaft       ,VTorNIL         ,cannaconf.stayAfterValidate)
-DEFVAREX(Vbreakin       ,VTorNIL         ,cannaconf.BreakIntoRoman)
-DEFVAREX(Vgrammati      ,VTorNIL         ,cannaconf.grammaticalQuestion)
-DEFVAREX(Vforceka       ,VTorNIL         ,cannaconf.forceKana)
-DEFVAREX(Vkouhoco       ,VTorNIL         ,cannaconf.kCount)
-DEFVAREX(Vauto          ,VTorNIL         ,cannaconf.chikuji)
-DEFVAREX(VlearnNumTy    ,VTorNIL         ,cannaconf.LearnNumericalType)
-DEFVAREX(VBSasQuit      ,VTorNIL         ,cannaconf.BackspaceBehavesAsQuit)
-DEFVAREX(Vinhibi        ,VTorNIL         ,cannaconf.iListCB)
-DEFVAREX(Vkeepcupos     ,VTorNIL         ,cannaconf.keepCursorPosition)
-DEFVAREX(VAbandon       ,VTorNIL         ,cannaconf.abandonIllegalPhono)
-DEFVAREX(VHexStyle      ,VTorNIL         ,cannaconf.hexCharacterDefiningStyle)
-DEFVAREX(VKojin         ,VTorNIL         ,cannaconf.kojin)
-DEFVAREX(VIndexHankaku  ,VTorNIL         ,cannaconf.indexHankaku)
-DEFVAREX(VAllowNext     ,VTorNIL         ,cannaconf.allowNextInput)
-DEFVAREX(VkanaGaku      ,VTorNIL         ,cannaconf.doKatakanaGakushu)
-DEFVAREX(VhiraGaku      ,VTorNIL         ,cannaconf.doHiraganaGakushu)
-DEFVAREX(VChikujiContinue ,VTorNIL       ,cannaconf.ChikujiContinue)
-DEFVAREX(VRenbunContinue  ,VTorNIL       ,cannaconf.RenbunContinue)
-DEFVAREX(VMojishuContinue ,VTorNIL       ,cannaconf.MojishuContinue)
-DEFVAREX(VcRealBS       ,VTorNIL         ,cannaconf.chikujiRealBackspace)
-DEFVAREX(VIgnoreCase    ,VTorNIL         ,cannaconf.ignore_case)
-DEFVAREX(VRomajiYuusen  ,VTorNIL         ,cannaconf.romaji_yuusen)
-DEFVAREX(VAutoSync      ,VTorNIL         ,cannaconf.auto_sync)
-DEFVAREX(VQuicklyEscape ,VTorNIL         ,cannaconf.quickly_escape)
-DEFVAREX(VInhibitHankana,VTorNIL         ,cannaconf.InhibitHankakuKana)
-DEFVAREX(VDelayConnect  ,VTorNIL         ,cannaconf.DelayConnect)
+DEFVAREX(Vgakushu, VTorNIL, cannaconf.Gakushu)
+DEFVAREX(Vcursorw, VTorNIL, cannaconf.CursorWrap)
+DEFVAREX(Vselectd, VTorNIL, cannaconf.SelectDirect)
+DEFVAREX(Vnumeric, VTorNIL, cannaconf.HexkeySelect)
+DEFVAREX(Vbunsets, VTorNIL, cannaconf.BunsetsuKugiri)
+DEFVAREX(Vcharact, VTorNIL, cannaconf.ChBasedMove)
+DEFVAREX(Vreverse, VTorNIL, cannaconf.ReverseWidely)
+DEFVAREX(VreverseWord, VTorNIL, cannaconf.ReverseWord)
+DEFVAREX(Vquitich, VTorNIL, cannaconf.QuitIchiranIfEnd)
+DEFVAREX(Vkakutei, VTorNIL, cannaconf.kakuteiIfEndOfBunsetsu)
+DEFVAREX(Vstayaft, VTorNIL, cannaconf.stayAfterValidate)
+DEFVAREX(Vbreakin, VTorNIL, cannaconf.BreakIntoRoman)
+DEFVAREX(Vgrammati, VTorNIL, cannaconf.grammaticalQuestion)
+DEFVAREX(Vforceka, VTorNIL, cannaconf.forceKana)
+DEFVAREX(Vkouhoco, VTorNIL, cannaconf.kCount)
+DEFVAREX(Vauto, VTorNIL, cannaconf.chikuji)
+DEFVAREX(VlearnNumTy, VTorNIL, cannaconf.LearnNumericalType)
+DEFVAREX(VBSasQuit, VTorNIL, cannaconf.BackspaceBehavesAsQuit)
+DEFVAREX(Vinhibi, VTorNIL, cannaconf.iListCB)
+DEFVAREX(Vkeepcupos, VTorNIL, cannaconf.keepCursorPosition)
+DEFVAREX(VAbandon, VTorNIL, cannaconf.abandonIllegalPhono)
+DEFVAREX(VHexStyle, VTorNIL, cannaconf.hexCharacterDefiningStyle)
+DEFVAREX(VKojin, VTorNIL, cannaconf.kojin)
+DEFVAREX(VIndexHankaku, VTorNIL, cannaconf.indexHankaku)
+DEFVAREX(VAllowNext, VTorNIL, cannaconf.allowNextInput)
+DEFVAREX(VkanaGaku, VTorNIL, cannaconf.doKatakanaGakushu)
+DEFVAREX(VhiraGaku, VTorNIL, cannaconf.doHiraganaGakushu)
+DEFVAREX(VChikujiContinue, VTorNIL, cannaconf.ChikujiContinue)
+DEFVAREX(VRenbunContinue, VTorNIL, cannaconf.RenbunContinue)
+DEFVAREX(VMojishuContinue, VTorNIL, cannaconf.MojishuContinue)
+DEFVAREX(VcRealBS, VTorNIL, cannaconf.chikujiRealBackspace)
+DEFVAREX(VIgnoreCase, VTorNIL, cannaconf.ignore_case)
+DEFVAREX(VRomajiYuusen, VTorNIL, cannaconf.romaji_yuusen)
+DEFVAREX(VAutoSync, VTorNIL, cannaconf.auto_sync)
+DEFVAREX(VQuicklyEscape, VTorNIL, cannaconf.quickly_escape)
+DEFVAREX(VInhibitHankana, VTorNIL, cannaconf.InhibitHankakuKana)
+DEFVAREX(VDelayConnect, VTorNIL, cannaconf.DelayConnect)
 
 #ifdef DEFINE_SOMETHING
 DEFVAR(Vchikuji_debug, VTorNIL, int, chikuji_debug)
@@ -4265,57 +4047,57 @@ DEFVAR(Vchikuji_debug, VTorNIL, int, chikuji_debug)
 /* Lisp の関数と C の関数の対応表 */
 
 static struct atomdefs initatom[] = {
-  {"quote"		,SPECIAL,Lquote		},
-  {"setq"		,SPECIAL,Lsetq		},
-  {"set"		,SUBR	,Lset		},
-  {"equal"		,SUBR	,Lequal		},
-  {"="			,SUBR	,Lequal		},
-  {">"			,SUBR	,Lgreaterp	},
-  {"<"			,SUBR	,Llessp		},
-  {"progn"		,SPECIAL,Lprogn		},
-  {"eq"			,SUBR	,Leq   		},
-  {"cond"		,SPECIAL,Lcond		},
-  {"null"		,SUBR	,Lnull		},
-  {"not"		,SUBR	,Lnull		},
-  {"and"		,SPECIAL,Land		},
-  {"or"			,SPECIAL,Lor		},
-  {"+"			,SUBR	,Lplus		},
-  {"-"			,SUBR	,Ldiff		},
-  {"*"			,SUBR	,Ltimes		},
-  {"/"			,SUBR	,Lquo		},
-  {"%"			,SUBR	,Lrem		},
-  {"gc"			,SUBR	,Lgc		},
-  {"load"		,SUBR	,Lload		},
-  {"list"		,SUBR	,Llist		},
-  {"sequence"		,SUBR	,Llist		},
-  {"defun"		,SPECIAL,Ldefun		},
-  {"defmacro"		,SPECIAL,Ldefmacro	},
-  {"cons"		,SUBR	,Lcons		},
-  {"car"		,SUBR	,Lcar		},
-  {"cdr"		,SUBR	,Lcdr		},
-  {"atom"		,SUBR	,Latom		},
-  {"let"		,CMACRO	,Llet		},
-  {"if"			,CMACRO	,Lif		},
-  {"boundp"		,SUBR	,Lboundp	},
-  {"fboundp"		,SUBR	,Lfboundp	},
-  {"getenv"		,SUBR	,Lgetenv	},
-  {"copy-symbol"	,SUBR	,Lcopysym	},
-  {"concat"		,SUBR	,Lconcat	},
-  {S_FN_UseDictionary	,SUBR	,Lusedic	},
-  {S_SetModeDisp	,SUBR	,Lmodestr	},
-  {S_SetKey		,SUBR	,Lsetkey	},
-  {S_GSetKey		,SUBR	,Lgsetkey	},
-  {S_UnbindKey		,SUBR	,Lunbindkey	},
-  {S_GUnbindKey		,SUBR	,Lgunbindkey	},
-  {S_DefMode		,SPECIAL,Ldefmode	},
-  {S_DefSymbol		,SPECIAL,Ldefsym	},
+  { "quote", SPECIAL, Lquote },
+  { "setq", SPECIAL, Lsetq },
+  { "set", SUBR, Lset },
+  { "equal", SUBR, Lequal },
+  { "=", SUBR, Lequal },
+  { ">", SUBR, Lgreaterp },
+  { "<", SUBR, Llessp },
+  { "progn", SPECIAL, Lprogn },
+  { "eq", SUBR, Leq },
+  { "cond", SPECIAL, Lcond },
+  { "null", SUBR, Lnull },
+  { "not", SUBR, Lnull },
+  { "and", SPECIAL, Land },
+  { "or", SPECIAL, Lor },
+  { "+", SUBR, Lplus },
+  { "-", SUBR, Ldiff },
+  { "*", SUBR, Ltimes },
+  { "/", SUBR, Lquo },
+  { "%", SUBR, Lrem },
+  { "gc", SUBR, Lgc },
+  { "load", SUBR, Lload },
+  { "list", SUBR, Llist },
+  { "sequence", SUBR, Llist },
+  { "defun", SPECIAL, Ldefun },
+  { "defmacro", SPECIAL, Ldefmacro },
+  { "cons", SUBR, Lcons },
+  { "car", SUBR, Lcar },
+  { "cdr", SUBR, Lcdr },
+  { "atom", SUBR, Latom },
+  { "let", CMACRO, Llet },
+  { "if", CMACRO, Lif },
+  { "boundp", SUBR, Lboundp },
+  { "fboundp", SUBR, Lfboundp },
+  { "getenv", SUBR, Lgetenv },
+  { "copy-symbol", SUBR, Lcopysym },
+  { "concat", SUBR, Lconcat },
+  { S_FN_UseDictionary, SUBR, Lusedic },
+  { S_SetModeDisp, SUBR, Lmodestr },
+  { S_SetKey, SUBR, Lsetkey },
+  { S_GSetKey, SUBR, Lgsetkey },
+  { S_UnbindKey, SUBR, Lunbindkey },
+  { S_GUnbindKey, SUBR, Lgunbindkey },
+  { S_DefMode, SPECIAL, Ldefmode },
+  { S_DefSymbol, SPECIAL, Ldefsym },
 #ifndef NO_EXTEND_MENU
-  {S_DefSelection	,SPECIAL,Ldefselection	},
-  {S_DefMenu		,SPECIAL,Ldefmenu	},
+  { S_DefSelection, SPECIAL, Ldefselection },
+  { S_DefMenu, SPECIAL, Ldefmenu },
 #endif
-  {S_SetInitFunc	,SUBR	,Lsetinifunc	},
-  {S_defEscSequence	,SUBR	,LdefEscSeq	},
-  {0			,UNDEF	,0		}, /* DUMMY */
+  { S_SetInitFunc, SUBR, Lsetinifunc },
+  { S_defEscSequence, SUBR, LdefEscSeq },
+  { 0, UNDEF, 0 }, /* DUMMY */
 };
 
 static void
@@ -4323,7 +4105,7 @@ deflispfunc()
 {
   struct atomdefs *p;
 
-  for (p = initatom ; p->symname ; p++) {
+  for (p = initatom; p->symname; p++) {
     struct atomcell *atomp;
     list temp;
 
@@ -4336,61 +4118,60 @@ deflispfunc()
   }
 }
 
-
 /* 変数表 */
 
 static struct cannavardefs cannavars[] = {
-  {S_VA_RomkanaTable		,Vromkana},
-  {S_VA_EnglishTable		,Venglish},
-  {S_VA_CursorWrap		,Vcursorw},
-  {S_VA_SelectDirect		,Vselectd},
-  {S_VA_NumericalKeySelect	,Vnumeric},
-  {S_VA_BunsetsuKugiri		,Vbunsets},
-  {S_VA_CharacterBasedMove	,Vcharact},
-  {S_VA_ReverseWidely		,Vreverse},
-  {S_VA_ReverseWord		,VreverseWord},
-  {S_VA_Gakushu			,Vgakushu},
-  {S_VA_QuitIfEOIchiran		,Vquitich},
-  {S_VA_KakuteiIfEOBunsetsu	,Vkakutei},
-  {S_VA_StayAfterValidate	,Vstayaft},
-  {S_VA_BreakIntoRoman		,Vbreakin},
-  {S_VA_NHenkanForIchiran	,Vnhenkan},
-  {S_VA_GrammaticalQuestion	,Vgrammati},
-  {"gramatical-question"	,Vgrammati}, /* 以前のスペルミスの救済 */
-  {S_VA_ForceKana		,Vforceka},
-  {S_VA_KouhoCount		,Vkouhoco},
-  {S_VA_Auto			,Vauto},
-  {S_VA_LearnNumericalType	,VlearnNumTy},
-  {S_VA_BackspaceBehavesAsQuit	,VBSasQuit},
-  {S_VA_InhibitListCallback	,Vinhibi},
-  {S_VA_nKouhoBunsetsu		,Vnkouhobunsetsu},
-  {S_VA_keepCursorPosition	,Vkeepcupos},
-  {S_VA_CannaVersion		,VCannaVersion},
-  {S_VA_Abandon			,VAbandon},
-  {S_VA_HexDirect		,VHexStyle},
-  {S_VA_CannaDir		,VCannaDir},
-  {S_VA_Kojin			,VKojin},
-  {S_VA_IndexHankaku	       	,VIndexHankaku},
-  {S_VA_IndexSeparator	       	,VIndexSeparator},
-  {S_VA_AllowNextInput		,VAllowNext},
-  {S_VA_doKatakanaGakushu	,VkanaGaku},
-  {S_VA_doHiraganaGakushu	,VhiraGaku},
-#ifdef	DEFINE_SOMETHING
-  {S_VA_chikuji_debug		,Vchikuji_debug},
-#endif	/* DEFINE_SOMETHING */
-  {S_VA_ChikujiContinue		,VChikujiContinue},
-  {S_VA_RenbunContinue		,VRenbunContinue},
-  {S_VA_MojishuContinue		,VMojishuContinue},
-  {S_VA_ChikujiRealBackspace	,VcRealBS},
-  {S_VA_nDisconnectServer	,Vndisconnect},
-  {S_VA_ignoreCase		,VIgnoreCase},
-  {S_VA_RomajiYuusen		,VRomajiYuusen},
-  {S_VA_AutoSync		,VAutoSync},
-  {S_VA_QuicklyEscape		,VQuicklyEscape},
-  {S_VA_InhibitHanKana		,VInhibitHankana},
-  {S_VA_CodeInput		,VCodeInput},
-  {S_VA_DelayConnect		,VDelayConnect},
-  {0				,0},
+  { S_VA_RomkanaTable, Vromkana },
+  { S_VA_EnglishTable, Venglish },
+  { S_VA_CursorWrap, Vcursorw },
+  { S_VA_SelectDirect, Vselectd },
+  { S_VA_NumericalKeySelect, Vnumeric },
+  { S_VA_BunsetsuKugiri, Vbunsets },
+  { S_VA_CharacterBasedMove, Vcharact },
+  { S_VA_ReverseWidely, Vreverse },
+  { S_VA_ReverseWord, VreverseWord },
+  { S_VA_Gakushu, Vgakushu },
+  { S_VA_QuitIfEOIchiran, Vquitich },
+  { S_VA_KakuteiIfEOBunsetsu, Vkakutei },
+  { S_VA_StayAfterValidate, Vstayaft },
+  { S_VA_BreakIntoRoman, Vbreakin },
+  { S_VA_NHenkanForIchiran, Vnhenkan },
+  { S_VA_GrammaticalQuestion, Vgrammati },
+  { "gramatical-question", Vgrammati }, /* 以前のスペルミスの救済 */
+  { S_VA_ForceKana, Vforceka },
+  { S_VA_KouhoCount, Vkouhoco },
+  { S_VA_Auto, Vauto },
+  { S_VA_LearnNumericalType, VlearnNumTy },
+  { S_VA_BackspaceBehavesAsQuit, VBSasQuit },
+  { S_VA_InhibitListCallback, Vinhibi },
+  { S_VA_nKouhoBunsetsu, Vnkouhobunsetsu },
+  { S_VA_keepCursorPosition, Vkeepcupos },
+  { S_VA_CannaVersion, VCannaVersion },
+  { S_VA_Abandon, VAbandon },
+  { S_VA_HexDirect, VHexStyle },
+  { S_VA_CannaDir, VCannaDir },
+  { S_VA_Kojin, VKojin },
+  { S_VA_IndexHankaku, VIndexHankaku },
+  { S_VA_IndexSeparator, VIndexSeparator },
+  { S_VA_AllowNextInput, VAllowNext },
+  { S_VA_doKatakanaGakushu, VkanaGaku },
+  { S_VA_doHiraganaGakushu, VhiraGaku },
+#ifdef DEFINE_SOMETHING
+  { S_VA_chikuji_debug, Vchikuji_debug },
+#endif /* DEFINE_SOMETHING */
+  { S_VA_ChikujiContinue, VChikujiContinue },
+  { S_VA_RenbunContinue, VRenbunContinue },
+  { S_VA_MojishuContinue, VMojishuContinue },
+  { S_VA_ChikujiRealBackspace, VcRealBS },
+  { S_VA_nDisconnectServer, Vndisconnect },
+  { S_VA_ignoreCase, VIgnoreCase },
+  { S_VA_RomajiYuusen, VRomajiYuusen },
+  { S_VA_AutoSync, VAutoSync },
+  { S_VA_QuicklyEscape, VQuicklyEscape },
+  { S_VA_InhibitHanKana, VInhibitHankana },
+  { S_VA_CodeInput, VCodeInput },
+  { S_VA_DelayConnect, VDelayConnect },
+  { 0, 0 },
 };
 
 static void
@@ -4398,59 +4179,57 @@ defcannavar()
 {
   struct cannavardefs *p;
 
-  for (p = cannavars ; p->varname ; p++) {
+  for (p = cannavars; p->varname; p++) {
     symbolpointer(getatmz(p->varname))->valfunc = p->varfunc;
   }
 }
 
-
-
 /* モード表 */
 
 static struct cannamodedefs cannamodes[] = {
-  {S_AlphaMode			,CANNA_MODE_AlphaMode},
-  {S_YomiganaiMode		,CANNA_MODE_EmptyMode},
-  {S_YomiMode			,CANNA_MODE_YomiMode},
-  {S_MojishuMode		,CANNA_MODE_JishuMode},
-  {S_TankouhoMode		,CANNA_MODE_TankouhoMode},
-  {S_IchiranMode		,CANNA_MODE_IchiranMode},
-  {S_KigouMode			,CANNA_MODE_KigoMode},
-  {S_YesNoMode			,CANNA_MODE_YesNoMode},
-  {S_OnOffMode			,CANNA_MODE_OnOffMode},
-  {S_ShinshukuMode		,CANNA_MODE_AdjustBunsetsuMode},
+  { S_AlphaMode, CANNA_MODE_AlphaMode },
+  { S_YomiganaiMode, CANNA_MODE_EmptyMode },
+  { S_YomiMode, CANNA_MODE_YomiMode },
+  { S_MojishuMode, CANNA_MODE_JishuMode },
+  { S_TankouhoMode, CANNA_MODE_TankouhoMode },
+  { S_IchiranMode, CANNA_MODE_IchiranMode },
+  { S_KigouMode, CANNA_MODE_KigoMode },
+  { S_YesNoMode, CANNA_MODE_YesNoMode },
+  { S_OnOffMode, CANNA_MODE_OnOffMode },
+  { S_ShinshukuMode, CANNA_MODE_AdjustBunsetsuMode },
 
-  {S_AutoYomiMode		,CANNA_MODE_ChikujiYomiMode},
-  {S_AutoBunsetsuMode		,CANNA_MODE_ChikujiTanMode},
+  { S_AutoYomiMode, CANNA_MODE_ChikujiYomiMode },
+  { S_AutoBunsetsuMode, CANNA_MODE_ChikujiTanMode },
 
-  {S_HenkanNyuuryokuMode	,CANNA_MODE_HenkanNyuryokuMode},
-  {S_HexMode			,CANNA_MODE_HexMode},
-  {S_BushuMode			,CANNA_MODE_BushuMode},
-  {S_ExtendMode			,CANNA_MODE_ExtendMode},
-  {S_RussianMode		,CANNA_MODE_RussianMode},
-  {S_GreekMode			,CANNA_MODE_GreekMode},
-  {S_LineMode			,CANNA_MODE_LineMode},
-  {S_ChangingServerMode		,CANNA_MODE_ChangingServerMode},
-  {S_HenkanMethodMode		,CANNA_MODE_HenkanMethodMode},
-  {S_DeleteDicMode		,CANNA_MODE_DeleteDicMode},
-  {S_TourokuMode		,CANNA_MODE_TourokuMode},
-  {S_TourokuHinshiMode		,CANNA_MODE_TourokuHinshiMode},
-  {S_TourokuDicMode		,CANNA_MODE_TourokuDicMode},
-  {S_QuotedInsertMode		,CANNA_MODE_QuotedInsertMode},
-  {S_BubunMuhenkanMode		,CANNA_MODE_BubunMuhenkanMode},
-  {S_MountDicMode		,CANNA_MODE_MountDicMode},
-  {S_ZenHiraHenkanMode		,CANNA_MODE_ZenHiraHenkanMode},
-  {S_HanHiraHenkanMode		,CANNA_MODE_HanHiraHenkanMode},
-  {S_ZenKataHenkanMode		,CANNA_MODE_ZenKataHenkanMode},
-  {S_HanKataHenkanMode		,CANNA_MODE_HanKataHenkanMode},
-  {S_ZenAlphaHenkanMode		,CANNA_MODE_ZenAlphaHenkanMode},
-  {S_HanAlphaHenkanMode		,CANNA_MODE_HanAlphaHenkanMode},
-  {S_ZenHiraKakuteiMode		,CANNA_MODE_ZenHiraKakuteiMode},
-  {S_HanHiraKakuteiMode		,CANNA_MODE_HanHiraKakuteiMode},
-  {S_ZenKataKakuteiMode		,CANNA_MODE_ZenKataKakuteiMode},
-  {S_HanKataKakuteiMode		,CANNA_MODE_HanKataKakuteiMode},
-  {S_ZenAlphaKakuteiMode	,CANNA_MODE_ZenAlphaKakuteiMode},
-  {S_HanAlphaKakuteiMode	,CANNA_MODE_HanAlphaKakuteiMode},
-  {0				,0},
+  { S_HenkanNyuuryokuMode, CANNA_MODE_HenkanNyuryokuMode },
+  { S_HexMode, CANNA_MODE_HexMode },
+  { S_BushuMode, CANNA_MODE_BushuMode },
+  { S_ExtendMode, CANNA_MODE_ExtendMode },
+  { S_RussianMode, CANNA_MODE_RussianMode },
+  { S_GreekMode, CANNA_MODE_GreekMode },
+  { S_LineMode, CANNA_MODE_LineMode },
+  { S_ChangingServerMode, CANNA_MODE_ChangingServerMode },
+  { S_HenkanMethodMode, CANNA_MODE_HenkanMethodMode },
+  { S_DeleteDicMode, CANNA_MODE_DeleteDicMode },
+  { S_TourokuMode, CANNA_MODE_TourokuMode },
+  { S_TourokuHinshiMode, CANNA_MODE_TourokuHinshiMode },
+  { S_TourokuDicMode, CANNA_MODE_TourokuDicMode },
+  { S_QuotedInsertMode, CANNA_MODE_QuotedInsertMode },
+  { S_BubunMuhenkanMode, CANNA_MODE_BubunMuhenkanMode },
+  { S_MountDicMode, CANNA_MODE_MountDicMode },
+  { S_ZenHiraHenkanMode, CANNA_MODE_ZenHiraHenkanMode },
+  { S_HanHiraHenkanMode, CANNA_MODE_HanHiraHenkanMode },
+  { S_ZenKataHenkanMode, CANNA_MODE_ZenKataHenkanMode },
+  { S_HanKataHenkanMode, CANNA_MODE_HanKataHenkanMode },
+  { S_ZenAlphaHenkanMode, CANNA_MODE_ZenAlphaHenkanMode },
+  { S_HanAlphaHenkanMode, CANNA_MODE_HanAlphaHenkanMode },
+  { S_ZenHiraKakuteiMode, CANNA_MODE_ZenHiraKakuteiMode },
+  { S_HanHiraKakuteiMode, CANNA_MODE_HanHiraKakuteiMode },
+  { S_ZenKataKakuteiMode, CANNA_MODE_ZenKataKakuteiMode },
+  { S_HanKataKakuteiMode, CANNA_MODE_HanKataKakuteiMode },
+  { S_ZenAlphaKakuteiMode, CANNA_MODE_ZenAlphaKakuteiMode },
+  { S_HanAlphaKakuteiMode, CANNA_MODE_HanAlphaKakuteiMode },
+  { 0, 0 },
 };
 
 static void
@@ -4458,97 +4237,95 @@ defcannamode()
 {
   struct cannamodedefs *p;
 
-  for (p = cannamodes ; p->mdname ; p++) {
+  for (p = cannamodes; p->mdname; p++) {
     symbolpointer(getatmz(p->mdname))->mid = p->mdid;
   }
 }
 
-
-
 /* 機能表 */
 
 static struct cannafndefs cannafns[] = {
-  {S_FN_Undefined		,CANNA_FN_Undefined},
-  {S_FN_SelfInsert		,CANNA_FN_FunctionalInsert},
-  {S_FN_QuotedInsert		,CANNA_FN_QuotedInsert},
-  {S_FN_JapaneseMode		,CANNA_FN_JapaneseMode},
-  {S_AlphaMode			,CANNA_FN_AlphaMode},
-  {S_HenkanNyuuryokuMode	,CANNA_FN_HenkanNyuryokuMode},
-  {S_HexMode			,CANNA_FN_HexMode},
-  {S_BushuMode			,CANNA_FN_BushuMode},
-  {S_KigouMode			,CANNA_FN_KigouMode},
-  {S_FN_Forward			,CANNA_FN_Forward},
-  {S_FN_Backward		,CANNA_FN_Backward},
-  {S_FN_Next			,CANNA_FN_Next},
-  {S_FN_Prev			,CANNA_FN_Prev},
-  {S_FN_BeginningOfLine		,CANNA_FN_BeginningOfLine},
-  {S_FN_EndOfLine		,CANNA_FN_EndOfLine},
-  {S_FN_DeleteNext		,CANNA_FN_DeleteNext},
-  {S_FN_DeletePrevious		,CANNA_FN_DeletePrevious},
-  {S_FN_KillToEndOfLine		,CANNA_FN_KillToEndOfLine},
-  {S_FN_Henkan			,CANNA_FN_Henkan},
-  {S_FN_HenkanNaive		,CANNA_FN_HenkanOrInsert}, /* for compati */
-  {S_FN_HenkanOrSelfInsert	,CANNA_FN_HenkanOrInsert},
-  {S_FN_HenkanOrDoNothing	,CANNA_FN_HenkanOrNothing},
-  {S_FN_Kakutei			,CANNA_FN_Kakutei},
-  {S_FN_Extend			,CANNA_FN_Extend},
-  {S_FN_Shrink			,CANNA_FN_Shrink},
-  {S_ShinshukuMode		,CANNA_FN_AdjustBunsetsu},
-  {S_FN_Quit			,CANNA_FN_Quit},
-  {S_ExtendMode			,CANNA_FN_ExtendMode},
-  {S_FN_Touroku			,CANNA_FN_Touroku},
-  {S_FN_ConvertAsHex		,CANNA_FN_ConvertAsHex},
-  {S_FN_ConvertAsBushu		,CANNA_FN_ConvertAsBushu},
-  {S_FN_KouhoIchiran		,CANNA_FN_KouhoIchiran},
-  {S_FN_BubunMuhenkan		,CANNA_FN_BubunMuhenkan},
-  {S_FN_Zenkaku			,CANNA_FN_Zenkaku},
-  {S_FN_Hankaku			,CANNA_FN_Hankaku},
-  {S_FN_ToUpper			,CANNA_FN_ToUpper},
-  {S_FN_Capitalize		,CANNA_FN_Capitalize},
-  {S_FN_ToLower			,CANNA_FN_ToLower},
-  {S_FN_Hiragana		,CANNA_FN_Hiragana},
-  {S_FN_Katakana		,CANNA_FN_Katakana},
-  {S_FN_Romaji			,CANNA_FN_Romaji},
-  {S_FN_KanaRotate		,CANNA_FN_KanaRotate},
-  {S_FN_RomajiRotate		,CANNA_FN_RomajiRotate},
-  {S_FN_CaseRotate		,CANNA_FN_CaseRotate},
-  {S_FN_BaseHiragana		,CANNA_FN_BaseHiragana},
-  {S_FN_BaseKatakana		,CANNA_FN_BaseKatakana},
-  {S_FN_BaseKana		,CANNA_FN_BaseKana},
-  {S_FN_BaseEisu		,CANNA_FN_BaseEisu},
-  {S_FN_BaseZenkaku		,CANNA_FN_BaseZenkaku},
-  {S_FN_BaseHankaku		,CANNA_FN_BaseHankaku},
-  {S_FN_BaseKakutei		,CANNA_FN_BaseKakutei},
-  {S_FN_BaseHenkan		,CANNA_FN_BaseHenkan},
-  {S_FN_BaseHiraKataToggle	,CANNA_FN_BaseHiraKataToggle},
-  {S_FN_BaseZenHanToggle	,CANNA_FN_BaseZenHanToggle},
-  {S_FN_BaseKanaEisuToggle	,CANNA_FN_BaseKanaEisuToggle},
-  {S_FN_BaseKakuteiHenkanToggle	,CANNA_FN_BaseKakuteiHenkanToggle},
-  {S_FN_BaseRotateForward	,CANNA_FN_BaseRotateForward},
-  {S_FN_BaseRotateBackward	,CANNA_FN_BaseRotateBackward},
-  {S_FN_Mark			,CANNA_FN_Mark},
-  {S_FN_Temporary		,CANNA_FN_TemporalMode},
-  {S_FN_SyncDic			,CANNA_FN_SyncDic},
-  {S_RussianMode		,CANNA_FN_RussianMode},
-  {S_GreekMode			,CANNA_FN_GreekMode},
-  {S_LineMode			,CANNA_FN_LineMode},
-  {S_FN_DefineDicMode		,CANNA_FN_DefineDicMode},
-  {S_FN_DeleteDicMode		,CANNA_FN_DeleteDicMode},
-  {S_FN_DicMountMode		,CANNA_FN_DicMountMode},
-  {S_FN_EnterChikujiMode	,CANNA_FN_EnterChikujiMode},
-  {S_FN_EnterRenbunMode		,CANNA_FN_EnterRenbunMode},
-  {S_FN_PageUp			,CANNA_FN_PageUp},
-  {S_FN_PageDown		,CANNA_FN_PageDown},
-  {S_FN_Edit			,CANNA_FN_Edit},
-  {S_FN_BubunKakutei		,CANNA_FN_BubunKakutei},
-  {S_FN_HenkanRegion		,CANNA_FN_HenkanRegion},
-  {S_FN_PhonoEdit		,CANNA_FN_PhonoEdit},
-  {S_FN_DicEdit			,CANNA_FN_DicEdit},
-  {S_FN_Configure		,CANNA_FN_Configure},
-  {S_FN_KanaRotate		,CANNA_FN_KanaRotate},
-  {S_FN_RomajiRotate		,CANNA_FN_RomajiRotate},
-  {S_FN_CaseRotate		,CANNA_FN_CaseRotate},
-  {0				,0},
+  { S_FN_Undefined, CANNA_FN_Undefined },
+  { S_FN_SelfInsert, CANNA_FN_FunctionalInsert },
+  { S_FN_QuotedInsert, CANNA_FN_QuotedInsert },
+  { S_FN_JapaneseMode, CANNA_FN_JapaneseMode },
+  { S_AlphaMode, CANNA_FN_AlphaMode },
+  { S_HenkanNyuuryokuMode, CANNA_FN_HenkanNyuryokuMode },
+  { S_HexMode, CANNA_FN_HexMode },
+  { S_BushuMode, CANNA_FN_BushuMode },
+  { S_KigouMode, CANNA_FN_KigouMode },
+  { S_FN_Forward, CANNA_FN_Forward },
+  { S_FN_Backward, CANNA_FN_Backward },
+  { S_FN_Next, CANNA_FN_Next },
+  { S_FN_Prev, CANNA_FN_Prev },
+  { S_FN_BeginningOfLine, CANNA_FN_BeginningOfLine },
+  { S_FN_EndOfLine, CANNA_FN_EndOfLine },
+  { S_FN_DeleteNext, CANNA_FN_DeleteNext },
+  { S_FN_DeletePrevious, CANNA_FN_DeletePrevious },
+  { S_FN_KillToEndOfLine, CANNA_FN_KillToEndOfLine },
+  { S_FN_Henkan, CANNA_FN_Henkan },
+  { S_FN_HenkanNaive, CANNA_FN_HenkanOrInsert }, /* for compati */
+  { S_FN_HenkanOrSelfInsert, CANNA_FN_HenkanOrInsert },
+  { S_FN_HenkanOrDoNothing, CANNA_FN_HenkanOrNothing },
+  { S_FN_Kakutei, CANNA_FN_Kakutei },
+  { S_FN_Extend, CANNA_FN_Extend },
+  { S_FN_Shrink, CANNA_FN_Shrink },
+  { S_ShinshukuMode, CANNA_FN_AdjustBunsetsu },
+  { S_FN_Quit, CANNA_FN_Quit },
+  { S_ExtendMode, CANNA_FN_ExtendMode },
+  { S_FN_Touroku, CANNA_FN_Touroku },
+  { S_FN_ConvertAsHex, CANNA_FN_ConvertAsHex },
+  { S_FN_ConvertAsBushu, CANNA_FN_ConvertAsBushu },
+  { S_FN_KouhoIchiran, CANNA_FN_KouhoIchiran },
+  { S_FN_BubunMuhenkan, CANNA_FN_BubunMuhenkan },
+  { S_FN_Zenkaku, CANNA_FN_Zenkaku },
+  { S_FN_Hankaku, CANNA_FN_Hankaku },
+  { S_FN_ToUpper, CANNA_FN_ToUpper },
+  { S_FN_Capitalize, CANNA_FN_Capitalize },
+  { S_FN_ToLower, CANNA_FN_ToLower },
+  { S_FN_Hiragana, CANNA_FN_Hiragana },
+  { S_FN_Katakana, CANNA_FN_Katakana },
+  { S_FN_Romaji, CANNA_FN_Romaji },
+  { S_FN_KanaRotate, CANNA_FN_KanaRotate },
+  { S_FN_RomajiRotate, CANNA_FN_RomajiRotate },
+  { S_FN_CaseRotate, CANNA_FN_CaseRotate },
+  { S_FN_BaseHiragana, CANNA_FN_BaseHiragana },
+  { S_FN_BaseKatakana, CANNA_FN_BaseKatakana },
+  { S_FN_BaseKana, CANNA_FN_BaseKana },
+  { S_FN_BaseEisu, CANNA_FN_BaseEisu },
+  { S_FN_BaseZenkaku, CANNA_FN_BaseZenkaku },
+  { S_FN_BaseHankaku, CANNA_FN_BaseHankaku },
+  { S_FN_BaseKakutei, CANNA_FN_BaseKakutei },
+  { S_FN_BaseHenkan, CANNA_FN_BaseHenkan },
+  { S_FN_BaseHiraKataToggle, CANNA_FN_BaseHiraKataToggle },
+  { S_FN_BaseZenHanToggle, CANNA_FN_BaseZenHanToggle },
+  { S_FN_BaseKanaEisuToggle, CANNA_FN_BaseKanaEisuToggle },
+  { S_FN_BaseKakuteiHenkanToggle, CANNA_FN_BaseKakuteiHenkanToggle },
+  { S_FN_BaseRotateForward, CANNA_FN_BaseRotateForward },
+  { S_FN_BaseRotateBackward, CANNA_FN_BaseRotateBackward },
+  { S_FN_Mark, CANNA_FN_Mark },
+  { S_FN_Temporary, CANNA_FN_TemporalMode },
+  { S_FN_SyncDic, CANNA_FN_SyncDic },
+  { S_RussianMode, CANNA_FN_RussianMode },
+  { S_GreekMode, CANNA_FN_GreekMode },
+  { S_LineMode, CANNA_FN_LineMode },
+  { S_FN_DefineDicMode, CANNA_FN_DefineDicMode },
+  { S_FN_DeleteDicMode, CANNA_FN_DeleteDicMode },
+  { S_FN_DicMountMode, CANNA_FN_DicMountMode },
+  { S_FN_EnterChikujiMode, CANNA_FN_EnterChikujiMode },
+  { S_FN_EnterRenbunMode, CANNA_FN_EnterRenbunMode },
+  { S_FN_PageUp, CANNA_FN_PageUp },
+  { S_FN_PageDown, CANNA_FN_PageDown },
+  { S_FN_Edit, CANNA_FN_Edit },
+  { S_FN_BubunKakutei, CANNA_FN_BubunKakutei },
+  { S_FN_HenkanRegion, CANNA_FN_HenkanRegion },
+  { S_FN_PhonoEdit, CANNA_FN_PhonoEdit },
+  { S_FN_DicEdit, CANNA_FN_DicEdit },
+  { S_FN_Configure, CANNA_FN_Configure },
+  { S_FN_KanaRotate, CANNA_FN_KanaRotate },
+  { S_FN_RomajiRotate, CANNA_FN_RomajiRotate },
+  { S_FN_CaseRotate, CANNA_FN_CaseRotate },
+  { 0, 0 },
 };
 
 static void
@@ -4556,11 +4333,10 @@ defcannafunc()
 {
   struct cannafndefs *p;
 
-  for (p = cannafns ; p->fnname ; p++) {
+  for (p = cannafns; p->fnname; p++) {
     symbolpointer(getatmz(p->fnname))->fid = p->fnid;
   }
 }
-
 
 static void
 defatms()
@@ -4569,23 +4345,23 @@ defatms()
   defcannavar();
   defcannamode();
   defcannafunc();
-  QUOTE		= getatmz("quote");
-  T		= getatmz("t");
-  _LAMBDA	= getatmz("lambda");
-  _MACRO	= getatmz("macro");
-  COND		= getatmz("cond");
-  USER		= getatmz(":user");
-  BUSHU		= getatmz(":bushu");
-  RENGO		= getatmz(":rengo");
-  KATAKANA	= getatmz(":katakana");
-  HIRAGANA	= getatmz(":hiragana");
-  GRAMMAR       = getatmz(":grammar");
-  HYPHEN	= getatmz("-");
+  QUOTE = getatmz("quote");
+  T = getatmz("t");
+  _LAMBDA = getatmz("lambda");
+  _MACRO = getatmz("macro");
+  COND = getatmz("cond");
+  USER = getatmz(":user");
+  BUSHU = getatmz(":bushu");
+  RENGO = getatmz(":rengo");
+  KATAKANA = getatmz(":katakana");
+  HIRAGANA = getatmz(":hiragana");
+  GRAMMAR = getatmz(":grammar");
+  HYPHEN = getatmz("-");
   symbolpointer(T)->value = T;
 }
 
 #ifndef wchar_t
-# error "wchar_t is already undefined"
+#error "wchar_t is already undefined"
 #endif
 #undef wchar_t
 /*********************************************************************
