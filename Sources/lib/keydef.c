@@ -665,9 +665,11 @@ regist_map(KanjiMode tbl,
       sequencelen = specialen(p->mode->keytbl);
       offs = q - p->mode->keytbl;
       if (p->mode->keytbl) {
-        p->mode->keytbl =
+        unsigned char *temp =
           (unsigned char*)realloc(p->mode->keytbl, sequencelen + 3);
-        if (!p->mode->keytbl) {
+        if (temp) {
+          p->mode->keytbl = temp;
+        }else{
           return NULL;
         }
         p->mode->keytbl[sequencelen] = keybuff[depth + 1];
