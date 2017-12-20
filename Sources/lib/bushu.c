@@ -403,11 +403,7 @@ vBushuIchiranQuitCatch(d, retval, env)
 }
 
 static int
-vBushuExitCatch(d, retval, env)
-     uiContext d;
-     int retval;
-     mode_context env;
-     /* ARGSUSED */
+vBushuExitCatch(uiContext d, int retval, mode_context env)   /* ARGSUSED */
 {
   forichiranContext fc;
   int cur, res;
