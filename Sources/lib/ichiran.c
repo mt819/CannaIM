@@ -565,11 +565,8 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 static int
-makeKouhoIchiran(d, nelem, bangomax, inhibit, currentkouho)
-uiContext d;
-int nelem, bangomax;
-unsigned char inhibit;
-int currentkouho;
+makeKouhoIchiran(uiContext d, int nelem, int bangomax, unsigned char inhibit,
+	int currentkouho)
 {
   ichiranContext ic = (ichiranContext)d->modec;
   wchar_t **kkptr, *kptr, *gptr, *svgptr;
