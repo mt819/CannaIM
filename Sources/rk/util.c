@@ -216,8 +216,7 @@ _RkCalcLog2(n)
 }
 
 Wchar
-uniqAlnum(c)
-     Wchar c;
+uniqAlnum(Wchar c)
 {
   return((0xa3a0 < c && c < 0xa3ff) ? (Wchar)(c & 0x7f) : c);
 }
