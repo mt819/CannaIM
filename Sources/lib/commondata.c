@@ -119,13 +119,13 @@ int nkeysup = 0;
 
 char *CANNA_initfilename = NULL;
 
-/*
- * バージョン
- */
-
-int protocol_version = -1;
-int server_version = -1;
-char *server_name = NULL;
+///*
+// * バージョン
+// */
+//
+//int protocol_version = -1;
+//int server_version = -1;
+//char *server_name = NULL;
 
 int chikuji_debug = 0;
 int auto_define = 0;
@@ -200,9 +200,9 @@ restoreBindings()
   free(initfunc);
   initfunc = NULL;
 
-  free(server_name);
-  server_name = NULL;
-
+//  free(server_name);
+//  server_name = NULL;
+//
   free(RomkanaTable);
   RomkanaTable = NULL;
   
@@ -226,7 +226,7 @@ restoreBindings()
   KeepCursorPosition = 0;
 
   nothermodes = 0;
-  protocol_version = server_version = -1;
+//  protocol_version = server_version = -1;
   nKouhoBunsetsu = 16;
   nkeysup = 0;
   chikuji_debug = 0;

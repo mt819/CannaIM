@@ -778,7 +778,7 @@ typedef struct _extra_func {
 #define DICHOME "/usr/lib/canna/dic"
 #endif
 
-#define DEFAULT_CANNA_SERVER_NAME "cannaserver"
+//#define DEFAULT_CANNA_SERVER_NAME "cannaserver"
 
 #ifndef	UTIL_FUNCTIONS_DEF
 #define	UTIL_FUNCTIONS_DEF

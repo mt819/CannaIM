@@ -320,7 +320,7 @@
 #define popYomiMode                         G327_popYomiMode
 #define prepareHenkanMode                   G328_prepareHenkanMode
 #define prevMenuIfExist                     G329_prevMenuIfExist
-#define protocol_version                    G330_protocol_version
+//#define protocol_version                    G330_protocol_version
 #define pushCallback                        G331_pushCallback
 #define queryMode                           G332_queryMode
 #define quickly_escape                      G333_quickly_escape
@@ -343,8 +343,8 @@
 #define selectKeysup                        G350_selectKeysup
 #define selectOnOff                         G351_selectOnOff
 #define selectOne                           G352_selectOne
-#define server_name                         G355_server_name
-#define server_version                      G356_server_version
+//#define server_name                         G355_server_name
+//#define server_version                      G356_server_version
 #define setMode                             G357_setMode
 #define setWStrings                         G358_setWStrings
 #define showmenu                            G359_showmenu
