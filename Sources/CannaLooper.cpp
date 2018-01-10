@@ -75,6 +75,7 @@ CannaLooper::Quit()
 
 	}
 
+#if 0
 	if (fTangoWindow != NULL) {
 		SERIAL_PRINT(("CannaLooper: Sending QUIT to tango window...\n"));
 
@@ -84,6 +85,7 @@ CannaLooper::Quit()
 		}
 
 	}
+#endif
 
 	if (fPaletteWindow) {
 		SERIAL_PRINT(("CannaLooper: Sending QUIT to palette...\n"));
@@ -517,7 +519,9 @@ CannaLooper::_HandleMethodActivated(bool active)
 			fPaletteWindow->Show();
 			fKouhoWindow = new KouhoWindow(this);
 			fKouhoWindow->Run();
+#if 0
 			fTangoWindow = new TangoWindow(frame, this);
+#endif
 		}
 
 		fPaletteWindow->PostMessage(PALETTE_WINDOW_SHOW);

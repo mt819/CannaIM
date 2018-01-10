@@ -222,6 +222,7 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 		msg, B_TWO_STATE_BUTTON );
 	fBack->AddChild( BushuButton );
 
+#if 0
 	largeimage->SetBits( TorokuOnbits, largebytes, 0, cspace );
 	fBack->BeginPicture( new BPicture );
 	fBack->DrawBitmap( largeimage );
@@ -235,6 +236,7 @@ PaletteWindow::PaletteWindow( BRect rect, BLooper *looper )
 	TorokuButton = new BPictureButton( BRect( 87, 26, 110, 41 ), "toroku",
 						offpict, onpict, msg, B_TWO_STATE_BUTTON );
 	fBack->AddChild( TorokuButton );
+#endif
 
 	HiraButton->SetValue( B_CONTROL_ON );
 	delete smallimage;
