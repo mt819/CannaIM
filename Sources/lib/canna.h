@@ -1198,7 +1198,7 @@ extern int clisp_init(void);
 
 /* multi.c */
 extern int DoFuncSequence(uiContext d);
-extern int multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, unsigned key,
+extern int multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key,
 								int fnum);
 /* mode.c */
 extern int changeModeName(int modeid, char *str);

@@ -237,7 +237,7 @@ multiSequenceFunc(d, mode, whattodo, key, fnum)
 uiContext d;
 KanjiMode mode;
 int whattodo;
-unsigned key;
+int key;
 int fnum;
 {
   int i;
