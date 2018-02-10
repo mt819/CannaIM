@@ -831,7 +831,9 @@ cancelNVE(struct NV* nv, struct NVE* p)
   p->right->left = p->left;
   p->left->right = p->right;
   free(s);
+  s = NULL;
   free(p);
+  p = NULL;
 }
 
 static struct NVE*
