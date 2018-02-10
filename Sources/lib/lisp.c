@@ -1299,7 +1299,7 @@ untyi(int c)
         }
       }
     }
-    if (untyip < untyisize) { /* それでもチェックする */
+    if (untyibuf && (untyip < untyisize)) { /* それでもチェックする */
       untyibuf[untyip++] = c;
     }
   }
