@@ -351,7 +351,7 @@ fillContext(int cx_num)
     }
     cx->poss_cont = 0;
 #ifdef EXTENSION_NEW
-    cx->cx_gwt = (pointer)calloc(sizeof(struct _rec), sizeof(unsigned char));
+    cx->cx_gwt = (pointer)calloc(sizeof(unsigned char), sizeof(struct _rec));
     if (cx->cx_gwt) {
       struct _rec* gwt = (struct _rec*)cx->cx_gwt;
       gwt->gwt_cx = -1; /* means no GetWordTextdic context
