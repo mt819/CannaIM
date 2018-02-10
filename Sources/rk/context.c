@@ -730,7 +730,7 @@ RkwGetDicList(int cx_num, char* mdname, int maxmdname)
     }
     /* 辞書リストの配列を malloc する */
     diclist = (struct dics*)malloc(count * sizeof(struct dics));
-    if (diclist) {
+    if (count > 0 && diclist) {
       struct dics *dicp = diclist, *prevdicp = NULL;
 
       for (i = 0; (dd = ddp[i]) != NULL; i++) {
