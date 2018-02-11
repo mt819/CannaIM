@@ -345,7 +345,7 @@ char *table;
 #endif
 
 
-  if (table || *table) {
+  if (table && *table) {
     retval = RkwOpenRoma(table);
 
     if (ckverbose == CANNA_FULL_VERBOSE) {
