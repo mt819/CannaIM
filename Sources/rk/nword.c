@@ -2163,6 +2163,7 @@ _RkLearnBun(struct RkContext* cx, int cur, int mode)
         if (!yomwrec) {
           return;
         }
+        yomwrec = {0};
         dp = yomwrec;
 #endif
         for (p = yomi; p < ey; p++) {
