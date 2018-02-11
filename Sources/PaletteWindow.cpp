@@ -8,7 +8,9 @@
 
 #include "CannaCommon.h"
 #include "PaletteWindow.h"
+#if 0
 #include "TangoWindow.h"
+#endif
 #include "canna/mfdef.h"
 #include "PaletteIconImages.h"
 #include <Bitmap.h>
@@ -362,7 +364,9 @@ PaletteWindow::AllButtonOff()
 	KigoButton->SetValue( B_CONTROL_OFF );
 	HexButton->SetValue( B_CONTROL_OFF );
 	BushuButton->SetValue( B_CONTROL_OFF );
+#if 0
 	TorokuButton->SetValue( B_CONTROL_OFF );
+#endif
 }
 
 

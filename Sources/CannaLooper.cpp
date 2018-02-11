@@ -28,7 +28,9 @@
 #include "CannaMethod.h"
 #include "KouhoWindow.h"
 #include "PaletteWindow.h"
+#if 0
 #include "TangoWindow.h"
+#endif
 
 #include <syslog.h>
 

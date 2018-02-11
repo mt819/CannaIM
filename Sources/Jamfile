@@ -14,7 +14,7 @@ AddOn canna :
 	CannaMethod.cpp
 	KouhoWindow.cpp
 	PaletteWindow.cpp
-	TangoWindow.cpp
+#	TangoWindow.cpp
 	: be textencoding /boot/system/servers/input_server libcanna.a librk.a $(STDC++LIB) localestub ;
 
 #Application mkdic :
