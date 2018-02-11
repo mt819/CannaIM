@@ -2163,7 +2163,7 @@ _RkLearnBun(struct RkContext* cx, int cur, int mode)
         if (!yomwrec) {
           return;
         }
-        yomwrec = {0};
+        memset(yomwrec, 0, sizeof(Wrec) * 32 * sizeof(Wchar));
         dp = yomwrec;
 #endif
         for (p = yomi; p < ey; p++) {
