@@ -63,6 +63,9 @@ uiContext d;
   d->n_buffer = sizeof(xxxx) / sizeof(wchar_t);
   d->nbytes = 0;
 
+  ks.length = -1;
+  ks.info = 0;
+
   if (initfunc) {
     pks = d->kanji_status_return;
     d->kanji_status_return = &ks;
