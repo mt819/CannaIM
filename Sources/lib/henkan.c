@@ -2576,6 +2576,9 @@ tanContext tan;
 int forw;
 {
   yomiContext yc = (yomiContext)tan;
+  if (yc == NULL) {
+    return;
+  }
 
   d->current_mode = yc->curMode;
   currentModeInfo(d);
