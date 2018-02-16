@@ -729,9 +729,11 @@ RkwGetDicList(int cx_num, char* mdname, int maxmdname)
         }
       }
     }
+
     if (count <= 0) {
-      count = -1; /* やっぱり正確な数が分からなかった */
+      return -1; /* 正確な数が分からなかった */
     }
+
     /* 辞書リストの配列を malloc する */
     diclist = (struct dics*)malloc(count * sizeof(struct dics));
     if (diclist) {
