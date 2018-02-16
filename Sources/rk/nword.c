@@ -2033,6 +2033,8 @@ doLearn(struct RkContext* cx, struct nword* thisW)
   }
 #endif
 
+  memset(tmp, 0, RK_WREC_BMAX);
+
   for (; (leftW = thisW->nw_left) != NULL; thisW = leftW) {
     struct ncache* thisCache = thisW->nw_cache;
 
