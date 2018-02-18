@@ -1514,8 +1514,12 @@ _RkMountMD(cx, dm, qm, mode, firsttime)
   char		*file;
   int		status;
 
-  if (!dm || !(md = (struct MD *)calloc(1, sizeof(struct MD))))
+  if (!dm)
     return -1;
+
+  if (!(md = (struct MD *)calloc(1, sizeof(struct MD))))
+    return -1;
+
   /* increment the reference counter */
   if (dm->dm_rcount == 0) {
     df = dm->dm_file;
