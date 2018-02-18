@@ -411,6 +411,7 @@ uiContext d;
       free(dicLbuf);
       free(dicLp);
       free(soldp);
+      free(snewp);
       return(NG);
     }
   }
