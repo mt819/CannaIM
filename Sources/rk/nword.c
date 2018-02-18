@@ -833,7 +833,6 @@ cancelNVE(struct NV* nv, struct NVE* p)
   free(s);
   s = NULL;
   free(p);
-  p = NULL;
 }
 
 static struct NVE*
@@ -862,6 +861,7 @@ newNVE(struct NV* nv, Wrec* y, int l, int v)
           if (r == p) {
             *q = r->next;
             cancelNVE(nv, p);
+            p = NULL;
             break;
           } else
             q = &r->next;
@@ -895,6 +895,7 @@ _RkRegisterNV(struct NV* nv, Wrec* yomi, int len, int half)
       if (positive(p->data, yomi, len)) {
         *q = p->next;
         cancelNVE(nv, p);
+        p = NULL;
       } else {
         q = &p->next;
       }
