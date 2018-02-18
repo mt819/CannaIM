@@ -66,7 +66,7 @@ Wchar *yomi;
 	*p++ = wp;
 
     while (p-- > words) {
-        int yomi_len, hinsi_len;
+        size_t yomi_len, hinsi_len;
 
 	wp = *p;
 	if (!wp->nw_left)
@@ -1474,7 +1474,8 @@ int
 RkwQueryDic(int cx_num, char *dirname, char *dicname, struct DicInfo *status)
 {
   struct RkContext	*cx;
-  int			new_cx_num, size;
+  int			new_cx_num;
+  size_t size;
   unsigned char		*buff;
   char			*file;
   struct DM		*dm;
