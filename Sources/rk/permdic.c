@@ -713,7 +713,7 @@ _Rkpctl(dm, qm, what, arg, gram)
 		if ((int)permutation[j]/2 > nk) {
 		  ecount++;
 		  break;
-		};
+		}
 		cval += permutation[j];
 		if ((unsigned)nk == permutation[j]/2 && dn < 0)
 		  dn = j;
@@ -728,11 +728,11 @@ _Rkpctl(dm, qm, what, arg, gram)
 		if ((int)permutation[j]/2 >  nk) {
 		  ecount++;
 		  break;
-		};
+		}
 		cval += permutation[j];
 		if ((unsigned)fnum == permutation[j]/2)
 		  dn = j;
-	      };
+	      }
 	      break;
 	    }
 	    if (ecount || cval < (nk-1)*(nk-2)) {

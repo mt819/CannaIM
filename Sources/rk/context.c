@@ -282,8 +282,8 @@ _RkEndBun(struct RkContext* cx)
         _RkUmountMD(cx, md);
       else if (!_RkIsInDDP(ddp, dd)) /* unreachable */
         _RkUmountMD(cx, md);
-    };
-  };
+    }
+  }
 }
 
 /* RkSetDicPath
@@ -301,7 +301,7 @@ RkwSetDicPath(int cx_num, char* path)
     _RkFreeDDP(cx->ddpath);
     cx->ddpath = new;
     return (0);
-  };
+  }
   return (-1);
 }
 
@@ -424,11 +424,11 @@ RkwCloseContext(int cx_num)
       for (m = mh->md_next; m != mh; m = n) {
         n = m->md_next;
         _RkUmountMD(cx, m);
-      };
+      }
       free(mh);
       cx->md[i] = NULL;
-    };
-  };
+    }
+  }
   cx->dmprev = NULL;
   cx->qmprev = NULL;
   /* convertion table */
@@ -454,9 +454,9 @@ RkwCloseContext(int cx_num)
       if (gwt->gwt_dicname)
         free(gwt->gwt_dicname);
       free(gwt);
-    };
+    }
     cx->cx_gwt = (pointer)0;
-  };
+  }
   freeTdn(cx);
 #endif
   return 0;
@@ -495,7 +495,7 @@ RkwDuplicateContext(int cx_num)
         mh = sx->md[i];
         for (md = mh->md_prev; md != mh; md = md->md_prev)
           _RkMountMD(dx, md->md_dic, md->md_freq, md->md_flags & MD_WRITE, 0);
-      };
+      }
       dx->ddpath = _RkCopyDDP(sx->ddpath);
       if (sx->litmode && dx->litmode)
         for (i = 0; i < MAXLIT; i++)
@@ -542,8 +542,8 @@ RkwMountDic(int cx_num, /* context specified */
           if (md->md_flags & MD_UPEND)
             md->md_flags &= ~MD_UPEND;
           count++;
-        };
-      };
+        }
+      }
       if (!count) {
         return _RkMountMD(cx, dm, qm, mode, firsttime);
       }
@@ -622,14 +622,14 @@ RkwRemountDic(int cx_num, /* context specified */
             md->md_prev = mh->md_prev;
             mh->md_prev->md_next = md;
             mh->md_prev = md;
-          };
+          }
           isfound++;
-        };
-      };
-    };
+        }
+      }
+    }
     if (isfound)
       return (0);
-  };
+  }
   return (-1);
 }
 
@@ -653,7 +653,7 @@ RkwGetMountList(int cx_num, char* mdname, int maxmdname)
 
         if (md->md_flags & (MD_MPEND | MD_UPEND)) {
           continue;
-        };
+        }
         name = md->md_freq ? md->md_freq->dm_nickname : dm->dm_nickname;
         j = i + strlen(name) + 1;
         if (j + 1 < maxmdname) {
@@ -662,12 +662,12 @@ RkwGetMountList(int cx_num, char* mdname, int maxmdname)
           }
           i = j;
           count++;
-        };
-      };
-    };
+        }
+      }
+    }
     if (i + 1 < maxmdname && mdname)
       mdname[i++] = (char)0;
-  };
+  }
   return (count);
 }
 
@@ -801,11 +801,11 @@ RkwGetDirList(int cx_num, char* ddname, int maxddname)
           strcpy(ddname + i, dd->dd_name);
         i = j;
         count++;
-      };
-    };
+      }
+    }
     if (i + 1 < maxddname && ddname)
       ddname[i++] = (char)0;
-  };
+  }
   return (count);
 }
 

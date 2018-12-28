@@ -209,20 +209,20 @@ int		maxhan;
 			if ( lo == 0xdf ) {
 			    code += 2; h += 2;
 			    break;
-			};
+			}
 	    /* ka */case 0xab: case 0xad: case 0xaf: case 0xb1: case 0xb3:
 	    /* sa */case 0xb5: case 0xb7: case 0xb9: case 0xbb: case 0xbd:
 	    /* ta */case 0xbf: case 0xc1: case 0xc4: case 0xc6: case 0xc8:
 			if ( lo == 0xde ) {
 			    code += 1; h += 2;
 			    break;
-			};
-		    };
-		};
-	    };
+			}
+		    }
+		}
+	    }
 	}
 	else if (hi == 0x8f) {
-	  ADDCODE(z, maxzen, count, hi, 1);
+	  ADDCODE(z, maxzen, count, hi, 1)
 	  code = (((unsigned long)h[0]) << 8)
                    | ((unsigned long)h[1]); h += 2;
 	  byte = 2;
@@ -256,8 +256,8 @@ int		maxhan;
 	    code = hi;
 	  byte = (code>>8) ? 2 : 1;
 	}
-	ADDCODE(z, maxzen, count, code, byte);
-    };
+	ADDCODE(z, maxzen, count, code, byte)
+    }
     if ( z )
 	*z = 0;
     return count;
@@ -315,7 +315,7 @@ int		maxzen;
 		else {
 		    code = 0x00008e00|(code&255);
 		    byte = 2;
-		};
+		}
 	    }
 	    else {
 			code = (hi<<8)|lo; byte = 2;
@@ -323,7 +323,7 @@ int		maxzen;
 	    break;
 	default:
 	    if (hi == 0x8f) {
-	      ADDCODE(h, maxhan, count, hi, 1);
+	      ADDCODE(h, maxhan, count, hi, 1)
 	      code = (((unsigned long)z[0]) << 8)
                        | ((unsigned long)z[1]); z += 2;
 	      byte = 2;
@@ -340,11 +340,11 @@ int		maxzen;
 		case	'.': 	code = 0x8ea1; byte = 2; break;
 		*/
 		default:	code = hi; break;
-		};
+		}
 	    break;
-	};
-	ADDCODE(h, maxhan, count, code, byte);
-    };
+	}
+	ADDCODE(h, maxhan, count, code, byte)
+    }
     if ( h )
 	*h = 0;
     return count;
@@ -372,7 +372,7 @@ int		maxhira;
     while ( h < H ) {
 	hi = *h++;
 	if (hi == 0x8f) {
-	  ADDCODE(k, maxkana, count, hi, 1);
+	  ADDCODE(k, maxkana, count, hi, 1)
 	  code = (((unsigned long)h[0]) << 8)
                    | ((unsigned long)h[1]); h += 2;
 	  byte = 2;
@@ -388,13 +388,13 @@ int		maxhira;
 	    if ( hi == 0xa4 && code == 0xa5a6 && dakuon ) {
 		code = 0xa5f4;
 		h += 2;
-	    };
+	    }
 	}
 	else {
 		code = hi; byte = 1;
 	}
-	ADDCODE(k, maxkana, count, code, byte);
-    };
+	ADDCODE(k, maxkana, count, code, byte)
+    }
     if ( k )
 	*k = 0;
     return count;
@@ -419,7 +419,7 @@ int		maxkana;
     while ( k < K ) {
 	hi = *k++;
 	if (hi == 0x8f) {
-	  ADDCODE(h, maxhira, count, hi, 1);
+	  ADDCODE(h, maxhira, count, hi, 1)
 	  code = (((unsigned long)k[0]) << 8)
                    | ((unsigned long)k[1]); k += 2;
 	  byte = 2;
@@ -442,8 +442,8 @@ int		maxkana;
 	else {
 		code = hi; byte = 1;
 	}
-	ADDCODE(h, maxhira, count, code, byte);
-    };
+	ADDCODE(h, maxhira, count, code, byte)
+    }
     if ( h )
 	*h = 0;
     return count;
@@ -469,15 +469,15 @@ int		maxsrc;
 	code = *s++;
 	byte = 1;
 	if (code == 0x8f) {
-	  ADDCODE(d, maxdst, count, code, 1);
+	  ADDCODE(d, maxdst, count, code, 1)
 	  code = (((unsigned long)s[0]) << 8)
                    | ((unsigned long)s[1]); s += 2;
 	  byte = 2;
 	}
 	else if ( code & 0x80 )
 	    code = (code<<8)|(*s++), byte = 2;
-	ADDCODE(d, maxdst, count, code, byte);
-    };
+	ADDCODE(d, maxdst, count, code, byte)
+    }
     if ( d )
 	*d = 0;
     return count;
@@ -538,9 +538,9 @@ int		maxsj;
 	    else 			/* guusuu ku */
 		lo -= (0x9f - 0x21);
 	    code = 0x8080|(hi<<8)|lo; byte = 2;
-	};
-	ADDCODE(e, maxeuc, count, code, byte);
-    };
+	}
+	ADDCODE(e, maxeuc, count, code, byte)
+    }
     if ( e )
 	*e = 0;
     return count;
@@ -597,17 +597,17 @@ int		format;
 	    if ( !('0' <= *s && *s <= '9') )
 		break;
 	    dec = *s-- - '0';
-	};
+	}
 
 	switch(format) {
     /* simple */
 	case 0:	/* sanyou suuji */
 	    code = hiragana[dec + '0'];
-	    ADDCODE(d, maxdst, count, code, 2);
+	    ADDCODE(d, maxdst, count, code, 2)
 	    break;
 	case 1:	/* kanji suuji */
 	    code = suujinew[dec];
-	    ADDCODE(d, maxdst, count, code, 2);
+	    ADDCODE(d, maxdst, count, code, 2)
 	    break;
     /* kanji kurai dori */
 	case 2:
@@ -632,43 +632,43 @@ int		format;
 			    if ( digit[i] ) {
 			        code = kurai3new[i];
 				if (code)
-				    ADDCODE(d, maxdst, count, code, 2);
+				    ADDCODE(d, maxdst, count, code, 2)
 				if ( i == 0 || (digit[i] > 1) ) {
 				    code = suujinew[digit[i]];
-				    ADDCODE(d, maxdst, count, code, 2);
-				};
-			    };
+				    ADDCODE(d, maxdst, count, code, 2)
+				}
+			    }
 			    break;
 			case 3:
 			    if ( digit[i] ) {
 			        code = kurai3old[i];
 				if (code)
-				    ADDCODE(d, maxdst, count, code, 2);
+				    ADDCODE(d, maxdst, count, code, 2)
 				code = suujiold[digit[i]];
-				ADDCODE(d, maxdst, count, code, 2);
-			    };
+				ADDCODE(d, maxdst, count, code, 2)
+			    }
 			    break;
 			case 4:
 			    code = hiragana[digit[i]+'0'];
-			    ADDCODE(d, maxdst, count, code, 2);
+			    ADDCODE(d, maxdst, count, code, 2)
 			    break;
-			};
-		};
+			}
+		}
 		pend = 0;
-	    };
+	    }
 	    break;
        case 5: /* 1,234,567,890 */
 	    if ( k && k%3 == 0 ) {
 		code = hiragana[','];
-		ADDCODE(d, maxdst, count, code, 2);
-	    };
+		ADDCODE(d, maxdst, count, code, 2)
+	    }
 	    code = hiragana[dec + '0'];
-	    ADDCODE(d, maxdst, count, code, 2);
+	    ADDCODE(d, maxdst, count, code, 2)
 	    break;
 	default:
 	    return 0;
-	};
-    };
+	}
+    }
 
     if ( format == 2 || format == 3 || format == 4 ) {
 	while ( pend > 0 && digit[pend - 1] == 0 )
@@ -686,41 +686,41 @@ int		format;
 		    if ( digit[i] ) {
 		        code = kurai3new[i];
 			if (code)
-			    ADDCODE(d, maxdst, count, code, 2);
+			    ADDCODE(d, maxdst, count, code, 2)
 			if ( i == 0 || (digit[i] > 1) ) {
 			    code = suujinew[digit[i]];
-			    ADDCODE(d, maxdst, count, code, 2);
-			};
-		    };
+			    ADDCODE(d, maxdst, count, code, 2)
+			}
+		    }
 		    break;
 		case 3:
 		    if ( digit[i] ) {
 		        code = kurai3old[i];
 			if (code)
-			    ADDCODE(d, maxdst, count, code, 2);
+			    ADDCODE(d, maxdst, count, code, 2)
 			code = suujiold[digit[i]];
-			ADDCODE(d, maxdst, count, code, 2);
-		    };
+			ADDCODE(d, maxdst, count, code, 2)
+		    }
 		    break;
 		case 4:
 		    code = hiragana[digit[i]+'0'];
-		    ADDCODE(d, maxdst, count, code, 2);
+		    ADDCODE(d, maxdst, count, code, 2)
 		    break;
-		};
-	};
-    };
+		}
+	}
+    }
 
     if ( dst ) {
 	*d = 0;
 	for ( i = 0, j = count - 1; i < j; i++, j-- ) {
 	    tmp = dst[i]; dst[i] = dst[j]; dst[j] = tmp;
-	};
+	}
 	for ( i = count - 1; i > 0; i-- )
 	    if ( dst[i] & 0x80 ) {
 		tmp = dst[i+0]; dst[i+0] = dst[i-1]; dst[i-1] = tmp;
 		i--;
-	    };
-    };
+	    }
+    }
     return count;
 }
 

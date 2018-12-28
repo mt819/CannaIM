@@ -59,14 +59,14 @@ WrToRut(ruc, csn, tick)
   whn = HashFunc(csn);
   for (pwd = ruc->dp+whn, wd = *pwd ; wd; pwd = &wd->next, wd = *pwd) {
     if (wd->ct[0] == csn) {
-      WriteCT(csn, tick, wd->ct);
+      WriteCT(csn, tick, wd->ct)
       return 0;
     }
   }
   if (!(wd = (struct CTdata *)calloc(1, sizeof(struct CTdata))))
     return -1;
   *pwd = wd;
-  WriteCT(csn, tick, wd->ct);
+  WriteCT(csn, tick, wd->ct)
   return 1;
 }
 
@@ -171,7 +171,7 @@ entryRut(ruc, csn, tick)
   else {
     wpadd = searchCTadd(ruc, csn);
     if (wpadd) {
-      WriteCT(csn, tick, wpadd->ct);
+      WriteCT(csn, tick, wpadd->ct)
       if (csn == ruc->frst)
 	ruc->frst = UpdateFrst(ruc);
     }
@@ -236,7 +236,7 @@ readWRT(fr)
   wrt->tm = wtm;
   if (wsz) {
     if (read(fr, wrt->buf, (unsigned) 5*wsz) != 5*(int)wsz) {
-      freeWRT(wrt);
+      freeWRT(wrt)
       return (struct WRT *) 0;
     }
   }
@@ -252,16 +252,16 @@ writeToWRT(fr, wrt)
 {
   unsigned char ll[4];
 
-  l_to_bst4(wrt->sz, ll);
+  l_to_bst4(wrt->sz, ll)
   if (write(fr, (char *)ll, 4) != 4)
     return 0;
-  l_to_bst4(wrt->cs, ll);
+  l_to_bst4(wrt->cs, ll)
   if (write(fr, (char *)ll, 4) != 4)
     return 0;
-  l_to_bst4(wrt->frst, ll);
+  l_to_bst4(wrt->frst, ll)
   if (write(fr, (char *)ll, 4) != 4)
     return 0;
-  l_to_bst4(wrt->tm, ll);
+  l_to_bst4(wrt->tm, ll)
   if (write(fr, (char *)ll, 4) != 4)
     return 0;
   if (wrt->sz) {
@@ -381,13 +381,13 @@ writeNV(fd, nv)
     }
   }
 
-  l_to_bst4(nv->sz, ll);
+  l_to_bst4(nv->sz, ll)
   if (write(fd, (char *)ll, 4) == 4) {
-    l_to_bst4(nv->cnt, ll);
+    l_to_bst4(nv->cnt, ll)
     if (write(fd, (char *)ll, 4) == 4) {
-      l_to_bst4(nv->tsz, ll);
+      l_to_bst4(nv->tsz, ll)
       if (write(fd, (char *)ll, 4) == 4) {
-	l_to_bst4((unsigned long)0, ll);
+	l_to_bst4((unsigned long)0, ll)
 	if (write(fd, (char *)ll, 4) == 4) {
 	  if (!nv->sz ||
 	      (buf && write(fd, buf, (int) nv->sz) == (int)nv->sz)) {
@@ -434,7 +434,7 @@ int fr;
     return (struct RUT *) 0;
 
   if (!(ruc = allocRUT(HN))) {
-    freeWRT(wruc);
+    freeWRT(wruc)
     return (struct RUT *) 0;
   }
 
@@ -452,7 +452,7 @@ int fr;
       ruc = (struct RUT *) 0;
     }
   }
-  freeWRT(wruc);
+  freeWRT(wruc)
   return ruc;
 }
 
@@ -483,7 +483,7 @@ struct RUT *ruc;
   count = 0L;
   for (lc = 0L; lc < HN; lc++) {
     for (wdp = *(ruc->dp+lc) ; wdp; wdp = wdp->next) {
-      WriteVal(wdp->ct[0], _RkGetTick(0) - wdp->ct[1], wruc->buf+5*count);
+      WriteVal(wdp->ct[0], _RkGetTick(0) - wdp->ct[1], wruc->buf+5*count)
       count ++;
     }
   }
@@ -492,7 +492,7 @@ struct RUT *ruc;
   }
   if (!writeToWRT(fr, wruc))
     retval = 0;
-  freeWRT(wruc);
+  freeWRT(wruc)
   return retval;
 }
 
@@ -661,7 +661,7 @@ FQclose(cx, dm, qm, file)
       if (qm->dm_flags & DM_UPDATED) {
 	lseek(fd, xqm->ex_boff, 0);
 	write(fd, (char *)qm->dm_qbits, (int)xqm->ex_bsiz);
-      };
+      }
       free(qm->dm_qbits);
       qm->dm_qbits = NULL;
     }

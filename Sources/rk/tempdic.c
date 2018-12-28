@@ -430,7 +430,7 @@ _Rktopen(dm, file, mode, gram)
       if (df->df_rcount++ == 0)
 	dd->dd_rcount++;
       ret = 0;
-    };
+    }
   }
  return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
@@ -537,7 +537,7 @@ _Rktclose(dm, file, gram)
       p++;
       backup[(int)(p - file)] = '#';
       strcpy(&backup[(int)(p-file) + 1], p);
-    };
+    }
 
     fdes = creat(backup, (unsigned)0666);
 #ifdef __CYGWIN32__
@@ -585,7 +585,7 @@ _Rktclose(dm, file, gram)
 #endif
     }
     dm->dm_flags &= ~DM_UPDATED;
-  };
+  }
   freeTD((struct TD *)xdm);
   --df->df_rcount;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
@@ -805,7 +805,7 @@ _Rktsync(cx, dm, qm)
 	p++;
 	backup[(int)(p - file)] = '#';
 	strcpy(&backup[(int)(p-file) + 1], p);
-      };
+      }
 
       fdes = creat(backup, (unsigned)0666);
 #ifdef __CYGWIN32__
@@ -856,7 +856,7 @@ _Rktsync(cx, dm, qm)
 	ret = -1;
 	goto return_ret;
       }
-    };
+    }
     free(file);
     ret = 0;
   }

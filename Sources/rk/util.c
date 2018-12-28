@@ -128,8 +128,8 @@ ustoeuc(src, srclen, dest, destlen)
 	  *dest++ = (unsigned char)(*src >> 8);
 	  *dest++ = (unsigned char)(*src++ | 0x80);
 	  destlen--;
-	};
-    };
+	}
+    }
     *dest = (unsigned char)0;
     return dest;
 }
@@ -415,8 +415,10 @@ _RkCreateHeader(hd, size)
       memcpy(datadst, hd->data[i].ptr, (size_t) len);
       datadst += len;
     }
-    l_to_bst4(len, tagdst); tagdst += HD_TAGSIZ;
-    l_to_bst4(off, tagdst); tagdst += HD_TAGSIZ;
+    l_to_bst4(len, tagdst)
+    tagdst += HD_TAGSIZ;
+    l_to_bst4(off, tagdst)
+    tagdst += HD_TAGSIZ;
   }
   RK_ASSERT(tagdst == ptr + tagsz);
   RK_ASSERT(datadst == ptr + tagsz + HD_TAGSIZ + datasz);

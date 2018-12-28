@@ -244,20 +244,20 @@ RkCvtZen(zen, maxzen, han, maxhan)
 	    if ( lo == 0xdf ) {
 	      code += 2, h += 2;
 	      break;
-	    };
+	    }
 	  case 0xab: case 0xad: case 0xaf: case 0xb1: case 0xb3: /* ka */
 	  case 0xb5: case 0xb7: case 0xb9: case 0xbb: case 0xbd: /* sa */
 	  case 0xbf: case 0xc1: case 0xc4: case 0xc6: case 0xc8: /* ta */
 	    if ( lo == 0xde ) {
 	      code += 1, h += 2;
 	      break;
-	    };
-	  };
-	};
-      };
+	    }
+	  }
+	}
+      }
     }
     else if (hi == 0x8f) {
-      ADDCODE(z, maxzen, count, hi, 1);
+      ADDCODE(z, maxzen, count, hi, 1)
       code = (((Wchar) h[0]) << 8) | ((Wchar) h[1]); h += 2;
       byte = 2;
     } else if ( hi & 0x80 )
@@ -267,8 +267,8 @@ RkCvtZen(zen, maxzen, han, maxhan)
 	code = hi;
       byte = (code>>8) ? 2 : 1;
     }
-    ADDCODE(z, maxzen, count, code, byte);
-  };
+    ADDCODE(z, maxzen, count, code, byte)
+  }
   if ( z )
     *z = 0;
   return count;
@@ -328,14 +328,14 @@ RkCvtHan(han, maxhan, zen, maxzen)
 	else {
 	  code = 0x00008e00|LOMASK(code);
 	  byte = 2;
-	};
+	}
       }
       else
 	code = (hi<<8)|lo, byte = 2;
       break;
     default:
       if (hi == 0x8f) {
-	ADDCODE(h, maxhan, count, hi, 1);
+	ADDCODE(h, maxhan, count, hi, 1)
 	code = (((Wchar) z[0]) << 8) | ((Wchar) z[1]); z += 2;
 	byte = 2;
       }
@@ -351,11 +351,11 @@ RkCvtHan(han, maxhan, zen, maxzen)
 	    case	'.': 	code = 0x8ea1; byte = 2; break;
 	    */
 	default:	code = hi; break;
-	};
+	}
       break;
-    };
-    ADDCODE(h, maxhan, count, code, byte);
-  };
+    }
+    ADDCODE(h, maxhan, count, code, byte)
+  }
   if ( h )
     *h = 0;
   return count;
@@ -386,7 +386,7 @@ RkCvtKana(kana, maxkana, hira, maxhira)
   while ( h < H ) {
     hi = *h++;
     if (hi == 0x8f) {
-      ADDCODE(k, maxkana, count, hi, 1);
+      ADDCODE(k, maxkana, count, hi, 1)
       code = (((Wchar) h[0]) << 8) | ((Wchar) h[1]); h += 2;
       byte = 2;
     }
@@ -400,11 +400,11 @@ RkCvtKana(kana, maxkana, hira, maxhira)
       if ( hi == 0xa4 && code == 0xa5a6 && dakuon ) {
 	code = 0xa5f4;
 	h += 2;
-      };
+      }
     } else 
       code = hi, byte = 1;
-    ADDCODE(k, maxkana, count, code, byte);
-  };
+    ADDCODE(k, maxkana, count, code, byte)
+  }
   if ( k )
     *k = 0;
   return count;
@@ -432,7 +432,7 @@ RkCvtHira(hira, maxhira, kana, maxkana)
   while ( k < K ) {
     hi = *k++;
     if (hi == 0x8f) {
-      ADDCODE(h, maxhira, count, hi, 1);
+      ADDCODE(h, maxhira, count, hi, 1)
       code = (((Wchar) k[0]) << 8) | ((Wchar) k[1]); k += 2;
       byte = 2;
     } else if ( hi & 0x80 ) {
@@ -448,8 +448,8 @@ RkCvtHira(hira, maxhira, kana, maxkana)
 	code = 0xa4b1;
     } else 
       code = hi, byte = 1;
-    ADDCODE(h, maxhira, count, code, byte);
-  };
+    ADDCODE(h, maxhira, count, code, byte)
+  }
   if ( h )
     *h = 0;
   return count;
@@ -479,14 +479,14 @@ RkCvtNone(dst, maxdst, src, maxsrc)
     code = *s++;
     byte = 1;
     if (code == 0x8f) {
-      ADDCODE(d, maxdst, count, code, 1);
+      ADDCODE(d, maxdst, count, code, 1)
       code = (((Wchar) s[0]) << 8) | ((Wchar) s[1]); s += 2;
       byte = 2;
     } else if ( code & 0x80 ) { 
 		code = (code<<8)|(*s++); byte = 2;
 	}
-    ADDCODE(d, maxdst, count, code, byte);
-  };
+    ADDCODE(d, maxdst, count, code, byte)
+  }
   if ( d )
     *d = 0;
   return count;
@@ -544,11 +544,11 @@ int maxsj;
 	    else 			/* guusuu ku */
 		lo -= (0x9f - 0x21);
 	    code = 0x8080|(hi<<8)|lo, byte = 2;
-	};
+	}
 	if (wc_return && e < ee) {
 	  *e++ = (Wchar)code;
 	}
-    };
+    }
     if (wc_return && e && e < ee) {
       *e = 0;
     }
@@ -595,10 +595,10 @@ RkCvtWide(dst, maxdst, src, maxsrc)
 	    default:
 		code = 0x8080|(((s[-1]<<8)|s[0])&0x7f7f);
                 s += 1;
-            };
-        };
-	ADDWCODE(d, maxdst, count, (Wchar)code);
-    };
+            }
+        }
+	ADDWCODE(d, maxdst, count, (Wchar)code)
+    }
     if ( d )
 	*d = 0;
     return count;
@@ -723,9 +723,9 @@ RkCvtNarrow(dst, maxdst, src, maxsrc)
 	    code &= 0xffff;
 	    byte = 2;
 	    break;
-        };
-	ADDCODE(d, maxdst, count, code, byte);
-    };
+        }
+	ADDCODE(d, maxdst, count, code, byte)
+    }
     if ( d )
 	*d = 0;
     return count;
@@ -771,9 +771,9 @@ RkCvtEuc(euc, maxeuc, sj, maxsj)
 	} else 			/* guusuu ku */
 	  lo -= (0x9f - 0x21);
 	code = 0x8080|(hi<<8)|lo, byte = 2;
-      };
-    ADDCODE(e, maxeuc, count, code, byte);
-  };
+      }
+    ADDCODE(e, maxeuc, count, code, byte)
+  }
   if ( e )
     *e = 0;
   return count;
@@ -835,26 +835,26 @@ RkwCvtSuuji(dst, maxdst, src, maxsrc, format)
       /* simple */
     case SUUJI_THROUGH:	/* sanyou suuji */
       code = thru;
-      ADDWCODE(d, maxdst, count, code);
+      ADDWCODE(d, maxdst, count, code)
       break;
     case SUUJI_HANKAKU:	/* sanyou suuji */
       code = dec + '0';
       if (code == thru) {
 	return 0;
       }
-      ADDWCODE(d, maxdst, count, code);
+      ADDWCODE(d, maxdst, count, code)
       break;
     case SUUJI_ZENKAKU:	/* sanyou suuji */
       code = hiragana[dec + '0'];
       if (code == thru) {
 	return 0;
       }
-      ADDWCODE(d, maxdst, count, code);
+      ADDWCODE(d, maxdst, count, code)
       break;
       /* kanji kurai dori */
     case SUUJI_SIMPLEKANJI:	/* kanji suuji */
       code = suujinew[dec];
-      ADDWCODE(d, maxdst, count, code);
+      ADDWCODE(d, maxdst, count, code)
       break;
     case SUUJI_FULLKANJI:
     case SUUJI_FULLKANJITRAD:
@@ -878,10 +878,10 @@ RkwCvtSuuji(dst, maxdst, src, maxsrc, format)
 	      if ( digit[i] ) {
 		code = kurai3new[i];
 		if (code)
-		  ADDWCODE(d, maxdst, count, code);
+		  ADDWCODE(d, maxdst, count, code)
 		if ( i == 0 || (digit[i] > 1) ) {
 		  code = suujinew[digit[i]];
-		  ADDWCODE(d, maxdst, count, code);
+		  ADDWCODE(d, maxdst, count, code)
 		}
 	      }
 	      break;
@@ -889,14 +889,14 @@ RkwCvtSuuji(dst, maxdst, src, maxsrc, format)
 	      if ( digit[i] ) {
 		code = kurai3old[i];
 		if (code)
-		  ADDWCODE(d, maxdst, count, code);
+		  ADDWCODE(d, maxdst, count, code)
 		code = suujiold[digit[i]];
-		ADDWCODE(d, maxdst, count, code);
-	      };
+		ADDWCODE(d, maxdst, count, code)
+	      }
 	      break;
 	    case SUUJI_WITHKANJIUNIT:
 	      code = hiragana[digit[i]+'0'];
-	      ADDWCODE(d, maxdst, count, code);
+	      ADDWCODE(d, maxdst, count, code)
 	      break;
 	    }
 	}
@@ -906,15 +906,15 @@ RkwCvtSuuji(dst, maxdst, src, maxsrc, format)
     case SUUJI_WITHCOMMA: /* 1,234,567,890 */
       if ( k && k%3 == 0 ) {
 	code = hiragana[','];
-	ADDWCODE(d, maxdst, count, code);
+	ADDWCODE(d, maxdst, count, code)
       }
       code = hiragana[dec + '0'];
-      ADDWCODE(d, maxdst, count, code);
+      ADDWCODE(d, maxdst, count, code)
       break;
     default:
       return 0;
-    };
-  };
+    }
+  }
   
   if (format == SUUJI_FULLKANJI || format == SUUJI_FULLKANJITRAD ||
       format == SUUJI_WITHKANJIUNIT) {
@@ -933,25 +933,25 @@ RkwCvtSuuji(dst, maxdst, src, maxsrc, format)
 	  if ( digit[i] ) {
 	    code = kurai3new[i];
 	    if (code)
-	      ADDWCODE(d, maxdst, count, code);
+	      ADDWCODE(d, maxdst, count, code)
 	    if ( i == 0 || (digit[i] > 1) ) {
 	      code = suujinew[digit[i]];
-	      ADDWCODE(d, maxdst, count, code);
-	    };
-	  };
+	      ADDWCODE(d, maxdst, count, code)
+	    }
+	  }
 	  break;
 	case SUUJI_FULLKANJITRAD:
 	  if ( digit[i] ) {
 	    code = kurai3old[i];
 	    if (code)
-	      ADDWCODE(d, maxdst, count, code);
+	      ADDWCODE(d, maxdst, count, code)
 	    code = suujiold[digit[i]];
-	    ADDWCODE(d, maxdst, count, code);
-	  };
+	    ADDWCODE(d, maxdst, count, code)
+	  }
 	  break;
 	case SUUJI_WITHKANJIUNIT:
 	  code = hiragana[digit[i]+'0'];
-	  ADDWCODE(d, maxdst, count, code);
+	  ADDWCODE(d, maxdst, count, code)
 	  break;
 	}
     }

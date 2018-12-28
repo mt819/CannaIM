@@ -259,7 +259,7 @@ allocBunStorage(len)
     for (i = 0; pat = (Wchar)~i, i < OVERRUN_MARGIN; i++)
       p[-i-1] = q[i] = pat;
     s->word_in_use = 0;
-  };
+  }
   if (!s) /* EMPTY */RkSetErrno(RK_ERRNO_ENOMEM);
   return s;
 }
@@ -278,25 +278,25 @@ _RkReallocBunStorage(src, len)
       for (i = 0; i <= (int)src->maxyomi; i++)
 	dst->yomi[i] = src->yomi[i];
       free((src->yomi-OVERRUN_MARGIN));
-    };
+    }
     dst->nyomi = src->nyomi;
     if (src->bunq) {
       for (i = 0; i <= (int)src->maxbun; i++)
 	dst->bunq[i] = src->bunq[i];
       free((src->bunq-OVERRUN_MARGIN));
-    };
+    }
     dst->maxbun = src->maxbun;
     dst->curbun = src->curbun;
     if (src->xq) {
       for (i = 0; i <= src->maxxq; i++)
 	dst->xq[i] = src->xq[i];
       free((src->xq-OVERRUN_MARGIN));
-    };
+    }
     if (src->xqh) {
       for (i = 0; i <= src->maxxq; i++)
 	dst->xqh[i] = src->xqh[i];
       free((src->xqh-OVERRUN_MARGIN));
-    };
+    }
     dst->word_in_use = src->word_in_use;
     free(src);
     return(dst);
@@ -367,7 +367,7 @@ RkwBgnBun(
       RkSetErrno(RK_ERRNO_EINVAL);
       RkwEndBun(cx_num, 0);
       return(-1);
-    };
+    }
     for (i = 0; i < n; i++)
       cx->store->yomi[i] = yomi[i];
     cx->store->yomi[n] = 0;
@@ -389,7 +389,7 @@ RkwBgnBun(
       RkSetErrno(RK_ERRNO_EINVAL);
       RkwEndBun(cx_num, 0);
       return(-1);
-    };
+    }
     return(0);
   }
 }
@@ -418,7 +418,7 @@ RkwEndBun(int cx_num, int mode)
     if (mode != DO_LEARN) {
       RkSetErrno(RK_ERRNO_EINVAL);
       return -1;
-    };
+    }
   }
 #ifdef RK_LOG
   if (mode) {
@@ -814,7 +814,7 @@ countCand(cx)
     maxcand = bun->nb_maxcand;
     for (mask = cx->kouhomode; mask; mask >>= RK_XFERBITS)
       maxcand++;
-  };
+  }
   return(maxcand);
 }
 
@@ -1133,11 +1133,11 @@ RkwGetYomi(cx_num, yomi, maxyomi)
       !(bun = getCurrentBun(store))) {
     RkSetErrno(RK_ERRNO_ECTXNO);
     return -1;
-  };
+  }
   if (!yomi) {
     RkSetErrno(RK_ERRNO_EINVAL);
     return -1;
-  };
+  }
   lex.ylen = bun->nb_curlen;
   i = addYomi(yomi, 0, maxyomi - 1,
 	      store->yomi + bun->nb_yoff,
@@ -1178,7 +1178,7 @@ RkwGetLastYomi(cx_num, yomi, maxyomi)
       yomi[nyomi] = (Wchar)0;
     } else {
       yomi[maxyomi - 1] = (Wchar)0;
-    };
+    }
   }
   return nyomi;
 }
@@ -1496,7 +1496,7 @@ RkwQueryDic(int cx_num, char *dirname, char *dicname, struct DicInfo *status)
       return BADCONT;
     }
     if(RkwSetDicPath(new_cx_num, dirname) < 0) {
-      CloseContext(new_cx_num);
+      CloseContext(new_cx_num)
       free(buff);
       return NOTALC;
     }
@@ -1513,13 +1513,13 @@ RkwQueryDic(int cx_num, char *dirname, char *dicname, struct DicInfo *status)
   }
   if (!strcmp(dirname, (char *)SYSTEM_DDHOME_NAME)) {
     if (!(dm = _RkSearchDDP(cx->ddpath, dicname))) {
-      CloseContext(new_cx_num);
+      CloseContext(new_cx_num)
       free(buff);
       return NOENT;
     }
   } else {
     if (!(dm = _RkSearchUDDP(cx->ddpath, dicname))) {
-      CloseContext(new_cx_num);
+      CloseContext(new_cx_num)
       free(buff);
       return NOENT;
     }
@@ -1535,14 +1535,14 @@ RkwQueryDic(int cx_num, char *dirname, char *dicname, struct DicInfo *status)
       status->di_count = stat(file, &st) >= 0 ? st.st_size : 0;
       status->di_time = stat(file, &st) >= 0 ? st.st_ctime : 0;
       status->di_mode = 0;
-      CloseContext(new_cx_num);
+      CloseContext(new_cx_num)
       free(file);
       free(buff);
       return(0);
     }
   }
   free(buff);
-  CloseContext(new_cx_num);
+  CloseContext(new_cx_num)
   return(-1);
 }
 

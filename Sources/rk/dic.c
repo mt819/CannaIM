@@ -267,7 +267,7 @@ int     mode;
       } else {
 	  /* return INVAL;	*/
 	  strcpy(extent, "mwd");
-      };
+      }
       sprintf(spec, "%s(.%s) -%s--%s-\n", filename, extent, dicname,
 		    DEFAULT_PERMISSION);
       if (!DMcheck(spec, dicname)) {
@@ -851,8 +851,8 @@ struct RkContext *cx;
     while((work = gwt->tdn) != NULL) {
       gwt->tdn = work->next;
       free(work);
-    };
-  };
+    }
+  }
 }
 
 static void

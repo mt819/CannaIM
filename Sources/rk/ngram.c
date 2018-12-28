@@ -86,7 +86,7 @@ gram_to_tab(gram)
   for (i = 0; i < gram->ng_rowcol; i++) {
     top[i] = str;
     str += strlen(str) + 1;
-  };
+  }
   top[gram->ng_rowcol] = NULL;
   return top;
 }
@@ -593,14 +593,14 @@ RkParseWrec(gram, src, left, dst, maxdst)
 #endif
 
   if (left > RK_LEFT_KEY_WMAX) {
-    ; /* return NULL */
+   /* return NULL */
   }
   else if (!(nc = wstowrec(gram, src, localbuffer, RK_WREC_BMAX,
 		      &ylen, &wlen, lucks))) {
-    ; /* return 0 */
+   /* return 0 */
   }
   else if (2 + (wreclen = 2 + (left * sizeof(Wchar)) + wlen) > maxdst) {
-    ; /* return (unsigned char *)0; */
+   /* return (unsigned char *)0; */
   }
   else if (left > ylen) { /* wrong argument */
     RK_ASSERT(0);
@@ -939,7 +939,7 @@ RkScanWcand(wrec, word, maxword)
       word[i].rcnum = rcnum;
       word[i].klen = klen;
       ns++;
-    };
+    }
     wrec += 2 * klen + 2;
   }
   return ns;
@@ -1009,7 +1009,7 @@ RkWcand2Wrec(key, wc, nc, lucks)
         return(tw);
       }
       sz += (wc[i].klen * 2) + NW_PREFIX;
-    };
+    }
     if (*key & 0x80)
       key += 2;
     key += 2;

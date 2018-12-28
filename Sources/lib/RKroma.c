@@ -327,7 +327,7 @@ int		flags;
     case RK_ZFER:
 	RkCvtZen(tmp, sizeof(tmp), kana, klen);
 	return tmp;
-    };
+    }
 }
 static
 unsigned char	*
@@ -352,7 +352,7 @@ int		flags;
     default:	  return hira_tsu;
     case RK_HFER: return han_tsu;
     case RK_KFER: return kana_tsu;
-    };
+    }
 }
 
 int
@@ -425,10 +425,10 @@ int		*status;
 			case RK_ZFER:
 			    byte = RkCvtZen(tmp, sizeof(tmp), src, count);
 			    break;
-			};
+			}
 			kana = tmp;
 			found = -1;
-		    };
+		    }
 		}
 		else {  /* 'n' nado no shori: saitan no monowo toru */
 		    kana = getKana(rdic, m->start, flags);
@@ -445,8 +445,8 @@ int		*status;
 		byte = strlen((char *)kana);
 		count = i + 1;
 		goto done;
-	    };
-	};
+	    }
+	}
 	byte = 0;
     }
     else
@@ -458,8 +458,8 @@ done:
 	    while ( byte-- )
 		*dst++ = *kana++;
 	    *dst = 0;
-	};
-    };
+	}
+    }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
     free(match);
 #endif

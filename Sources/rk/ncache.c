@@ -63,7 +63,7 @@ _RkInitializeCache(size)
     sx->cache[i].nc_aprev = &sx->cache[i-1];
     sx->cache[i].nc_hnext = sx->cache[i].nc_hprev = &sx->cache[i];
     sx->cache[i].nc_count = 0;
-  };
+  }
   Ncfree.nc_anext = &sx->cache[0];
   sx->cache[sx->maxcache - 1].nc_anext = &Ncfree;
   Ncfree.nc_aprev = &sx->cache[sx->maxcache - 1];
@@ -90,10 +90,10 @@ flushCache(dm, cache)
   if (cache->nc_word) {
     if (dm && (cache->nc_flags & NC_DIRTY)) {
       DST_WRITE(dm, cache);
-    };
+    }
     cache->nc_flags &= ~NC_DIRTY;
     return 0;
-  };
+  }
   return -1;
 }
 
@@ -106,15 +106,15 @@ struct ncache	*newCache(ndm, address)
 
   if ((new = Ncfree.nc_anext) != &Ncfree) {
     flushCache(new->nc_dic, new);
-    aremove(new);
-    hremove(new);
+    aremove(new)
+    hremove(new)
     new->nc_dic = ndm;
     new->nc_word = NULL;
     new->nc_flags  = 0;
     new->nc_address = address;
     new->nc_count = 0;
     return(new);
-  };
+  }
   return NULL;
 }
 
@@ -127,14 +127,14 @@ _RkRelease()
     if (!new->nc_word || (new->nc_flags & NC_NHEAP))
       continue;
     flushCache(new->nc_dic, new);
-    hremove(new);
+    hremove(new)
     new->nc_dic = NULL;
     new->nc_flags  = (unsigned short)0;
     new->nc_word = NULL;
     new->nc_address = (long)0;
     new->nc_count = (unsigned long)0;
     return 1;
-  };
+  }
   return 0;
 }
 
@@ -162,15 +162,15 @@ _RkDerefCache(cache)
   if (cache->nc_count == 0) {
     _Rkpanic("wrong cache count %s %d#%d",
 	     dm ? dm->dm_dicname : "-", cache->nc_address, cache->nc_count);
-  };
+  }
   if (--cache->nc_count == 0) {
-    aremove(cache);
+    aremove(cache)
     if (cache->nc_flags & NC_ERROR) {
-      ainserttop(cache);
+      ainserttop(cache)
     } else {
-      ainsertbottom(cache);
-    };
-  };
+      ainsertbottom(cache)
+    }
+  }
   return;
 }
 
@@ -178,9 +178,9 @@ void
 _RkPurgeCache(cache)
      struct ncache	*cache;
 {
-  hremove(cache);
-  aremove(cache);
-  ainserttop(cache);
+  hremove(cache)
+  aremove(cache)
+  ainserttop(cache)
 }
 
 void
@@ -194,8 +194,8 @@ _RkKillCache(dm)
     if (dm == cache->nc_dic) {
       flushCache(dm, cache);
       _RkPurgeCache(cache);
-    };
-  };
+    }
+  }
 }
 
 #if defined(MMAP)
@@ -231,9 +231,9 @@ _RkDoInvalidateCache(addr, size)
       if (cache->nc_address >= addr &&
 	  cache->nc_address < (long)(addr + size))  {
         cache->nc_flags |= NC_ERROR;
-        hremove(cache);
-        aremove(cache);
-        ainserttop(cache);
+        hremove(cache)
+        aremove(cache)
+        ainserttop(cache)
       }
       cache = tmp;
     }
@@ -264,12 +264,12 @@ _RkRehashCache(cache, addr)
   struct ncache	*head;
 
   if ((head = &Nchash[hash(addr)]) != &Nchash[hash(cache->nc_address)]) {
-    hremove(cache);
+    hremove(cache)
     cache->nc_hnext = head->nc_hnext;
     cache->nc_hprev = head;
     head->nc_hnext->nc_hprev = cache;
     head->nc_hnext = cache;
-  };
+  }
   cache->nc_address = addr;
 }
 
@@ -283,9 +283,9 @@ _RkReadCache(dm, addr)
   head = &Nchash[hash(addr)];
   for (cache = head->nc_hnext; cache != head; cache = cache->nc_hnext) {
     if (cache->nc_dic == dm && cache->nc_address == addr) {
-      aremove(cache);
+      aremove(cache)
       if (cache != head->nc_hnext) {
-	hremove(cache);
+	hremove(cache)
 	cache->nc_hnext = head->nc_hnext;
 	cache->nc_hprev = head;
 	head->nc_hnext->nc_hprev = cache;
@@ -293,12 +293,12 @@ _RkReadCache(dm, addr)
       }
       _RkEnrefCache(cache);
       return(cache);
-    };
-  };
+    }
+  }
   cache = newCache(dm, addr);
   if (cache) {
     if (DST_READ(dm, cache)) {
-      ainserttop(cache);
+      ainserttop(cache)
       return NULL;
     } else {
       cache->nc_hnext = head->nc_hnext;
@@ -307,8 +307,8 @@ _RkReadCache(dm, addr)
       head->nc_hnext = cache;
       _RkEnrefCache(cache);
       return(cache);
-    };
+    }
   } else {
     return NULL;
-  };
+  }
 }

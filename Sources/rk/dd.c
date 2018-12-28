@@ -114,7 +114,7 @@ _RkFreeDM(dm)
 	if (dm->dm_nickname)
 	    free(dm->dm_nickname);
 	free(dm);
-    };
+    }
 }
 
 static
@@ -165,11 +165,11 @@ _RkCreateDF(dd, lnk, type)
     if (!(df->df_link = strdup((char *)lnk))) {
       free(df);
       return(0);
-    };
+    }
     df->df_rcount = 0;
     df->df_type  = type;
     df->df_extdata.ptr = NULL;
-  };
+  }
   return(df);
 }
 
@@ -187,14 +187,14 @@ _RkFreeDF(df)
     for (m = mh->dm_next; m != mh; m = n) {
       n = m->dm_next;
       _RkFreeDM(m);
-    };
+    }
     /* unlink from directory list */
     df->df_next->df_prev = df->df_prev;
     df->df_prev->df_next = df->df_next;
     if (df->df_link)
       free(df->df_link);
     free(df);
-  };
+  }
 }
 
 static struct DF*
@@ -214,7 +214,7 @@ _RkAllocDF(struct DD *dd, unsigned char *lnk, int type)
     f->df_prev = fh->df_prev;
     fh->df_prev = f;
     f->df_prev->df_next = f;
-  };
+  }
   return(f);
 }
 
@@ -420,7 +420,7 @@ _RkFreeDD(dd)
     for (f = fh->df_next; f != fh; f = g) {
       g = f->df_next;
       _RkFreeDF(f);
-    };
+    }
     dd->dd_next->dd_prev = dd->dd_prev;
     dd->dd_prev->dd_next = dd->dd_next;
     if (dd->dd_path)
@@ -436,9 +436,9 @@ _RkFreeDD(dd)
       if (p->ddt_spec)
 	free(p->ddt_spec);
       free(p);
-    };
+    }
     free(dd);
-  };
+  }
 }
 static
 struct DD	*
@@ -565,7 +565,7 @@ _RkReadDD(name)
       {
 	free(ddt);
 	continue;
-      };
+      }
     {
       int len = strlen((char *)line);
       if (line[len - 1] == '\n') {
@@ -604,9 +604,9 @@ _RkReadDD(name)
 	  dm->dm_flags |= DM_WRITEOK;
 	}
 	ddt->ddt_status = 0;
-      };
-    };
-  };
+      }
+    }
+  }
   fclose(fp);
 
  return_dd:
@@ -641,7 +641,7 @@ _RkOpenDD(name)
     dd->dd_prev = knownDD->dd_prev;
     knownDD->dd_prev = dd;
     dd->dd_prev->dd_next = dd;
-  };
+  }
   return dd;
 }
 
@@ -661,7 +661,7 @@ _RkCreatePath(dd, name)
     strcpy(ddname, dd->dd_path);
     strcat(ddname, "/");
     strcat(ddname, name);
-  };
+  }
   return ddname;
 }
 
@@ -704,8 +704,8 @@ _RkCreateUniquePath(dd, proto)
       umask(oldmask);
       if (!count)
 	return newLinkName;
-    };
-  };
+    }
+  }
   return NULL;
 }
 
@@ -781,7 +781,7 @@ _RkRealizeDD(dd)
     }
     unlink(dicsdir);
 #endif /* !HAVE_RENAME */
-  };
+  }
   /* create dics.dir */
 
   if ((fdes = creat(dicsdir, CREAT_MODE)) < 0) {
@@ -799,7 +799,7 @@ _RkRealizeDD(dd)
 #endif
     }
     goto return_ret;
-  };
+  }
 #ifdef __CYGWIN32__
   setmode(fdes, O_BINARY);
 #endif
@@ -832,7 +832,7 @@ _RkRealizeDD(dd)
       unlink(dicsdir);
     close(fdes);
     goto return_ret;
-  };
+  }
   /* fill up bodies */
   ddLines = &dd->dd_text;
   for (ddt = ddLines->ddt_next; ddt != ddLines; ddt = ddt->ddt_next)
@@ -865,8 +865,8 @@ _RkRealizeDD(dd)
 	  unlink(dicsdir);
 	close(fdes);
 	goto return_ret;
-      };
-    };
+      }
+    }
   close(fdes);
   /* change owner
   if (pw)
@@ -923,7 +923,7 @@ _RkCopyDDP(ddp)
     if (new)
       for (i = 0; (dd = new[i] = ddp[i]) != NULL ; i++)
 	dd->dd_rcount++;
-  };
+  }
   return new;
 }
 static
@@ -941,7 +941,7 @@ _RkAppendDDP(ddp, dd)
     if (ddp) {
       for (i = 0; i < count; i++) new[i] = ddp[i];
       free(ddp);
-    };
+    }
     new[count++] = dd;
     new[count] = NULL;
     dd->dd_rcount++;
@@ -982,12 +982,12 @@ _RkCreateDDP(ddpath)
 	if (count < RK_PATH_BMAX)
 	  *d++ = *s;
 	s++;
-      };
+      }
     *d = 0;
     dd = _RkOpenDD(dir);
     if (dd)
       ddp = _RkAppendDDP(ddp, dd);
-  };
+  }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(dir);
 #endif
@@ -1005,9 +1005,9 @@ _RkFreeDDP(ddp)
     for (i = 0; (dd = ddp[i]) != NULL ; i++)
       if (--dd->dd_rcount == 0) {
 	_RkFreeDD(dd);
-      };
+      }
     free(ddp);
-  };
+  }
 }
 
 /* _RkSearchDDP/Q
@@ -1077,10 +1077,10 @@ _RkSearchDDQ(ddp, name, type)
 	  for (m = mh->dm_next; m != mh; m = m->dm_next) {
 	    if (!STRCMP(m->dm_nickname, name))
 	      return(m);
-	  };
-	};
-    };
-  };
+	  }
+	}
+    }
+  }
   return NULL;
 }
 
@@ -1310,7 +1310,7 @@ DMremove(dm)
      if (ddt->ddt_spec)
        free(ddt->ddt_spec);
      free(ddt);
-   };
+   }
   /* free dm itself */
   _RkFreeDM(dm);
   if (df) {
@@ -1318,7 +1318,7 @@ DMremove(dm)
 
     if (mh == mh->dm_next)
       _RkFreeDF(df);
-  };
+  }
   return 0;
 }
 
@@ -1362,7 +1362,7 @@ DMrename(dm, nickname)
   case ND_SUC:
     strcpy(member, ".suc");
     break;
-  };
+  }
   sprintf(spec, "%s(%s) -%s--%s%s-", df->df_link,
 		dicname ? dicname : member, nickname,
 		(dm->dm_flags & DM_READOK) ? "r" : "",
@@ -1375,7 +1375,7 @@ DMrename(dm, nickname)
   if (!(new_nick = strdup((char *)nickname))) {
     free(new_spec);
     goto return_ret;
-  };
+  }
   free(ddt->ddt_spec);
   ddt->ddt_spec = new_spec;
   free(dm->dm_nickname);
@@ -1527,28 +1527,28 @@ _RkMountMD(cx, dm, qm, mode, firsttime)
     if (!(file = _RkCreatePath(dd, df->df_link))) {
       free(md);
       return -1;
-    };
+    }
     status = DST_OPEN(dm, file,  DM_WRITABLE, cx->gram->gramdic);
     free(file);
     if (status) {
       free(md);
       return -1;
-    };
-  };
+    }
+  }
   if (qm && qm->dm_rcount == 0) {
     df = qm->dm_file;
     dd = df->df_direct;
     if (!(file = _RkCreatePath(dd, df->df_link))) {
       free(md);
       return -1;
-    };
+    }
     status = FQopen(dm, qm, file, DM_WRITABLE);
     free(file);
     if (status) {
       free(md);
       return -1;
-    };
-  };
+    }
+  }
   /* use the dic as the default grammatical dic if it contains */
   if (firsttime && DM2TYPE(dm) == DF_PERMDIC && dm->dm_gram) {
     cx->gram = dm->dm_gram;
@@ -1607,11 +1607,11 @@ _RkUmountMD(cx, md)
 	  if (!df->df_rcount) {
 	    if (dd->dd_rcount > 0 && --dd->dd_rcount == 0)
 	      _RkFreeDD(dd);
-	  };
+	  }
 	  free(file);
-	};
-      };
-    };
+	}
+      }
+    }
     if (dm->dm_rcount > 0 && --dm->dm_rcount == 0) {
       df = dm->dm_file;
       dd = df->df_direct;
@@ -1621,9 +1621,9 @@ _RkUmountMD(cx, md)
 	if (df->df_rcount == 0) {
 	  if (dd->dd_rcount > 0 && --dd->dd_rcount == 0)
 	    _RkFreeDD(dd);
-	};
+	}
 	free(file);
-      };
-    };
-  };
+      }
+    }
+  }
 }

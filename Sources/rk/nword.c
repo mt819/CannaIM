@@ -107,15 +107,15 @@ allocWord(struct nstore* st, int bb)
       for (i = 1; i + 1 < NW_PAGESIZE; i++)
         new_page[i].nw_next = &new_page[i + 1];
       new_page[i].nw_next = NULL;
-    };
-  };
+    }
+  }
   new_word = SX.word;
   if (new_word) {
     SX.word = new_word->nw_next;
     clearWord(new_word, bb);
     st->word_in_use++;
     SX.word_in_use++;
-  };
+  }
   return new_word;
 }
 
@@ -138,7 +138,7 @@ killWord(struct nstore* st, struct nword* word) /* dispose the unsed words */
       if (!p->nw_cache && p->nw_kanji) {
         _Rkpanic("killWord this would never happen addr ", 0, 0, 0);
         free(p->nw_kanji);
-      };
+      }
       st->word_in_use--;
       SX.word_in_use--;
     }
@@ -218,7 +218,7 @@ int bb;
       } else {
         conc.nw_class = q->nw_class;
         conc.nw_flags = q->nw_flags;
-      };
+      }
       break;
     case ND_PUN:
       /* avoid punctionations where prohibited */
@@ -245,7 +245,7 @@ int bb;
     case ND_SUC:
       conc.nw_flags |= NW_SUC;
       break;
-  };
+  }
   /* cache no sanshoudo wo kousinn suru */
   pq = allocWord(cx->store, bb);
   if (pq) {
@@ -253,7 +253,7 @@ int bb;
     p->nw_flags |= NW_FOLLOW;
     if (pq->nw_cache)
       _RkEnrefCache(pq->nw_cache);
-  };
+  }
   return pq;
 }
 
@@ -280,7 +280,7 @@ _RkFreeQue(struct nstore* st, int s, int e)
       freeWord(st, xq[s].tree);
     clearQue(&xq[s]);
     s++;
-  };
+  }
 }
 
 /*
@@ -455,7 +455,7 @@ readWord(struct RkContext* cx,
         for (num = 0; num < nk; num++) {
           candidates[num] = wp;
           wp += 2 * ((*wp >> 1) & 0x7f) + 2;
-        };
+        }
         if (qm) {
           int ecount, cval, i;
 
@@ -465,15 +465,15 @@ readWord(struct RkContext* cx,
             if ((int)permutation[i] / 2 > nk) {
               ecount++;
               break;
-            };
+            }
             cval += permutation[i];
           }
           if (ecount || cval < (nk - 1) * (nk - 2)) {
             for (i = 0; i < nk; i++)
               permutation[i] = 2 * i;
             _RkPackBits(qm->dm_qbits, offset, bitSize, permutation, nk);
-          };
-        };
+          }
+        }
         pp = wrds;
         for (num = 0; num < nk; num++) {
           unsigned permed;
@@ -512,7 +512,7 @@ readWord(struct RkContext* cx,
 
               t = _RkGetTick(0) - wrds->nw_prio;
               wrds->nw_prio = (0 <= t && t < 0x2000) ? (0x2000 - t) << 4 : 0;
-            };
+            }
             switch (num) {
               case 0:
                 wrds->nw_prio += 15L;
@@ -526,9 +526,9 @@ readWord(struct RkContext* cx,
               case 3:
                 wrds->nw_prio += 3L;
                 break;
-            };
+            }
             wrds->nw_prio |= 0x01;
-          };
+          }
           if (douniq) {
             for (qq = pp; qq < wrds; qq++)
               if (qq->nw_rowcol == wrds->nw_rowcol)
@@ -539,12 +539,12 @@ readWord(struct RkContext* cx,
           _RkEnrefCache(thisCache);
           wrds++;
           maxword--;
-        };
-      };
+        }
+      }
       _RkDerefCache(thisCache);
-    };
+    }
     maxcache -= nc;
-  };
+  }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(permutation);
   free(candidates);
@@ -594,7 +594,7 @@ makeWord(struct RkContext* cx,
           if (clen >= RK_KEY_WMAX || !('0' <= *k && *k <= '9')) {
             doflush++;
             break;
-          };
+          }
       }
       hinshi = cx->gram->P_NN;
       literal = LIT_NUM;
@@ -606,7 +606,7 @@ makeWord(struct RkContext* cx,
           if (clen >= RK_KEY_WMAX || !us_iscodeG0(*k)) {
             doflush++;
             break;
-          };
+          }
       }
       hinshi = cx->gram->P_T35;
       literal = LIT_ALPHA;
@@ -617,7 +617,7 @@ makeWord(struct RkContext* cx,
         if (clen >= RK_KEY_WMAX || *k < 0xb000) {
           doflush++;
           break;
-        };
+        }
       hinshi = cx->gram->P_T00;
     } else if (0xa1a2 <= c && c <= 0xa1db) {
       /*
@@ -627,7 +627,7 @@ makeWord(struct RkContext* cx,
         if (clen >= RK_KEY_WMAX || !(0xa1a2 <= *k && *k <= 0xa1db)) {
           doflush++;
           break;
-        };
+        }
       switch (c) {
         case 0xa1a2:
         case 0xa1a3:
@@ -670,7 +670,7 @@ makeWord(struct RkContext* cx,
         default:
           hinshi = cx->gram->P_T00;
           doflush++;
-      };
+      }
     } else if (0xa3b0 <= c && c <= 0xa3b9) { /* suuji */
       if (!(cx->concmode & RK_MAKE_EISUUJI)) {
         doflush++;
@@ -679,7 +679,7 @@ makeWord(struct RkContext* cx,
           if (clen >= RK_KEY_WMAX || !(0xa3b0 <= *k && *k <= 0xa3b9)) {
             doflush++;
             break;
-          };
+          }
       }
       hinshi = cx->gram->P_NN;
       literal = LIT_NUM;
@@ -693,7 +693,7 @@ makeWord(struct RkContext* cx,
                                        (0xa3e1 <= c && c <= 0xa3fa))) {
             doflush++;
             break;
-          };
+          }
       }
       hinshi = cx->gram->P_T35;
       literal = LIT_ALPHA;
@@ -703,14 +703,14 @@ makeWord(struct RkContext* cx,
             ((0xa5a1 > (c = *k) || c > 0xa5f6) && (0xa1a1 > c || c > 0xa1f6))) {
           doflush++;
           break;
-        };
+        }
       hinshi = cx->gram->P_T30;
     } else if (0xa4a1 <= c && c <= 0xa4f3) { /* hiragana */
       for (; k < z; k++, clen++) {
         if (clen >= RK_KEY_WMAX) {
           doflush++;
           break;
-        };
+        }
         switch (*k) {
 #ifndef LOGIC_HACK
           case 0xa4a1:
@@ -736,20 +736,20 @@ makeWord(struct RkContext* cx,
             doflush++;
             gobeyond++;
             goto hira;
-        };
-      };
+        }
+      }
     hira:
       hinshi = cx->gram->P_T35;
     } else {
       doflush++;
       hinshi = cx->gram->P_T35;
-    };
+    }
   } else if (us_iscodeG2(c)) { /* hankaku katakana */
     for (; k < z; k++, clen++)
       if (clen >= RK_KEY_WMAX || !us_iscodeG2(*k)) {
         doflush++;
         break;
-      };
+      }
     hinshi = cx->gram->P_T30;
   } else {
     doflush++;
@@ -767,7 +767,7 @@ makeWord(struct RkContext* cx,
           setWord(w++, hinshi, 0, key, clen, (Wrec*)0, clen, cx->gram->P_BB);
           if (punct)
             w[-1].nw_class = punct;
-        };
+        }
       }
     }
   }
@@ -1462,7 +1462,7 @@ evalSplit(struct RkContext* cx, struct nword* suc, struct splitParm* ul)
       l2 = p->nw_ylen;
     if (u2 < p->nw_prio)
       u2 = p->nw_prio;
-  };
+  }
   ul->l2 = l2;
   ul->u2 = u2;
 }
@@ -1637,8 +1637,8 @@ splitBun(struct RkContext* cx, int yy, int ys, int ye)
       int ye1 = (ye - len);
 
       xq[w->nw_ylen].tree = parseBun(cx, yy + len, ys1, ye1, 1, 1, &junk);
-    };
-  };
+    }
+  }
 
   /* compute the proper bunsetu length */
   count = calcSplit(cx, yy, xq[0].tree, xq, maxclen, 1);
@@ -1710,7 +1710,7 @@ IsStableQue(struct RkContext* cx, int c, int doflush)
       return 0;
     else
       return 1;
-  };
+  }
   if (xq[c].maxlen <= 0)
     return (!c ? 0 : 1);
 
@@ -1719,7 +1719,7 @@ IsStableQue(struct RkContext* cx, int c, int doflush)
       return 0;
     if (!c && w->nw_ylen && !IsStableQue(cx, c + w->nw_ylen, doflush))
       return 0;
-  };
+  }
   return 1;
 }
 
@@ -1758,7 +1758,7 @@ Que2Bun(struct RkContext* cx, int yy, int ys, int ye, int doflush)
       for (i = count; (int)i <= st->maxxq; i++) {
         xq[i - count] = xq[i];
         clearQue(&xq[i]);
-      };
+      }
       bun->nb_curlen = count;
       storeBun(cx, (int)bun->nb_yoff, 0, ye, bun);
       st->maxbun++;
@@ -1793,7 +1793,7 @@ _RkRenbun2(struct RkContext* cx, int firstlen /* bunsetsu chou sitei(ow 0) */)
   if (IS_XAUTCTX(cx)) {
     if (uyomi >= 0)
       _RkFreeQue(st, 0, uyomi + 1);
-  };
+  }
   /*
    *
    */
@@ -1868,7 +1868,7 @@ exit:
   if (IS_XAUTCTX(cx) && uyomi > 0) {
     _RkSubstYomi(cx, 0, uyomi, st->yomi + bun->nb_yoff, uyomi);
     st->curbun = oldcurbun;
-  };
+  }
   return st->maxbun;
 }
 
@@ -1903,7 +1903,7 @@ _RkSubstYomi(struct RkContext* cx, int ys, int ye, Wchar* yomi, int newLen)
     if (!st)
       return -1;
     cx->store = st;
-  };
+  }
   /*
    * STEP 1:	update yomigana buffer
    */
@@ -2066,7 +2066,7 @@ doLearn(struct RkContext* cx, struct nword* thisW)
       for (i = 0; i < ncands; i++) {
         candidates[i] = wp;
         wp += 2 * ((*wp >> 1) & 0x7f) + 2;
-      };
+      }
       /*
             if (thisCache->nc_count)
               continue;
@@ -2103,7 +2103,7 @@ doLearn(struct RkContext* cx, struct nword* thisW)
                         tmp,
                         (unsigned long)0L,
                         current);
-          };
+          }
           qm->dm_flags |= DM_UPDATED;
         }
       } else {
