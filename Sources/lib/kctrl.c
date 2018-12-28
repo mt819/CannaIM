@@ -1373,8 +1373,8 @@ mode_context mode_c;
 KanjiMode c_mode;
 {
   wcKanjiStatus ks;
-  long gfback;
-  BYTE inhback;
+  long gfback = 0;
+  BYTE inhback = 0;
   int retval = 0;
   yomiContext yc = (yomiContext)0;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY

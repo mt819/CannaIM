@@ -1179,7 +1179,7 @@ static int
 makePhonoOnBuffer(uiContext d, yomiContext yc, unsigned char key, int flag,
 	int english)
 {
-  int i, n, m, t, sm, henkanflag, prevflag, cond;
+  int i, n = 0, m, t, sm, henkanflag, prevflag, cond;
   int retval = 0;
   int sup = 0;
   int engflag = (english && englishdic);

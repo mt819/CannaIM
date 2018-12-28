@@ -2947,7 +2947,7 @@ Ldefmode()
   extraFunc *extrafunc = NULL;
   int i, j;
   int ecode;
-  list l, edata;
+  list l, edata = 0;
 
   form = pop1();
   if (atom(form)) {

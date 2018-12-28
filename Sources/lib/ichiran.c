@@ -963,7 +963,7 @@ IchiranBackwardKouho(d)
 uiContext d;
 {
   ichiranContext ic = (ichiranContext)d->modec;
-  BYTE mode;
+  BYTE mode = 0;
 
   if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
       d->list_func) {
