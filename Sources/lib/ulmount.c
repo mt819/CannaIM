@@ -472,7 +472,7 @@ uiContext d;
   }
   d->status = 0;
 
-  if((retval = getMountContext(d)) == NG) {
+  if(getMountContext(d) == NG) {
     killmenu(d);
     return(GLineNGReturn(d));
   }

@@ -282,7 +282,7 @@ uuKigoMake(uiContext d, wchar_t **allkouho, int size, char cur, char mode,
 
   d->status = 0;
 
-  if((retval = getForIchiranContext(d)) == NG) {
+  if(getForIchiranContext(d) == NG) {
     return(GLineNGReturn(d));
   }
   fc = (forichiranContext)d->modec;

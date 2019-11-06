@@ -999,7 +999,7 @@ uiContext d;
                           /* 読みを入力してください */
   }
 
-  if((retval = getForIchiranContext(d)) < 0) {
+  if(getForIchiranContext(d) < 0) {
     freeDic(tc);
     defineEnd(d);
     return(GLineNGReturnTK(d));

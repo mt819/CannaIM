@@ -952,7 +952,7 @@ uiContext d;
                                                != NULL) {
         if ((snewp = (BYTE *)calloc(upnelem + 1, sizeof(BYTE)))
                                                  != NULL) {
-          if ((retval = getMountContext(d)) != NG) {
+          if (getMountContext(d) != NG) {
             mc = (mountContext)d->modec;
             mc->mountOldStatus = soldp;
             mc->mountNewStatus = snewp;

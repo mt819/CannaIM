@@ -337,7 +337,7 @@ int major_mode;
 
   d->status = 0;
 
-  if((retval = getForIchiranContext(d)) == NG) {
+  if(getForIchiranContext(d) == NG) {
     killmenu(d);
     return(GLineNGReturn(d));
   }

@@ -949,7 +949,7 @@ canna_callback_t quitfunc;
   for(work = tc->udic; *work; work++)
     upnelem++;
 
-  if((retval = getForIchiranContext(d)) == NG) {
+  if(getForIchiranContext(d) == NG) {
     freeDic(tc);
     defineEnd(d);
     return(GLineNGReturnTK(d));

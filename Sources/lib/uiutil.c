@@ -479,7 +479,7 @@ menustruct *table;
 
   d->status = 0;
 
-  if((retval = getForIchiranContext(d)) == NG)
+  if(getForIchiranContext(d) == NG)
      return(GLineNGReturn(d));
   fc = (forichiranContext)d->modec;
 
