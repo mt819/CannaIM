@@ -214,7 +214,7 @@ allocBunStorage(len)
     s->xq = NULL;
     s->xqh = NULL;
     s->nyomi = (unsigned)0;
-    s->maxyomi = (unsigned)len;
+    s->maxyomi = len;
 #ifdef RK_LOG
     s->nblog = 0;
     s->blog = NULL;
@@ -223,10 +223,10 @@ allocBunStorage(len)
 #endif
 
     s->yomi = (Wchar *)calloc((s->maxyomi+1+2*OVERRUN_MARGIN), sizeof(Wchar));
-    s->maxbunq = (unsigned)len;
+    s->maxbunq = len;
     s->maxbun = (unsigned)0;
     s->curbun = 0;
-    s->bunq = (struct nbun *)calloc((unsigned)(s->maxbunq+1+2*OVERRUN_MARGIN),
+    s->bunq = (struct nbun *)calloc((s->maxbunq+1+2*OVERRUN_MARGIN),
 				    sizeof(struct nbun));
     s->maxxq = len;
     s->xq = (struct nqueue *)calloc((unsigned)(s->maxxq+1+2*OVERRUN_MARGIN),
@@ -242,8 +242,8 @@ allocBunStorage(len)
     s->bunq += OVERRUN_MARGIN;
     s->xq += OVERRUN_MARGIN;
     s->xqh += OVERRUN_MARGIN;
-    p = (Wchar*)&s->yomi[0];
-    q = (Wchar*)&s->yomi[s->maxyomi+1];
+    p = &s->yomi[0];
+    q = &s->yomi[s->maxyomi+1];
     for (i = 0; pat = (Wchar)~i, i < OVERRUN_MARGIN; i++)
       p[-i-1] = q[i] = pat;
     p = (Wchar*)&s->bunq[0];
@@ -469,7 +469,7 @@ RkwRemoveBun(cx_num, mode)
     store->bunq[i - store->curbun - 1].nb_yoff -= c;
   }
   store->nyomi -= c;
-  usncopy(store->yomi, store->yomi + c, (unsigned)store->nyomi);
+  usncopy(store->yomi, store->yomi + c, store->nyomi);
   store->maxbun -= store->curbun + 1;
   store->curbun = 0;
   return(store->maxbun);
@@ -614,7 +614,7 @@ int
 	return ret_val;
     }
 #else
-    return(_RkRenbun2(cx, (int)(bun->nb_curlen + 1)));
+    return(_RkRenbun2(cx, (bun->nb_curlen + 1)));
 #endif
   }
   return(store->maxbun);
@@ -647,7 +647,7 @@ RkwShorten(cx_num)
 	return ret_val;
     }
 #else
-    return(_RkRenbun2(cx, (int)(bun->nb_curlen - 1)));
+    return(_RkRenbun2(cx, (bun->nb_curlen - 1)));
 #endif
   }
   return(store->maxbun);

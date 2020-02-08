@@ -651,7 +651,7 @@ bushuHenkan(uiContext d, int flag, int ext, int cur,
 
 
   if(flag) {
-    yomi = (wchar_t *)bushu_key[cur];
+    yomi = bushu_key[cur];
     length = WStrlen(yomi);
     d->curbushu = (short)cur;
   } else {

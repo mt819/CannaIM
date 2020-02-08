@@ -188,7 +188,7 @@ BYTE *arg;
       FirstTime = 0;
     }
 
-    d = keyToContext((unsigned int)display, (unsigned int)window);
+    d = keyToContext(display, window);
 
     if (d == NULL) {
       d = newUiContext(display, window);

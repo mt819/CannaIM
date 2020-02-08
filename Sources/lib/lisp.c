@@ -774,7 +774,7 @@ mkatm(char *name)
 
   temp = newsymbol(name);
   newatom = symbolpointer(temp);
-  newatom->value = (*name == ':') ? (list)temp : (list)UNBOUND;
+  newatom->value = (*name == ':') ? temp : (list)UNBOUND;
   newatom->plist = NIL;    /* set null plist	*/
   newatom->ftype = UNDEF;  /* set undef func-type	*/
   newatom->func = NULL;    /* Don't kill this line	*/

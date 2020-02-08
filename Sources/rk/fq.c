@@ -166,7 +166,7 @@ entryRut(ruc, csn, tick)
 	ruc->frst = UpdateFrst(ruc);
       break;
     case -1:
-      return (int) 0;
+      return 0;
     }
   else {
     wpadd = searchCTadd(ruc, csn);
@@ -199,7 +199,7 @@ allocWRT(size)
 
   if (!(tempo = (struct WRT *)calloc(1, sizeof(struct WRT))))
     return((struct WRT *) 0);
-  if (!(tempo->buf = (unsigned char *)calloc(1, (int) 5*size))){
+  if (!(tempo->buf = (unsigned char *)calloc(1, 5*size))){
     free(tempo);
     return((struct WRT *) 0);
   }
@@ -218,16 +218,16 @@ readWRT(fr)
 
   if (read(fr, (char *)ll, 4) != 4)
     return (struct WRT *) 0;
-  wsz = (unsigned long) bst4_to_l(ll);
+  wsz = bst4_to_l(ll);
   if (read(fr, (char *)ll, 4) != 4)
     return (struct WRT *) 0;
-  wcs = (unsigned long) bst4_to_l(ll);
+  wcs = bst4_to_l(ll);
   if (read(fr, (char *)ll, 4) != 4)
     return (struct WRT *) 0;
-  wfrst = (unsigned long) bst4_to_l(ll);
+  wfrst = bst4_to_l(ll);
   if (read(fr, (char *)ll, 4) != 4)
     return (struct WRT *) 0;
-  wtm  = (unsigned long) bst4_to_l(ll);
+  wtm  = bst4_to_l(ll);
   if (!(wrt = allocWRT(wsz)))
     return (struct WRT *) 0;
 
@@ -468,11 +468,11 @@ struct RUT *ruc;
   int		retval;
 
   if (!ruc)
-    return (int) 0;
+    return 0;
   retval = 1;
   if (!(wruc = allocWRT(ruc->sz))){
     freeRUT(ruc);
-    return (int) 0;
+    return 0;
   }
   wruc->sz = ruc->sz;
   wruc->cs = ruc->cs;
@@ -487,7 +487,7 @@ struct RUT *ruc;
     }
   }
   if (count != ruc->cs) {
-    retval = (int) 0;
+    retval = 0;
   }
   if (!writeToWRT(fr, wruc))
     retval = 0;
@@ -557,7 +557,7 @@ FQscan(df, codm, file, w)
     lseek(fd, off, 0);
     dmh = &df->df_members;
     for (dm = dmh->dm_next; dm != dmh; dm = dm->dm_next) {
-      if (!strcmp((char *)dm->dm_dicname, (char *)hd.data[HD_CODM].ptr)) {
+      if (!strcmp(dm->dm_dicname, (char *)hd.data[HD_CODM].ptr)) {
 	struct xqm 		*xqm;
 
 	if (!(xqm = (struct xqm *)malloc(sizeof(struct xqm))))

@@ -288,7 +288,7 @@ int *r_return, *w_return; /* アクセス権を返す所 */
     return -1;
   if (count > RK_LINK_BMAX)
     return -1;
-  if (!(t = (char *)strrchr(lnk, '.')))
+  if (!(t = strrchr(lnk, '.')))
     return -1;
   if (!STRCMP(t, ".d") || !STRCMP(t, ".cbd"))
     *dftype = DF_PERMDIC;
@@ -316,7 +316,7 @@ int *r_return, *w_return; /* アクセス権を返す所 */
     return -1;
   if (count > RK_MEMBER_BMAX)
     return -1;
-  if (!(t = (char *)strrchr(member, '.')))
+  if (!(t = strrchr(member, '.')))
     return -1;
   if (!STRCMP(t, ".mwd"))
     *dmclass = ND_MWD;
@@ -585,7 +585,7 @@ _RkReadDD(name)
       continue;
     }
 
-    if (strlen((char *)path) + strlen((char *)lnk) + 1 >= RK_PATH_BMAX)
+    if (strlen(path) + strlen((char *)lnk) + 1 >= RK_PATH_BMAX)
       continue;
     strcpy(file, path);
     strcat(file, "/");

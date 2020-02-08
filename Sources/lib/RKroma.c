@@ -114,7 +114,7 @@ char *romaji;
 #ifdef O_BINARY
 	open_flags |= O_BINARY;
 #endif
-	if ( (dic = open((char *)romaji, open_flags)) < 0 ) {
+	if ( (dic = open(romaji, open_flags)) < 0 ) {
 		free(rdic);
 		return NULL;
 	}
@@ -231,7 +231,7 @@ char *romaji;
 	free (tmp_rdic);
 #endif /* JAPANESE_SORT */
     }
-    return((struct RkRxDic *)rdic);
+    return(rdic);
 }
 /* RkCloseRoma
  *	romaji henkan table wo tojiru

@@ -555,7 +555,7 @@ uiContext d;
   }
   tourokup[nmudic] = NULL;
 
-  return (wchar_t **)tourokup;
+  return tourokup;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -730,7 +730,7 @@ canna_callback_t quitfunc;
   yc2 = GetKanjiString(d, NULL, 0,
 		      CANNA_NOTHING_RESTRICTED,
 		      (int)CANNA_YOMI_CHGMODE_INHIBITTED,
-		      (int)!CANNA_YOMI_END_IF_KAKUTEI,
+		      !CANNA_YOMI_END_IF_KAKUTEI,
 		      CANNA_YOMI_INHIBIT_NONE,
 		      uuT2TangoEveryTimeCatch, uuT2TangoExitCatch,
 		      uuT2TangoQuitCatch);

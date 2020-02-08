@@ -221,8 +221,8 @@ uiContext d;
 
   yc = newYomiContext(NULL, 0, /* 結果は格納しない */
 		      CANNA_NOTHING_RESTRICTED,
-		      (int)!CANNA_YOMI_CHGMODE_INHIBITTED,
-		      (int)!CANNA_YOMI_END_IF_KAKUTEI,
+		      !CANNA_YOMI_CHGMODE_INHIBITTED,
+		      !CANNA_YOMI_END_IF_KAKUTEI,
 		      CANNA_YOMI_INHIBIT_NONE);
   if (yc == (yomiContext)0) {
     popCallback(d);

@@ -571,14 +571,14 @@ RomkanaInit()
       if (extrafunc1->u.modeptr->romaji_table) {
         if (RomkanaTable &&
             !strcmp(RomkanaTable,
-		    (char *)extrafunc1->u.modeptr->romaji_table)) {
+		    extrafunc1->u.modeptr->romaji_table)) {
 	  extrafunc1->u.modeptr->romdic = romajidic;
 	  extrafunc1->u.modeptr->romdic_owner = 0;
         }
 #ifndef NOT_ENGLISH_TABLE
         else if (EnglishTable &&
 	         !strcmp(EnglishTable,
-			 (char *)extrafunc1->u.modeptr->romaji_table)) {
+			 extrafunc1->u.modeptr->romaji_table)) {
 	  extrafunc1->u.modeptr->romdic = englishdic;
 	  extrafunc1->u.modeptr->romdic_owner = 0;
         }
@@ -588,8 +588,8 @@ RomkanaInit()
 					extrafunc2 = extrafunc2->next) {
 	    if (extrafunc2->keyword == EXTRA_FUNC_DEFMODE &&
 		extrafunc2->u.modeptr->romaji_table) {
-	      if (!strcmp((char *)extrafunc1->u.modeptr->romaji_table,
-			  (char *)extrafunc2->u.modeptr->romaji_table)) {
+	      if (!strcmp(extrafunc1->u.modeptr->romaji_table,
+			  extrafunc2->u.modeptr->romaji_table)) {
 	        extrafunc1->u.modeptr->romdic = extrafunc2->u.modeptr->romdic;
 	        extrafunc1->u.modeptr->romdic_owner = 0;
 	        break;
@@ -2220,8 +2220,8 @@ yomiContext yc;
 
   res = newYomiContext(NULL, 0, /* 結果は格納しない */
 		       CANNA_NOTHING_RESTRICTED,
-		       (int)!CANNA_YOMI_CHGMODE_INHIBITTED,
-		       (int)!CANNA_YOMI_END_IF_KAKUTEI,
+		       !CANNA_YOMI_CHGMODE_INHIBITTED,
+		       !CANNA_YOMI_END_IF_KAKUTEI,
 		       CANNA_YOMI_INHIBIT_NONE);
   if (res) {
     res->generalFlags = yc->generalFlags;
@@ -4585,7 +4585,7 @@ uiContext d;
   if (englishdic) {
     if (regionGairaigo(yc, yc->pmark, yc->cmark)) {
       yc->englishtype++;
-      yc->englishtype = (BYTE)((int)yc->englishtype % (int)(CANNA_ENG_NO + 1));
+      yc->englishtype = (BYTE)((int)yc->englishtype % (CANNA_ENG_NO + 1));
       if (yc->englishtype == CANNA_ENG_KANA) {
 	kPos2rPos(yc, yc->pmark, yc->cmark, &rp, &rc);
 	replaceEnglish(d, yc, rp, rc, RK_FLUSH, 1);

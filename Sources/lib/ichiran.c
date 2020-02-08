@@ -1434,9 +1434,9 @@ uiContext d;
   if(((0x30 <= d->ch) && (d->ch <= 0x39))
      || ((0x61 <= d->ch) && (d->ch <= 0x66))) {
     if((0x30 <= d->ch) && (d->ch <= 0x39))
-      num = (int)(d->ch & 0x0f);
+      num = (d->ch & 0x0f);
     else if((0x61 <= d->ch) && (d->ch <= 0x66))
-      num = (int)(d->ch - 0x57);
+      num = (d->ch - 0x57);
   }
   else {
     /* 入力された番号は正しくありません */

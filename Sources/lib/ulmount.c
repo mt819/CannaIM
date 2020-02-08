@@ -177,7 +177,7 @@ mode_context env;
       if(mc->mountNewStatus[i]) {
 	/* マウントする */
 	nmount++;
-	if((retval = RkwMountDic(defaultContext, (char *)mc->mountList[i],
+	if((retval = RkwMountDic(defaultContext, mc->mountList[i],
 			    cannaconf.kojin ? PL_ALLOW : PL_INHIBIT)) == NG) {
 	  if (errno == EPIPE) {
 	    jrKanjiPipeError();
@@ -188,7 +188,7 @@ mode_context env;
                        /* 辞書のマウントに失敗しました */
 	}
 	else if(d->contextCache != -1 &&
-	  (retval = RkwMountDic(d->contextCache, (char *)mc->mountList[i],
+	  (retval = RkwMountDic(d->contextCache, mc->mountList[i],
 			    cannaconf.kojin ? PL_ALLOW : PL_INHIBIT)) == NG) {
 	  if (errno == EPIPE) {
 	    jrKanjiPipeError();
@@ -199,14 +199,14 @@ mode_context env;
                               /* 辞書のマウントに失敗しました */
 	}
 	else { /* 成功 */
-	  dp = findDic((char *)mc->mountList[i]);
+	  dp = findDic(mc->mountList[i]);
 	  if (!dp) {
 	    dp = (struct dicname *)malloc(sizeof(struct dicname));
 	    if (dp) {
-	      dp->name = malloc(strlen((char *)mc->mountList[i]) + 1);
+	      dp->name = malloc(strlen(mc->mountList[i]) + 1);
 	      if (dp->name) {
 		/* マウントしたやつはリストにつなぐ */
-		strcpy(dp->name, (char *)mc->mountList[i]);
+		strcpy(dp->name, mc->mountList[i]);
 		dp->dictype = DIC_PLAIN;
 		/* dp->dicflag = DIC_NOT_MOUNTED; will be rewritten below */
 		dp->next = kanjidicnames;
@@ -225,7 +225,7 @@ mode_context env;
       } else {
 	/* アンマウントする */
 	nmount++;
-	if((retval = RkwUnmountDic(defaultContext, (char *)mc->mountList[i]))
+	if((retval = RkwUnmountDic(defaultContext, mc->mountList[i]))
 	   == NG) {
 	  if (errno == EPIPE) {
 	    jrKanjiPipeError();
@@ -236,7 +236,7 @@ mode_context env;
                              /* 辞書のアンマウントに失敗しました */
 	}
 	else if(d->contextCache != -1 &&
-	  (retval = RkwUnmountDic(d->contextCache, (char *)mc->mountList[i]))
+	  (retval = RkwUnmountDic(d->contextCache, mc->mountList[i]))
 		== NG) {
 	  if (errno == EPIPE) {
 	    jrKanjiPipeError();
@@ -247,7 +247,7 @@ mode_context env;
                              /* 辞書のアンマウントに失敗しました */
 	}
 	else {
-	  dp = findDic((char *)mc->mountList[i]);
+	  dp = findDic(mc->mountList[i]);
 	  if (dp) { /* かならず以下を通るはず */
 	    dp->dicflag = DIC_NOT_MOUNTED;
 	  }
@@ -341,7 +341,7 @@ uiContext d;
       return(NG);
     }
   }
-  if((dicLc = RkwGetDicList(defaultContext, (char *)dicLbuf, ROMEBUFSIZE))
+  if((dicLc = RkwGetDicList(defaultContext, dicLbuf, ROMEBUFSIZE))
      < 0) {
     if(errno == EPIPE)
       jrKanjiPipeError();
@@ -444,7 +444,7 @@ uiContext d;
   }
   for(Lp=dicLp, sop=soldp, snp=snewp; *Lp; Lp++, sop++, snp++) {
     for(Mp=dicMp; *Mp; Mp++) {
-      if(!strcmp((char *)*Lp, (char *)*Mp)) {
+      if(!strcmp(*Lp, *Mp)) {
 	*sop = *snp = 1;
 	break;
       }

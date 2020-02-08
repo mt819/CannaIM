@@ -89,7 +89,7 @@ selectOnOff(uiContext d, wchar_t **buf, int *ck, int nelem,
     return(NG);
   }
 
-  if ((oc = (ichiranContext)newIchiranContext()) == NULL) {
+  if ((oc = newIchiranContext()) == NULL) {
     popCallback(d);
     return(NG);
   }

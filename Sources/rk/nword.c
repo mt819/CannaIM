@@ -378,7 +378,7 @@ setLit(struct RkContext* cx,
       if (dstlen < 0)
         setWord(w++, rc, code, src, srclen, (Wrec*)0, srclen, cx->gram->P_BB);
     }
-  return (struct nword*)w;
+  return w;
 }
 
 #define READWORD_MAXCACHE 128
@@ -1225,8 +1225,8 @@ compword(const struct compRec*, const struct compRec*);
 
 static int compword(x, y) const struct compRec *x, *y;
 {
-  int lowdiff = (int)((unsigned char)y->word->nw_flags & NW_LOWPRI) -
-                (int)((unsigned char)x->word->nw_flags & NW_LOWPRI);
+  int lowdiff = (y->word->nw_flags & NW_LOWPRI) -
+                (x->word->nw_flags & NW_LOWPRI);
   long d = ((long)y->word->nw_prio) - ((long)(x->word->nw_prio));
 
   if (lowdiff > 0)
@@ -1503,7 +1503,7 @@ calcSplit(struct RkContext* cx,
   if (cx->nv && cx->nv->tsz && cx->nv->buf) {
     r = cx->nv->buf + *(st->yomi + yy) % cx->nv->tsz;
     for (p = *r; p; p = p->next) {
-      if (determinate(p->data, (Wrec*)(st->yomi + yy), (int)L2)) {
+      if (determinate(p->data, (Wrec*)(st->yomi + yy), L2)) {
         if (*(p->data + 1) > L1)
           L1 = *(p->data + 1);
       }
@@ -1897,7 +1897,7 @@ _RkSubstYomi(struct RkContext* cx, int ys, int ye, Wchar* yomi, int newLen)
    */
   new_size = st->nyomi + (newLen - (ye - ys));
   if (new_size > (int)st->maxyomi || new_size > (int)st->maxbunq ||
-      new_size > (int)st->maxxq) {
+      new_size > st->maxxq) {
     st = _RkReallocBunStorage(st, (int)(new_size * 1.2 + 10));
     if (!st)
       return -1;
@@ -2088,16 +2088,16 @@ doLearn(struct RkContext* cx, struct nword* thisW)
                         (unsigned long)0L,
                         bits,
                         qm->dm_qbits,
-                        (unsigned long)offset,
+                        offset,
                         current);
             _RkCopyBits(qm->dm_qbits,
-                        (unsigned long)(offset + 0L),
+                        (offset + 0L),
                         bits,
                         qm->dm_qbits,
-                        (unsigned long)(offset + current * bits),
+                        (offset + current * bits),
                         1);
             _RkCopyBits(qm->dm_qbits,
-                        (unsigned long)(offset + bits),
+                        (offset + bits),
                         bits,
                         tmp,
                         (unsigned long)0L,

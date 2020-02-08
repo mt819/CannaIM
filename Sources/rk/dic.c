@@ -441,7 +441,7 @@ int mode;
   }
 
   /* find dictionary in current mount list */
-  dm = _RkSearchDDP(userDDP, (char *)dicname);
+  dm = _RkSearchDDP(userDDP, dicname);
   if (!dm || ((mode & PL_DIC) && dm->dm_file->df_type != DF_FREQDIC)) {
     return NOENT;
   }
@@ -509,7 +509,7 @@ RkwRenameDic(cx_num, old, new, mode)
     return ACCES;
   if (!cx || !cx->ddpath || !cx->ddpath[0])
     return BADCONT;
-  if (strlen((char *)new) >= (unsigned)RK_NICK_BMAX) {
+  if (strlen(new) >= (unsigned)RK_NICK_BMAX) {
     return INVAL;
   }
 
@@ -517,7 +517,7 @@ RkwRenameDic(cx_num, old, new, mode)
     return ACCES;
   }
 
-  dm1 = _RkSearchDDP(userDDP, (char *)old);
+  dm1 = _RkSearchDDP(userDDP, old);
   if (!dm1) {
     return NOENT;
   }
@@ -527,7 +527,7 @@ RkwRenameDic(cx_num, old, new, mode)
     return ACCES;
   }
 
-  dm2 = _RkSearchDDP(userDDP, (char *)new);
+  dm2 = _RkSearchDDP(userDDP, new);
 
   if (dm1->dm_rcount > 0)
     return TXTBSY;
@@ -609,7 +609,7 @@ int mode;
     return NOENT;
   if (!to || !*to)
     return ACCES;
-  if (strlen((char *)to) >= (unsigned)RK_NICK_BMAX) {
+  if (strlen(to) >= (unsigned)RK_NICK_BMAX) {
     return INVAL;
   }
 
@@ -836,8 +836,8 @@ struct TD *tdp;
   }
   new->td = (char *)tdp;
   new->n = 0;
-  new->next = (struct td_n_tupple *)gwt->tdn;
-  gwt->tdn = (struct td_n_tupple *)new;
+  new->next = gwt->tdn;
+  gwt->tdn = new;
   return new;
 }
 
@@ -1037,13 +1037,13 @@ RkwGetWordTextDic(cx_num, dirname, dicname, info, infolen)
     }
     initial_td = NULL;
   }
-  if (GetLine(new_cx, cx->gram->gramdic, (struct TD *)initial_td,
+  if (GetLine(new_cx, cx->gram->gramdic, initial_td,
 	      info, infolen) < 0) {
     RkwUnmountDic(new_cx_num, (char *)gwt->gwt_dicname);
     RkwCloseContext(new_cx_num);
     gwt->gwt_cx = -1;
     return 0;
   }
-  infolen = uslen((Wchar *)info);
+  infolen = uslen(info);
   return infolen;
 }

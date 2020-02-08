@@ -1034,7 +1034,7 @@ uiContext	d;
 
   if(defaultContext == -1) {
     if((KanjiInit() < 0) || (defaultContext == -1)) {
-      jrKanjiError = (char *)e_message[14];
+      jrKanjiError = e_message[14];
       freeAndPopTouroku(d);
       return(GLineNGReturn(d));
     }

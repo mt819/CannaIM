@@ -119,7 +119,7 @@ openDF(df, dfnm, w, gramoff, gramsz)
     }
     dmh = &df->df_members;
     for (dm = dmh->dm_next; dm != dmh; dm = dm->dm_next) {
-      if (!strcmp((char *)dm->dm_dicname, (char *)hd.data[HD_DMNM].ptr)) {
+      if (!strcmp(dm->dm_dicname, (char *)hd.data[HD_DMNM].ptr)) {
 	if (!dm->dm_xdm) {
 	  if (!(xnd = (struct ND *)malloc(sizeof(struct ND))))
 	    break;
@@ -379,7 +379,7 @@ readThisCache(dm, xdm, pgno, val, key, cur, ylen, nread, mc, nc, cf)
       wrec1 += 2;
     wrec1 += 2;
     remlen = (*wrec >> 1) & 0x3f;
-    if (_RkEql(key + cur, (unsigned char *)wrec1, remlen)) {
+    if (_RkEql(key + cur, wrec1, remlen)) {
       if (remlen + cur > ylen)
 	(*cf)++;
       else if (nc < mc) {
@@ -482,7 +482,7 @@ SearchInDir(dm, xdm, pos, key, cur, ylen, nread, mc, nc, cf)
     return(nc);
   }
   kv = uniqAlnum(*(key + cur));
-  next = (int)(kv % nw);
+  next = (kv % nw);
   do {
     p = pos + (((Wchar) next++) % nw) * 5;
     if ((wc = bst2_to_s(p)) == 0xffff)

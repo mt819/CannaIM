@@ -380,7 +380,7 @@ RkGetGramNum(gram, name)
 
   if (gram->ng_strtab) {
     for (row = 0; row < max; row++) {
-      if (!strcmp(gram->ng_strtab[row], (char *)name))
+      if (!strcmp(gram->ng_strtab[row], name))
 	return(row);
     }
   }
@@ -730,7 +730,7 @@ RkUparseGramNum(gram, row, dst, maxdst)
 {
   unsigned char	*name, *p;
 
-  name = (unsigned char *)RkGetGramName(gram, row);
+  name = RkGetGramName(gram, row);
   if (name) {
     int len = strlen((char *)name);
     if (len + 1 < maxdst) {
@@ -816,7 +816,7 @@ _RkUparseWrec(gram, src, dst, maxdst, lucks, add)
     wrec += NW_PREFIX;
     if (oldrow != row) {
       *dst++ = (Wchar)' ';
-      if (!(dst = RkUparseGramNum(gram, (int)row, dst, (int)(endp - dst))))
+      if (!(dst = RkUparseGramNum(gram, row, dst, (int)(endp - dst))))
  	break;
       oldrow = row;
       if (endp <= dst)
@@ -826,7 +826,7 @@ _RkUparseWrec(gram, src, dst, maxdst, lucks, add)
     if (add && i < 2 && lucks[i]) {
       if (!oh) {
 	*dst++ = (Wchar)' ';
-	if (!(dst = RkUparseGramNum(gram, (int)row, dst, (int)(endp - dst))))
+	if (!(dst = RkUparseGramNum(gram, row, dst, (int)(endp - dst))))
 	  break;
 	oh++;
       }
@@ -1018,7 +1018,7 @@ RkWcand2Wrec(key, wc, nc, lucks)
     if (tw) {
       dst = fil_wrec_flag(dst, &sz, (unsigned)nc, key, ylen, ylen);
       if (dst) {
-	wrec = (Wrec *)malloc((unsigned)(sz));
+	wrec = (Wrec *)malloc((sz));
 	if (wrec) {
 	  memcpy(wrec, localbuffer,
 		       (size_t)(dst - localbuffer));

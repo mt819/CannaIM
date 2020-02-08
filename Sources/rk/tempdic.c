@@ -147,7 +147,7 @@ nthKey(w, n)
      Wrec	*w;
      int	n;
 {
-  if (n < (int)((*w >> 1) & 0x3f)) {
+  if (n < ((*w >> 1) & 0x3f)) {
     if (*w & 0x80)
       w += 2;
     w += (n << 1) + 2;
@@ -406,7 +406,7 @@ _Rktopen(dm, file, mode, gram)
     fclose(f);
   }
   else {
-    while (fgets((char *)line, RK_LINE_BMAX*10, f)) {
+    while (fgets(line, RK_LINE_BMAX*10, f)) {
       int		sz;
 
       offset += strlen(line);
@@ -421,7 +421,7 @@ _Rktopen(dm, file, mode, gram)
     dm->dm_offset = 0L;
     df->df_size = offset;
     if (ecount) {
-      freeTD((struct TD *)xdm);
+      freeTD(xdm);
       dm->dm_td = NULL;
       dm->dm_flags &= ~DM_EXIST;
       ret = -1;
@@ -586,7 +586,7 @@ _Rktclose(dm, file, gram)
     }
     dm->dm_flags &= ~DM_UPDATED;
   }
-  freeTD((struct TD *)xdm);
+  freeTD(xdm);
   --df->df_rcount;
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(backup);

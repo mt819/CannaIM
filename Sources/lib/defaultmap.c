@@ -34,7 +34,7 @@ unsigned char f;
   struct funccfunc *p;
 
   for (p = tbl ; p->funcid || p->cfunc ; p++) {
-    if (p->funcid == (unsigned char)f) {
+    if (p->funcid == f) {
       return p->cfunc;
     }
   }

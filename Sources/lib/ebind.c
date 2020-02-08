@@ -221,7 +221,7 @@ jrKanjiStatus *kanji_status_return;
   inbuf[ret] = (wchar_t)0;
 
   return StoreWCtoEUC(inbuf, ret, &wks,
-		      (char *)buffer_return, bytes_buffer, kanji_status_return,
+		      buffer_return, bytes_buffer, kanji_status_return,
 		      ch, nbytes);
 }
 
