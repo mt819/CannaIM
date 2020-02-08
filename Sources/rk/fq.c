@@ -292,8 +292,7 @@ abolishNV(nv)
     free(nv->buf);
     free(nv);
   }
-  return;
-}
+  }
 
 static
 struct NV *

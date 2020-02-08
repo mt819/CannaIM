@@ -1108,7 +1108,6 @@ uiContext d;
     kindex = ic->glineifp[curretsu].glkosu - 1;
   /* 前候補列の同じ番号に移動する */
   *(ic->curIkouho) = kindex + ic->glineifp[curretsu].glhead;
-  return;
 }
 
 /*
@@ -1249,7 +1248,6 @@ uiContext d;
     kindex = ic->glineifp[curretsu].glkosu - 1;
   /* 前候補列の同じ番号に移動する */
   *(ic->curIkouho) = kindex + ic->glineifp[curretsu].glhead;
-  return;
 }
 
 /*

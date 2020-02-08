@@ -3252,7 +3252,6 @@ uiContext d;
   d->modec = (mode_context)cc;
   d->current_mode = &yomi_quoted_insert_mode;
   currentModeInfo(d);
-  return;
 }
 
 int

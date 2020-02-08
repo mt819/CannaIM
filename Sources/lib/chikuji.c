@@ -53,7 +53,6 @@ clearHenkanContent(yomiContext yc)
 {
   yc->allkouho = 0;
   yc->kouhoCount = yc->curIkouho = 0;
-  return;
 }
 
 void
@@ -65,7 +64,6 @@ clearHenkanContext(yomiContext yc)
   }
   yc->nbunsetsu = yc->curbun = 0;
   clearHenkanContent(yc);
-  return;
 }
 
 extern int NothingChanged (uiContext);

@@ -210,13 +210,6 @@ RkwFinalize()
   _RkFreeDDP(sx->ddpath);
   RkCloseGram(SG.gramdic);
   sx->flag &= ~SX_INITED;
-
-#ifdef MMAP
-  close(fd_dic);
-  fd_dic = -1;
-#endif
-
-  return;
 }
 
 /* RkGetSystem: System heno pointer wo motomeru

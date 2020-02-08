@@ -1636,7 +1636,6 @@ canna_callback_t cnt;
   }
   d->modec = (mode_context)cc;
   d->current_mode = &canna_message_mode;
-  return;
 }
 
 /*

@@ -165,7 +165,6 @@ _RkFreeBunq(struct nstore* st) /* freeWord = derefWord + killWord */
   bunq->nb_yoff = 0;
   bunq->nb_curlen = bunq->nb_maxcand = bunq->nb_curcand = 0;
   bunq->nb_flags = (unsigned short)0;
-  return;
 }
 
 static struct nword* concWord(cx,

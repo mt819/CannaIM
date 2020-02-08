@@ -171,8 +171,7 @@ _RkDerefCache(cache)
       ainsertbottom(cache)
     }
   }
-  return;
-}
+  }
 
 void
 _RkPurgeCache(cache)
