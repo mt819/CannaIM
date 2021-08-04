@@ -17,10 +17,10 @@ CannaIM は、河村さんにより BeOS 用に開発され、
 
 #Install
 To install canna without Haikudepot, download source code from
-https://github.com/mt819/Canna-Dictionary/archive/master.zip
+https://github.com/mt819/CannaIM/archive/master.zip
 then unzip and run 'sh install.sh' in Terminal.
 
 HaikuDepot を使わずにインストールするには、
-ソースコードを https://github.com/mt819/Canna-Dictionary/archive/master.zip から
+ソースコードを https://github.com/mt819/CannaIM/archive/master.zip から
 ダウンロードして、展開後ターミナルから sh install.sh を実行してください。
 
