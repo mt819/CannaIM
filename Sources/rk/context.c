@@ -346,8 +346,9 @@ fillContext(int cx_num)
 #ifdef EXTENSION_NEW
     cx->cx_gwt = (pointer)malloc(sizeof(struct _rec) * sizeof(unsigned char));
     if (cx->cx_gwt) {
+      struct _rec* gwt;
       memset(cx->cx_gwt, 0, sizeof(struct _rec) * sizeof(unsigned char));
-      struct _rec* gwt = (struct _rec*)cx->cx_gwt;
+      gwt = (struct _rec*)cx->cx_gwt;
       gwt->gwt_cx = -1; /* means no GetWordTextdic context
                            is available */
       gwt->gwt_dicname = NULL;
