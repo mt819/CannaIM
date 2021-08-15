@@ -1,4 +1,4 @@
-#About
+# About
 CannaIM is a Japanese input method add-on for Haiku.
 
 It was originally developed by M.Kawamura for BeOS, and he contributed
@@ -15,7 +15,7 @@ CannaIM は、河村さんにより BeOS 用に開発され、
 
 変換用辞書は、https://github.com/mt819/Canna-Dictionary で保守されています。
 
-#Install
+# Install
 To install canna without Haikudepot, download source code from
 https://github.com/mt819/CannaIM/archive/master.zip
 then unzip and run 'sh install.sh' in Terminal.
