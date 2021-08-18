@@ -124,14 +124,14 @@ CannaLooper::_ChkVersion(const BPath &srcPath, const BPath &dstPath)
 		return;
 	}
 	BFile src(&srcEnt, B_READ_ONLY);
-	
+
 	tmpPath = dstPath;
 	tmpPath.Append("Canna/version.txt");
 
 	const BEntry dstEnt(tmpPath.Path());
 	if (dstEnt.Exists()) {
 		BFile dst(&dstEnt, B_READ_ONLY);
-	
+
 		// compare src / dst version
 		char srcBuf[256], dstBuf[256];
 		ssize_t size;
@@ -146,7 +146,7 @@ CannaLooper::_ChkVersion(const BPath &srcPath, const BPath &dstPath)
 			return;
 		}
 	}
-	
+
 	_CopyData(srcPath, dstPath);
 }
 
@@ -156,7 +156,13 @@ CannaLooper::ReadSettings(char* basePath)
 {
 	BPath srcPath;
 	status_t status;
-	
+#if __GNUC__ < 3
+// gcc2 seems not work with B_CURRENT_IMAGE_SYMBOL
+// defined as ((void*)&__func__)
+#undef B_CURRENT_IMAGE_SYMBOL
+#define B_CURRENT_IMAGE_SYMBOL	((void*)__func__)
+#endif
+
 	status = BPathFinder().FindPath(
 		B_FIND_PATH_DATA_DIRECTORY, "Canna",
 		B_FIND_PATH_EXISTING_ONLY, srcPath);
@@ -167,23 +173,23 @@ CannaLooper::ReadSettings(char* basePath)
 		if (status != B_OK)
 			return status;
 	}
-	
+
 	BPath dstPath;
 	status = find_directory(B_USER_SETTINGS_DIRECTORY, &dstPath);
 	if (status != B_OK)
 		return status;
-		
+
 	BPath tmpPath;
 	tmpPath = dstPath;
 	tmpPath.Append("Canna");
-	
+
 	const BEntry dstEnt(tmpPath.Path());
 	if (!dstEnt.Exists()) {
 		_CopyData(srcPath, dstPath);
 	} else {
 		_ChkVersion(srcPath, dstPath);
 	}
-	
+
 	strlcpy(basePath, tmpPath.Path(), B_PATH_NAME_LENGTH);
 	strlcat(basePath, "/", B_PATH_NAME_LENGTH);
 
@@ -261,7 +267,7 @@ CannaLooper::MessageReceived(BMessage* msg)
 				cannaconf.Gakushu,
 				CANNA_initfilename,
 				RomkanaTable);
-				
+
 			BAlert* panel = new BAlert( "", m, "OK");
 			panel->SetFlags(panel->Flags() | B_CLOSE_ON_ESCAPE);
 			panel->Go();
@@ -582,5 +588,4 @@ CannaLooper::SendInputStarted()
 
 	SERIAL_PRINT(("CannaLooper: B_INPUT_METHOD_STARTED has been sent\n"));
 }
-
 
