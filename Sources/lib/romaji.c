@@ -3596,7 +3596,7 @@ int hexlen;
   }
   b = (a = tmpbuf) + 1;
   *a = (char)(0x80 | (*a * 16 + *b));
-  *(tmpbuf+1) = 0x80 | (*(a += 2) * 16 + *(b += 2));
+  *(tmpbuf+1) = 0x80 | (*(a += 2) * 16 + *(b + 2));
   *a = '\0';
   if ((unsigned char)*tmpbuf < 0xa1 ||
       0xfe < (unsigned char)*tmpbuf ||
