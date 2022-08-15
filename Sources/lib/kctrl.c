@@ -22,10 +22,10 @@
 
 #include "canna.h"
 
+#include <canna/mfdef.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include <canna/mfdef.h>
 
 /*********************************************************************
  *                      wchar_t replace begin                        *

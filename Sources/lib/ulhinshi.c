@@ -20,8 +20,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <errno.h>
 #include "canna.h"
+#include <errno.h>
 
 /*********************************************************************
  *                      wchar_t replace begin                        *

@@ -21,8 +21,8 @@
  */
 
 #include "RKintern.h"
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 #define	isEndTag(s)	(s[0] == 0 && s[1] == 0 && s[2] == 0 && s[3] == 0)
 

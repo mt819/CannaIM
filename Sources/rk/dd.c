@@ -37,8 +37,8 @@
 #ifdef __EMX__
 #include <io.h>
 #endif
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #define cx_gwt		cx_extdata.ptr
 #define	STRCMP(d, s)	strcmp((char *)(d), (char *)(s))

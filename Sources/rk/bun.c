@@ -1465,8 +1465,8 @@ RkwGetHinshi(cx_num, dst, maxdst)
   return(i);
 }
 
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #define	CloseContext(a)	{if ((a) != cx_num) RkwCloseContext(a);}
 

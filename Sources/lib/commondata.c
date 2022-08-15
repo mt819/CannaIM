@@ -21,8 +21,8 @@
  */
 
 #include "canna.h"
-#include <canna/mfdef.h>
 #include "patchlevel.h"
+#include <canna/mfdef.h>
 
 struct CannaConfig cannaconf;
      

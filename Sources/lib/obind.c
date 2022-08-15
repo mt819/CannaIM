@@ -29,8 +29,8 @@
 # define WCHAR16
 #endif
 
-#include "widedef.h"
 #include "canna.h"
+#include "widedef.h"
 #undef wcKanjiString
 #undef wcKanjiControl
 #undef wcCloseKanjiContext

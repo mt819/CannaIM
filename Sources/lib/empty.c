@@ -592,5 +592,5 @@ uiContext d;
 }
 #endif /* not NO_EXTEND_MENU */
 
-#include "emptymap.h"
 #include "alphamap.h"
+#include "emptymap.h"

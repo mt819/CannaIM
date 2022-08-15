@@ -21,8 +21,8 @@
  */
 
 #ifndef NO_EXTEND_MENU
-#include	<errno.h>
-#include 	"canna.h"
+#include	"canna.h"
+#include 	<errno.h>
 
 #ifdef luna88k
 extern int errno;
