@@ -37,10 +37,10 @@ extern int errno;
 #endif
 
 
-static int dicTourokuDo(uiContext);
-static int checkUsrDic(uiContext);
-static int dicTourokuYomi(uiContext);
-static int dicTourokuYomiDo(uiContext, canna_callback_t);
+static int dicTourokuDo(uiContext /*d*/);
+static int checkUsrDic(uiContext /*d*/);
+static int dicTourokuYomi(uiContext /*d*/);
+static int dicTourokuYomiDo(uiContext /*d*/, canna_callback_t /*quitfunc*/);
 
 
 static char *shinshitbl1[] =
@@ -847,7 +847,7 @@ mode_context env;
   return(dicTourokuHinshi(d));
 }
 
-static int uuTYomiQuitCatch(uiContext, int, mode_context);
+static int uuTYomiQuitCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
 
 static int
 uuTYomiQuitCatch(d, retval, env)

@@ -443,7 +443,7 @@ _Rktopen(dm, file, mode, gram)
 /*
  * CLOSE
  */
-static int writeTD(struct TD *, struct RkKxGram *, int);
+static int writeTD(struct TD * /*td*/, struct RkKxGram * /*gram*/, int /*fdes*/);
 
 static int
 writeTD(td, gram, fdes)

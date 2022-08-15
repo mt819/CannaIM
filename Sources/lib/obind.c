@@ -68,10 +68,10 @@ typedef canna_uint32_t cannawc32;
 extern int howToReturnModeInfo;
 extern char *context_table;
 
-int wcKanjiString(const int, const int, wchar_t *, const int,
-			    owcKanjiStatus *);
-int wcKanjiControl(const int, const int, char *);
-int wcCloseKanjiContext(const int, owcKanjiStatusWithValue *);
+int wcKanjiString(const int /*context_id*/, const int /*ch*/, wchar_t * /*buffer_return*/, const int /*nbuffer*/,
+			    owcKanjiStatus * /*kanji_status_return*/);
+int wcKanjiControl(const int /*context*/, const int /*request*/, char * /*arg*/);
+int wcCloseKanjiContext(const int /*context*/, owcKanjiStatusWithValue * /*ksva*/);
 
 static size_t
 wc32stowc16s(cannawc16 *wc16s, const cannawc32 *wc32s, size_t len)

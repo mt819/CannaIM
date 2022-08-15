@@ -36,12 +36,12 @@
 extern int errno;
 #endif
 
-static int tourokuYes(uiContext);
-static int tourokuNo(uiContext);
-static int makeDoushi(uiContext);
-static int uuTDicExitCatch(uiContext, int, mode_context);
-static int uuTDicQuitCatch(uiContext, int, mode_context);
-static int tangoTouroku(uiContext);
+static int tourokuYes(uiContext /*d*/);
+static int tourokuNo(uiContext /*d*/);
+static int makeDoushi(uiContext /*d*/);
+static int uuTDicExitCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
+static int uuTDicQuitCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
+static int tangoTouroku(uiContext /*d*/);
 static int makeHinshi(uiContext d);
 
 static char *e_message[] = {

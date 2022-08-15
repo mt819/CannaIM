@@ -51,7 +51,7 @@
 #define KCODEALLCOLS    (KAKKOCOLS + KAKKOCOLS + KCODECOLS)
 
 extern int allocIchiranBuf(uiContext);
-int makeKigoIchiran(uiContext, int);
+int makeKigoIchiran(uiContext /*d*/, int /*major_mode*/);
 
 static int kigo_curIkouho;
 

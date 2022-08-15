@@ -34,7 +34,7 @@ extern KanjiModeRec bunsetsu_mode;
 extern KanjiModeRec cy_mode, cb_mode;
 
 static void
-undefineKeyfunc(unsigned char*, unsigned);
+undefineKeyfunc(unsigned char* /*keytbl*/, unsigned /*fnum*/);
 static int
 regist_key_hash(unsigned char* tbl_ptr,
                 unsigned char* keybuff,

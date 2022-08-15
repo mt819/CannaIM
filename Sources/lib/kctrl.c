@@ -40,8 +40,8 @@
 extern char *CANNA_initfilename;
 extern char saveapname[];
 
-static int insertEmptySlots(uiContext);
-static int callCallback(uiContext, int);
+static int insertEmptySlots(uiContext /*d*/);
+static int callCallback(uiContext /*d*/, int /*res*/);
 static void freeKeysup(void);
 static void freeBuffer(void);
 static void freeExtra(void);
@@ -1078,7 +1078,7 @@ int flag;
 
  */
 
-static void closeRKContextInUIContext(uiContext, int);
+static void closeRKContextInUIContext(uiContext /*d*/, int /*flag*/);
 
 static void
 closeRKContextInUIContext(d, flag)

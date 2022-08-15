@@ -279,8 +279,8 @@ extern int extractJishuString(yomiContext, wchar_t *,  wchar_t *,
  */
 
 static int extractSimpleYomiString
- (yomiContext, wchar_t *, wchar_t *, wchar_t **, wchar_t **,
-       wcKanjiAttributeInternal *, int);
+ (yomiContext /*yc*/, wchar_t *, wchar_t *, wchar_t **, wchar_t **,
+       wcKanjiAttributeInternal * /*pat*/, int /*focused*/);
 
 static int
 extractSimpleYomiString(yc, s, e, sr, er, pat, focused)
@@ -363,8 +363,8 @@ int focused;
  */
 
 static int extractKanjiString
- (yomiContext, wchar_t *, wchar_t *, int, wchar_t **, wchar_t **,
-       wcKanjiAttributeInternal *, int);
+ (yomiContext /*yc*/, wchar_t *, wchar_t *, int /*b*/, wchar_t **, wchar_t **,
+       wcKanjiAttributeInternal * /*pat*/, int /*focused*/);
 
 static int
 extractKanjiString(yc, s, e, b, sr, er, pat, focused)
@@ -471,8 +471,8 @@ int focused;
  */
 
 static int extractYomiString
- (yomiContext, wchar_t *, wchar_t *, int, wchar_t **, wchar_t **,
-       wcKanjiAttributeInternal *, int);
+ (yomiContext /*yc*/, wchar_t *, wchar_t *, int /*b*/, wchar_t **, wchar_t **,
+       wcKanjiAttributeInternal * /*pat*/, int /*focused*/);
 
 static int
 extractYomiString(yc, s, e, b, sr, er, pat, focused)
@@ -1582,7 +1582,7 @@ uiContext d;
   return 0;
 }
 
-static int wait_anykey_func(uiContext, KanjiMode, int, int, int);
+static int wait_anykey_func(uiContext /*d*/, KanjiMode /*mode*/, int /*whattodo*/, int /*key*/, int /*fnum*/);
 
 static int
 wait_anykey_func(d, mode, whattodo, key, fnum)

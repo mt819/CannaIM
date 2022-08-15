@@ -43,10 +43,10 @@ extern int RkwGetServerVersion (int *, int *);
 extern int RkwGetProtocolVersion (int *, int *);
 
 int forceRomajiFlushYomi (uiContext);
-void moveToChikujiTanMode (uiContext);
-void moveToChikujiYomiMode (uiContext);
+void moveToChikujiTanMode (uiContext /*d*/);
+void moveToChikujiYomiMode (uiContext /*d*/);
 
-static void clearHenkanContent (yomiContext);
+static void clearHenkanContent (yomiContext /*yc*/);
 
 static void
 clearHenkanContent(yomiContext yc)

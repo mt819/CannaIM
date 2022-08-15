@@ -53,9 +53,9 @@ extern int mountnottry;
 
 #define DICERRORMESGLEN 78
 
-static int doYomiHenkan(uiContext, int, wchar_t *, yomiContext);
-static yomiContext tanbunToYomi(uiContext, tanContext, wchar_t *);
-static void tanbunCommitYomi(uiContext, tanContext, yomiContext);
+static int doYomiHenkan(uiContext /*d*/, int /*len*/, wchar_t *, yomiContext /*yc*/);
+static yomiContext tanbunToYomi(uiContext /*d*/, tanContext /*tan*/, wchar_t *);
+static void tanbunCommitYomi(uiContext /*d*/, tanContext /*tan*/, yomiContext /*yc*/);
 
 static char dictmp[DICERRORMESGLEN];
 static char *mountErrorMessage = "\244\362\245\336\245\246\245\363\245\310"
@@ -1653,7 +1653,7 @@ uiContext d;
   TanHenkan -- 回数をチェックする以外は TanNextKouho とほぼ同じ
 
  */
-static int TanHenkan(uiContext);
+static int TanHenkan(uiContext /*d*/);
 
 static int
 TanHenkan(d)
@@ -1711,7 +1711,7 @@ uiContext	d;
   tanJishuHenkan -- 特定の文節だけ字種変換する
  */
 
-static int tanJishuHenkan(uiContext, int);
+static int tanJishuHenkan(uiContext /*d*/, int /*fn*/);
 
 static int
 tanJishuHenkan(d, fn)
@@ -1774,7 +1774,7 @@ uiContext d;
   return tanJishuHenkan(d, CANNA_FN_Hankaku);
 }
 
-int TanKanaRotate(uiContext);
+int TanKanaRotate(uiContext /*d*/);
 
 int
 TanKanaRotate(d)
@@ -1783,7 +1783,7 @@ uiContext d;
   return tanJishuHenkan(d, CANNA_FN_KanaRotate);
 }
 
-int TanRomajiRotate(uiContext);
+int TanRomajiRotate(uiContext /*d*/);
 
 int
 TanRomajiRotate(d)
@@ -1792,7 +1792,7 @@ uiContext d;
   return tanJishuHenkan(d, CANNA_FN_RomajiRotate);
 }
 
-int TanCaseRotateForward(uiContext);
+int TanCaseRotateForward(uiContext /*d*/);
 
 int
 TanCaseRotateForward(d)
@@ -2212,7 +2212,7 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static int TanKakuteiYomiInsert(uiContext);
+static int TanKakuteiYomiInsert(uiContext /*d*/);
 
 static int
 TanKakuteiYomiInsert(d)
@@ -2331,7 +2331,7 @@ int n;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static int TanExtendBunsetsu(uiContext);
+static int TanExtendBunsetsu(uiContext /*d*/);
 
 static int
 TanExtendBunsetsu(d)
@@ -2364,7 +2364,7 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static int TanShrinkBunsetsu(uiContext);
+static int TanShrinkBunsetsu(uiContext /*d*/);
 
 static int
 TanShrinkBunsetsu(d)
@@ -2514,7 +2514,7 @@ jrKanjiPipeError()
 
  */
 
-static int TanBunsetsuMode(uiContext);
+static int TanBunsetsuMode(uiContext /*d*/);
 
 static int
 TanBunsetsuMode(d)
@@ -2683,7 +2683,7 @@ uiContext d;
   return 0;
 }
 
-static int TbChooseChar(uiContext, int);
+static int TbChooseChar(uiContext /*d*/, int /*head*/);
 
 static int
 TbChooseChar(d, head)
@@ -2761,8 +2761,8 @@ int head;
   return retval;
 }
 
-static int TanChooseHeadChar(uiContext);
-static int TanChooseTailChar(uiContext);
+static int TanChooseHeadChar(uiContext /*d*/);
+static int TanChooseTailChar(uiContext /*d*/);
 
 static int
 TanChooseHeadChar(d)

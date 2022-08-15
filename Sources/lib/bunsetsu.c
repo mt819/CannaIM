@@ -76,7 +76,7 @@ yomiContext yc;
   return 0;
 }
 
-int leaveAdjustMode(uiContext, yomiContext);
+int leaveAdjustMode(uiContext /*d*/, yomiContext /*yc*/);
 
 int
 leaveAdjustMode(d, yc)
@@ -91,7 +91,7 @@ yomiContext yc;
   return 0;
 }
 
-static int BunFullExtend(uiContext);
+static int BunFullExtend(uiContext /*d*/);
 
 static int
 BunFullExtend(d)
@@ -104,7 +104,7 @@ uiContext d;
   return 0;
 }
 
-static int BunFullShrink(uiContext);
+static int BunFullShrink(uiContext /*d*/);
 
 static int
 BunFullShrink(d)
@@ -117,7 +117,7 @@ uiContext d;
   return 0;
 }
 
-static int BunExtend(uiContext);
+static int BunExtend(uiContext /*d*/);
 
 static int
 BunExtend(d)
@@ -139,7 +139,7 @@ uiContext d;
   return 0;
 }
 
-static int BunShrink(uiContext);
+static int BunShrink(uiContext /*d*/);
 
 static int
 BunShrink(d)
@@ -165,7 +165,7 @@ uiContext d;
   return 0;
 }
 
-static int BunHenkan(uiContext);
+static int BunHenkan(uiContext /*d*/);
 
 static int
 BunHenkan(d)
@@ -185,7 +185,7 @@ uiContext d;
   return 0;
 }
 
-static int BunQuit(uiContext);
+static int BunQuit(uiContext /*d*/);
 
 static int
 BunQuit(d)
@@ -199,7 +199,7 @@ uiContext d;
   return 0;
 }
 
-static int BunSelfInsert(uiContext);
+static int BunSelfInsert(uiContext /*d*/);
 
 static int
 BunSelfInsert(d)
@@ -212,7 +212,7 @@ uiContext d;
   return d->nbytes;
 }
 
-static int BunQuotedInsert(uiContext);
+static int BunQuotedInsert(uiContext /*d*/);
 
 static int
 BunQuotedInsert(d)
@@ -225,7 +225,7 @@ uiContext d;
   return d->nbytes;
 }
 
-static int BunKillToEOL(uiContext);
+static int BunKillToEOL(uiContext /*d*/);
 
 static int
 BunKillToEOL(d)

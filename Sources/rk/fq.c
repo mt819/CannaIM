@@ -243,7 +243,7 @@ readWRT(fr)
   return wrt;
 }
 
-static int writeToWRT(int, struct WRT *);
+static int writeToWRT(int /*fr*/, struct WRT * /*wrt*/);
 
 static int
 writeToWRT(fr, wrt)
@@ -455,7 +455,7 @@ int fr;
   return ruc;
 }
 
-static int SaveRUC(int, struct RUT *);
+static int SaveRUC(int /*fr*/, struct RUT * /*ruc*/);
 
 static int
 SaveRUC(fr, ruc)

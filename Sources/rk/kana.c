@@ -457,7 +457,7 @@ RkCvtHira(hira, maxhira, kana, maxkana)
 
 #endif
 
-int RkCvtNone(unsigned char *, int, unsigned char *, int);
+int RkCvtNone(unsigned char * /*dst*/, int /*maxdst*/, unsigned char * /*src*/, int /*maxsrc*/);
 
 int
 RkCvtNone(dst, maxdst, src, maxsrc)
@@ -1126,7 +1126,7 @@ RkwCvtZen(dst, maxdst, src, srclen)
 }
 #endif /* __HAIKU__*/
 
-int RkwCvtNone(Wchar *, int, Wchar *, int);
+int RkwCvtNone(Wchar * /*dst*/, int /*maxdst*/, Wchar * /*src*/, int /*srclen*/);
 
 int
 RkwCvtNone(dst, maxdst, src, srclen)

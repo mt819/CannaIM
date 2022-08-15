@@ -36,11 +36,11 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-static int dicSakujoYomi(uiContext),
-           dicSakujoEndBun(uiContext),
-           dicSakujoTango(uiContext),
-           dicSakujoDictionary(uiContext),
-           dicSakujoDo(uiContext);
+static int dicSakujoYomi(uiContext /*d*/),
+           dicSakujoEndBun(uiContext /*d*/),
+           dicSakujoTango(uiContext /*d*/),
+           dicSakujoDictionary(uiContext /*d*/),
+           dicSakujoDo(uiContext /*d*/);
 
 void
 freeWorkDic3(tourokuContext tc)

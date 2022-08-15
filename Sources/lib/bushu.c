@@ -443,7 +443,7 @@ uiContext d;
  * 部首モード入力の一覧表示                                                  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static int bushuEveryTimeCatch(uiContext, int, mode_context);
+static int bushuEveryTimeCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
 
 static int
 bushuEveryTimeCatch(d, retval, env)
@@ -457,7 +457,7 @@ bushuEveryTimeCatch(d, retval, env)
   return(retval);
 }
 
-static int bushuExitCatch(uiContext, int, mode_context);
+static int bushuExitCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
 
 static int
 bushuExitCatch(d, retval, env)
@@ -543,7 +543,7 @@ mode_context env;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-int ConvertAsBushu(uiContext);
+int ConvertAsBushu(uiContext /*d*/);
 
 int
 ConvertAsBushu(d)

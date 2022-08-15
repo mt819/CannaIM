@@ -1221,7 +1221,7 @@ struct compRec
 };
 
 static int
-compword(const struct compRec*, const struct compRec*);
+compword(const struct compRec* /*x*/, const struct compRec* /*y*/);
 
 static int compword(x, y) const struct compRec *x, *y;
 {

@@ -54,7 +54,7 @@ static int allocarea(void), skipspaces(void), zaplin(void), isterm(int c);
 static void prins(char *s);
 static list mkatm(char *name), read1(void), ratom(void), ratom2(int a), rstring(void);
 static int tyipeek(void), tyi(void);
-static void tyo(int);
+static void tyo(int /*c*/);
 static void defatms(void), epush(list value);
 static void push(list value), pop(int x);
 static int evpsh(list args);
