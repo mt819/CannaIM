@@ -38,8 +38,7 @@ static unsigned char *keyHistory;
 
 
 static unsigned char *
-showChar(c)
-int c;
+showChar(int c)
 {
   static unsigned char Gkey[9];
   static char *keyCharMap[] = {
@@ -88,8 +87,7 @@ int c;
 }
 
 int
-UseOtherKeymap(d)
-uiContext d;
+UseOtherKeymap(uiContext d)
 {
   struct map *p;
   unsigned char showKey[10];
@@ -113,11 +111,9 @@ uiContext d;
   return NothingForGLine(d);
 }
 
+/* 複数の機能の割り当て */
 static int
-_DoFuncSequence(d, keytbl, key) /* 複数の機能の割り当て */
-uiContext d;
-BYTE *keytbl;
-BYTE key;
+_DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
 {
   int res, total_res, ginfo = 0;
   int prevEchoLen = -1, prevRevPos = -1, prevRevLen = -1;
@@ -225,20 +221,15 @@ BYTE key;
   return total_res;
 }
 
+/* 複数の機能の割り当て */
 int
-DoFuncSequence(d) /* 複数の機能の割り当て */
-uiContext d;
+DoFuncSequence(uiContext d)
 {
   return _DoFuncSequence(d, NULL, (BYTE)0);
 }
 
 int
-multiSequenceFunc(d, mode, whattodo, key, fnum)
-uiContext d;
-KanjiMode mode;
-int whattodo;
-int key;
-int fnum;
+multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
 {
   int i;
   unsigned char *p;

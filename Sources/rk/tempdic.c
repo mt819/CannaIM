@@ -41,8 +41,7 @@
 #define	dm_td	dm_extdata.ptr
 
 static void
-freeTD(td)
-     struct TD	*td;
+freeTD(struct TD *td)
 {
   int	i;
   for (i = 0; i < (int)td->td_n; i++) {
@@ -82,10 +81,7 @@ newTD()
  * INSERT
  */
 static TN *
-extendTD(tdic, key, tw)
-     struct TD		*tdic;
-     Wchar		key;
-     struct TW		*tw;
+extendTD(struct TD *tdic, Wchar key, struct TW *tw)
 {
   int		i, j;
   struct TN	*tp;
@@ -119,9 +115,7 @@ extendTD(tdic, key, tw)
 }
 
 static int
-yomi_equal(x, y, n)
-     Wrec *x, *y;
-     int n;
+yomi_equal(Wrec *x, Wrec *y, int n)
 {
   int l;
 
@@ -143,9 +137,7 @@ yomi_equal(x, y, n)
 
 static
 Wchar
-nthKey(w, n)
-     Wrec	*w;
-     int	n;
+nthKey(Wrec *w, int n)
 {
   if (n < ((*w >> 1) & 0x3f)) {
     if (*w & 0x80)
@@ -168,12 +160,7 @@ nthKey(w, n)
  */
 
 static TN *
-defineTD(dm, tab, n, newTW, nlen)
-     struct DM	*dm;
-     struct TD	*tab;
-     int	n;
-     struct TW	*newTW;
-     int	nlen;
+defineTD(struct DM *dm, struct TD *tab, int n, struct TW *newTW, int nlen)
 {
   int		i;
   Wchar		key;
@@ -223,11 +210,7 @@ defineTD(dm, tab, n, newTW, nlen)
 }
 
 static int
-enterTD(dm, td, gram, word)
-     struct DM		*dm;
-     struct TD		*td;
-     struct RkKxGram	*gram;
-     Wchar		*word;
+enterTD(struct DM *dm, struct TD *td, struct RkKxGram *gram, Wchar *word)
 {
   struct TW	tw;
   int ret = -1;
@@ -268,9 +251,7 @@ enterTD(dm, td, gram, word)
  * DELETE
  */
 static void
-shrinkTD(td, key)
-     struct TD *td;
-     Wchar key;
+shrinkTD(struct TD *td, Wchar key)
 {
   int		i;
   struct TN	*tn = td->td_node;
@@ -294,11 +275,7 @@ shrinkTD(td, key)
  *    newW  定義するワードレコード
  */
 static int
-deleteTD(dm, tab, n, newW)
-     struct DM	*dm;
-     struct TD	**tab;
-     int	n;
-     Wrec	*newW;
+deleteTD(struct DM *dm, struct TD **tab, int n, Wrec *newW)
 {
   struct TD	*td = *tab;
   int		i;
@@ -358,11 +335,7 @@ deleteTD(dm, tab, n, newW)
  */
 /*ARGSUSED*/
 int
-_Rktopen(dm, file, mode, gram)
-     struct DM	*dm;
-     char	*file;
-     int	mode;
-     struct RkKxGram	*gram;
+_Rktopen(struct DM *dm, char *file, int mode, struct RkKxGram *gram)
 {
   struct DF	*df = dm->dm_file;
   struct DD	*dd = df->df_direct;
@@ -446,10 +419,7 @@ _Rktopen(dm, file, mode, gram)
 static int writeTD(struct TD * /*td*/, struct RkKxGram * /*gram*/, int /*fdes*/);
 
 static int
-writeTD(td, gram, fdes)
-     struct TD		*td;
-     struct RkKxGram	*gram;
-     int		fdes;
+writeTD(struct TD *td, struct RkKxGram *gram, int fdes)
 {
   int	i, tmpres;
   int	ecount = 0;
@@ -501,10 +471,7 @@ writeTD(td, gram, fdes)
 }
 
 int
-_Rktclose(dm, file, gram)
-     struct DM	*dm;
-     char	*file;
-     struct RkKxGram	*gram;
+_Rktclose(struct DM *dm, char *file, struct RkKxGram *gram)
 {
   struct DF	*df = dm->dm_file;
   struct TD	*xdm = (struct TD *)dm->dm_td;
@@ -597,14 +564,8 @@ _Rktclose(dm, file, gram)
 }
 
 int
-_Rktsearch(cx, dm, key, n, nread, maxcache, cf)
-     struct RkContext	*cx;
-     struct DM		*dm;
-     Wchar		*key;
-     int		n;
-     struct nread	*nread;
-     int		maxcache;
-     int		*cf;
+_Rktsearch(struct RkContext *cx, struct DM *dm, Wchar *key, int n,
+	struct nread *nread, int maxcache, int *cf)
 {
   struct TD	*xdm = (struct TD *)dm->dm_td;
   int		nc = 0;
@@ -690,10 +651,7 @@ _Rktsearch(cx, dm, key, n, nread, maxcache, cf)
  */
 /*ARGSUSED*/
 int
-_Rktio(dm, cp, io)
-     struct DM		*dm;
-     struct ncache	*cp;
-     int		io;
+_Rktio(struct DM *dm, struct ncache *cp, int io)
 {
   if (io == 0) {
     cp->nc_word = ((struct TW *)cp->nc_address)->word;
@@ -708,12 +666,8 @@ _Rktio(dm, cp, io)
  * CTL
  */
 int
-_Rktctl(dm, qm, what, arg, gram)
-     struct DM	*dm;
-     struct DM	*qm; /* no use : dummy*/
-     int	what;
-     Wchar	*arg;
-     struct RkKxGram	*gram;
+_Rktctl(struct DM *dm, struct DM *qm, /* no use : dummy*/
+	int what, Wchar *arg, struct RkKxGram *gram)
 /* ARGSUSED */
 {
   struct TD	*xdm = (struct TD *)dm->dm_td;
@@ -762,9 +716,7 @@ _Rktctl(dm, qm, what, arg, gram)
 }
 
 int
-_Rktsync(cx, dm, qm)
-     struct RkContext *cx;
-     struct DM	*dm, *qm;
+_Rktsync(struct RkContext *cx, struct DM *dm, struct DM *qm)
 /* ARGSUSED */
 {
   struct RkKxGram  *gram = cx->gram->gramdic;

@@ -42,9 +42,7 @@ static char *e_message[] = {
 };
 
 int
-enterAdjustMode(d, yc)
-uiContext d;
-yomiContext yc;
+enterAdjustMode(uiContext d, yomiContext yc)
 {
   extern KanjiModeRec bunsetsu_mode;
   int i, n = 0;
@@ -76,12 +74,9 @@ yomiContext yc;
   return 0;
 }
 
-int leaveAdjustMode(uiContext /*d*/, yomiContext /*yc*/);
 
 int
-leaveAdjustMode(d, yc)
-uiContext d;
-yomiContext yc;
+leaveAdjustMode(uiContext d, yomiContext yc)
 {
   extern KanjiModeRec bunsetsu_mode;
 
@@ -91,11 +86,9 @@ yomiContext yc;
   return 0;
 }
 
-static int BunFullExtend(uiContext /*d*/);
 
 static int
-BunFullExtend(d)
-uiContext d;
+BunFullExtend(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -104,11 +97,9 @@ uiContext d;
   return 0;
 }
 
-static int BunFullShrink(uiContext /*d*/);
 
 static int
-BunFullShrink(d)
-uiContext d;
+BunFullShrink(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -117,11 +108,9 @@ uiContext d;
   return 0;
 }
 
-static int BunExtend(uiContext /*d*/);
 
 static int
-BunExtend(d)
-uiContext d;
+BunExtend(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -139,11 +128,9 @@ uiContext d;
   return 0;
 }
 
-static int BunShrink(uiContext /*d*/);
 
 static int
-BunShrink(d)
-uiContext d;
+BunShrink(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -165,11 +152,9 @@ uiContext d;
   return 0;
 }
 
-static int BunHenkan(uiContext /*d*/);
 
 static int
-BunHenkan(d)
-uiContext d;
+BunHenkan(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -185,11 +170,9 @@ uiContext d;
   return 0;
 }
 
-static int BunQuit(uiContext /*d*/);
 
 static int
-BunQuit(d)
-uiContext d;
+BunQuit(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -199,11 +182,9 @@ uiContext d;
   return 0;
 }
 
-static int BunSelfInsert(uiContext /*d*/);
 
 static int
-BunSelfInsert(d)
-uiContext d;
+BunSelfInsert(uiContext d)
 {
   d->nbytes = BunQuit(d);
   d->more.todo = 1;
@@ -212,11 +193,9 @@ uiContext d;
   return d->nbytes;
 }
 
-static int BunQuotedInsert(uiContext /*d*/);
 
 static int
-BunQuotedInsert(d)
-uiContext d;
+BunQuotedInsert(uiContext d)
 {
   d->nbytes = BunQuit(d);
   d->more.todo = 1;
@@ -225,11 +204,9 @@ uiContext d;
   return d->nbytes;
 }
 
-static int BunKillToEOL(uiContext /*d*/);
 
 static int
-BunKillToEOL(d)
-uiContext d;
+BunKillToEOL(uiContext d)
 {
   d->nbytes = BunQuit(d);
   d->more.todo = 1;

@@ -27,9 +27,7 @@ extern int howToBehaveInCaseOfUndefKey;
 
 #define DEFAULTBEHAVIOR 0
 
-static int (*getfunc(tbl, f))()
-struct funccfunc *tbl;
-unsigned char f;
+static int (*getfunc(struct funccfunc *tbl, unsigned char f))()
 {
   struct funccfunc *p;
 
@@ -42,8 +40,7 @@ unsigned char f;
 }
 
 static int
-simpleUndefBehavior(d)
-uiContext d;
+simpleUndefBehavior(uiContext d)
 {
   switch (howToBehaveInCaseOfUndefKey)
     {
@@ -87,12 +84,7 @@ int getFunction(KanjiMode mode, int key)
 }
 
 int
-searchfunc(d, mode, whattodo, key, fnum)
-uiContext d;
-KanjiMode mode;
-int whattodo;
-int key;
-int fnum;
+searchfunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
 {
   int (*func)();
 
@@ -169,12 +161,7 @@ int fnum;
 /* 逐次読みモード用 */
 
 int
-CYsearchfunc(d, mode, whattodo, key, fnum)
-uiContext d;
-KanjiMode mode;
-int whattodo;
-int key;
-int fnum;
+CYsearchfunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
 {
   int (*func)();
   extern KanjiModeRec yomi_mode;

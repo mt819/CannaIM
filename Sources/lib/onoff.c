@@ -59,8 +59,7 @@ initOnoffTable()
 }
 
 static void
-popOnOffMode(d)
-uiContext d;
+popOnOffMode(uiContext d)
 {
   ichiranContext oc = (ichiranContext)d->modec;
 
@@ -120,11 +119,7 @@ selectOnOff(uiContext d, wchar_t **buf, int *ck, int nelem,
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 static int
-makeOnOffIchiran(d, nelem, bangomax, currentkouho, status)
-uiContext d;
-int nelem, bangomax;
-int currentkouho;
-unsigned char *status;
+makeOnOffIchiran(uiContext d, int nelem, int bangomax, int currentkouho, unsigned char *status)
 {
   ichiranContext oc = (ichiranContext)d->modec;
   wchar_t **kkptr, *kptr, *gptr, *svgptr;
@@ -262,8 +257,7 @@ unsigned char *status;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 static int
-OnOffSelect(d)
-uiContext d;
+OnOffSelect(uiContext d)
 {
   ichiranContext oc = (ichiranContext)d->modec;
   mountContext mc = (mountContext)oc->next;
@@ -294,8 +288,7 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 static int
-OnOffKakutei(d)
-uiContext d;
+OnOffKakutei(uiContext d)
 {
   ichiranContext oc = (ichiranContext)d->modec;
   int retval = 0;

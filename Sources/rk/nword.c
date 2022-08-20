@@ -36,12 +36,11 @@ int		debug_flags = D_CONC|D_PARSE|D_SUCC;
 int		debug_flags = D_PARSE|D_SUCC;
 */
 int debug_flags = 0;
-static void
-dumpSimpleWordRec(),
-  dumpWordRec(), dumpAllBunq();
-static void
-dumpXQH(),
-  dumpXQ();
+static void dumpSimpleWordRec();
+static void  dumpWordRec();
+static void  dumpAllBunq();
+static void dumpXQH();
+static void dumpXQ();
 
 #else
 #define rk_debug(file, fmt, a, b, c)
@@ -167,15 +166,9 @@ _RkFreeBunq(struct nstore* st) /* freeWord = derefWord + killWord */
   bunq->nb_flags = (unsigned short)0;
 }
 
-static struct nword* concWord(cx,
-                              p,
-                              q,
-                              loc,
-                              bb) /* create the concatinated word p+q */
-  struct RkContext* cx;
-struct nword *p, *q; /* prefix word list, and right word */
-int loc;
-int bb;
+static struct nword*
+concWord(struct RkContext* cx, struct nword * p, struct nword * q, int  loc,  int bb)
+/* create the concatinated word p+q */
 {
   struct nword conc;
   struct nword* pq;
@@ -918,21 +911,11 @@ _RkRegisterNV(struct NV* nv, Wrec* yomi, int len, int half)
 /* parseWord
  *	bunsestu no ki wo seichou saseru.
  */
-static int parseWord(cx,
-                     yy,
-                     ys,
-                     ye,
-                     class,
-                     xqh,
-                     maxclen,
-                     doflush,
-                     douniq) struct RkContext* cx;
-int yy, ys, ye;
-int class;
-struct nword* xqh[]; /* indexed by nw_ylen */
-int maxclen;         /* saishou yomi no nagasa */
-int doflush;
-int douniq;
+static int
+parseWord(struct RkContext* cx, int yy, int  ys, int  ye, int class,
+  struct nword*  xqh[], /* indexed by nw_ylen */
+   int  maxclen, /* saishou yomi no nagasa */
+  int  doflush, int   douniq)
 {
   struct RkKxGram* gram = cx->gram->gramdic;
   int clen;
@@ -1068,9 +1051,8 @@ doParse(struct RkContext* cx,
 /* getKanji
  *	get kanji in reverse order
  */
-Wchar* _RkGetKanji(cw, key, mode) unsigned long mode;
-struct nword* cw;
-Wchar* key;
+Wchar*
+_RkGetKanji(struct nword* cw, Wchar* key, unsigned long mode)
 {
   Wrec* str;
   static Wchar tmp[RK_LEN_WMAX + 1]; /* static! */
@@ -1220,10 +1202,9 @@ struct compRec
   long prio;
 };
 
-static int
-compword(const struct compRec* /*x*/, const struct compRec* /*y*/);
 
-static int compword(x, y) const struct compRec *x, *y;
+static int
+compword(const struct compRec *x, const struct compRec *y)
 {
   int lowdiff = (y->word->nw_flags & NW_LOWPRI) -
                 (x->word->nw_flags & NW_LOWPRI);
@@ -1249,7 +1230,8 @@ static int compword(x, y) const struct compRec *x, *y;
   }
 }
 
-static struct nword* sortWord(words) struct nword* words;
+static struct nword*
+sortWord(struct nword* words)
 {
   unsigned long nwords, pos, neg;
   long i, p, n;
@@ -1347,11 +1329,12 @@ list2height(struct nword* height[], int maxclen, struct nword* parse)
  *	key yori hajimaru bunsetsu wo kaiseki suru
  */
 static struct nword*
-  parseBun(cx, yy, ys, ye, doflush, douniq, maxclen) struct RkContext* cx;
-int yy, ys, ye; /* kaiseki seiyaku */
-int doflush;
-int douniq;   /* unique shori sitei */
-int* maxclen; /* bunsetu saidai moji suu */
+  parseBun(struct RkContext* cx,
+  int yy, int ys, int ye,  /* kaiseki seiyaku */
+  int doflush,
+  int douniq,  /* unique shori sitei */
+  int* maxclen /* bunsetu saidai moji suu */
+  )
 {
   struct nstore* st = cx->store;
   struct nword** xqh = st->xqh;

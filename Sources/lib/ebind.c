@@ -37,15 +37,15 @@ static wchar_t *inbuf = 0;
 static int inbufsize = 0;
 
 static int
-StoreWCtoEUC(wbuf, wbuflen, wks, ebuf, maxebuf, ks, ch, nbytes)
-wchar_t *wbuf;
-int wbuflen;
-wcKanjiStatus *wks;
-char *ebuf;
-int maxebuf;
-jrKanjiStatus *ks;
-int ch;
-int nbytes;
+StoreWCtoEUC(
+wchar_t *wbuf,
+int wbuflen,
+wcKanjiStatus *wks,
+char *ebuf,
+int maxebuf,
+jrKanjiStatus *ks,
+int ch,
+int nbytes)
 {
   int ret, rest, totallen = 0, len;
   char *p;
@@ -183,13 +183,9 @@ int nbytes;
 }
 
 int
-XLookupKanji2(dpy, win, buffer_return, bytes_buffer, nbytes, functionalChar,
-	      kanji_status_return)
-unsigned int dpy, win;
-int functionalChar, nbytes;
-char *buffer_return;
-int bytes_buffer;
-jrKanjiStatus *kanji_status_return;
+XLookupKanji2(unsigned int dpy, unsigned int win, char *buffer_return,
+	int bytes_buffer, int nbytes, int functionalChar,
+	jrKanjiStatus * kanji_status_return)
 {
   int ret;
   wcKanjiStatus wks;
@@ -226,11 +222,7 @@ jrKanjiStatus *kanji_status_return;
 }
 
 int
-EUCListCallback(client_data, func, items, nitems, cur_item)
-char *client_data;
-int func;
-wchar_t **items;
-int nitems, *cur_item;
+EUCListCallback(char *client_data, int func, wchar_t **items, int nitems, int *cur_item)
 {
   const jrEUCListCallbackStruct *elistcb;
   int r = -1;

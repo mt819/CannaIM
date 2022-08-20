@@ -171,9 +171,7 @@ initUlKeisenTable()
 }
 
 static int
-uuKigoExitDo(d, retval)
-uiContext d;
-int retval;
+uuKigoExitDo(uiContext d, int retval)
 {
   popForIchiranMode(d);
   popCallback(d);
@@ -186,10 +184,7 @@ int retval;
 }
 
 static int
-uuKigoRExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuKigoRExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -203,10 +198,7 @@ mode_context env;
 }
 
 static int
-uuKigoGExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuKigoGExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -220,10 +212,7 @@ mode_context env;
 }
 
 static int
-uuKigoKExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuKigoKExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -237,10 +226,7 @@ mode_context env;
 }
 
 int
-uuKigoGeneralExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuKigoGeneralExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -256,10 +242,7 @@ mode_context env;
 }
 
 static int
-uuKigoQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuKigoQuitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   popCallback(d); /* 一覧を pop */
@@ -345,8 +328,7 @@ uiContext	d;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 int
-kigoRussia(d)
-uiContext d;
+kigoRussia(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -367,8 +349,7 @@ uiContext d;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 int
-kigoGreek(d)
-uiContext d;
+kigoGreek(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -389,8 +370,7 @@ uiContext d;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 int
-kigoKeisen(d)
-uiContext d;
+kigoKeisen(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 

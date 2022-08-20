@@ -44,10 +44,7 @@ static int quitHex(uiContext d, int retval, mode_context env);
  */
 
 static int
-hexEveryTimeCatch(d, retval, env)
-     uiContext d;
-     int retval;
-     mode_context env;
+hexEveryTimeCatch(uiContext d, int retval, mode_context env)
      /* ARGSUSED */
 {
   yomiContext yc = (yomiContext)d->modec;
@@ -98,10 +95,7 @@ hexEveryTimeCatch(d, retval, env)
 }
 
 static int
-exitHex(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+exitHex(uiContext d, int retval, mode_context env)
 {
   killmenu(d);
   if (cvtAsHex(d, d->buffer_return, d->buffer_return, d->nbytes)) {
@@ -117,10 +111,7 @@ mode_context env;
 }
 
 static int
-quitHex(d, retval, env)
-     uiContext d;
-     int retval;
-     mode_context env;
+quitHex(uiContext d, int retval, mode_context env)
      /* ARGSUSED */
 {
   GlineClear(d);
@@ -130,9 +121,7 @@ quitHex(d, retval, env)
 }
 
 static int
-hexMode(d, major_mode)
-uiContext d;
-int major_mode;
+hexMode(uiContext d, int major_mode)
 {
   yomiContext yc;
 
@@ -158,8 +147,7 @@ int major_mode;
  */
 
 int
-HexMode(d)
-uiContext d;
+HexMode(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 

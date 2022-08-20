@@ -36,13 +36,14 @@
 extern int errno;
 #endif
 
-static int tourokuYes(uiContext /*d*/);
-static int tourokuNo(uiContext /*d*/);
-static int makeDoushi(uiContext /*d*/);
-static int uuTDicExitCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
-static int uuTDicQuitCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
-static int tangoTouroku(uiContext /*d*/);
+static int makeDoushi(uiContext d);
 static int makeHinshi(uiContext d);
+static int tangoTouroku(uiContext d);
+static int tourokuNo(uiContext d);
+static int tourokuYes(uiContext d);
+static int uuTDicExitCatch(uiContext d, int retval, mode_context env);
+static int uuTDicQuitCatch(uiContext d, int retval, mode_context env);
+
 
 static char *e_message[] = {
 #ifdef CODED_MESSAGE
@@ -181,8 +182,7 @@ initHinshiMessage()
    :WSprintf(to_buf,"x1%sx2",from_buf);
  */
 static void
-WSprintf(to_buf, x1, x2, from_buf)
-wchar_t *to_buf, *x1, *x2, *from_buf;
+WSprintf(wchar_t *to_buf, wchar_t *x1, wchar_t *x2, wchar_t *from_buf)
 {
     WStrcpy(to_buf, x1);
     WStrcat(to_buf, from_buf);
@@ -191,9 +191,7 @@ wchar_t *to_buf, *x1, *x2, *from_buf;
 #endif /* NO_EXTEND_MENU */
 
 void
-EWStrcat(buf, xxxx)
-wchar_t *buf;
-char *xxxx;
+EWStrcat(wchar_t *buf, char *xxxx)
 {
   wchar_t x[1024];
 
@@ -203,9 +201,7 @@ char *xxxx;
 
 #ifndef NO_EXTEND_MENU
 static void
-EWStrcpy(buf, xxxx)
-wchar_t *buf;
-char *xxxx;
+EWStrcpy(wchar_t *buf, char *xxxx)
 {
   wchar_t x[1024];
   int len;
@@ -216,9 +212,7 @@ char *xxxx;
 }
 
 static int
-EWStrcmp(buf, xxxx)
-wchar_t *buf;
-char *xxxx;
+EWStrcmp(wchar_t *buf, char *xxxx)
 {
   wchar_t x[1024];
 
@@ -227,10 +221,7 @@ char *xxxx;
 }
 
 static int
-EWStrncmp(buf, xxxx, len)
-wchar_t *buf;
-char *xxxx;
-int len;
+EWStrncmp(wchar_t *buf, char *xxxx, int len)
 /* ARGSUSED */
 {
   wchar_t x[1024];
@@ -258,10 +249,7 @@ initGyouTable()
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static int
-uuTHinshiYNQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTHinshiYNQuitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   popCallback(d);
@@ -274,10 +262,7 @@ mode_context env;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static int
-uuTHinshi2YesCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTHinshi2YesCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   tourokuContext tc;
@@ -298,10 +283,7 @@ mode_context env;
 }
 
 static int
-uuTHinshi2NoCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTHinshi2NoCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   tourokuContext tc;
@@ -327,10 +309,7 @@ mode_context env;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static int
-uuTHinshi1YesCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTHinshi1YesCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   tourokuContext tc;
@@ -363,10 +342,7 @@ mode_context env;
 }
 
 static int
-uuTHinshi1NoCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTHinshi1NoCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   tourokuContext tc;
@@ -403,10 +379,7 @@ mode_context env;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static int
-uuTHinshiQYesCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTHinshiQYesCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   tourokuContext tc;
@@ -431,10 +404,7 @@ mode_context env;
 }
 
 static int
-uuTHinshiQNoCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTHinshiQNoCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   popCallback(d); /* yesNo をポップ */
@@ -448,8 +418,7 @@ mode_context env;
 
 
 int
-dicTourokuHinshiDelivery(d)
-uiContext	d;
+dicTourokuHinshiDelivery(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   coreContext ync;
@@ -497,8 +466,7 @@ uiContext	d;
  * tc->genbuf	エラー
  */
 static int
-makeHinshi(d)
-uiContext	d;
+makeHinshi(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   int tlen, ylen, yomi_katsuyou;
@@ -657,8 +625,7 @@ uiContext	d;
 }
 
 static int
-tourokuYes(d)
-uiContext	d;
+tourokuYes(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
 
@@ -746,8 +713,7 @@ uiContext	d;
 }
 
 static int
-tourokuNo(d)
-uiContext	d;
+tourokuNo(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   int ylen;
@@ -846,8 +812,7 @@ uiContext	d;
 }
 
 int
-makeDoushi(d)
-uiContext	d;
+makeDoushi(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
 
@@ -888,10 +853,7 @@ uiContext	d;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static int
-uuTDicExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTDicExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -916,10 +878,7 @@ mode_context env;
 }
 
 static int
-uuTDicQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuTDicQuitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   popCallback(d); /* 一覧を pop */
@@ -931,10 +890,7 @@ mode_context env;
 }
 
 int
-dicTourokuDictionary(d, exitfunc, quitfunc)
-uiContext d;
-canna_callback_t exitfunc;
-canna_callback_t quitfunc;
+dicTourokuDictionary(uiContext d, canna_callback_t exitfunc, canna_callback_t quitfunc)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   forichiranContext fc;
@@ -998,8 +954,7 @@ canna_callback_t quitfunc;
  * 単語登録を行う
  */
 static int
-tangoTouroku(d)
-uiContext	d;
+tangoTouroku(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   wchar_t ktmpbuf[256];

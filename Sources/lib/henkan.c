@@ -63,8 +63,7 @@ static char *mountErrorMessage = "\244\362\245\336\245\246\245\363\245\310"
                                  /* をマウントできませんでした */
 
 static int
-kanakanError(d)
-uiContext d;
+kanakanError(uiContext d)
 {
   return makeRkError(d, "\244\253\244\312\264\301\273\372\312\321\264\271"
 	"\244\313\274\272\307\324\244\267\244\336\244\267\244\277");
@@ -72,8 +71,7 @@ uiContext d;
 }
 
 static void
-dicMesg(s, d)
-char *s, *d;
+dicMesg(char *s, char *d)
 {
   if (ckverbose == CANNA_FULL_VERBOSE) {
     char buf[128];
@@ -99,8 +97,7 @@ RkwInitError()
 }
 
 static void
-mountError(dic)
-char *dic;
+mountError(char *dic)
 {
   int mnterrlen;
   if (DICERRORMESGLEN <
@@ -130,8 +127,7 @@ autodicError()
 
 #ifndef __HAIKU__
 static void
-warnRKCErrors(errors)
-const char *const *errors;
+warnRKCErrors(const char *const *errors)
 {
   for (; *errors; ++errors)
     addWarningMesg((char *)*errors);
@@ -493,8 +489,7 @@ KanjiFin()
 }
 
 static tanContext
-newTanContext(majo, mino)
-int majo, mino;
+newTanContext(int majo, int mino)
 {
   tanContext tan;
 
@@ -512,8 +507,7 @@ int majo, mino;
 }
 
 void
-freeTanContext(tan)
-tanContext tan;
+freeTanContext(tanContext tan)
 {
     free(tan->kanji);
     free(tan->yomi);
@@ -524,9 +518,7 @@ tanContext tan;
 }
 
 static wchar_t *
-DUpwstr(w, l)
-wchar_t *w;
-int l;
+DUpwstr(wchar_t *w, int l)
 {
   wchar_t *res;
 
@@ -539,9 +531,7 @@ int l;
 }
 
 static BYTE *
-DUpattr(a, l)
-BYTE *a;
-int l;
+DUpattr(BYTE *a, int l)
 {
   BYTE *res;
 
@@ -553,9 +543,7 @@ int l;
 }
 
 static void
-copyYomiinfo2Tan(yc, tan)
-yomiContext yc;
-tanContext tan;
+copyYomiinfo2Tan(yomiContext yc, tanContext tan)
 {
   tan->next = yc->next;
   tan->prevMode = yc->prevMode;
@@ -571,9 +559,7 @@ tanContext tan;
 }
 
 static void
-copyTaninfo2Yomi(tan, yc)
-tanContext tan;
-yomiContext yc;
+copyTaninfo2Yomi(tanContext tan, yomiContext yc)
 {
   /* next と prevMode は既に設定済み */
   yc->generalFlags = tan->generalFlags;
@@ -595,10 +581,7 @@ yomiContext yc;
  * DO_MERGEにも全く対応していない。
  */
 static void
-tanbunToYomiAll(d, st, et)
-uiContext d;
-tanContext st;
-tanContext et;
+tanbunToYomiAll(uiContext d, tanContext st, tanContext et)
 {
   tanContext tan;
   for (tan = st; tan != et; tan = tan->right) {
@@ -776,9 +759,7 @@ procerror:
 }
 
 static int
-doTanBubunMuhenkan(d, yc)
-uiContext d;
-yomiContext yc;
+doTanBubunMuhenkan(uiContext d, yomiContext yc)
 {
   int cur = yc->curbun, i, len, ylen = 0, rlen = 0, ret = 0;
   int scuryomi, ecuryomi, scurroma, ecurroma;
@@ -999,8 +980,7 @@ yomiContext yc;
 
 
 int
-YomiBubunKakutei(d)
-uiContext d;
+YomiBubunKakutei(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   tanContext tan;
@@ -1101,9 +1081,7 @@ uiContext d;
 }
 
 yomiContext
-newFilledYomiContext(next, prev)
-mode_context next;
-KanjiMode prev;
+newFilledYomiContext(mode_context next, KanjiMode prev)
 {
   yomiContext yc;
 
@@ -1126,8 +1104,7 @@ KanjiMode prev;
 #ifdef DO_MERGE
 static int
 yomiContext
-mergeYomiContext(yc)
-yomiContext yc;
+mergeYomiContext(yomiContext yc)
 {
   yomiContext res, a, b;
 
@@ -1164,10 +1141,7 @@ yomiContext yc;
  */
 
 static yomiContext
-tanbunToYomi(d, tan, kanji)
-uiContext d;
-tanContext tan;
-wchar_t *kanji;
+tanbunToYomi(uiContext d, tanContext tan, wchar_t *kanji)
 {
   yomiContext yc;
 
@@ -1212,10 +1186,7 @@ wchar_t *kanji;
  * yc->curModeは変更されていてもよい。
  */
 static void
-tanbunCommitYomi(d, tan, yc)
-uiContext d;
-tanContext tan;
-yomiContext yc;
+tanbunCommitYomi(uiContext d, tanContext tan, yomiContext yc)
 {
   if (yc->left)
     yc->left->right = (tanContext)yc;
@@ -1232,8 +1203,7 @@ yomiContext yc;
 }
 
 static int
-TbBubunMuhenkan(d)
-uiContext d;
+TbBubunMuhenkan(uiContext d)
 {
   tanContext tan = (tanContext)d->modec;
   yomiContext yc;
@@ -1256,8 +1226,7 @@ uiContext d;
  */
 
 int
-TanBubunMuhenkan(d)
-uiContext d;
+TanBubunMuhenkan(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1279,8 +1248,7 @@ uiContext d;
 }
 
 int
-prepareHenkanMode(d)
-uiContext d;
+prepareHenkanMode(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1293,10 +1261,7 @@ uiContext d;
 }
 
 int
-doHenkan(d, len, kanji)
-uiContext d;
-int len;
-wchar_t *kanji;
+doHenkan(uiContext d, int len, wchar_t *kanji)
 {
   /* よみを漢字に変換する */
   if(doYomiHenkan(d, len, kanji, (yomiContext)d->modec) == NG) {
@@ -1324,11 +1289,7 @@ wchar_t *kanji;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 static int
-doYomiHenkan(d, len, kanji, yc)
-uiContext	d;
-int len;
-wchar_t *kanji;
-yomiContext yc;
+doYomiHenkan(uiContext	d, int len, wchar_t *kanji, yomiContext yc)
 {
   unsigned int mode;
   extern int defaultContext;
@@ -1410,8 +1371,7 @@ yomiContext yc;
 }
 
 int
-TanNop(d)
-uiContext	d;
+TanNop(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1424,9 +1384,7 @@ uiContext	d;
 }
 
 static int
-doGoTo(d, yc)
-uiContext d;
-yomiContext yc;
+doGoTo(uiContext d, yomiContext yc)
 {
   if (RkwGoTo(yc->context, yc->curbun) == -1) {
     return makeRkError(d, "\312\270\300\341\244\316\260\334\306\260\244\313"
@@ -1448,8 +1406,7 @@ yomiContext yc;
  */
 
 int
-TanForwardBunsetsu(d)
-uiContext	d;
+TanForwardBunsetsu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1499,8 +1456,7 @@ uiContext	d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 int
-TanBackwardBunsetsu(d)
-uiContext	d;
+TanBackwardBunsetsu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1541,9 +1497,7 @@ uiContext	d;
  */
 
 static int
-tanNextKouho(d, yc)
-uiContext	d;
-yomiContext   yc;
+tanNextKouho(uiContext	d, yomiContext   yc)
 {
 #ifdef MEASURE_TIME
   struct tms timebuf;
@@ -1625,8 +1579,7 @@ enterTanHenkanMode(uiContext d, int fnum)
  */
 
 int
-TanKouhoIchiran(d)
-uiContext d;
+TanKouhoIchiran(uiContext d)
 {
   if (d->modec->id != YOMI_CONTEXT) {
     return enterTanHenkanMode(d, CANNA_FN_KouhoIchiran);
@@ -1635,8 +1588,7 @@ uiContext d;
 }
 
 int
-TanNextKouho(d)
-uiContext d;
+TanNextKouho(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1653,11 +1605,9 @@ uiContext d;
   TanHenkan -- 回数をチェックする以外は TanNextKouho とほぼ同じ
 
  */
-static int TanHenkan(uiContext /*d*/);
 
 static int
-TanHenkan(d)
-uiContext d;
+TanHenkan(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1681,8 +1631,7 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 int
-TanPreviousKouho(d)
-uiContext	d;
+TanPreviousKouho(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1711,12 +1660,9 @@ uiContext	d;
   tanJishuHenkan -- 特定の文節だけ字種変換する
  */
 
-static int tanJishuHenkan(uiContext /*d*/, int /*fn*/);
 
 static int
-tanJishuHenkan(d, fn)
-uiContext d;
-int fn;
+tanJishuHenkan(uiContext d, int fn)
 {
   d->nbytes = TanBubunMuhenkan(d);
   d->more.todo = 1;
@@ -1726,85 +1672,70 @@ int fn;
 }
 
 int
-TanHiragana(d)
-uiContext	d;
+TanHiragana(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_Hiragana);
 }
 
 int
-TanKatakana(d)
-uiContext	d;
+TanKatakana(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_Katakana);
 }
 
 int
-TanRomaji(d)
-uiContext	d;
+TanRomaji(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_Romaji);
 }
 
 int
-TanUpper(d)
-uiContext	d;
+TanUpper(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_ToUpper);
 }
 
 int
-TanCapitalize(d)
-uiContext	d;
+TanCapitalize(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_Capitalize);
 }
 
 int
-TanZenkaku(d)
-uiContext d;
+TanZenkaku(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_Zenkaku);
 }
 
 int
-TanHankaku(d)
-uiContext d;
+TanHankaku(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_Hankaku);
 }
 
-int TanKanaRotate(uiContext /*d*/);
 
 int
-TanKanaRotate(d)
-uiContext d;
+TanKanaRotate(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_KanaRotate);
 }
 
-int TanRomajiRotate(uiContext /*d*/);
 
 int
-TanRomajiRotate(d)
-uiContext d;
+TanRomajiRotate(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_RomajiRotate);
 }
 
-int TanCaseRotateForward(uiContext /*d*/);
 
 int
-TanCaseRotateForward(d)
-uiContext d;
+TanCaseRotateForward(uiContext d)
 {
   return tanJishuHenkan(d, CANNA_FN_CaseRotate);
 }
 
 static int
-gotoBunsetsu(yc, n)
-yomiContext yc;
-int n;
+gotoBunsetsu(yomiContext yc, int n)
 {
   /* カレント文節を移動する */
   if (RkwGoTo(yc->context, n) == -1) {
@@ -1827,8 +1758,7 @@ int n;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 int
-TanBeginningOfBunsetsu(d)
-uiContext	d;
+TanBeginningOfBunsetsu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1850,8 +1780,7 @@ uiContext	d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 int
-TanEndOfBunsetsu(d)
-uiContext	d;
+TanEndOfBunsetsu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -1874,9 +1803,7 @@ uiContext	d;
 }
 
 int
-tanMuhenkan(d, kCurs)
-uiContext d;
-int kCurs;
+tanMuhenkan(uiContext d, int kCurs)
 {
   extern KanjiModeRec yomi_mode;
   yomiContext yc = (yomiContext)d->modec;
@@ -1928,8 +1855,7 @@ int kCurs;
  */
 
 int
-TanMuhenkan(d)
-uiContext	d;
+TanMuhenkan(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec, newyc;
   tanContext tan;
@@ -1997,8 +1923,7 @@ uiContext	d;
 }
 
 int
-TanDeletePrevious(d)
-uiContext	d;
+TanDeletePrevious(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int i, j, l = -1, ret = 0;
@@ -2069,8 +1994,7 @@ yomiContext yc;
 #endif /* 0 */
 
 void
-finishTanKakutei(d)
-uiContext d;
+finishTanKakutei(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int autoconvert = yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE;
@@ -2196,8 +2120,7 @@ uiContext d;
 }
 
 int
-TanKakutei(d)
-uiContext d;
+TanKakutei(uiContext d)
 {
   return YomiKakutei(d);
 }
@@ -2215,8 +2138,7 @@ uiContext d;
 static int TanKakuteiYomiInsert(uiContext /*d*/);
 
 static int
-TanKakuteiYomiInsert(d)
-uiContext d;
+TanKakuteiYomiInsert(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   tanContext tan;
@@ -2293,10 +2215,7 @@ uiContext d;
 */
 
 static int
-doTbResize(d, yc, n)
-uiContext d;
-yomiContext yc;
-int n;
+doTbResize(uiContext d, yomiContext yc, int n)
 {
   int len;
 
@@ -2331,11 +2250,9 @@ int n;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static int TanExtendBunsetsu(uiContext /*d*/);
 
 static int
-TanExtendBunsetsu(d)
-uiContext	d;
+TanExtendBunsetsu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -2364,11 +2281,9 @@ uiContext	d;
  * 引き数	uiContext
  * 戻り値	正常終了時 0	異常終了時 -1
  */
-static int TanShrinkBunsetsu(uiContext /*d*/);
 
 static int
-TanShrinkBunsetsu(d)
-uiContext	d;
+TanShrinkBunsetsu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -2405,8 +2320,7 @@ uiContext	d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 int
-TanPrintBunpou(d)
-uiContext	d;
+TanPrintBunpou(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   static wchar_t mesg[512]; /* static! */
@@ -2462,8 +2376,7 @@ uiContext	d;
 
 #ifdef MEASURE_TIME
 static int
-TanPrintTime(d)
-uiContext	d;
+TanPrintTime(uiContext d)
 {
   /* BIGARRAY */
   unsgined char tmpbuf[1024];
@@ -2517,8 +2430,7 @@ jrKanjiPipeError()
 static int TanBunsetsuMode(uiContext /*d*/);
 
 static int
-TanBunsetsuMode(d)
-uiContext	d;
+TanBunsetsuMode(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -2538,9 +2450,7 @@ uiContext	d;
 }
 
 static void
-chikujiSetCursor(d, forw)
-uiContext d;
-int forw;
+chikujiSetCursor(uiContext d, int forw)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -2570,10 +2480,7 @@ int forw;
 
 
 void
-setMode(d, tan, forw)
-uiContext d;
-tanContext tan;
-int forw;
+setMode(uiContext d, tanContext tan, int forw)
 {
   yomiContext yc = (yomiContext)tan;
   if (yc == NULL) {
@@ -2606,8 +2513,7 @@ int forw;
 }
 
 int
-TbForward(d)
-uiContext d;
+TbForward(uiContext d)
 {
   tanContext tan = (tanContext)d->modec;
 
@@ -2630,8 +2536,7 @@ uiContext d;
 }
 
 int
-TbBackward(d)
-uiContext d;
+TbBackward(uiContext d)
 {
   tanContext tan = (tanContext)d->modec;
 
@@ -2654,8 +2559,7 @@ uiContext d;
 }
 
 int
-TbBeginningOfLine(d)
-uiContext d;
+TbBeginningOfLine(uiContext d)
 {
   tanContext tan = (tanContext)d->modec;
 
@@ -2669,8 +2573,7 @@ uiContext d;
 }
 
 int
-TbEndOfLine(d)
-uiContext d;
+TbEndOfLine(uiContext d)
 {
   tanContext tan = (tanContext)d->modec;
 
@@ -2683,12 +2586,9 @@ uiContext d;
   return 0;
 }
 
-static int TbChooseChar(uiContext /*d*/, int /*head*/);
 
 static int
-TbChooseChar(d, head)
-uiContext d;
-int head;
+TbChooseChar(uiContext d, int head)
 {
   tanContext tan = (tanContext)d->modec;
 
@@ -2707,9 +2607,7 @@ int head;
 }
 
 static int
-TanChooseChar(d, head)
-uiContext d;
-int head;
+TanChooseChar(uiContext d, int head)
 {
   int retval, len;
   yomiContext yc = (yomiContext)d->modec;
@@ -2761,19 +2659,15 @@ int head;
   return retval;
 }
 
-static int TanChooseHeadChar(uiContext /*d*/);
-static int TanChooseTailChar(uiContext /*d*/);
 
 static int
-TanChooseHeadChar(d)
-uiContext d;
+TanChooseHeadChar(uiContext d)
 {
   return TanChooseChar(d, 1);
 }
 
 static int
-TanChooseTailChar(d)
-uiContext d;
+TanChooseTailChar(uiContext d)
 {
   return TanChooseChar(d, 0);
 }

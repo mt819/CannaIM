@@ -280,9 +280,7 @@ parse()
 
 
 static void
-DISPLAY_to_hostname(name, buf, bufsize)
-char *name, *buf;
-int bufsize;
+DISPLAY_to_hostname(char *name, char *buf, int bufsize)
 {
   if (name[0] == ':' || !strncmp(name, "unix", 4)) {
     gethostname(buf, bufsize);

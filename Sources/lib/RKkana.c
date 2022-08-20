@@ -172,11 +172,7 @@ extern const struct NormalizePair norm_pair[];
  *	dakuten,handakuten shori mo okonau.
  */
 int
-RkCvtZen(zen, maxzen, han, maxhan)
-unsigned char	*zen;
-int		maxzen;
-unsigned char	*han;
-int		maxhan;
+RkCvtZen(unsigned char *zen, int maxzen, unsigned char *han, int maxhan)
 {
     unsigned char	*z = zen;
     const unsigned char	*h = han;
@@ -266,11 +262,7 @@ int		maxhan;
  *	zenkaku kana moji wo hankaku moji ni suru
  */
 int
-RkCvtHan(han, maxhan, zen, maxzen)
-unsigned char	*han;
-int		maxhan;
-unsigned char	*zen;
-int		maxzen;
+RkCvtHan(unsigned char *han, int maxhan, unsigned char *zen, int maxzen)
 {
     unsigned char	*h = han;
     unsigned char	*z = zen;
@@ -353,11 +345,7 @@ int		maxzen;
  *	zenkaku hiragana wo katakana ni suru
  */
 int
-RkCvtKana(kana, maxkana, hira, maxhira)
-unsigned char	*kana;
-int		maxkana;
-unsigned char	*hira;
-int		maxhira;
+RkCvtKana(unsigned char *kana, int maxkana, unsigned char *hira, int maxhira)
 {
     unsigned char	*k = kana;
     unsigned char	*h = hira;
@@ -400,11 +388,7 @@ int		maxhira;
     return count;
 }
 int
-RkCvtHira(hira, maxhira, kana, maxkana)
-unsigned char	*hira;
-int		maxhira;
-unsigned char	*kana;
-int		maxkana;
+RkCvtHira(unsigned char *hira, int maxhira, unsigned char *kana, int maxkana)
 {
     unsigned char	*h = hira;
     unsigned char	*k = kana;
@@ -450,11 +434,7 @@ int		maxkana;
 }
 #ifndef __HAIKU__
 int
-RkCvtNone(dst, maxdst, src, maxsrc)
-unsigned char	*dst;
-int		maxdst;
-unsigned char	*src;
-int		maxsrc;
+RkCvtNone(unsigned char *dst, int maxdst, unsigned char *src, int maxsrc)
 {
     unsigned char	*d = dst;
     unsigned char	*s = src;
@@ -488,11 +468,7 @@ int		maxsrc;
  * 	shift jis --> euc
  */
 int
-RkCvtEuc(euc, maxeuc, sj, maxsj)
-unsigned char	*euc;
-int		maxeuc;
-unsigned char	*sj;
-int		maxsj;
+RkCvtEuc(unsigned char *euc, int maxeuc, unsigned char *sj, int maxsj)
 {
     unsigned char	*e = euc;
     unsigned char	*s = sj;
@@ -564,12 +540,8 @@ static unsigned kurai3new[] = { 0, 0xbdbd, 0xc9b4, 0xc0e9, };
 static unsigned kurai3old[] = { 0, 0xbdbd, 0xc9b4, 0xc0e9, };
 
 int
-RkCvtSuuji(dst, maxdst, src, maxsrc, format)
-unsigned char	*dst;
-int		maxdst;
-unsigned char	*src;
-int		maxsrc;
-int		format;
+RkCvtSuuji(unsigned char *dst, int maxdst, unsigned char *src, int maxsrc,
+	int format)
 {
     int			count;
     int			i, j, k;

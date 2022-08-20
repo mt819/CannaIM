@@ -36,11 +36,11 @@ extern int errno;
 #endif
 #define wchar_t cannawc
 
-static int dicSakujoYomi(uiContext /*d*/),
-           dicSakujoEndBun(uiContext /*d*/),
-           dicSakujoTango(uiContext /*d*/),
-           dicSakujoDictionary(uiContext /*d*/),
-           dicSakujoDo(uiContext /*d*/);
+
+static int dicSakujoDictionary(uiContext d);
+static int dicSakujoDo(uiContext d);
+static int dicSakujoTango(uiContext d);
+
 
 void
 freeWorkDic3(tourokuContext tc)
@@ -60,8 +60,7 @@ freeWorkDic(tourokuContext tc)
 }
 
 void
-freeDic(tc)
-tourokuContext tc;
+freeDic(tourokuContext tc)
 {
   if (tc->udic) {
     wchar_t **p = tc->udic;
@@ -75,8 +74,7 @@ tourokuContext tc;
 }
 
 void
-freeAndPopTouroku(d)
-uiContext d;
+freeAndPopTouroku(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
 
@@ -89,10 +87,7 @@ uiContext d;
  * 単語削除の読みの入力                                                      *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 static int
-uuSYomiEveryTimeCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSYomiEveryTimeCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   int len, echoLen, revPos;
@@ -136,10 +131,7 @@ mode_context env;
 }
 
 static int
-uuSYomiExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSYomiExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   tourokuContext tc;
@@ -156,10 +148,7 @@ mode_context env;
 }
 
 static int
-uuSYomiQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSYomiQuitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   popCallback(d); /* 読みを pop */
@@ -174,8 +163,7 @@ mode_context env;
 }
 
 static int
-dicSakujoYomi(d)
-uiContext d;
+dicSakujoYomi(uiContext d)
 {
   yomiContext yc;
 
@@ -201,10 +189,7 @@ uiContext d;
 }
 
 static int
-acDicSakujoYomi(d, dn, dm)
-uiContext d;
-int dn;
-mode_context dm;
+acDicSakujoYomi(uiContext d, int dn, mode_context dm)
 /* ARGSUSED */
 {
   popCallback(d);
@@ -212,10 +197,7 @@ mode_context dm;
 }
 
 static int
-acDicSakujoDictionary(d, dn, dm)
-uiContext d;
-int dn;
-mode_context dm;
+acDicSakujoDictionary(uiContext d, int dn, mode_context dm)
 /* ARGSUSED */
 {
   popCallback(d);
@@ -227,9 +209,7 @@ mode_context dm;
  */
 static
 wchar_t **
-getMountDicName(d, num_return)
-uiContext d;
-int *num_return;
+getMountDicName(uiContext d, int *num_return)
 /* ARGSUSED */
 {
   int nmmdic, check, majv, minv;
@@ -317,8 +297,7 @@ int *num_return;
 }
 
 int
-dicSakujo(d)
-uiContext d;
+dicSakujo(uiContext d)
 {
   wchar_t **mp, **p;
   tourokuContext tc;
@@ -364,8 +343,7 @@ uiContext d;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static void
-CloseDeleteContext(tc)
-tourokuContext tc;
+CloseDeleteContext(tourokuContext tc)
 {
   if(tc->delContext >= 0) {
     if (RkwCloseContext(tc->delContext) < 0) {
@@ -384,8 +362,7 @@ tourokuContext tc;
  * 指定された単語が登録されている辞書を取り出す
  */
 static int
-getEffectDic(tc)
-tourokuContext tc;
+getEffectDic(tourokuContext tc)
 {
   int workContext, currentkouho, nbunsetsu, nelem = tc->nudic;
   wchar_t **mdic, **cands, **work;
@@ -532,10 +509,7 @@ tourokuContext tc;
 }
 
 static int
-uuSTangoExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSTangoExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -566,10 +540,7 @@ mode_context env;
 }
 
 static int
-uuSTangoQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSTangoQuitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -590,9 +561,7 @@ mode_context env;
  * 読みを指定された辞書から変換する
  */
 static int
-dicSakujoBgnBun(d, st)
-uiContext d;
-RkStat *st;
+dicSakujoBgnBun(uiContext d, RkStat *st)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   int nbunsetsu;
@@ -675,8 +644,7 @@ RkStat *st;
 }
 
 static int
-dicSakujoEndBun(d)
-uiContext d;
+dicSakujoEndBun(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
 
@@ -694,8 +662,7 @@ uiContext d;
 }
 
 static int
-dicSakujoTango(d)
-uiContext d;
+dicSakujoTango(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   forichiranContext fc;
@@ -804,8 +771,7 @@ uiContext d;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static int
-getDeleteDic(mc)
-mountContext mc;
+getDeleteDic(mountContext mc)
 {
   tourokuContext tc = (tourokuContext)mc->next;
   int i, num = 0;
@@ -841,10 +807,7 @@ mountContext mc;
 
 
 static int
-uuSDicExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSDicExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   mountContext mc;
@@ -881,10 +844,7 @@ mode_context env;
 }
 
 static int
-uuSDicQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSDicQuitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   popCallback(d); /* 一覧を pop */
@@ -897,8 +857,7 @@ mode_context env;
 }
 
 static int
-dicSakujoDictionary(d)
-uiContext d;
+dicSakujoDictionary(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   mountContext mc;
@@ -1027,10 +986,7 @@ uiContext d;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static int
-uuSDeleteYesCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSDeleteYesCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   tourokuContext tc;
@@ -1120,10 +1076,7 @@ mode_context env;
 }
 
 static int
-uuSDeleteQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSDeleteQuitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   tourokuContext tc = (tourokuContext)env;
@@ -1139,10 +1092,7 @@ mode_context env;
 }
 
 static int
-uuSDeleteNoCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuSDeleteNoCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   popCallback(d); /* yesNo をポップ */
@@ -1157,8 +1107,7 @@ mode_context env;
 }
 
 static int
-dicSakujoDo(d)
-uiContext d;
+dicSakujoDo(uiContext d)
 {
   tourokuContext tc = (tourokuContext)d->modec;
   int l;

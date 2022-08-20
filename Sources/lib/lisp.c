@@ -48,37 +48,51 @@ static char *memtop;
 
 static int ncells = CELLSIZE;
 
-static int initIS(void);
-static void finIS(void);
-static int allocarea(void), skipspaces(void), zaplin(void), isterm(int c);
-static void prins(char *s);
-static list mkatm(char *name), read1(void), ratom(void), ratom2(int a), rstring(void);
-static int tyipeek(void), tyi(void);
-static void tyo(int /*c*/);
-static void defatms(void), epush(list value);
-static void push(list value), pop(int x);
+static char *Strncpy(char *x, char *y, int len);
+static int allocarea(void);
+static int equal(list x, list y);
 static int evpsh(list args);
-static void freearea(void), print(list l);
-static list getatm(char *name, int key), getatmz(char *name), newsymbol(char *name),
-  copystring(char *s, int n);
-static list assq(list e, list a), pop1(void);
-static list Lprogn(void), Lcons(int n), Lread(int n);
-static list Leval(int n), Lprint(int n), Lmodestr(int n), Lputd(int n),
- Lxcons(int n), Lncons(int n);
-static list NumAcc(int *var, int setp, list arg), StrAcc(char **var, int setp, list arg);
+static int initIS(void);
+static int isnum(char *name);
+static int isterm(int c);
+static int skipspaces(void);
+static int tyi(void);
+static int tyipeek(void);
+static int zaplin(void);
+static list assq(list e, list a);
+static list copystring(char *s, int n);
+static list getatm(char *name, int key);
+static list getatmz(char *name);
+static list Lcons(int n);
+static list Leval(int n);
+static list Lncons(int n);
+static list Lprint(int n);
+static list Lprogn(void);
+static list Lread(int n);
+static list newsymbol(char *name);
+static list pop1(void);
+static list ratom(void);
+static list ratom2(int a);
+static list rcharacter(void);
+static list read1(void);
+static list rstring(void);
+static void defatms(void);
+static void epush(list value);
+static void finIS(void);
+static void freearea(void);
+static void gc(void);
 static void markcopycell(list *addr);
 static void patom(list atm);
-static list rcharacter(void);
-static int isnum(char *name);
+static void prins(char *s);
+static void print(list l);
+static void push(list value);
+static void tyo(int c);
 static void untyi(int c);
-static void gc(void);
-static char *Strncpy(char *x, char *y, int len);
-static int equal(list x, list y);
+
 
 /* error functions	*/
-static void argnerr(char *msg) __attribute__((noreturn));
-static void numerr(char *fn, list arg) __attribute__((noreturn));
 static void error(char *msg, list v) __attribute__((noreturn));
+
 
 /* parameter stack */
 
@@ -3902,16 +3916,14 @@ NumAcc(int *var, int setp, list arg)
 /* 実際のアクセス関数 */
 
 #define DEFVAR(fn, acc, ty, var)                                               \
-  static list fn(setp, arg) int setp;                                          \
-  list arg;                                                                    \
+  static list fn(int setp, list arg)                                          \
   {                                                                            \
     extern ty var;                                                             \
     return acc(&var, setp, arg);                                               \
   }
 
 #define DEFVAREX(fn, acc, var)                                                 \
-  static list fn(setp, arg) int setp;                                          \
-  list arg;                                                                    \
+  static list fn(int setp, list arg)                                           \
   {                                                                            \
     extern struct CannaConfig cannaconf;                                       \
     return acc(&var, setp, arg);                                               \

@@ -49,8 +49,7 @@ Ncfree.nc_aprev->nc_anext = (p); Ncfree.nc_aprev = (p); \
 }
 
 int
-_RkInitializeCache(size)
-     int	size;
+_RkInitializeCache(int size)
 {
   struct RkParam	*sx = &SX;
   int				i;
@@ -83,9 +82,7 @@ _RkFinalizeCache()
 
 static
 int
-flushCache(dm, cache)
-     struct DM		*dm;
-     struct ncache	*cache;
+flushCache(struct DM *dm, struct ncache *cache)
 {
   if (cache->nc_word) {
     if (dm && (cache->nc_flags & NC_DIRTY)) {
@@ -98,9 +95,7 @@ flushCache(dm, cache)
 }
 
 static
-struct ncache	*newCache(ndm, address)
-     struct DM		*ndm;
-     long		address;
+struct ncache	*newCache(struct DM *ndm, long address)
 {
   struct ncache	*new;
 
@@ -150,8 +145,7 @@ _RkEnrefCache(cache)
 */
 
 void
-_RkDerefCache(cache)
-     struct ncache *cache;
+_RkDerefCache(struct ncache *cache)
 {
   struct DM	*dm = cache->nc_dic;
 /*
@@ -174,8 +168,7 @@ _RkDerefCache(cache)
   }
 
 void
-_RkPurgeCache(cache)
-     struct ncache	*cache;
+_RkPurgeCache(struct ncache *cache)
 {
   hremove(cache)
   aremove(cache)
@@ -183,8 +176,7 @@ _RkPurgeCache(cache)
 }
 
 void
-_RkKillCache(dm)
-     struct DM	*dm;
+_RkKillCache(struct DM *dm)
 {
   struct ncache		*cache;
   int			i;
@@ -199,9 +191,7 @@ _RkKillCache(dm)
 
 #if defined(MMAP)
 int
-_RkDoInvalidateCache(addr, size)
-     long	addr;
-     unsigned long	size;
+_RkDoInvalidateCache(long addr, unsigned long size)
 {
   struct ncache	*head, *cache, *tmp;
   int i;
@@ -242,9 +232,7 @@ _RkDoInvalidateCache(addr, size)
 #endif
 
 struct ncache	*
-_RkFindCache(dm, addr)
-     struct DM	*dm;
-     long	addr;
+_RkFindCache(struct DM *dm, long addr)
 {
   struct ncache	*head, *cache;
 
@@ -256,9 +244,7 @@ _RkFindCache(dm, addr)
 }
 
 void
-_RkRehashCache(cache, addr)
-     struct ncache	*cache;
-     long		addr;
+_RkRehashCache(struct ncache *cache, long addr)
 {
   struct ncache	*head;
 
@@ -273,9 +259,7 @@ _RkRehashCache(cache, addr)
 }
 
 struct ncache	*
-_RkReadCache(dm, addr)
-     struct DM	*dm;
-     long	addr;
+_RkReadCache(struct DM *dm, long addr)
 {
   struct ncache	*head, *cache;
 

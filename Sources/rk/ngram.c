@@ -70,10 +70,8 @@ RkCloseGram(struct RkKxGram *gram)
   free(gram);
 }
 
-static
-char	**
-gram_to_tab(gram)
-     struct RkKxGram	*gram;
+static char **
+gram_to_tab(struct RkKxGram *gram)
 {
   char	**top, *str;
   int	i;
@@ -92,8 +90,7 @@ gram_to_tab(gram)
 }
 
 static int
-gram_fill_conjcells(gram)
-     struct RkKxGram	*gram;
+gram_fill_conjcells(struct RkKxGram *gram)
 {
   int row, colbyte;
   const char *src;
@@ -156,8 +153,7 @@ nomem:
 #ifdef unused
 /* RkGetGramSize -- gram_conj に入れているメモリの大きさを返す */
 static int
-RkGetGramSize(gram)
-struct RkKxGram *gram;
+RkGetGramSize(struct RkKxGram *gram)
 {
   char *str;
   int i;
@@ -171,9 +167,7 @@ struct RkKxGram *gram;
 #endif /* unused */
 
 struct RkKxGram *
-RkReadGram(fd, gramsz)
-int fd;
-size_t gramsz;
+RkReadGram(int fd, size_t gramsz)
 {
   struct RkKxGram	*gram = NULL;
   unsigned char		l4[4];
@@ -248,8 +242,7 @@ cellsfail:;
 }
 
 struct RkKxGram	*
-RkOpenGram(mydic)
-     char	*mydic;
+RkOpenGram(char *mydic)
 {
   struct RkKxGram	*gram;
   struct HD		hd;
@@ -301,8 +294,7 @@ RkOpenGram(mydic)
 
 #ifdef unused
 struct RkKxGram	*
-RkDuplicateGram(ogram)
-struct RkKxGram *ogram;
+RkDuplicateGram(struct RkKxGram *ogram)
 {
   struct RkKxGram *gram = NULL;
 
@@ -347,8 +339,7 @@ cellsfail:
 #endif /* unused */
 
 int
-_RkWordLength(wrec)
-     unsigned char	*wrec;
+_RkWordLength(unsigned char *wrec)
 {
   int	wl;
 
@@ -359,8 +350,7 @@ _RkWordLength(wrec)
 }
 
 int
-_RkCandNumber(wrec)
-     unsigned char	*wrec;
+_RkCandNumber(unsigned char *wrec)
 {
   int	nc;
 
@@ -371,9 +361,7 @@ _RkCandNumber(wrec)
 }
 
 int
-RkGetGramNum(gram, name)
-     struct RkKxGram	*gram;
-     char			*name;
+RkGetGramNum(struct RkKxGram *gram, char *name)
 {
   int	row;
   int	max = gram->ng_rowcol;
@@ -388,8 +376,7 @@ RkGetGramNum(gram, name)
 }
 
 static Wchar *
-skip_space(src)
-     Wchar	*src;
+skip_space(Wchar *src)
 {
   while (*src) {
     if (!rk_isspace(*src))
@@ -400,8 +387,7 @@ skip_space(src)
 }
 
 static int
-skip_until_space(src, next)
-Wchar	*src, **next;
+skip_until_space(Wchar *src, Wchar **next)
 {
   int len = 0;
 
@@ -422,13 +408,9 @@ Wchar	*src, **next;
 }
 
 static int
-wstowrec(gram, src, dst, maxdst, yomilen, wlen, lucks)
-     struct RkKxGram	*gram;
-     Wchar		*src;
-     Wrec		*dst;
-     unsigned		maxdst;
-     unsigned		*yomilen, *wlen;
-     unsigned long	*lucks;
+wstowrec(struct RkKxGram *gram, Wchar *src, Wrec *dst,
+     unsigned maxdst, unsigned *yomilen, unsigned *wlen,
+     unsigned long *lucks)
 {
   Wrec		*odst = dst;
   Wchar		*yomi, *kanji;
@@ -494,10 +476,7 @@ wstowrec(gram, src, dst, maxdst, yomilen, wlen, lucks)
 }
 
 static Wrec *
-fil_wc2wrec_flag(wrec, wreclen, ncand, yomi, ylen, left)
-     Wrec	*wrec;
-     Wchar	*yomi;
-     unsigned	*wreclen, ylen, ncand, left;
+fil_wc2wrec_flag(Wrec * wrec, unsigned	* wreclen, unsigned ncand, Wchar	* yomi, unsigned ylen, unsigned left)
 {
   Wrec		*owrec = wrec;
   Wchar		tmp;
@@ -539,9 +518,7 @@ fil_wc2wrec_flag(wrec, wreclen, ncand, yomi, ylen, left)
 }
 
 static Wrec *
-fil_wrec_flag(wrec, wreclen, ncand, yomi, ylen, left)
-     Wrec	*wrec, *yomi;
-     unsigned	*wreclen, ylen, ncand, left;
+fil_wrec_flag(Wrec	* wrec, unsigned	* wreclen, unsigned ncand, Wrec	* yomi, unsigned ylen, unsigned left)
 {
   Wrec		*owrec = wrec;
   Wchar		tmp;
@@ -573,12 +550,7 @@ fil_wrec_flag(wrec, wreclen, ncand, yomi, ylen, left)
 }
 
 Wrec *
-RkParseWrec(gram, src, left, dst, maxdst)
-     struct RkKxGram	*gram;
-     Wchar		*src;
-     unsigned		left;
-     unsigned char	*dst;
-     unsigned		maxdst;
+RkParseWrec(struct RkKxGram *gram, Wchar *src, unsigned left, unsigned char *dst, unsigned maxdst)
 {
   unsigned	wreclen, wlen, ylen, nc;
   unsigned long	lucks[2];
@@ -617,12 +589,7 @@ RkParseWrec(gram, src, left, dst, maxdst)
 }
 
 Wrec *
-RkParseOWrec(gram, src, dst, maxdst, lucks)
-     struct RkKxGram	*gram;
-     Wchar		*src;
-     unsigned char	*dst;
-     unsigned		maxdst;
-     unsigned long	*lucks;
+RkParseOWrec(struct RkKxGram *gram, Wchar *src, unsigned char *dst, unsigned maxdst, unsigned long *lucks)
 {
   unsigned	wreclen, wlen, ylen, nc;
   unsigned char *ret = NULL;
@@ -653,10 +620,7 @@ RkParseOWrec(gram, src, dst, maxdst, lucks)
 }
 
 Wchar *
-RkParseGramNum(gram, src, row)
-     struct RkKxGram	*gram;
-     Wchar 		*src;
-     int		*row;
+RkParseGramNum(struct RkKxGram *gram, Wchar *src, int *row)
 {
   int		rnum;
   Wchar		*ws;
@@ -711,9 +675,7 @@ RkParseGramNum(gram, src, row)
 }
 
 unsigned char *
-RkGetGramName(gram, row)
-     struct RkKxGram	*gram;
-     int		row;
+RkGetGramName(struct RkKxGram *gram, int row)
 {
   if (gram && gram->ng_strtab)
     if (is_row_num(gram, row))
@@ -722,11 +684,7 @@ RkGetGramName(gram, row)
 }
 
 Wchar *
-RkUparseGramNum(gram, row, dst, maxdst)
-     struct RkKxGram	*gram;
-     int		row;
-     Wchar		*dst;
-     int		maxdst;
+RkUparseGramNum(struct RkKxGram *gram, int row,  Wchar *dst, int maxdst)
 {
   unsigned char	*name, *p;
 
@@ -766,8 +724,7 @@ RkUparseGramNum(gram, row, dst, maxdst)
 }
 
 int
-_RkRowNumber(wrec)
-     unsigned char	*wrec;
+_RkRowNumber(unsigned char *wrec)
 {
   int	row;
 
@@ -778,13 +735,7 @@ _RkRowNumber(wrec)
 }
 
 Wchar	*
-_RkUparseWrec(gram, src, dst, maxdst, lucks, add)
-     struct RkKxGram	*gram;
-     Wrec		*src;
-     Wchar		*dst;
-     int		maxdst;
-     unsigned long     	*lucks;
-     int		add;
+_RkUparseWrec(struct RkKxGram *gram, Wrec *src, Wchar *dst, int maxdst, unsigned long *lucks, int add)
 {
   unsigned long luck = _RkGetTick(0), val;
   unsigned char	*wrec = src;
@@ -880,19 +831,13 @@ _RkUparseWrec(gram, src, dst, maxdst, lucks, add)
 }
 
 Wchar	*
-RkUparseWrec(gram, src, dst, maxdst, lucks)
-     struct RkKxGram	*gram;
-     Wrec		*src;
-     Wchar		*dst;
-     int		maxdst;
-     unsigned long	*lucks;
+RkUparseWrec(struct RkKxGram *gram, Wrec *src, Wchar *dst, int maxdst, unsigned long *lucks)
 {
   return(_RkUparseWrec(gram, src, dst, maxdst, lucks, 0));
 }
 
 struct TW *
-RkCopyWrec(src)
-     struct TW	*src;
+RkCopyWrec(struct TW *src)
 {
   struct TW	*dst = NULL;
   unsigned int	sz;
@@ -916,10 +861,7 @@ RkCopyWrec(src)
 }
 
 int
-RkScanWcand(wrec, word, maxword)
-     Wrec		*wrec;
-     struct RkWcand	*word;
-     int		maxword;
+RkScanWcand(Wrec *wrec, struct RkWcand *word, int maxword)
 {
   int	i, l, nc, ns = 0;
 
@@ -947,9 +889,7 @@ RkScanWcand(wrec, word, maxword)
 
 
 int
-RkUniqWcand(wc, nwc)
-     struct RkWcand	*wc;
-     int		nwc;
+RkUniqWcand(struct RkWcand *wc, int nwc)
 {
   int		i, j, nu;
   Wrec		*a;
@@ -969,15 +909,9 @@ RkUniqWcand(wc, nwc)
   return(nu);
 }
 
-static struct TW *
-RkWcand2Wrec(Wrec * /*key*/, struct RkWcand * /*wc*/, int /*nc*/, unsigned long * /*lucks*/);
 
 static struct TW *
-RkWcand2Wrec(key, wc, nc, lucks)
-     Wrec		*key;
-     struct RkWcand	*wc;
-     int		nc;
-     unsigned long	*lucks;
+RkWcand2Wrec(Wrec *key, struct RkWcand *wc, int nc, unsigned long *lucks)
 {
   int		i, j;
   unsigned	ylen, sz;
@@ -1048,9 +982,7 @@ RkWcand2Wrec(key, wc, nc, lucks)
 }
 
 int
-RkUnionWcand(wc1, nc1, wlen1, wc2, nc2)
-     struct RkWcand	*wc1, *wc2;
-     int		wlen1, nc1, nc2;
+RkUnionWcand(struct RkWcand * wc1, int nc1, int wlen1, struct RkWcand * wc2, int nc2)
 {
   int		i, j, nu;
   Wrec		*a;
@@ -1074,12 +1006,7 @@ RkUnionWcand(wc1, nc1, wlen1, wc2, nc2)
 }
 
 int
-RkSubtractWcand(wc1, nc1, wc2, nc2, lucks)
-     struct RkWcand	*wc1;
-     struct RkWcand	*wc2;
-     int		nc1;
-     int		nc2;
-     unsigned long	*lucks;
+RkSubtractWcand(struct RkWcand * wc1, int nc1, struct RkWcand * wc2, int nc2, unsigned long *lucks)
 {
   int		i, j, nu;
   Wrec		*a;
@@ -1112,9 +1039,7 @@ RkSubtractWcand(wc1, nc1, wc2, nc2, lucks)
 }
 
 struct TW *
-RkSubtractWrec(tw1, tw2)
-     struct TW	*tw1;
-     struct TW	*tw2;
+RkSubtractWrec(struct TW *tw1, struct TW *tw2)
 {
   struct RkWcand	*wc1, *wc2;
   int			nc1, nc2, nc, ylen;
@@ -1159,9 +1084,7 @@ RkSubtractWrec(tw1, tw2)
 }
 
 struct TW *
-RkUnionWrec(tw1, tw2)
-     struct TW	*tw1;
-     struct TW	*tw2;
+RkUnionWrec(struct TW *tw1, struct TW *tw2)
 {
   struct RkWcand	*wc1, *wc2;
   Wrec			*wrec2 = tw2->word;
@@ -1195,10 +1118,7 @@ RkUnionWrec(tw1, tw2)
 }
 
 int
-RkTestGram(gram, row, col)
-  const struct RkKxGram *gram;
-  int row;
-  int col;
+RkTestGram(const struct RkKxGram *gram, int row, int col)
 {
   const conjcell *start = gram->ng_conjrows[row];
   const conjcell *end = gram->ng_conjrows[row + 1];
@@ -1232,11 +1152,7 @@ RkTestGram(gram, row, col)
  *    2: 優先度を下げる
  */
 int
-RkCheckNegGram(gram, rc1, rc2, rc3)
-  const struct RkKxGram *gram;
-  int rc1;
-  int rc2;
-  int rc3;
+RkCheckNegGram(const struct RkKxGram *gram, int rc1, int rc2, int rc3)
 {
   int m, l = 0, r = gram->ng_numneg;
   canna_uint32_t *neg = gram->ng_neg;
@@ -1260,17 +1176,13 @@ RkCheckNegGram(gram, rc1, rc2, rc3)
 #endif
 
 void
-RkFirstGram(iter, gram)
-  struct RkGramIterator *iter;
-  const struct RkKxGram *gram;
+RkFirstGram(struct RkGramIterator *iter, const struct RkKxGram *gram)
 {
   iter->rowcol = 0;
 }
 
 void
-RkEndGram(iter, gram)
-  struct RkGramIterator *iter;
-  const struct RkKxGram *gram;
+RkEndGram(struct RkGramIterator *iter, const struct RkKxGram *gram)
 {
   iter->rowcol = gram->ng_rowcol;
 }

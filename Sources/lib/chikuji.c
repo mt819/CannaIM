@@ -46,7 +46,6 @@ int forceRomajiFlushYomi (uiContext);
 void moveToChikujiTanMode (uiContext /*d*/);
 void moveToChikujiYomiMode (uiContext /*d*/);
 
-static void clearHenkanContent (yomiContext /*yc*/);
 
 static void
 clearHenkanContent(yomiContext yc)

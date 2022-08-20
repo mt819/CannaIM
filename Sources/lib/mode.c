@@ -91,8 +91,7 @@ static wchar_t * _ModeNames[CANNA_MODE_MAX_IMAGINARY_MODE];
  FindExtraFunc((mnum) - CANNA_MODE_MAX_IMAGINARY_MODE + CANNA_FN_MAX_FUNC)
 
 newmode *
-findExtraKanjiMode(mnum)
-int mnum;
+findExtraKanjiMode(int mnum)
 {
   extern extraFunc *extrafuncp;
   extraFunc *extrafunc;
@@ -115,8 +114,7 @@ int mnum;
 extern int nothermodes;
 
 static wchar_t *
-modestr(mid)
-int mid;
+modestr(int mid)
 {
   if (mid < CANNA_MODE_MAX_IMAGINARY_MODE) {
       return(ModeNames[mid].name);
@@ -131,8 +129,7 @@ int mid;
 }
 
 void
-currentModeInfo(d)
-uiContext d;
+currentModeInfo(uiContext d)
 {
   coreContext cc = (coreContext)d->modec;
 
@@ -203,8 +200,7 @@ resetModeNames()
 }
 
 static void
-japaneseMode(d)
-uiContext d;
+japaneseMode(uiContext d)
 {
   coreContext cc = (coreContext)d->modec;
 
@@ -223,8 +219,7 @@ uiContext d;
  */
 
 int
-JapaneseMode(d)
-uiContext d;
+JapaneseMode(uiContext d)
 {
   coreContext cc = (coreContext)d->modec;
   yomiContext yc = (yomiContext)cc->next;
@@ -239,8 +234,7 @@ uiContext d;
 }
 
 int
-AlphaMode(d)
-uiContext d;
+AlphaMode(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -256,8 +250,7 @@ uiContext d;
 }
 
 int
-HenkanNyuryokuMode(d)
-uiContext d;
+HenkanNyuryokuMode(uiContext d)
 {
   extern KanjiModeRec empty_mode;
   yomiContext yc = (yomiContext)d->modec;
@@ -282,9 +275,7 @@ uiContext d;
 }
 
 int
-queryMode(d, arg)
-uiContext d;
-wchar_t *arg;
+queryMode(uiContext d, wchar_t *arg)
 {
   coreContext cc = (coreContext)d->modec;
   wchar_t *mode_str = NULL;
@@ -370,9 +361,7 @@ wchar_t *arg;
  */
 
 int
-changeModeName(modeid, str)
-int modeid;
-char *str;
+changeModeName(int modeid, char *str)
 {
   extraFunc *ep;
 

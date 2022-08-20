@@ -67,9 +67,7 @@ static int JishuHankaku(uiContext d);
 #define INHIBIT_HIRA	0x08
 
 void
-enterJishuMode(d, yc)
-uiContext d;
-yomiContext yc;
+enterJishuMode(uiContext d, yomiContext yc)
 {
   extern KanjiModeRec jishu_mode;
   int pos;
@@ -104,9 +102,7 @@ yomiContext yc;
 }
 
 void
-leaveJishuMode(d, yc)
-uiContext d;
-yomiContext yc;
+leaveJishuMode(uiContext d, yomiContext yc)
 {
   extern KanjiModeRec yomi_mode, cy_mode;
 
@@ -122,8 +118,7 @@ yomiContext yc;
 }
 
 static void
-setInhibitInformation(yc)
-yomiContext yc;
+setInhibitInformation(yomiContext yc)
 {
   int i;
 
@@ -142,9 +137,8 @@ yomiContext yc;
 }
 
 int
-extractJishuString(yc, s, e, sr, er)
-yomiContext yc;
-wchar_t *s, *e, **sr, **er;
+extractJishuString(yomiContext yc,
+	wchar_t *s, wchar_t *e, wchar_t **sr, wchar_t **er)
 {
   wchar_t *ss = s;
   int jishulen = 0, len, revlen = 0;
@@ -350,8 +344,7 @@ wchar_t *s, *e, **sr, **er;
 }
 
 static int
-inhibittedJishu(d)
-uiContext d;
+inhibittedJishu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -367,8 +360,7 @@ uiContext d;
 }
 
 static int
-nextJishu(d)
-uiContext d;
+nextJishu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   BYTE startkc = yc->jishu_kc;
@@ -380,8 +372,7 @@ uiContext d;
 }
 
 static int
-previousJishu(d)
-uiContext d;
+previousJishu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   BYTE startkc = yc->jishu_kc;
@@ -393,11 +384,10 @@ uiContext d;
   return yc->jishu_kc != startkc;
 }
 
-static int JishuNextJishu(uiContext /*d*/);
 
+/* 字種モードの時に順回り文字種変換をする */
 static int
-JishuNextJishu(d) /* 字種モードの時に順回り文字種変換をする */
-uiContext d;
+JishuNextJishu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -414,11 +404,10 @@ uiContext d;
   return 0;
 }
 
-static int JishuPreviousJishu(uiContext /*d*/);
 
+/* 字種モードの時に逆回り文字種変換をする */
 static int
-JishuPreviousJishu(d) /* 字種モードの時に逆回り文字種変換をする */
-uiContext d;
+JishuPreviousJishu(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -435,12 +424,9 @@ uiContext d;
   return 0;
 }
 
-static int JishuRotateWithInhibition(uiContext /*d*/, unsigned /*inhibit*/);
 
 static int
-JishuRotateWithInhibition(d, inhibit)
-uiContext d;
-unsigned inhibit;
+JishuRotateWithInhibition(uiContext d, unsigned inhibit)
 {
   yomiContext yc = (yomiContext)d->modec;
   BYTE savedInhibition = yc->inhibition;
@@ -453,30 +439,27 @@ unsigned inhibit;
   return res;
 }
 
-static int JishuKanaRotate(uiContext /*d*/);
 
+/* 字種モードの時に順回りかな文字種変換をする */
 static int
-JishuKanaRotate(d) /* 字種モードの時に順回りかな文字種変換をする */
-uiContext d;
+JishuKanaRotate(uiContext d)
 {
   return JishuRotateWithInhibition(d, INHIBIT_ALPHA);
 }
 
-static int JishuRomajiRotate(uiContext /*d*/);
 
+/* 字種モードの時に順回り英数文字種変換をする */
 static int
-JishuRomajiRotate(d) /* 字種モードの時に順回り英数文字種変換をする */
-uiContext d;
+JishuRomajiRotate(uiContext d)
 {
   return JishuRotateWithInhibition(d, INHIBIT_KANA | INHIBIT_HIRA);
 }
 
 static void myjishuAdjustRome(uiContext /*d*/);
-static int JishuShrink(uiContext /*d*/);
 
+/* 文字種変換領域を縮める */
 static int
-JishuShrink(d) /* 文字種変換領域を縮める */
-uiContext d;
+JishuShrink(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -534,11 +517,9 @@ uiContext d;
   return 0;
 }
 
-static int JishuNop(uiContext /*d*/);
 
 static int
-JishuNop(d)
-uiContext d;
+JishuNop(uiContext d)
 {
   /* currentModeInfo でモード情報が必ず返るようにダミーのモードを入れておく */
   d->majorMode = d->minorMode = CANNA_MODE_AlphaMode;
@@ -548,11 +529,10 @@ uiContext d;
   return 0;
 }
 
-static int JishuExtend(uiContext /*d*/);
 
+/* 文字種変換領域を伸ばす */
 static int
-JishuExtend(d) /* 文字種変換領域を伸ばす */
-uiContext d;
+JishuExtend(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -620,8 +600,7 @@ uiContext d;
 }
 
 static void
-jishuAdjustRome(d)
-uiContext d;
+jishuAdjustRome(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -631,8 +610,7 @@ uiContext d;
 }
 
 static void
-myjishuAdjustRome(d)
-uiContext d;
+myjishuAdjustRome(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -643,9 +621,9 @@ uiContext d;
 }
 
 
+/* 全角変換 */
 static int
-JishuZenkaku(d) /* 全角変換 */
-uiContext d;
+JishuZenkaku(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -678,9 +656,9 @@ uiContext d;
 }
 
 
+/* 半角変換 */
 static int
-JishuHankaku(d) /* 半角変換 */
-     uiContext d;
+JishuHankaku(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -720,9 +698,7 @@ JishuHankaku(d) /* 半角変換 */
 }
 
 static int
-exitJishuAndDoSomething(d, fnum)
-uiContext d;
-int fnum;
+exitJishuAndDoSomething(uiContext d, int fnum)
 {
   exitJishu(d);
   d->more.todo = 1;
@@ -733,11 +709,9 @@ int fnum;
   return d->nbytes = 0;
 }
 
-static int JishuYomiInsert(uiContext /*d*/);
 
 static int
-JishuYomiInsert(d)
-uiContext d;
+JishuYomiInsert(uiContext d)
 {
   if (cannaconf.MojishuContinue) {
     return exitJishuAndDoSomething(d, 0);
@@ -757,11 +731,9 @@ uiContext d;
   }
 }
 
-static int JishuQuit(uiContext /*d*/);
 
 static int
-JishuQuit(d)
-uiContext d;
+JishuQuit(uiContext d)
 {
   leaveJishuMode(d, (yomiContext)d->modec);
   makeKanjiStatusReturn(d, (yomiContext)d->modec);
@@ -770,11 +742,9 @@ uiContext d;
 
 /* 大文字にする関数 */
 
-static int JishuToUpper(uiContext /*d*/);
 
 static int
-JishuToUpper(d)
-uiContext d;
+JishuToUpper(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -799,11 +769,9 @@ uiContext d;
   }
 }
 
-static int JishuCapitalize(uiContext /*d*/);
 
 static int
-JishuCapitalize(d)
-uiContext d;
+JishuCapitalize(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -828,11 +796,9 @@ uiContext d;
   }
 }
 
-static int JishuToLower(uiContext /*d*/);
 
 static int
-JishuToLower(d)
-uiContext d;
+JishuToLower(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -857,11 +823,9 @@ uiContext d;
   }
 }
 
-static int JishuHiragana(uiContext /*d*/);
 
 static int
-JishuHiragana(d)
-uiContext d;
+JishuHiragana(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -870,11 +834,9 @@ uiContext d;
   return 0;
 }
 
-static int JishuKatakana(uiContext /*d*/);
 
 static int
-JishuKatakana(d)
-uiContext d;
+JishuKatakana(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -883,11 +845,9 @@ uiContext d;
   return 0;
 }
 
-static int JishuRomaji(uiContext /*d*/);
 
 static int
-JishuRomaji(d)
-uiContext d;
+JishuRomaji(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -900,17 +860,14 @@ uiContext d;
 }
 
 static void
-nextCase(yc)
-yomiContext yc;
+nextCase(yomiContext yc)
 {
   yc->jishu_case = (BYTE)(((int)yc->jishu_case + 1) % CANNA_JISHU_MAX_CASE);
 }
 
-static int JishuCaseRotateForward(uiContext /*d*/);
 
 static int
-JishuCaseRotateForward(d)
-uiContext d;
+JishuCaseRotateForward(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
@@ -938,29 +895,23 @@ uiContext d;
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static int JishuKanjiHenkan(uiContext /*d*/);
 
 static int
-JishuKanjiHenkan(d)
-uiContext	d;
+JishuKanjiHenkan(uiContext d)
 {
   return exitJishuAndDoSomething(d, CANNA_FN_Henkan);
 }
 
-static int JishuKanjiHenkanOInsert(uiContext /*d*/);
 
 static int
-JishuKanjiHenkanOInsert(d)
-uiContext	d;
+JishuKanjiHenkanOInsert(uiContext d)
 {
   return exitJishuAndDoSomething(d, CANNA_FN_HenkanOrInsert);
 }
 
-static int JishuKanjiHenkanONothing(uiContext /*d*/);
 
 static int
-JishuKanjiHenkanONothing(d)
-uiContext	d;
+JishuKanjiHenkanONothing(uiContext d)
 {
   return exitJishuAndDoSomething(d, CANNA_FN_HenkanOrNothing);
 }

@@ -103,8 +103,7 @@ static menustruct *me[N_BUILTIN_MENU];
 #define MBUFSIZE 512
 
 void
-freeMenu(m)
-menustruct *m;
+freeMenu(menustruct *m)
 {
   free(m->titles);
   free(m->titledata);
@@ -113,8 +112,7 @@ menustruct *m;
 }
 
 menustruct *
-allocMenu(n, nc)
-int n, nc;
+allocMenu(int n, int nc)
 {
   wchar_t *wctab, **wcs;
   menuitem *menubody;
@@ -143,8 +141,7 @@ int n, nc;
 }
 
 static menustruct *
-copystruct(eucmenu)
-struct _e_menu *eucmenu;
+copystruct(struct _e_menu *eucmenu)
 {
   int i, nc, len, n = eucmenu->ni;
   e_menuitem *euctable = eucmenu->mi;
@@ -238,8 +235,7 @@ finExtMenu()
 #endif /* NO_EXTEND_MENU */
 
 static int
-makeUiUtilEchoStr(d)
-uiContext d;
+makeUiUtilEchoStr(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
@@ -252,10 +248,7 @@ uiContext d;
 }
 
 int
-uiUtilIchiranTooSmall(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uiUtilIchiranTooSmall(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   makeUiUtilEchoStr(d);
@@ -264,9 +257,7 @@ mode_context env;
 
 #ifndef NO_EXTEND_MENU
 static void
-pushmenu(d, tab)
-uiContext d;
-menustruct *tab;
+pushmenu(uiContext d, menustruct *tab)
 {
   tab->prev = d->prevMenu;
   d->prevMenu = tab;
@@ -277,10 +268,7 @@ menustruct *tab;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static int
-uuflExitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuflExitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   forichiranContext fc;
@@ -343,8 +331,7 @@ mode_context env;
 }
 
 int
-prevMenuIfExist(d)
-uiContext d;
+prevMenuIfExist(uiContext d)
 {
   menustruct *m = d->prevMenu;
 
@@ -360,10 +347,7 @@ uiContext d;
 }
 
 static int
-uuflQuitCatch(d, retval, env)
-uiContext d;
-int retval;
-mode_context env;
+uuflQuitCatch(uiContext d, int retval, mode_context env)
 /* ARGSUSED */
 {
   popCallback(d); /* 一覧を pop */
@@ -382,8 +366,7 @@ mode_context env;
 
  */
 int
-UiUtilMode(d)
-uiContext d;
+UiUtilMode(uiContext d)
 {
 #ifdef NO_EXTEND_MENU
   d->kanji_status_return->info |= KanjiExtendInfo;
@@ -399,8 +382,7 @@ uiContext d;
  */
 
 static menuinfo *
-newMenuInfo(tab)
-menustruct *tab;
+newMenuInfo(menustruct *tab)
 {
   menuinfo *res;
 
@@ -413,8 +395,7 @@ menustruct *tab;
 }
 
 void
-freeAllMenuInfo(p)
-menuinfo *p;
+freeAllMenuInfo(menuinfo *p)
 {
   menuinfo *q;
 
@@ -426,9 +407,7 @@ menuinfo *p;
 }
 
 static menuinfo *
-findMenuInfo(p, ms)
-menuinfo *p;
-menustruct *ms;
+findMenuInfo(menuinfo *p, menustruct *ms)
 {
   while (p) {
     if (p->mstruct == ms) {
@@ -448,9 +427,7 @@ menustruct *ms;
  */
 
 int
-showmenu(d, table)
-uiContext d;
-menustruct *table;
+showmenu(uiContext d, menustruct *table)
 {
   yomiContext yc = (yomiContext)d->modec;
   forichiranContext fc;

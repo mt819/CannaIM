@@ -86,8 +86,7 @@ static char	*Hdrtag[] = {
 };
 
 int
-uslen(us)
-     Wchar	*us;
+uslen(Wchar *us)
 {
   Wchar *ous = us;
 
@@ -99,18 +98,13 @@ uslen(us)
 }
 
 void
-usncopy(dst, src, len)
-     Wchar	*dst, *src;
-     int	len;
+usncopy(Wchar *dst, Wchar *src, int len)
 {
   while (len-- > 0 && (*dst++ = *src++)) /* EMPTY */;
 }
 
 unsigned char *
-ustoeuc(src, srclen, dest, destlen)
-     Wchar		*src;
-     unsigned char	*dest;
-     int		srclen, destlen;
+ustoeuc(Wchar *src, int srclen, unsigned char *dest, int destlen)
 {
     if (!src || !dest || !srclen || !destlen)
 	return dest;
@@ -135,10 +129,7 @@ ustoeuc(src, srclen, dest, destlen)
 }
 
 Wchar *
-euctous(src, srclen, dest, destlen)
-     unsigned char	*src;
-     Wchar		*dest;
-     int		srclen, destlen;
+euctous(unsigned char *src, int srclen, Wchar *dest, int destlen)
 {
   Wchar	*a = dest;
 
@@ -187,25 +178,20 @@ _Rkpanic(const char *fmt, ...)
 }
 
 void
-RkAssertFail(file, line, expr)
-     const char *file;
-     int line;
-     const char *expr;
+RkAssertFail(const char *file, int line, const char *expr)
 {
   _Rkpanic("RK assertion failed: %s:%d %s", file, line, expr);
   /* NOTREACHED */
 }
 
 int
-_RkCalcUnlog2(x)
-     int	x;
+_RkCalcUnlog2(int x)
 {
   return((1 << x) - 1);
 }
 
 int
-_RkCalcLog2(n)
-     int n;
+_RkCalcLog2(int n)
 {
   int	lg2;
 
@@ -222,8 +208,7 @@ uniqAlnum(Wchar c)
 }
 
 void
-_RkClearHeader(hd)
-     struct HD	*hd;
+_RkClearHeader(struct HD *hd)
 {
   int	i;
 
@@ -237,11 +222,7 @@ _RkClearHeader(hd)
 }
 
 static int
-read_tags(hd, srctop, srcend, pass)
-     struct HD	*hd;
-     const unsigned char *srctop;
-     const unsigned char *srcend;
-     int	pass;
+read_tags(struct HD *hd, const unsigned char *srctop,  const unsigned char *srcend, int pass)
 {
   unsigned long	len, off;
   const unsigned char *src = srctop;
@@ -286,10 +267,7 @@ read_tags(hd, srctop, srcend, pass)
 }
 
 int
-_RkReadHeader(fd, hd, off_from_top)
-     int	fd;
-     struct HD	*hd;
-     off_t	off_from_top;
+_RkReadHeader(int fd, struct HD *hd, off_t off_from_top)
 {
   off_t tmpres;
   ssize_t pass1size;
@@ -367,9 +345,7 @@ _RkReadHeader(fd, hd, off_from_top)
 }
 
 unsigned char *
-_RkCreateHeader(hd, size)
-     struct HD	*hd;
-     size_t *size;
+_RkCreateHeader(struct HD *hd, size_t *size)
 {
   unsigned char	*tagdst, *datadst, *ptr;
   unsigned int i;
@@ -428,18 +404,14 @@ _RkCreateHeader(hd, size)
 }
 
 unsigned long
-_RkGetTick(mode)
-     int	mode;
+_RkGetTick(int mode)
 {
   static unsigned long time = 10000;
   return(mode ? time++ : time);
 }
 
 int
-set_hdr_var(hd, n, var)
-     struct HD		*hd;
-     int		n;
-     unsigned long	var;
+set_hdr_var(struct HD *hd, int n, unsigned long var)
 {
     if (!hd)
 	return -1;
@@ -449,12 +421,8 @@ set_hdr_var(hd, n, var)
 }
 
 int
-_RkGetLink(dic, pgno, off, lvo, csn)
-     struct ND	*dic;
-     long	pgno;
-     unsigned long	off;
-     unsigned long	*lvo;
-     unsigned long	*csn;
+_RkGetLink(struct ND *dic, long pgno, unsigned long off, unsigned long *lvo,
+  unsigned long *csn)
 {
   struct NP	*pg = dic->pgs + pgno;
   unsigned char	*p;
@@ -471,9 +439,7 @@ _RkGetLink(dic, pgno, off, lvo, csn)
 }
 
 unsigned long
-_RkGetOffset(dic, pos)
-     struct ND		*dic;
-     unsigned char	*pos;
+_RkGetOffset(struct ND *dic, unsigned char *pos)
 {
   struct NP	*pg;
   unsigned char	*p;
@@ -507,9 +473,7 @@ _RkGetOffset(dic, pos)
 }
 
 int
-HowManyChars(yomi, len)
-     Wchar	*yomi;
-     int	len;
+HowManyChars(Wchar *yomi, int len)
 {
   int chlen, bytelen;
 
@@ -527,9 +491,7 @@ HowManyChars(yomi, len)
 }
 
 int
-HowManyBytes(yomi, len)
-     Wchar	*yomi;
-     int	len;
+HowManyBytes(Wchar *yomi, int len)
 {
   int chlen, bytelen;
 
@@ -549,8 +511,7 @@ HowManyBytes(yomi, len)
 
 #ifdef TEST
 
-printWord(w)
-struct nword *w;
+printWord(struct nword *w)
 {
   printf("[0x%x] Y=%d, K=%d, class=0x%x, flg=0x%x, lit=%d, prio=%d, kanji=",
 	 w, w->nw_ylen, w->nw_klen, w->nw_class, w->nw_flags,
@@ -567,8 +528,7 @@ struct nword *w;
   printf("\n");
 }
 
-showWord(w)
-struct nword *w;
+showWord(struct nword *w)
 {
   struct nword *p, *q;
 

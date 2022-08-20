@@ -40,8 +40,8 @@
 extern char *CANNA_initfilename;
 extern char saveapname[];
 
-static int insertEmptySlots(uiContext /*d*/);
-static int callCallback(uiContext /*d*/, int /*res*/);
+static int insertEmptySlots(uiContext d);
+static int callCallback(uiContext d, int res);
 static void freeKeysup(void);
 static void freeBuffer(void);
 static void freeExtra(void);
@@ -49,8 +49,7 @@ extern int ckverbose;
 
 
 static int
-doInitializeFunctions(d)
-uiContext d;
+doInitializeFunctions(uiContext d)
 {
   BYTE *p;
   int res = 0;
@@ -110,8 +109,7 @@ initRomeStruct(uiContext d, int flg)
 }
 
 static void
-freeModec(modec)
-mode_context modec;
+freeModec(mode_context modec)
 {
   coreContext cc;
   union {
@@ -164,8 +162,7 @@ mode_context modec;
 }
 
 static void
-freeCallbacks(cb)
-struct callback *cb;
+freeCallbacks(struct callback *cb)
 {
   struct callback *nextcb;
 
@@ -176,8 +173,7 @@ struct callback *cb;
 }
 
 void
-freeRomeStruct(d)
-uiContext d;
+freeRomeStruct(uiContext d)
 {
   freeModec(d->modec);
   if (d->cb) {
@@ -209,8 +205,7 @@ uiContext d;
 }
 
 static int
-insertEmptySlots(d)
-uiContext d;
+insertEmptySlots(uiContext d)
 {
   extern KanjiModeRec	empty_mode;
   yomiContext		yc;
@@ -287,8 +282,7 @@ countContext()
 /* ハッシュキーを作る関数(いい加減) */
 
 static unsigned int
-makeKey(data1, data2)
-unsigned int data1, data2;
+makeKey(unsigned int data1, unsigned int data2)
 {
   unsigned int key;
 
@@ -310,8 +304,7 @@ unsigned int data1, data2;
   */
 
 uiContext
-keyToContext(data1, data2)
-unsigned int data1, data2;
+keyToContext(unsigned int data1, unsigned int data2)
 {
   unsigned int key;
   struct bukRec *p;
@@ -335,9 +328,7 @@ unsigned int data1, data2;
 */
 
 struct bukRec *
-internContext(data1, data2, context)
-unsigned int data1, data2;
-uiContext context;
+internContext(unsigned int data1, unsigned int data2, uiContext context)
 {
   unsigned int key;
   struct bukRec *p, **pp;
@@ -366,8 +357,7 @@ uiContext context;
 */
 
 void
-rmContext(data1, data2)
-unsigned int data1, data2;
+rmContext(unsigned int data1, unsigned int data2)
 {
   unsigned int key;
   struct bukRec *p, *q, **pp;
@@ -396,8 +386,7 @@ unsigned int data1, data2;
 */
 
 static void
-freeBukRecs(p)
-struct bukRec *p;
+freeBukRecs(struct bukRec *p)
 {
   struct bukRec *nextp;
 
@@ -449,8 +438,7 @@ initWarningMesg()
 }
 
 void
-addWarningMesg(s)
-char *s;
+addWarningMesg(char *s)
 {
   int n;
   char *work;
@@ -466,9 +454,7 @@ char *s;
 }
 
 static int
-KC_keyconvCallback(d, arg)
-uiContext d;
-char *arg;
+KC_keyconvCallback(uiContext d, char *arg)
 /* ARGSUSED */
 {
   extern void (*keyconvCallback)();
@@ -484,9 +470,7 @@ char *arg;
 
 
 static int
-KC_initialize(d, arg)
-     uiContext d;
-     char *arg;
+KC_initialize(uiContext d, char *arg)
      /* ARGSUSED */
 {
   extern int FirstTime;
@@ -677,9 +661,7 @@ freeExtra()
 }
 
 static int
-KC_finalize(d, arg)
-     uiContext d;
-     char *arg;
+KC_finalize(uiContext d, char *arg)
      /* ARGSUSED */
 {
   extern int FirstTime;
@@ -751,18 +733,14 @@ KC_finalize(d, arg)
 }
 
 static int
-KC_setWidth(d, arg)
-uiContext d;
-caddr_t arg;
+KC_setWidth(uiContext d, caddr_t arg)
 {
   d->ncolumns = (int)(POINTERINT)arg;
   return 0;
 }
 
 static int
-KC_setBunsetsuKugiri(d, arg)
-     uiContext d;
-     caddr_t arg;
+KC_setBunsetsuKugiri(uiContext d, caddr_t arg)
      /* ARGSUSED */
 {
   cannaconf.BunsetsuKugiri = (int)(POINTERINT)arg;
@@ -787,9 +765,7 @@ static long gflags[] = {
 };
 
 static int
-KC_changeMode(d, arg)
-uiContext d;
-wcKanjiStatusWithValue *arg;
+KC_changeMode(uiContext d, wcKanjiStatusWithValue *arg)
 {
   coreContext cc;
   yomiContext yc;
@@ -889,8 +865,7 @@ wcKanjiStatusWithValue *arg;
 }
 
 static int
-baseModeP(d)
-uiContext d;
+baseModeP(uiContext d)
 {
   extern KanjiModeRec alpha_mode, empty_mode;
 
@@ -912,9 +887,7 @@ uiContext d;
 */
 
 int
-escapeToBasicStat(d, how)
-uiContext d;
-int how;
+escapeToBasicStat(uiContext d, int how)
 {
   int len = 0, totallen = 0;
   wchar_t *p = d->buffer_return;
@@ -946,9 +919,7 @@ int how;
 }
 
 static int
-KC_setUFunc(d, arg)
-     uiContext d;
-     caddr_t arg;
+KC_setUFunc(uiContext d, caddr_t arg)
      /* ARGSUSED */
 {
   extern int howToBehaveInCaseOfUndefKey;
@@ -958,9 +929,7 @@ KC_setUFunc(d, arg)
 }
 
 static int
-KC_setModeInfoStyle(d, arg)
-     uiContext d;
-     caddr_t arg;
+KC_setModeInfoStyle(uiContext d, caddr_t arg)
      /* ARGSUSED */
 {
   int	tmpval;
@@ -973,9 +942,7 @@ KC_setModeInfoStyle(d, arg)
 }
 
 static int
-KC_setHexInputStyle(d, arg)
-     uiContext d;
-     caddr_t arg;
+KC_setHexInputStyle(uiContext d, caddr_t arg)
      /* ARGSUSED */
 {
   cannaconf.hexCharacterDefiningStyle = (int)(POINTERINT)arg;
@@ -983,9 +950,7 @@ KC_setHexInputStyle(d, arg)
 }
 
 static int
-KC_inhibitHankakuKana(d, arg)
-     uiContext d;
-     caddr_t arg;
+KC_inhibitHankakuKana(uiContext d, caddr_t arg)
      /* ARGSUSED */
 {
   cannaconf.InhibitHankakuKana = (int)(POINTERINT)arg;
@@ -996,10 +961,7 @@ KC_inhibitHankakuKana(d, arg)
 extern void popTourokuMode(uiContext);
 
 static int
-popTourokuWithGLineClear(d, retval, env)
-     uiContext d;
-     int retval;
-     mode_context env;
+popTourokuWithGLineClear(uiContext d, int retval, mode_context env)
      /* ARGSUSED */
 {
   tourokuContext tc;
@@ -1019,9 +981,7 @@ popTourokuWithGLineClear(d, retval, env)
 #endif
 
 static int
-KC_defineKanji(d, arg)
-uiContext d;
-wcKanjiStatusWithValue *arg;
+KC_defineKanji(uiContext d, wcKanjiStatusWithValue *arg)
 {
 #ifdef NO_EXTEND_MENU
   return 0;
@@ -1062,9 +1022,7 @@ wcKanjiStatusWithValue *arg;
  */
 
 static void
-closeRK(cxp, flag)
-int *cxp;
-int flag;
+closeRK(int *cxp, int flag)
 {
   if (flag && *cxp >= 0) {
     RkwCloseContext(*cxp);
@@ -1081,9 +1039,9 @@ int flag;
 static void closeRKContextInUIContext(uiContext /*d*/, int /*flag*/);
 
 static void
-closeRKContextInUIContext(d, flag)
-uiContext d;
-int flag; /* ０以外ならクローズもする。 */
+closeRKContextInUIContext(
+uiContext d,
+int flag) /* ０以外ならクローズもする。 */
 {
   coreContext cc;
 
@@ -1105,9 +1063,7 @@ int flag; /* ０以外ならクローズもする。 */
 */
 
 static void
-closeRKContextInMemory(p, flag)
-struct bukRec *p;
-int flag;
+closeRKContextInMemory(struct bukRec *p, int flag)
 {
 
   while (p) { /* reconfirm that p points some structure */
@@ -1123,8 +1079,7 @@ int flag;
 */
 
 void
-makeAllContextToBeClosed(flag)
-int flag;
+makeAllContextToBeClosed(int flag)
 {
   int i;
   struct bukRec *p;
@@ -1138,9 +1093,7 @@ int flag;
 }
 
 static int
-KC_kakutei(d, arg)
-uiContext d;
-wcKanjiStatusWithValue *arg;
+KC_kakutei(uiContext d, wcKanjiStatusWithValue *arg)
 {
   d->buffer_return = arg->buffer;
   d->n_buffer = arg->n_buffer;
@@ -1158,9 +1111,7 @@ wcKanjiStatusWithValue *arg;
 }
 
 static int
-KC_kill(d, arg)
-uiContext d;
-wcKanjiStatusWithValue *arg;
+KC_kill(uiContext d, wcKanjiStatusWithValue *arg)
 {
   d->buffer_return = arg->buffer;
   d->n_buffer = arg->n_buffer;
@@ -1175,9 +1126,7 @@ wcKanjiStatusWithValue *arg;
 }
 
 static int
-KC_modekeys(d, arg)
-uiContext d;
-unsigned char *arg;
+KC_modekeys(uiContext d, unsigned char *arg)
 {
   int n = 0;
   int i;
@@ -1199,17 +1148,13 @@ unsigned char *arg;
 }
 
 static int
-KC_queryMode(d, arg)
-uiContext d;
-wchar_t *arg;
+KC_queryMode(uiContext d, wchar_t *arg)
 {
   return queryMode(d, arg);
 }
 
 static int
-KC_queryConnection(d, arg)
-     uiContext d;
-     unsigned char *arg;
+KC_queryConnection(uiContext d, unsigned char *arg)
      /* ARGSUSED */
 {
   extern int defaultContext;
@@ -1223,9 +1168,7 @@ KC_queryConnection(d, arg)
 }
 
 static int
-KC_parse(d, arg)
-     uiContext d;
-     char **arg;
+KC_parse(uiContext d, char **arg)
      /* ARGSUSED */
 {
   initWarningMesg();
@@ -1240,9 +1183,7 @@ KC_parse(d, arg)
 int yomiInfoLevel = 0;
 
 static int
-KC_yomiInfo(d, arg)
-     uiContext d;
-     int arg;
+KC_yomiInfo(uiContext d, int arg)
      /* ARGSUSED */
 {
   yomiInfoLevel = arg;
@@ -1250,9 +1191,7 @@ KC_yomiInfo(d, arg)
 }
 
 static int
-KC_storeYomi(d, arg)
-uiContext d;
-wcKanjiStatusWithValue *arg;
+KC_storeYomi(uiContext d, wcKanjiStatusWithValue *arg)
 {
   extern KanjiModeRec yomi_mode, cy_mode;
   coreContext cc;
@@ -1306,9 +1245,7 @@ wcKanjiStatusWithValue *arg;
 char *initFileSpecified = NULL;
 
 static int
-KC_setInitFileName(d, arg)
-     uiContext d;
-     char *arg;
+KC_setInitFileName(uiContext d, char *arg)
      /* ARGSUSED */
 {
   int len;
@@ -1334,9 +1271,7 @@ KC_setInitFileName(d, arg)
 }
 
 static int
-KC_do(d, arg)
-uiContext d;
-wcKanjiStatusWithValue *arg;
+KC_do(uiContext d, wcKanjiStatusWithValue *arg)
 {
   d->buffer_return = arg->buffer;
   d->n_buffer = arg->n_buffer;
@@ -1366,11 +1301,7 @@ wcKanjiStatusWithValue *arg;
  */
 
 int
-_do_func_slightly(d, fnum, mode_c, c_mode)
-uiContext d;
-int fnum;
-mode_context mode_c;
-KanjiMode c_mode;
+_do_func_slightly(uiContext d, int fnum, mode_context mode_c, KanjiMode c_mode)
 {
   wcKanjiStatus ks;
   long gfback = 0;
@@ -1422,10 +1353,9 @@ KanjiMode c_mode;
 
 #endif
 
+/* コールバックを呼ぶ */
 static int
-callCallback(d, res)  /* コールバックを呼ぶ */
-uiContext d;
-int res;
+callCallback(uiContext d, int res)
 {
   struct callback *cbp;
 
@@ -1455,9 +1385,7 @@ int res;
 }
 
 int
-_doFunc(d, fnum)
-uiContext d;
-int fnum;
+_doFunc(uiContext d, int fnum)
 {
   int res = 0, tmpres, ginfo = 0;
   int reallyThrough = 1;
@@ -1553,9 +1481,7 @@ int fnum;
 }
 
 int
-_afterDoFunc(d, retval)
-uiContext d;
-int retval;
+_afterDoFunc(uiContext d, int retval)
 {
   int res = retval;
   wcKanjiStatus   *kanji_status_return = d->kanji_status_return;
@@ -1586,17 +1512,13 @@ int retval;
  */
 
 int
-doFunc(d, fnum)
-uiContext d;
-int fnum;
+doFunc(uiContext d, int fnum)
 {
   return _afterDoFunc(d, _doFunc(d, fnum));
 }
 
 static int
-KC_getContext(d, arg)
-     uiContext d;
-     int arg;
+KC_getContext(uiContext d, int arg)
      /* ARGSUSED */
 {
   extern int defaultContext, defaultBushuContext;
@@ -1640,8 +1562,7 @@ KC_closeUIContext(uiContext d, wcKanjiStatusWithValue *arg)
 }
 
 static yomiContext
-getYomiContext(d)
-uiContext d;
+getYomiContext(uiContext d)
 {
   coreContext cc = (coreContext)d->modec;
   yomiContext yc;
@@ -1663,9 +1584,7 @@ uiContext d;
 }
 
 static int
-KC_inhibitChangeMode(d, arg)
-uiContext d;
-int arg;
+KC_inhibitChangeMode(uiContext d, int arg)
 {
   yomiContext yc;
 
@@ -1685,9 +1604,7 @@ int arg;
 }
 
 static int
-KC_letterRestriction(d, arg)
-uiContext d;
-int arg;
+KC_letterRestriction(uiContext d, int arg)
 {
   yomiContext yc;
 
@@ -1702,8 +1619,7 @@ int arg;
 }
 
 static int
-countColumns(str)
-wchar_t *str;
+countColumns(wchar_t *str)
 {
   int len = 0;
   wchar_t *p;
@@ -1726,9 +1642,7 @@ wchar_t *str;
 }
 
 static int
-KC_queryMaxModeStr(d, arg)
-     uiContext d;
-     int arg;
+KC_queryMaxModeStr(uiContext d, int arg)
      /* ARGSUSED */
 {
   int i, maxcolumns = 0, ncols;
@@ -1752,9 +1666,7 @@ KC_queryMaxModeStr(d, arg)
 }
 
 static int
-KC_setListCallback(d, arg)
-uiContext d;
-jrListCallbackStruct *arg;
+KC_setListCallback(uiContext d, jrListCallbackStruct *arg)
 {
   if (cannaconf.iListCB) {
     d->client_data = NULL;
@@ -1783,9 +1695,7 @@ jrListCallbackStruct *arg;
 }
 
 static int
-KC_setVerbose(d, arg)
-     uiContext d;
-     int arg;
+KC_setVerbose(uiContext d, int arg)
      /* ARGSUSED */
 {
   extern int ckverbose;
@@ -1847,9 +1757,7 @@ jrCloseKanjiContext(const int context, jrKanjiStatusWithValue *ksva)
 }
 
 int
-ToggleChikuji(d, flg)
-     uiContext d;
-     int flg;
+ToggleChikuji(uiContext d, int flg)
 {
   yomiContext	yc = (yomiContext)d->modec;
   extern KanjiModeRec empty_mode;
@@ -1882,9 +1790,7 @@ ToggleChikuji(d, flg)
 }
 
 static int
-KC_lispInteraction(d, arg)
-uiContext d;
-int arg;
+KC_lispInteraction(uiContext d, int arg)
 /* ARGSUSED */
 {
   clisp_main();
@@ -1895,9 +1801,7 @@ int arg;
  * サーバとの接続を切る
  */
 static int
-KC_disconnectServer(d, arg)
-uiContext d;
-int arg;
+KC_disconnectServer(uiContext d, int arg)
 /* ARGSUSED */
 {
 
@@ -1909,9 +1813,7 @@ int arg;
 }
 
 static int
-KC_setAppName(d, arg)
-uiContext d;
-unsigned char *arg;
+KC_setAppName(uiContext d, unsigned char *arg)
 /* ARGSUSED */
 {
   extern int defaultContext;
@@ -1929,9 +1831,7 @@ unsigned char *arg;
 }
 
 static int
-KC_debugmode(d, arg)
-uiContext d;
-int arg;
+KC_debugmode(uiContext d, int arg)
 /* ARGSUSED */
 {
   extern int iroha_debug;
@@ -1941,8 +1841,7 @@ int arg;
 }
 
 static void
-debug_yomibuf(yc)
-yomiContext yc;
+debug_yomibuf(yomiContext yc)
 /* ARGSUSED */
 {
 #if defined(DEBUG)
@@ -2049,9 +1948,7 @@ yomiContext yc;
 }
 
 static int
-KC_debugyomi(d, arg)
-uiContext d;
-int arg;
+KC_debugyomi(uiContext d, int arg)
 /* ARGSUSED */
 {
   if (((coreContext)(d)->modec)->id == YOMI_CONTEXT) {
@@ -2061,9 +1958,7 @@ int arg;
 }
 
 static int
-KC_queryPhono(d, arg)
-uiContext d;
-char *arg;
+KC_queryPhono(uiContext d, char *arg)
 /* ARGSUSED */
 {
   extern struct RkRxDic *romajidic;
@@ -2074,9 +1969,7 @@ char *arg;
 }
 
 static int
-KC_setUserInfo(d, arg)
-uiContext d;
-jrUserInfoStruct *arg;
+KC_setUserInfo(uiContext d, jrUserInfoStruct *arg)
 /* ARGSUSED */
 {
   extern jrUserInfoStruct *uinfo;
@@ -2166,9 +2059,7 @@ jrUserInfoStruct *arg;
 }
 
 static int
-KC_queryCustom(d, arg)
-uiContext d;
-jrCInfoStruct *arg;
+KC_queryCustom(uiContext d, jrCInfoStruct *arg)
 /* ARGSUSED */
 {
   extern struct CannaConfig cannaconf;
@@ -2189,9 +2080,7 @@ jrCInfoStruct *arg;
 }
 
 static int
-KC_closeAllContext(d, arg)
-uiContext d;
-char *arg;
+KC_closeAllContext(uiContext d, char *arg)
 /* ARGSUSED */
 {
   makeAllContextToBeClosed(1);
@@ -2199,9 +2088,7 @@ char *arg;
 }
 
 static int
-KC_attributeInfo(d, arg)
-uiContext d;
-char *arg;
+KC_attributeInfo(uiContext d, char *arg)
 {
   wcKanjiAttributeInternal **p = (wcKanjiAttributeInternal **)arg;
 
@@ -2287,10 +2174,7 @@ static int (*kctlfunc[MAX_KC_REQUEST])() = {
 };
 
 int
-kanjiControl(request, d, arg)
-int request;
-uiContext d;
-caddr_t arg;
+kanjiControl(int request, uiContext d, caddr_t arg)
 {
   return kctlfunc[request](d, arg);
 }

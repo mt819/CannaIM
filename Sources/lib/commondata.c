@@ -12,12 +12,12 @@
  * is" without express or implied warranty.
  *
  * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN 
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
  * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
- * PERFORMANCE OF THIS SOFTWARE. 
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
  */
 
 #include "canna.h"
@@ -25,7 +25,7 @@
 #include <canna/mfdef.h>
 
 struct CannaConfig cannaconf;
-     
+
 /* デフォルトのローマ字かな変換用のバッファ */
 
 int defaultContext = -1;
@@ -37,7 +37,7 @@ int defaultBushuContext = -1;
  * あれば RomeStruct のメンバとして入れておく必要もありましょうが...そ
  * の時はその時で考えましょう。
  */
-     
+
 struct RkRxDic *romajidic, *englishdic;
 
 /* 未定義キー打鍵時の処理のしかた */
@@ -146,8 +146,7 @@ jrUserInfoStruct *uinfo = NULL;
 int mountnottry = 1;
 
 void
-InitCannaConfig(cf)
-struct CannaConfig *cf;
+InitCannaConfig(struct CannaConfig *cf)
 {
   bzero(cf, sizeof(struct CannaConfig));
   cf->CannaVersion = CANNA_MAJOR_MINOR;
@@ -205,10 +204,10 @@ restoreBindings()
 //
   free(RomkanaTable);
   RomkanaTable = NULL;
-  
+
   free(EnglishTable);
   EnglishTable = NULL;
-  
+
   romajidic = NULL;
   englishdic = NULL;
   RengoGakushu = NULL;
