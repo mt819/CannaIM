@@ -28,10 +28,9 @@
  *                      wchar_t replace begin                        *
  *********************************************************************/
 #ifdef wchar_t
-# error "wchar_t is already defined"
+#error "wchar_t is already defined"
 #endif
 #define wchar_t cannawc
-
 
 /*
 
@@ -52,29 +51,34 @@
 
 extern int FirstTime;
 
-
 int
-wcKanjiString(const int context_id, const int ch, wchar_t *buffer_return,
-	const int nbuffer, wcKanjiStatus *kanji_status_return)
+wcKanjiString(const int context_id,
+              const int ch,
+              wchar_t* buffer_return,
+              const int nbuffer,
+              wcKanjiStatus* kanji_status_return)
 {
   int res;
 
   *buffer_return = (wchar_t)ch;
 
-  res = XwcLookupKanji2((unsigned int)0, (unsigned int)context_id,
-			buffer_return, nbuffer,
-			1/* byte */, 1/* functional char*/,
-			kanji_status_return);
+  res = XwcLookupKanji2((unsigned int)0,
+                        (unsigned int)context_id,
+                        buffer_return,
+                        nbuffer,
+                        1 /* byte */,
+                        1 /* functional char*/,
+                        kanji_status_return);
   return res;
 }
 
 /* jrKanjiControl -- カナ漢字変換の制御を行う */
 
 int
-wcKanjiControl(const int context, const int request, char *arg)
+wcKanjiControl(const int context, const int request, char* arg)
 {
-  return XwcKanjiControl2((unsigned int)0, (unsigned int)context,
-			  (unsigned int)request, (BYTE *)arg);
+  return XwcKanjiControl2(
+    (unsigned int)0, (unsigned int)context, (unsigned int)request, (BYTE*)arg);
 }
 
 static uiContext
@@ -86,7 +90,7 @@ newUiContext(unsigned int dpy, unsigned int win)
   if ((d = (uiContext)malloc(sizeof(uiContextRec))) != (uiContext)0) {
     if (initRomeStruct(d, cannaconf.chikuji) == 0) {
       if (internContext(dpy, win, d)) {
-	return d;
+        return d;
       }
       freeRomeStruct(d);
     }
@@ -95,12 +99,17 @@ newUiContext(unsigned int dpy, unsigned int win)
   return (uiContext)0;
 }
 
-extern int kanjiControl(int, uiContext, caddr_t);
+extern int
+kanjiControl(int, uiContext, caddr_t);
 
 int
-XwcLookupKanji2(unsigned int dpy, unsigned int win, wchar_t *buffer_return,
-	int nbuffer, int nbytes, int functionalChar,
-	wcKanjiStatus *kanji_status_return)
+XwcLookupKanji2(unsigned int dpy,
+                unsigned int win,
+                wchar_t* buffer_return,
+                int nbuffer,
+                int nbytes,
+                int functionalChar,
+                wcKanjiStatus* kanji_status_return)
 {
   uiContext d;
   int retval;
@@ -125,7 +134,6 @@ XwcLookupKanji2(unsigned int dpy, unsigned int win, wchar_t *buffer_return,
     }
   }
 
-
   bzero(kanji_status_return, sizeof(wcKanjiStatus));
 
   d->ch = (unsigned)*buffer_return;
@@ -133,9 +141,9 @@ XwcLookupKanji2(unsigned int dpy, unsigned int win, wchar_t *buffer_return,
   d->n_buffer = nbuffer;
   d->kanji_status_return = kanji_status_return;
 
-  debug_message("current_mode(0x%x)\n", d->current_mode,0,0);
+  debug_message("current_mode(0x%x)\n", d->current_mode, 0, 0);
 
-  if ( nbytes || functionalChar ) { /* キャラクタコードがとれた場合 */
+  if (nbytes || functionalChar) { /* キャラクタコードがとれた場合 */
     int check;
 
     *buffer_return = key2wchar(d->ch, &check);
@@ -149,27 +157,26 @@ XwcLookupKanji2(unsigned int dpy, unsigned int win, wchar_t *buffer_return,
 #ifdef DEBUG
     checkModec(d);
 #endif /* DEBUG */
-    return(retval);
-  }
-  else { /* キャラクタコードがとれなかった場合（シフトキーなど）... */
+    return (retval);
+  } else { /* キャラクタコードがとれなかった場合（シフトキーなど）... */
     d->kanji_status_return->length = -1;
     return 0;
   }
 }
 
-
 int
-XwcKanjiControl2(unsigned int display, unsigned int window, unsigned int request,
-	BYTE *arg)
+XwcKanjiControl2(unsigned int display,
+                 unsigned int window,
+                 unsigned int request,
+                 BYTE* arg)
 {
   if (request == KC_INITIALIZE || request == KC_FINALIZE ||
-      request == KC_SETINITFILENAME ||
-      request == KC_SETVERBOSE || request == KC_KEYCONVCALLBACK ||
-      request == KC_QUERYCONNECTION || request == KC_SETUSERINFO ||
-      request == KC_QUERYCUSTOM || request == KC_SYNCDICTIONARY) {
-    return kanjiControl(request, NULL, (char *)arg);
-  }
-  else if (/* 0 <= request && (必ず真) */ request < MAX_KC_REQUEST) {
+      request == KC_SETINITFILENAME || request == KC_SETVERBOSE ||
+      request == KC_KEYCONVCALLBACK || request == KC_QUERYCONNECTION ||
+      request == KC_SETUSERINFO || request == KC_QUERYCUSTOM ||
+      request == KC_SYNCDICTIONARY) {
+    return kanjiControl(request, NULL, (char*)arg);
+  } else if (/* 0 <= request && (必ず真) */ request < MAX_KC_REQUEST) {
     uiContext d;
 
     /* 初めて wcKanjiString が呼ばれた時は辞書の初期化などの処理が
@@ -177,7 +184,7 @@ XwcKanjiControl2(unsigned int display, unsigned int window, unsigned int request
 
     if (FirstTime) {
       if (kanjiControl(KC_INITIALIZE, NULL, NULL) == -1) {
-	return -1;
+        return -1;
       }
       FirstTime = 0;
     }
@@ -187,20 +194,18 @@ XwcKanjiControl2(unsigned int display, unsigned int window, unsigned int request
     if (d == NULL) {
       d = newUiContext(display, window);
       if (d == NULL) {
-	return NoMoreMemory();
+        return NoMoreMemory();
       }
     }
 
     if (request == KC_CLOSEUICONTEXT) {
       rmContext(display, window);
     }
-    return kanjiControl(request, d, (char *)arg);
-  }
-  else {
+    return kanjiControl(request, d, (char*)arg);
+  } else {
     return -1;
   }
 }
-
 
 /* cfuncdef
 
@@ -213,13 +218,17 @@ XwcKanjiControl2(unsigned int display, unsigned int window, unsigned int request
 
  */
 
-struct callback *
-pushCallback(uiContext d, mode_context env, canna_callback_t ev, canna_callback_t ex,
-	canna_callback_t qu, canna_callback_t au)
+struct callback*
+pushCallback(uiContext d,
+             mode_context env,
+             canna_callback_t ev,
+             canna_callback_t ex,
+             canna_callback_t qu,
+             canna_callback_t au)
 {
-  struct callback *newCB;
+  struct callback* newCB;
 
-  newCB = (struct callback *)malloc(sizeof(struct callback));
+  newCB = (struct callback*)malloc(sizeof(struct callback));
   if (newCB) {
     newCB->func[0] = ev;
     newCB->func[1] = ex;
@@ -235,7 +244,7 @@ pushCallback(uiContext d, mode_context env, canna_callback_t ev, canna_callback_
 void
 popCallback(uiContext d)
 {
-  struct callback *oldCB;
+  struct callback* oldCB;
 
   oldCB = d->cb;
   d->cb = oldCB->next;
@@ -243,7 +252,7 @@ popCallback(uiContext d)
 }
 
 #ifndef wchar_t
-# error "wchar_t is already undefined"
+#error "wchar_t is already undefined"
 #endif
 #undef wchar_t
 /*********************************************************************

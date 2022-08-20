@@ -20,32 +20,33 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include	"canna.h"
+#include "canna.h"
 
 #ifdef MEASURE_TIME
-#include	<sys/types.h>
 #include <sys/times.h>
+#include <sys/types.h>
 #endif /* MEASURE_TIME */
 
 /*********************************************************************
  *                      wchar_t replace begin                        *
  *********************************************************************/
 #ifdef wchar_t
-# error "wchar_t is already defined"
+#error "wchar_t is already defined"
 #endif
 #define wchar_t cannawc
 
 extern int yomiInfoLevel, nKouhoBunsetsu, KeepCursorPosition;
 extern int defaultContext;
 extern KanjiModeRec tankouho_mode, cy_mode, cb_mode;
-extern void makeYomiReturnStruct (uiContext);
-extern int RkwGetServerVersion (int *, int *);
-extern int RkwGetProtocolVersion (int *, int *);
+extern void makeYomiReturnStruct(uiContext);
+extern int
+RkwGetServerVersion(int*, int*);
+extern int
+RkwGetProtocolVersion(int*, int*);
 
-int forceRomajiFlushYomi (uiContext);
-void moveToChikujiTanMode (uiContext /*d*/);
-void moveToChikujiYomiMode (uiContext /*d*/);
-
+int forceRomajiFlushYomi(uiContext);
+void moveToChikujiTanMode(uiContext /*d*/);
+void moveToChikujiYomiMode(uiContext /*d*/);
 
 static void
 clearHenkanContent(yomiContext yc)
@@ -65,7 +66,7 @@ clearHenkanContext(yomiContext yc)
   clearHenkanContent(yc);
 }
 
-extern int NothingChanged (uiContext);
+extern int NothingChanged(uiContext);
 
 /*
   restoreChikujiYomi
@@ -98,52 +99,52 @@ restoreChikujiYomi(uiContext d, int old)
     if (nKouhoBunsetsu) {
       cutOffLeftSide(d, yc, nKouhoBunsetsu - yc->nbunsetsu);
       if (nKouhoBunsetsu < yc->nbunsetsu) {
-	n = yc->nbunsetsu - nKouhoBunsetsu;
-	if (n > old) {
-	  n = old; /* 前にまだ漢字になっていなかった分までは確定させない */
-	}
+        n = yc->nbunsetsu - nKouhoBunsetsu;
+        if (n > old) {
+          n = old; /* 前にまだ漢字になっていなかった分までは確定させない */
+        }
       }
     }
     if (n > 0) { /* 確定させる文節数 */
 
       recalc = 1;
-      for (i = 0 ; i < n ; i++) {
-	if (RkwGoTo(yc->context, i) < 0 ||
-	    (len = RkwGetKanji(yc->context, s, (int)(e - s))) < 0 ||
-	    RkwGetStat(yc->context, &stat) == -1) {
-	  return -1;
-	}
-	s += len;
+      for (i = 0; i < n; i++) {
+        if (RkwGoTo(yc->context, i) < 0 ||
+            (len = RkwGetKanji(yc->context, s, (int)(e - s))) < 0 ||
+            RkwGetStat(yc->context, &stat) == -1) {
+          return -1;
+        }
+        s += len;
 
-	ll += stat.ylen;
-	m += stat.klen;
+        ll += stat.ylen;
+        m += stat.klen;
       }
       d->nbytes = s - d->buffer_return;
       if (s < e) {
-	*s++ = (wchar_t)'\0';
+        *s++ = (wchar_t)'\0';
       }
 
       if (RkwRemoveBun(yc->context, cannaconf.Gakushu ? 1 : 0) == -1) {
-	return -1;
+        return -1;
       }
 
       /* かなバッファとかも削る */
       kPos2rPos(yc, 0, ll, NULL, &j);
 
       if (yomiInfoLevel > 0) {
-	d->kanji_status_return->info |= KanjiYomiInfo;
-	len = xString(yc->kana_buffer, ll, s, e);
-	s += len;
-	if (s < e) {
-	  *s++ = (wchar_t)'\0';
-	}
-	if (yomiInfoLevel > 1) {
-	  len = xString(yc->romaji_buffer, j, s, e);
-	  s += len;
-	}
-	if (s < e) {
-	  *s++ = (wchar_t)'\0';
-	}
+        d->kanji_status_return->info |= KanjiYomiInfo;
+        len = xString(yc->kana_buffer, ll, s, e);
+        s += len;
+        if (s < e) {
+          *s++ = (wchar_t)'\0';
+        }
+        if (yomiInfoLevel > 1) {
+          len = xString(yc->romaji_buffer, j, s, e);
+          s += len;
+        }
+        if (s < e) {
+          *s++ = (wchar_t)'\0';
+        }
       }
 
       removeKana(d, yc, ll, j);
@@ -151,7 +152,7 @@ restoreChikujiYomi(uiContext d, int old)
       yc->nbunsetsu -= n;
     }
     if (RkwGoTo(yc->context, yc->nbunsetsu - 1) == -1)
-      return(-1);
+      return (-1);
     yc->curbun = yc->nbunsetsu - 1;
     if (old < yc->curbun) { /* せめて前のやつの右に行く */
       yc->curbun = old;
@@ -174,7 +175,7 @@ restoreChikujiYomi(uiContext d, int old)
   if (yc->nbunsetsu) {
     moveToChikujiTanMode(d);
   }
-  return(0);
+  return (0);
 }
 
 static int
@@ -185,11 +186,11 @@ doesSupportChikuji()
   if (defaultContext == -1) {
     if (KanjiInit() < 0 || defaultContext == -1) {
       jrKanjiError = KanjiInitError();
-      return(-1);
+      return (-1);
     }
   }
   RkwGetProtocolVersion(&a, &b);
-  return(a > 1);
+  return (a > 1);
 }
 
 #ifndef NO_EXTEND_MENU
@@ -209,30 +210,35 @@ chikujiInit(uiContext d)
   chikuji_f = doesSupportChikuji();
 
   if (ToggleChikuji(d, 1) == -1) {
-    if(!chikuji_f)
-      jrKanjiError = "\245\265\241\274\245\320\244\254\303\340\274\241\274\253"
-	"\306\260\312\321\264\271\244\362\245\265\245\335\241\274\245\310"
-	"\244\267\244\306\244\244\244\336\244\273\244\363";
-                     /* サーバが逐次自動変換をサポートしていません */
+    if (!chikuji_f)
+      jrKanjiError =
+        "\245\265\241\274\245\320\244\254\303\340\274\241\274\253"
+        "\306\260\312\321\264\271\244\362\245\265\245\335\241\274\245\310"
+        "\244\267\244\306\244\244\244\336\244\273\244\363";
+    /* サーバが逐次自動変換をサポートしていません */
     else
-      jrKanjiError = "\303\340\274\241\274\253\306\260\312\321\264\271\244\313"
-	"\300\332\302\330\244\250\244\353\244\263\244\310\244\254\244\307"
-	"\244\255\244\336\244\273\244\363";
-                     /* 逐次自動変換に切替えることができません */
+      jrKanjiError =
+        "\303\340\274\241\274\253\306\260\312\321\264\271\244\313"
+        "\300\332\302\330\244\250\244\353\244\263\244\310\244\254\244\307"
+        "\244\255\244\336\244\273\244\363";
+    /* 逐次自動変換に切替えることができません */
     makeGLineMessageFromString(d, jrKanjiError);
     currentModeInfo(d);
-    return(-1);
-  }
-  else {
-    if(!chikuji_f)
-      makeGLineMessageFromString(d, "\245\265\241\274\245\320\244\254\303\340"
-	"\274\241\274\253\306\260\312\321\264\271\244\362\245\265\245\335"
-	"\241\274\245\310\244\267\244\306\244\244\244\336\244\273\244\363");
-                /* サーバが逐次自動変換をサポートしていません */
+    return (-1);
+  } else {
+    if (!chikuji_f)
+      makeGLineMessageFromString(
+        d,
+        "\245\265\241\274\245\320\244\254\303\340"
+        "\274\241\274\253\306\260\312\321\264\271\244\362\245\265\245\335"
+        "\241\274\245\310\244\267\244\306\244\244\244\336\244\273\244\363");
+    /* サーバが逐次自動変換をサポートしていません */
     else
-      makeGLineMessageFromString(d, "\303\340\274\241\274\253\306\260\312\321"
-	"\264\271\244\313\300\332\302\330\244\250\244\336\244\267\244\277");
-                /* 逐次自動変換に切替えました */
+      makeGLineMessageFromString(
+        d,
+        "\303\340\274\241\274\253\306\260\312\321"
+        "\264\271\244\313\300\332\302\330\244\250\244\336\244\267\244\277");
+    /* 逐次自動変換に切替えました */
     currentModeInfo(d);
     return 0;
   }
@@ -250,34 +256,37 @@ chikujiSubstYomi(uiContext d)
       return -1;
     }
     if (!doesSupportChikuji()) {
-      jrKanjiError = "\245\265\241\274\245\320\244\254\303\340\274\241\274\253"
-	"\306\260\312\321\264\271\244\362\245\265\245\335\241\274\245\310"
-	"\244\267\244\306\244\244\244\336\244\273\244\363";
-                     /* サーバが逐次自動変換をサポートしていません */
+      jrKanjiError =
+        "\245\265\241\274\245\320\244\254\303\340\274\241\274\253"
+        "\306\260\312\321\264\271\244\362\245\265\245\335\241\274\245\310"
+        "\244\267\244\306\244\244\244\336\244\273\244\363";
+      /* サーバが逐次自動変換をサポートしていません */
       abandonContext(d, yc);
-      return(-1);
+      return (-1);
     }
-    if (RkwBgnBun(yc->context, NULL, 1,
-                    RK_XFER << RK_XFERBITS | RK_KFER) == NG) {
+    if (RkwBgnBun(yc->context, NULL, 1, RK_XFER << RK_XFERBITS | RK_KFER) ==
+        NG) {
     substError:
       jrKanjiError = "\303\340\274\241\274\253\306\260\312\321\264\271\244\313"
-	"\274\272\307\324\244\267\244\336\244\267\244\277";
-                     /* 逐次自動変換に失敗しました */
+                     "\274\272\307\324\244\267\244\336\244\267\244\277";
+      /* 逐次自動変換に失敗しました */
       /* 以下は何をやっているのかしら？ */
       if (TanMuhenkan(d) == -1) {
-	return -2;
+        return -2;
       }
-      return(-1);
+      return (-1);
     }
   }
   yc->nbunsetsu = RkwSubstYomi(yc->context,
-			       yc->ys - yc->cStartp, yc->ye - yc->cStartp,
-			       yc->kana_buffer + yc->ys, yc->kEndp - yc->ys);
+                               yc->ys - yc->cStartp,
+                               yc->ye - yc->cStartp,
+                               yc->kana_buffer + yc->ys,
+                               yc->kEndp - yc->ys);
   yc->ys = yc->ye = yc->kEndp;
   if (yc->nbunsetsu < 0 || (ret = restoreChikujiYomi(d, n)) < 0) {
     goto substError;
   }
-  return(ret);
+  return (ret);
 }
 
 int
@@ -285,9 +294,8 @@ ChikujiSubstYomi(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  if ((yc->ys == yc->ye && yc->kEndp == yc->ye)
-      || yc->kEndp != yc->kCurs
-      || !(yc->kAttr[yc->kEndp - 1] & HENKANSUMI)) {
+  if ((yc->ys == yc->ye && yc->kEndp == yc->ye) || yc->kEndp != yc->kCurs ||
+      !(yc->kAttr[yc->kEndp - 1] & HENKANSUMI)) {
     /* 新しい入力がなかったり、
        最後への入力じゃなかったり、
        最後の字がローマ字かな変換されつくしていなかったりしたら */
@@ -312,24 +320,24 @@ ChikujiTanDeletePrevious(uiContext d)
   if (forceRomajiFlushYomi(d)) {
     return d->nbytes;
   }
-  if (RkwSubstYomi(yc->context, 0, yc->ye - yc->cStartp,
-                                    NULL, 0) == NG) {
+  if (RkwSubstYomi(yc->context, 0, yc->ye - yc->cStartp, NULL, 0) == NG) {
     /* 読みで残っている分を逐次のデータから消す */
-    makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
-	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
-                         /* 読みに戻すことができません */
+    makeRkError(d,
+                "\306\311\244\337\244\313\314\341\244\271\244\263"
+                "\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
+    /* 読みに戻すことができません */
     TanMuhenkan(d); /* これ要るの？ */
     return 0;
   }
   yc->ys = yc->ye = yc->cStartp;
-  for (i = yc->nbunsetsu - 1 ; i >= yc->curbun ; i--) {
+  for (i = yc->nbunsetsu - 1; i >= yc->curbun; i--) {
     /* カレント文節から後ろを読みに戻すための準備 */
-    if (RkwGoTo(yc->context, i) == NG
-	|| RkwGetStat(yc->context, &stat) == NG
-	|| RkwStoreYomi(yc->context, NULL, 0) == NG) {
-      makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
-	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
-                           /* 読みに戻すことができません */
+    if (RkwGoTo(yc->context, i) == NG || RkwGetStat(yc->context, &stat) == NG ||
+        RkwStoreYomi(yc->context, NULL, 0) == NG) {
+      makeRkError(d,
+                  "\306\311\244\337\244\313\314\341\244\271\244\263"
+                  "\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
+      /* 読みに戻すことができません */
       TanMuhenkan(d); /* これ、要るの？ */
       return 0;
     }
@@ -341,10 +349,10 @@ ChikujiTanDeletePrevious(uiContext d)
     do {
       ++i;
       if (yc->kAttr[yc->cStartp - i] & SENTOU) {
-	for (j++ ;
-	     j < yc->cRStartp && !(yc->rAttr[yc->cRStartp - j] & SENTOU) ;) {
-	  j++;
-	}
+        for (j++;
+             j < yc->cRStartp && !(yc->rAttr[yc->cRStartp - j] & SENTOU);) {
+          j++;
+        }
       }
     } while (i < l);
     yc->cStartp = (i < yc->cStartp) ? yc->cStartp - i : 0;
@@ -353,8 +361,7 @@ ChikujiTanDeletePrevious(uiContext d)
   if (KeepCursorPosition && yc->kCurs != yc->kEndp) {
     yc->kRStartp = yc->kCurs = yc->cStartp;
     yc->rStartp = yc->rCurs = yc->cRStartp;
-  }
-  else {
+  } else {
     yc->kRStartp = yc->kCurs = yc->kEndp;
     yc->rStartp = yc->rCurs = yc->rEndp;
   }
@@ -388,10 +395,12 @@ chikuji_restore_yomi(uiContext d)
   int l, j;
 
   if ((l = RkwGetLastYomi(yc->context, d->genbuf, ROMEBUFSIZE)) == -1) {
-    return makeRkError(d, "\314\244\267\350\312\270\300\341\244\362\274\350"
-	"\244\352\275\320\244\273\244\336\244\273\244\363\244\307\244\267"
-	"\244\277");
-                          /* 未決文節を取り出せませんでした */
+    return makeRkError(
+      d,
+      "\314\244\267\350\312\270\300\341\244\362\274\350"
+      "\244\352\275\320\244\273\244\336\244\273\244\363\244\307\244\267"
+      "\244\277");
+    /* 未決文節を取り出せませんでした */
   }
   if (l != yc->kEndp - yc->cStartp) { /* 変わったら */
     kPos2rPos(yc, 0, yc->kEndp - l, NULL, &j);
@@ -410,13 +419,16 @@ chikuji_subst_yomi(uiContext d)
   int l, n = yc->nbunsetsu;
 
   /* 読みを全部食わせる */
-  l = RkwSubstYomi(yc->context, yc->ys - yc->cStartp, yc->ye - yc->cStartp,
-		   yc->kana_buffer + yc->ys, yc->kEndp - yc->ys);
+  l = RkwSubstYomi(yc->context,
+                   yc->ys - yc->cStartp,
+                   yc->ye - yc->cStartp,
+                   yc->kana_buffer + yc->ys,
+                   yc->kEndp - yc->ys);
   yc->ys = yc->ye = yc->kEndp;
   if (l == -1) {
     jrKanjiError = "\312\321\264\271\244\313\274\272\307\324\244\267\244\336"
-	"\244\267\244\277";
-                   /* 変換に失敗しました */
+                   "\244\267\244\277";
+    /* 変換に失敗しました */
     TanMuhenkan(d);
     return -1;
   }
@@ -443,17 +455,19 @@ ChikujiTanExtend(uiContext d)
       return TanMuhenkan(d);
     }
     if (RkwGoTo(yc->context, i) == -1) {
-      makeRkError(d, "\312\270\300\341\244\316\260\334\306\260\244\313"
-	"\274\272\307\324\244\267\244\336\244\267\244\277");
-                           /* 文節の移動に失敗しました */
+      makeRkError(d,
+                  "\312\270\300\341\244\316\260\334\306\260\244\313"
+                  "\274\272\307\324\244\267\244\336\244\267\244\277");
+      /* 文節の移動に失敗しました */
       return TanMuhenkan(d);
     }
     yc->curbun = i;
   }
   if ((yc->nbunsetsu = RkwEnlarge(yc->context)) <= 0) {
-    makeRkError(d, "\312\270\300\341\244\316\263\310\302\347\244\313"
-	"\274\272\307\324\244\267\244\336\244\267\244\277");
-                         /* 文節の拡大に失敗しました */
+    makeRkError(d,
+                "\312\270\300\341\244\316\263\310\302\347\244\313"
+                "\274\272\307\324\244\267\244\336\244\267\244\277");
+    /* 文節の拡大に失敗しました */
     return TanMuhenkan(d);
   }
   if (chikuji_restore_yomi(d) == NG) {
@@ -480,9 +494,10 @@ ChikujiTanShrink(uiContext d)
       return TanMuhenkan(d);
     }
     if (RkwGoTo(yc->context, i) == -1) {
-      makeRkError(d, "\312\270\300\341\244\316\275\314\276\256\244\313"
-	"\274\272\307\324\244\267\244\336\244\267\244\277");
-                           /* 文節の縮小に失敗しました */
+      makeRkError(d,
+                  "\312\270\300\341\244\316\275\314\276\256\244\313"
+                  "\274\272\307\324\244\267\244\336\244\267\244\277");
+      /* 文節の縮小に失敗しました */
       return TanMuhenkan(d);
     }
     yc->curbun = i;
@@ -494,9 +509,10 @@ ChikujiTanShrink(uiContext d)
   }
   yc->nbunsetsu = RkwShorten(yc->context);
   if (yc->nbunsetsu <= 0) { /* 0 ってことあんのかなあ？ */
-    makeRkError(d, "\312\270\300\341\244\316\275\314\276\256\244\313"
-	"\274\272\307\324\244\267\244\336\244\267\244\277");
-                         /* 文節の縮小に失敗しました */
+    makeRkError(d,
+                "\312\270\300\341\244\316\275\314\276\256\244\313"
+                "\274\272\307\324\244\267\244\336\244\267\244\277");
+    /* 文節の縮小に失敗しました */
     return TanMuhenkan(d);
   }
   if (chikuji_restore_yomi(d) == NG) {
@@ -516,40 +532,41 @@ ChikujiYomiDeletePrevious(uiContext d)
 
   d->nbytes = 0;
   if (!(yc->cStartp < yc->kCurs)) { /* 読みがないなら */
-    if (!yc->nbunsetsu) { /* 文節もない */
+    if (!yc->nbunsetsu) {           /* 文節もない */
       return NothingChanged(d);
-    }
-    else {
-      if (RkwSubstYomi(yc->context, 0, yc->ye - yc->cStartp,
-                                        NULL, 0) == NG) {
-	makeRkError(d, "\306\311\244\337\244\313\314\341\244\271\244\263"
-	"\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
-                             /* 読みに戻すことができません */
-	TanMuhenkan(d);
-	return 0;
+    } else {
+      if (RkwSubstYomi(yc->context, 0, yc->ye - yc->cStartp, NULL, 0) == NG) {
+        makeRkError(d,
+                    "\306\311\244\337\244\313\314\341\244\271\244\263"
+                    "\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
+        /* 読みに戻すことができません */
+        TanMuhenkan(d);
+        return 0;
       }
       yc->ys = yc->ye = yc->cStartp;
       yc->curbun = yc->nbunsetsu - 1; /* ひとつ読みに戻す */
       for (i = yc->nbunsetsu - 1; i >= yc->curbun; i--) {
-	if (RkwGoTo(yc->context, i) == NG ||
-	    RkwGetStat(yc->context, &stat) == NG ||
-	    RkwStoreYomi(yc->context, NULL, 0) == NG) {
-	  return makeRkError(d, "\306\311\244\337\244\313\314\341\244\271"
-	"\244\263\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
-                                /* 読みに戻すことができません */
-	}
-	l += stat.ylen;
-	yc->nbunsetsu--;
+        if (RkwGoTo(yc->context, i) == NG ||
+            RkwGetStat(yc->context, &stat) == NG ||
+            RkwStoreYomi(yc->context, NULL, 0) == NG) {
+          return makeRkError(
+            d,
+            "\306\311\244\337\244\313\314\341\244\271"
+            "\244\263\244\310\244\254\244\307\244\255\244\336\244\273\244\363");
+          /* 読みに戻すことができません */
+        }
+        l += stat.ylen;
+        yc->nbunsetsu--;
       }
       i = j = 0;
       do {
-	++i;
-	if (yc->kAttr[yc->cStartp - i] & SENTOU) {
-	  for (j++ ;
-	       j < yc->cRStartp && !(yc->rAttr[yc->cRStartp - j] & SENTOU) ;) {
-	    j++;
-	  }
-	}
+        ++i;
+        if (yc->kAttr[yc->cStartp - i] & SENTOU) {
+          for (j++;
+               j < yc->cRStartp && !(yc->rAttr[yc->cRStartp - j] & SENTOU);) {
+            j++;
+          }
+        }
       } while (i < l);
       yc->kCurs = yc->kRStartp = yc->cStartp;
       yc->rCurs = yc->rStartp = yc->cRStartp;
@@ -558,7 +575,7 @@ ChikujiYomiDeletePrevious(uiContext d)
       yc->ys = yc->ye = yc->cStartp;
       clearHenkanContent(yc);
       if (yc->curbun) {
-	yc->curbun--;
+        yc->curbun--;
       }
 
       makeKanjiStatusReturn(d, yc);
@@ -576,16 +593,16 @@ ChikujiYomiDeletePrevious(uiContext d)
   if (yc->kCurs <= yc->cStartp && yc->kEndp <= yc->cStartp && yc->nbunsetsu) {
     /* 文節はあるのに読みがないなら */
     if (RkwGoTo(yc->context, yc->nbunsetsu - 1) == -1) {
-      return makeRkError(d, "\312\270\300\341\244\316\260\334\306\260\244\313"
-	"\274\272\307\324\244\267\244\336\244\267\244\277");
-                            /* 文節の移動に失敗しました */
+      return makeRkError(d,
+                         "\312\270\300\341\244\316\260\334\306\260\244\313"
+                         "\274\272\307\324\244\267\244\336\244\267\244\277");
+      /* 文節の移動に失敗しました */
     }
     yc->kouhoCount = 0;
     yc->curbun = yc->nbunsetsu - 1;
     moveToChikujiTanMode(d);
     makeKanjiStatusReturn(d, yc);
-  }
-  else {
+  } else {
     moveToChikujiYomiMode(d);
     makeYomiReturnStruct(d);
     if (yc->kEndp <= yc->cStartp && !yc->nbunsetsu) {
@@ -604,15 +621,15 @@ ChikujiHenkan(uiContext d)
   int n, tmp, idx;
 
   if (!yc->nbunsetsu && yc->rEndp == /* yc->cRStartp(== 0) + */ 1 &&
-      (yc->kAttr[0] & SUPKEY) &&
-      (idx = findSup(yc->romaji_buffer[0]))) {
+      (yc->kAttr[0] & SUPKEY) && (idx = findSup(yc->romaji_buffer[0]))) {
     return selectKeysup(d, yc, idx - 1);
   }
   if (!doesSupportChikuji()) {
-    jrKanjiError = "\245\265\241\274\245\320\244\254\303\340\274\241\274\253"
-	"\306\260\312\321\264\271\244\362\245\265\245\335\241\274\245\310"
-	"\244\267\244\306\244\244\244\336\244\273\244\363";
-                   /* サーバが逐次自動変換をサポートしていません */
+    jrKanjiError =
+      "\245\265\241\274\245\320\244\254\303\340\274\241\274\253"
+      "\306\260\312\321\264\271\244\362\245\265\245\335\241\274\245\310"
+      "\244\267\244\306\244\244\244\336\244\273\244\363";
+    /* サーバが逐次自動変換をサポートしていません */
     makeGLineMessageFromString(d, jrKanjiError);
     makeKanjiStatusReturn(d, yc);
     d->nbytes = 0;
@@ -620,8 +637,7 @@ ChikujiHenkan(uiContext d)
   }
   if (yc->status & CHIKUJI_ON_BUNSETSU) {
     tmp = yc->curbun;
-  }
-  else {
+  } else {
     tmp = yc->nbunsetsu;
   }
   d->nbytes = 0;
@@ -644,7 +660,7 @@ ChikujiHenkan(uiContext d)
   }
 
   yc->kRStartp = yc->kCurs = yc->kEndp;
-  yc->rStartp  = yc->rCurs = yc->rEndp;
+  yc->rStartp = yc->rCurs = yc->rEndp;
 
   if (yc->cStartp < yc->kEndp) { /* 読みがあれば */
     yc->kCurs = yc->kEndp;
@@ -655,9 +671,10 @@ ChikujiHenkan(uiContext d)
     }
     n = RkwFlushYomi(yc->context);
     if (n == -1) {
-      makeRkError(d, "\312\321\264\271\244\313\274\272\307\324\244\267"
-	"\244\336\244\267\244\277");
-                           /* 変換に失敗しました */
+      makeRkError(d,
+                  "\312\321\264\271\244\313\274\272\307\324\244\267"
+                  "\244\336\244\267\244\277");
+      /* 変換に失敗しました */
       TanMuhenkan(d);
       return 0;
     }
@@ -671,9 +688,10 @@ ChikujiHenkan(uiContext d)
     }
   }
   if (RkwGoTo(yc->context, tmp) == -1) {
-    makeRkError(d, "\303\340\274\241\312\321\264\271\244\313\274\272\307\324"
-	"\244\267\244\336\244\267\244\277");
-                   /* 逐次変換に失敗しました */
+    makeRkError(d,
+                "\303\340\274\241\312\321\264\271\244\313\274\272\307\324"
+                "\244\267\244\336\244\267\244\277");
+    /* 逐次変換に失敗しました */
     return 0;
   }
   yc->curbun = tmp;
@@ -716,12 +734,10 @@ generalNaive(uiContext d, int (*fn)(uiContext d))
   if ((((yomiContext)d->modec)->generalFlags) &
       (CANNA_YOMI_HANKAKU | CANNA_YOMI_ROMAJI | CANNA_YOMI_BASE_HANKAKU)) {
     return (*fn)(d);
-  }
-  else {
+  } else {
     return ChikujiHenkan(d);
   }
 }
-
 
 static int
 ChikujiHenkanNaive(uiContext d)
@@ -742,12 +758,10 @@ ChikujiMuhenkan(uiContext d)
 
   if (yc->nbunsetsu) {
     return TanMuhenkan(d);
-  }
-  else if (yc->left || yc->right) {
+  } else if (yc->left || yc->right) {
     removeCurrentBunsetsu(d, (tanContext)yc);
     yc = (yomiContext)d->modec;
-  }
-  else {
+  } else {
     RomajiClearYomi(d);
     d->current_mode = yc->curMode = yc->myEmptyMode;
     d->kanji_status_return->info |= KanjiEmptyInfo;
@@ -757,7 +771,7 @@ ChikujiMuhenkan(uiContext d)
 }
 
 #ifndef wchar_t
-# error "wchar_t is already undefined"
+#error "wchar_t is already undefined"
 #endif
 #undef wchar_t
 /*********************************************************************

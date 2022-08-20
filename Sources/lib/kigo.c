@@ -20,38 +20,39 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include	"canna.h"
+#include "canna.h"
 
 /*********************************************************************
  *                      wchar_t replace begin                        *
  *********************************************************************/
 #ifdef wchar_t
-# error "wchar_t is already defined"
+#error "wchar_t is already defined"
 #endif
 #define wchar_t cannawc
 
-#define BYTE1		84	/* JISコード表の第一バイトの数 */
-#define BYTE2		94	/* JISコード表の第二バイトの数 */
-#define KIGOSU		(((BYTE1 - 1) * BYTE2) + 4)
-    				/* 記号の総数 */
+#define BYTE1 84 /* JISコード表の第一バイトの数 */
+#define BYTE2 94 /* JISコード表の第二バイトの数 */
+#define KIGOSU (((BYTE1 - 1) * BYTE2) + 4)
+/* 記号の総数 */
 
-#define KIGOSIZE	1	/* 記号候補の文字数 */
-#define KIGOCOLS	2	/* 記号候補のコラム数 */
-#define KIGOSPACE	2	/* 記号の間の空白文字のコラム数 */
-#define KIGOWIDTH	(KIGOCOLS + KIGOSPACE)
-					/* bangomaxを計算するための数 */
+#define KIGOSIZE 1  /* 記号候補の文字数 */
+#define KIGOCOLS 2  /* 記号候補のコラム数 */
+#define KIGOSPACE 2 /* 記号の間の空白文字のコラム数 */
+#define KIGOWIDTH (KIGOCOLS + KIGOSPACE)
+/* bangomaxを計算するための数 */
 
-#define NKAKKOCHARS	1	/* JISコード表示用括弧の文字数 */
-#define KAKKOCOLS       2       /* 同コラム数 */
-#define NKCODECHARS	4	/* JISコード表示そのものの文字数 */
-#define KCODECOLS       4       /* 同コラム数 */
+#define NKAKKOCHARS 1 /* JISコード表示用括弧の文字数 */
+#define KAKKOCOLS 2   /* 同コラム数 */
+#define NKCODECHARS 4 /* JISコード表示そのものの文字数 */
+#define KCODECOLS 4   /* 同コラム数 */
 /* JISコード表示全体の文字数 */
-#define NKCODEALLCHARS	(NKAKKOCHARS + NKAKKOCHARS + NKCODECHARS)
+#define NKCODEALLCHARS (NKAKKOCHARS + NKAKKOCHARS + NKCODECHARS)
 /* 同コラム数 */
-#define KCODEALLCOLS    (KAKKOCOLS + KAKKOCOLS + KCODECOLS)
+#define KCODEALLCOLS (KAKKOCOLS + KAKKOCOLS + KCODECOLS)
 
 extern int allocIchiranBuf(uiContext);
-int makeKigoIchiran(uiContext /*d*/, int /*major_mode*/);
+int
+makeKigoIchiran(uiContext /*d*/, int /*major_mode*/);
 
 static int kigo_curIkouho;
 
@@ -86,13 +87,12 @@ newKigoContext()
 {
   ichiranContext kcxt;
 
-  if((kcxt = (ichiranContext)malloc(sizeof(ichiranContextRec)))
-                                         == NULL) {
+  if ((kcxt = (ichiranContext)malloc(sizeof(ichiranContextRec))) == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newKigoContext) できませんでした";
 #else
     jrKanjiError = "malloc (newKigoContext) \244\307\244\255\244\336\244\273"
-	"\244\363\244\307\244\267\244\277";
+                   "\244\363\244\307\244\267\244\277";
 #endif
     return (ichiranContext)0;
   }
@@ -101,38 +101,43 @@ newKigoContext()
   return kcxt;
 }
 
-
-#ifdef	SOMEONE_USES_THIS
+#ifdef SOMEONE_USES_THIS
 static void
 freeKigoContext(ichiranContext kc)
 {
   free(kc);
 }
-#endif	/* SOMEONE_USES_THIS */
+#endif /* SOMEONE_USES_THIS */
 
 /*
  * 記号一覧行を作る
  */
 static int
 getKigoContext(uiContext d,
-canna_callback_t everyTimeCallback, canna_callback_t exitCallback,
-canna_callback_t quitCallback, canna_callback_t auxCallback)
+               canna_callback_t everyTimeCallback,
+               canna_callback_t exitCallback,
+               canna_callback_t quitCallback,
+               canna_callback_t auxCallback)
 {
   extern KanjiModeRec kigo_mode;
   ichiranContext kc;
   int retval = 0;
 
-  if(pushCallback(d, d->modec,
-	everyTimeCallback, exitCallback, quitCallback, auxCallback) == 0) {
+  if (pushCallback(d,
+                   d->modec,
+                   everyTimeCallback,
+                   exitCallback,
+                   quitCallback,
+                   auxCallback) == 0) {
     jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273"
-	"\244\363\244\307\244\267\244\277";
-                                         /* できませんでした */
-    return(NG);
+                   "\244\363\244\307\244\267\244\277";
+    /* できませんでした */
+    return (NG);
   }
 
-  if((kc = newKigoContext()) == NULL) {
+  if ((kc = newKigoContext()) == NULL) {
     popCallback(d);
-    return(NG);
+    return (NG);
   }
   kc->next = d->modec;
   d->modec = (mode_context)kc;
@@ -140,7 +145,7 @@ canna_callback_t quitCallback, canna_callback_t auxCallback)
   kc->prevMode = d->current_mode;
   d->current_mode = &kigo_mode;
 
-  return(retval);
+  return (retval);
 }
 
 #ifndef NO_EXTEND_MENU
@@ -167,17 +172,17 @@ static void
 makeKigoGlineStatus(uiContext d)
 {
   ichiranContext kc = (ichiranContext)d->modec;
-  wchar_t *gptr;
+  wchar_t* gptr;
   char xxx[3];
-  char *yyy = xxx;
-  int  i, b1, b2;
+  char* yyy = xxx;
+  int i, b1, b2;
 
   gptr = kc->glineifp->gldata + NKAKKOCHARS;
 
   /* カレント記号のJISコードを一覧行の中のカッコ内に入れる */
   CANNA_wcstombs(xxx, kc->kouhoifp[*(kc->curIkouho)].khdata, 3);
 
-  for(i=0; i<2; i++, yyy++) {
+  for (i = 0; i < 2; i++, yyy++) {
     b1 = (((unsigned long)*yyy & 0x7f) >> 4);
     b2 = (*yyy & 0x0f);
     *gptr++ = b1 + ((b1 > 0x09) ? ('a' - 10) : '0');
@@ -187,10 +192,8 @@ makeKigoGlineStatus(uiContext d)
   d->kanji_status_return->info |= KanjiGLineInfo;
   d->kanji_status_return->gline.line = kc->glineifp->gldata;
   d->kanji_status_return->gline.length = kc->glineifp->gllen;
-  d->kanji_status_return->gline.revPos =
-    kc->kouhoifp[*(kc->curIkouho)].khpoint;
+  d->kanji_status_return->gline.revPos = kc->kouhoifp[*(kc->curIkouho)].khpoint;
   d->kanji_status_return->gline.revLen = KIGOSIZE;
-
 }
 
 /* 記号一覧用のglineinfoとkouhoinfoを作る
@@ -221,22 +224,22 @@ static int
 makeKigoInfo(uiContext d, int headkouho)
 {
   ichiranContext kc = (ichiranContext)d->modec;
-  wchar_t *gptr;
-  int  i, b1, b2, lnko, cn;
-  int  byte1hex = 0xa1;
-  int  byte2hex = 0xa1;
+  wchar_t* gptr;
+  int i, b1, b2, lnko, cn;
+  int byte1hex = 0xa1;
+  int byte2hex = 0xa1;
   char xxx[3];
 
-  b2 = headkouho % BYTE2;	/* JISコード表中(Ｘ軸)の位置 (点-1) */
-  b1 = headkouho / BYTE2;	/* JISコード表中(Ｙ軸)の位置 (区-1) */
+  b2 = headkouho % BYTE2; /* JISコード表中(Ｘ軸)の位置 (点-1) */
+  b1 = headkouho / BYTE2; /* JISコード表中(Ｙ軸)の位置 (区-1) */
 
   xxx[2] = '\0';
 
 #if defined(DEBUG)
   if (iroha_debug) {
     printf("kigoinfo = bangomax %d, b1 %d, b2 %d\n", kc->nIkouho, b1, b2);
-    printf("kigoinfo = headkouho %d, curIkouho %d\n",
-	   headkouho, *(kc->curIkouho));
+    printf(
+      "kigoinfo = headkouho %d, curIkouho %d\n", headkouho, *(kc->curIkouho));
   }
 #endif
 
@@ -248,21 +251,23 @@ makeKigoInfo(uiContext d, int headkouho)
 
   /* JISコードの表示領域を一覧行中に作る */
   CANNA_mbstowcs(gptr, "\241\316", 1);
-                 /* ［ */
-  for(i=0, gptr++; i<NKCODECHARS; i++)
+  /* ［ */
+  for (i = 0, gptr++; i < NKCODECHARS; i++)
     *gptr++ = ' ';
   CANNA_mbstowcs(gptr++, "\241\317", 1);
-                 /* ］ */
+  /* ］ */
 
-  for(cn=NKCODEALLCHARS, lnko=0;
-      b1<BYTE1 && lnko<kc->nIkouho && (headkouho+lnko)<KIGOSU ; b1++) {
-    for(; b2<BYTE2 && lnko<kc->nIkouho && (headkouho+lnko)<KIGOSU; b2++, lnko++) {
+  for (cn = NKCODEALLCHARS, lnko = 0;
+       b1 < BYTE1 && lnko < kc->nIkouho && (headkouho + lnko) < KIGOSU;
+       b1++) {
+    for (; b2 < BYTE2 && lnko < kc->nIkouho && (headkouho + lnko) < KIGOSU;
+         b2++, lnko++) {
 
       /* 区切りになる空白をコピーする */
-      if(lnko != 0) {
-	CANNA_mbstowcs(gptr++, "\241\241", 1);
-                         /* 　 */
-	cn ++;
+      if (lnko != 0) {
+        CANNA_mbstowcs(gptr++, "\241\241", 1);
+        /* 　 */
+        cn++;
       }
 
       kc->kouhoifp[lnko].khpoint = cn;
@@ -272,7 +277,7 @@ makeKigoInfo(uiContext d, int headkouho)
       *xxx = (char)byte1hex + b1;
       *(xxx + 1) = (char)byte2hex + b2;
       CANNA_mbstowcs(gptr++, xxx, 1);
-      cn ++;
+      cn++;
     }
     b2 = 0;
   }
@@ -280,7 +285,7 @@ makeKigoInfo(uiContext d, int headkouho)
   kc->glineifp->glkosu = lnko;
   kc->glineifp->gllen = WStrlen(kc->glineifp->gldata);
 
-  return(0);
+  return (0);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -289,7 +294,7 @@ makeKigoInfo(uiContext d, int headkouho)
 
 static int
 kigoIchiranExitCatch(uiContext d, int retval, mode_context env)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   popCallback(d);
   retval = YomiExit(d, retval);
@@ -297,12 +302,12 @@ kigoIchiranExitCatch(uiContext d, int retval, mode_context env)
 
   killmenu(d);
 
-  return(retval);
+  return (retval);
 }
 
 static int
 kigoIchiranQuitCatch(uiContext d, int retval, mode_context env)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   popCallback(d);
   currentModeInfo(d);
@@ -324,10 +329,10 @@ KigoIchiran(uiContext d)
   d->kanji_status_return->info |= KanjiKigoInfo;
   return 0;
 #else
-  if(makeKigoIchiran(d, CANNA_MODE_KigoMode) == NG)
-    return(GLineNGReturn(d));
+  if (makeKigoIchiran(d, CANNA_MODE_KigoMode) == NG)
+    return (GLineNGReturn(d));
   else
-    return(0);
+    return (0);
 #endif
 }
 
@@ -342,19 +347,24 @@ int
 makeKigoIchiran(uiContext d, int major_mode)
 {
   ichiranContext kc;
-  int            headkouho;
+  int headkouho;
 
-  if(d->ncolumns < (KCODEALLCOLS + KIGOCOLS)) {
+  if (d->ncolumns < (KCODEALLCOLS + KIGOCOLS)) {
     NothingChangedWithBeep(d);
-    jrKanjiError = "\270\365\312\344\260\354\315\367\315\321\244\316\311\375"
-	"\244\254\266\271\244\244\244\316\244\307\265\255\271\346\260\354"
-	"\315\367\244\307\244\255\244\336\244\273\244\363";
-                   /* 候補一覧用の幅が狭いので記号一覧できません */
-    return(NG);
+    jrKanjiError =
+      "\270\365\312\344\260\354\315\367\315\321\244\316\311\375"
+      "\244\254\266\271\244\244\244\316\244\307\265\255\271\346\260\354"
+      "\315\367\244\307\244\255\244\336\244\273\244\363";
+    /* 候補一覧用の幅が狭いので記号一覧できません */
+    return (NG);
   }
 
-  if(getKigoContext(d, NO_CALLBACK, kigoIchiranExitCatch, kigoIchiranQuitCatch, NO_CALLBACK) == NG)
-    return(NG);
+  if (getKigoContext(d,
+                     NO_CALLBACK,
+                     kigoIchiranExitCatch,
+                     kigoIchiranQuitCatch,
+                     NO_CALLBACK) == NG)
+    return (NG);
 
   kc = (ichiranContext)d->modec;
   kc->majorMode = major_mode;
@@ -365,23 +375,22 @@ makeKigoIchiran(uiContext d, int major_mode)
 
   /* 最大記号表示数のセット */
   /* 総カラム数から "［JIS ］" 分を差し引いて計算する */
-  if((kc->nIkouho =
-      (((d->ncolumns - KCODEALLCOLS - KIGOCOLS) / KIGOWIDTH) + 1))
-                                                  > KIGOBANGOMAX) {
+  if ((kc->nIkouho = (((d->ncolumns - KCODEALLCOLS - KIGOCOLS) / KIGOWIDTH) +
+                      1)) > KIGOBANGOMAX) {
     kc->nIkouho = KIGOBANGOMAX;
   }
 
   kc->curIkouho = &kigo_curIkouho;
 
-  if(allocIchiranBuf(d) == NG) { /* 記号一覧モード */
+  if (allocIchiranBuf(d) == NG) { /* 記号一覧モード */
     popKigoMode(d);
     popCallback(d);
-    return(NG);
+    return (NG);
   }
 
   /* カレント候補のある記号一覧行の先頭候補と、
      一覧行中のカレント候補の位置を求める */
-  if(d->curkigo) {		/* a1a1から何番目の記号か */
+  if (d->curkigo) { /* a1a1から何番目の記号か */
     headkouho = (d->curkigo / kc->nIkouho) * kc->nIkouho;
     *(kc->curIkouho) = d->curkigo % kc->nIkouho;
   } else {
@@ -400,7 +409,7 @@ makeKigoIchiran(uiContext d, int major_mode)
   /* kanji_status_returnを作る */
   makeKigoGlineStatus(d);
 
-  return(0);
+  return (0);
 }
 
 static int
@@ -424,16 +433,16 @@ static int
 KigoForwardKouho(uiContext d)
 {
   ichiranContext kc = (ichiranContext)d->modec;
-  int  headkouho;
+  int headkouho;
 
   /* 次の記号にする */
   ++*(kc->curIkouho);
 
   /* 一覧表示の最後の記号だったら、次の一覧行の先頭記号をカレント記号とする */
-  if((*(kc->curIkouho) >= kc->nIkouho) ||
-     (kc->glineifp->glhead + *(kc->curIkouho) >= KIGOSU)) {
-    headkouho  = kc->glineifp->glhead + kc->nIkouho;
-    if(headkouho >= KIGOSU)
+  if ((*(kc->curIkouho) >= kc->nIkouho) ||
+      (kc->glineifp->glhead + *(kc->curIkouho) >= KIGOSU)) {
+    headkouho = kc->glineifp->glhead + kc->nIkouho;
+    if (headkouho >= KIGOSU)
       headkouho = 0;
     *(kc->curIkouho) = 0;
     makeKigoInfo(d, headkouho);
@@ -443,7 +452,7 @@ KigoForwardKouho(uiContext d)
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
-  return(0);
+  return (0);
 }
 
 /*
@@ -456,15 +465,15 @@ static int
 KigoBackwardKouho(uiContext d)
 {
   ichiranContext kc = (ichiranContext)d->modec;
-  int  headkouho;
+  int headkouho;
 
   /* 前の記号にする */
   --*(kc->curIkouho);
 
   /* 一覧表示の先頭の記号だったら、前の一覧行の最終記号をカレント記号とする */
-  if(*(kc->curIkouho) < 0) {
-    headkouho  = kc->glineifp->glhead - kc->nIkouho;
-    if(headkouho < 0)
+  if (*(kc->curIkouho) < 0) {
+    headkouho = kc->glineifp->glhead - kc->nIkouho;
+    if (headkouho < 0)
       headkouho = ((KIGOSU - 1) / kc->nIkouho) * kc->nIkouho;
     makeKigoInfo(d, headkouho);
     *(kc->curIkouho) = kc->glineifp->glkosu - 1;
@@ -474,7 +483,7 @@ KigoBackwardKouho(uiContext d)
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
-  return(0);
+  return (0);
 }
 
 /*
@@ -490,21 +499,21 @@ KigoPreviousKouhoretsu(uiContext d)
   int headkouho;
 
   /** 前候補列にする **/
-  headkouho  = kc->glineifp->glhead - kc->nIkouho;
-  if(headkouho < 0)
-    headkouho = ((KIGOSU -1) / kc->nIkouho) * kc->nIkouho;
+  headkouho = kc->glineifp->glhead - kc->nIkouho;
+  if (headkouho < 0)
+    headkouho = ((KIGOSU - 1) / kc->nIkouho) * kc->nIkouho;
   makeKigoInfo(d, headkouho);
 
   /* *(kc->curIkouho) がカレント記号一覧の記号数より大きくなってしまったら
      最右記号をカレント候補とする */
-  if(*(kc->curIkouho) >= kc->glineifp->glkosu)
+  if (*(kc->curIkouho) >= kc->glineifp->glkosu)
     *(kc->curIkouho) = kc->glineifp->glkosu - 1;
 
   /* kanji_status_retusrn を作る */
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
-  return(0);
+  return (0);
 }
 
 /*
@@ -521,20 +530,20 @@ KigoNextKouhoretsu(uiContext d)
 
   /** 次候補列にする **/
   headkouho = kc->glineifp->glhead + kc->nIkouho;
-  if(headkouho >= KIGOSU)
+  if (headkouho >= KIGOSU)
     headkouho = 0;
   makeKigoInfo(d, headkouho);
 
   /* *(kc->curIkouho) がカレント記号一覧の記号数より大きくなってしまったら
      最右記号をカレント候補とする */
-  if(*(kc->curIkouho) >= kc->glineifp->glkosu)
+  if (*(kc->curIkouho) >= kc->glineifp->glkosu)
     *(kc->curIkouho) = kc->glineifp->glkosu - 1;
 
   /* kanji_status_retusrn を作る */
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
-  return(0);
+  return (0);
 }
 
 /*
@@ -555,7 +564,7 @@ KigoBeginningOfKouho(uiContext d)
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
-  return(0);
+  return (0);
 }
 
 /*
@@ -576,7 +585,7 @@ KigoEndOfKouho(uiContext d)
   makeKigoGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
 
-  return(0);
+  return (0);
 }
 
 /*
@@ -599,19 +608,17 @@ KigoKakutei(uiContext d)
   /* エコーストリングを確定文字列とする */
   if (d->n_buffer >= KIGOSIZE) {
     d->nbytes = KIGOSIZE;
-    WStrncpy(d->buffer_return, kc->kouhoifp[*(kc->curIkouho)].khdata,
-	    d->nbytes);
+    WStrncpy(
+      d->buffer_return, kc->kouhoifp[*(kc->curIkouho)].khdata, d->nbytes);
     d->buffer_return[KIGOSIZE] = (wchar_t)0;
-  }
-  else {
+  } else {
     d->nbytes = 0;
   }
 
   if (kc->flags & ICHIRAN_STAY_LONG) {
     kc->flags |= ICHIRAN_NEXT_EXIT;
     d->status = EVERYTIME_CALLBACK;
-  }
-  else {
+  } else {
     freeIchiranBuf(kc);
     popKigoMode(d);
     GlineClear(d);
@@ -619,10 +626,10 @@ KigoKakutei(uiContext d)
     d->status = EXIT_CALLBACK;
   }
 
-  return(d->nbytes);
+  return (d->nbytes);
 }
 
-#ifdef	SOMEONE_USES_THIS
+#ifdef SOMEONE_USES_THIS
 /*
  * 記号一覧行中の入力された番号の記号に移動する  【未使用】
  *
@@ -636,19 +643,18 @@ KigoBangoKouho(uiContext d)
   int num;
 
   /* 入力データは ０〜９ ａ〜ｆ か？ */
-  if(((0x30 <= d->ch) && (d->ch <= 0x39))
-     || ((0x61 <= d->ch) && (d->ch <= 0x66))) {
-    if((0x30 <= d->ch) && (d->ch <= 0x39))
+  if (((0x30 <= d->ch) && (d->ch <= 0x39)) ||
+      ((0x61 <= d->ch) && (d->ch <= 0x66))) {
+    if ((0x30 <= d->ch) && (d->ch <= 0x39))
       num = (int)(d->ch & 0x0f);
-    else if((0x61 <= d->ch) && (d->ch <= 0x66))
+    else if ((0x61 <= d->ch) && (d->ch <= 0x66))
       num = (int)(d->ch - 0x57);
-  }
-  else {
+  } else {
     /* 入力された番号は正しくありません */
     return NothingChangedWithBeep(d);
   }
   /* 入力データは 候補行の中に存在する数か？ */
-  if(num >= kc->glineifp->glkosu) {
+  if (num >= kc->glineifp->glkosu) {
     /* 入力された番号は正しくありません */
     return NothingChangedWithBeep(d);
   }
@@ -658,15 +664,15 @@ KigoBangoKouho(uiContext d)
 
   /* SelectDirect のカスタマイズの処理 */
   if (cannaconf.SelectDirect) /* ON */ {
-    return(KigoKakutei(d));
-  } else           /* OFF */ {
+    return (KigoKakutei(d));
+  } else /* OFF */ {
     /* kanji_status_retusrn を作る */
     makeKigoGlineStatus(d);
 
-    return(0);
+    return (0);
   }
 }
-#endif	/* SOMEONE_USES_THIS */
+#endif /* SOMEONE_USES_THIS */
 
 /*
  * 記号一覧行を消去する
@@ -690,11 +696,11 @@ KigoQuit(uiContext d)
 #endif /* NO_EXTEND_MENU */
 
 #ifndef wchar_t
-# error "wchar_t is already undefined"
+#error "wchar_t is already undefined"
 #endif
 #undef wchar_t
 /*********************************************************************
  *                       wchar_t replace end                         *
  *********************************************************************/
 
-#include	"kigomap.h"
+#include "kigomap.h"

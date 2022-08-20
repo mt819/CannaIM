@@ -24,18 +24,18 @@
 #include "canna.h"
 
 #define HEXPROMPT "\245\263\241\274\245\311: "
-#define HEXPROMPTLEN  5 /* "コード: " の長さは5バイト */
+#define HEXPROMPTLEN 5 /* "コード: " の長さは5バイト */
 
 /*********************************************************************
  *                      wchar_t replace begin                        *
  *********************************************************************/
 #ifdef wchar_t
-# error "wchar_t is already defined"
+#error "wchar_t is already defined"
 #endif
 #define wchar_t cannawc
 
-
-static int quitHex(uiContext d, int retval, mode_context env);
+static int
+quitHex(uiContext d, int retval, mode_context env);
 
 /* cfuncdef
 
@@ -45,7 +45,7 @@ static int quitHex(uiContext d, int retval, mode_context env);
 
 static int
 hexEveryTimeCatch(uiContext d, int retval, mode_context env)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   yomiContext yc = (yomiContext)d->modec;
   static wchar_t buf[256];
@@ -67,26 +67,24 @@ hexEveryTimeCatch(uiContext d, int retval, mode_context env)
     echostrClear(d);
     if (codelen == 4) { /* ４文字になったときには.... */
       if (convertAsHex(d)) {
-	yc->allowedChars = CANNA_NOTHING_ALLOWED;
-	*(d->kanji_status_return->echoStr = yc->kana_buffer + yc->kEndp + 1)
-	  = *(d->buffer_return);
-	d->kanji_status_return->revPos = d->kanji_status_return->revLen = 0;
-	d->kanji_status_return->length = 1;
-	retval = 0;
-	if (cannaconf.hexCharacterDefiningStyle != HEX_USUAL) {
-	  d->more.todo = 1;
-	  d->more.ch = d->ch;
-	  d->more.fnum = CANNA_FN_Kakutei;
-	}
+        yc->allowedChars = CANNA_NOTHING_ALLOWED;
+        *(d->kanji_status_return->echoStr = yc->kana_buffer + yc->kEndp + 1) =
+          *(d->buffer_return);
+        d->kanji_status_return->revPos = d->kanji_status_return->revLen = 0;
+        d->kanji_status_return->length = 1;
+        retval = 0;
+        if (cannaconf.hexCharacterDefiningStyle != HEX_USUAL) {
+          d->more.todo = 1;
+          d->more.ch = d->ch;
+          d->more.fnum = CANNA_FN_Kakutei;
+        }
+      } else {
+        CannaBeep();
+        d->more.todo = 1;
+        d->more.ch = d->ch;
+        d->more.fnum = CANNA_FN_DeletePrevious;
       }
-      else {
-	CannaBeep();
-	d->more.todo = 1;
-	d->more.ch = d->ch;
-	d->more.fnum = CANNA_FN_DeletePrevious;
-      }
-    }
-    else {
+    } else {
       yc->allowedChars = CANNA_ONLY_HEX;
     }
   }
@@ -104,15 +102,14 @@ exitHex(uiContext d, int retval, mode_context env)
     retval = YomiExit(d, 1);
     currentModeInfo(d);
     return retval;
-  }
-  else {
+  } else {
     return quitHex(d, 0, env);
   }
 }
 
 static int
 quitHex(uiContext d, int retval, mode_context env)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   GlineClear(d);
   popCallback(d);
@@ -125,12 +122,16 @@ hexMode(uiContext d, int major_mode)
 {
   yomiContext yc;
 
-  yc = GetKanjiString(d, NULL, 0,
-		      CANNA_ONLY_HEX,
-		      (int)CANNA_YOMI_CHGMODE_INHIBITTED,
-		      (int)CANNA_YOMI_END_IF_KAKUTEI,
-		      CANNA_YOMI_INHIBIT_ALL,
-		      hexEveryTimeCatch, exitHex, quitHex);
+  yc = GetKanjiString(d,
+                      NULL,
+                      0,
+                      CANNA_ONLY_HEX,
+                      (int)CANNA_YOMI_CHGMODE_INHIBITTED,
+                      (int)CANNA_YOMI_END_IF_KAKUTEI,
+                      CANNA_YOMI_INHIBIT_ALL,
+                      hexEveryTimeCatch,
+                      exitHex,
+                      quitHex);
   if (yc == (yomiContext)0) {
     return NoMoreMemory();
   }
@@ -161,7 +162,7 @@ HexMode(uiContext d)
 #endif /* NO_EXTEND_MENU */
 
 #ifndef wchar_t
-# error "wchar_t is already undefined"
+#error "wchar_t is already undefined"
 #endif
 #undef wchar_t
 /*********************************************************************

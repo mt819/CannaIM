@@ -24,56 +24,32 @@
 /* THIS SOURCE CODE IS MODIFIED FOR TKO BY T.MURAI 1997
 /************************************************************************/
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "RKintern.h"
 // There is Exported Symbols !!
 
-static char	*Hdrtag[] = {
-  HD_TAG_MAG,
-  HD_TAG_VER,
-  HD_TAG_TIME,
-  HD_TAG_REC,
-  HD_TAG_CAN,
-  HD_TAG_L2P,
-  HD_TAG_L2C,
-  HD_TAG_PAG,
-  HD_TAG_LND,
-  HD_TAG_SND,
-  HD_TAG_SIZ,
-  HD_TAG_HSZ,
-  HD_TAG_DROF,
-  HD_TAG_PGOF,
-  HD_TAG_DMNM,
-  HD_TAG_CODM,
-  HD_TAG_LANG,
-  HD_TAG_WWID,
-  HD_TAG_WTYP,
-  HD_TAG_COPY,
-  HD_TAG_NOTE,
-  HD_TAG_TYPE,
-  0,
+static char* Hdrtag[] = {
+  HD_TAG_MAG,  HD_TAG_VER,  HD_TAG_TIME, HD_TAG_REC,  HD_TAG_CAN,  HD_TAG_L2P,
+  HD_TAG_L2C,  HD_TAG_PAG,  HD_TAG_LND,  HD_TAG_SND,  HD_TAG_SIZ,  HD_TAG_HSZ,
+  HD_TAG_DROF, HD_TAG_PGOF, HD_TAG_DMNM, HD_TAG_CODM, HD_TAG_LANG, HD_TAG_WWID,
+  HD_TAG_WTYP, HD_TAG_COPY, HD_TAG_NOTE, HD_TAG_TYPE, 0,
 };
 
-static char	essential_tag[] = {
-    HD_TIME,
-    HD_DMNM,
-    HD_LANG,
-    HD_WWID,
-    HD_WTYP,
-    HD_TYPE,
+static char essential_tag[] = {
+  HD_TIME, HD_DMNM, HD_LANG, HD_WWID, HD_WTYP, HD_TYPE,
 };
 
-static	unsigned char	localbuffer[RK_MAX_HDRSIZ];
+static unsigned char localbuffer[RK_MAX_HDRSIZ];
 
 int
-uslen(WCHAR_T *us)
+uslen(WCHAR_T* us)
 {
-  WCHAR_T *ous = us;
+  WCHAR_T* ous = us;
 
   if (!us)
     return 0;
@@ -83,57 +59,59 @@ uslen(WCHAR_T *us)
 }
 
 void
-usncopy(WCHAR_T *dst, WCHAR_T *src, int len)
+usncopy(WCHAR_T* dst, WCHAR_T* src, int len)
 {
-  while (len-- > 0 && (*dst++ = *src++)) /* EMPTY */;
+  while (len-- > 0 && (*dst++ = *src++)) /* EMPTY */
+    ;
 }
 
-unsigned char *
-ustoeuc(WCHAR_T *src, int srclen, unsigned char *dest, int destlen)
+unsigned char*
+ustoeuc(WCHAR_T* src, int srclen, unsigned char* dest, int destlen)
 {
-    if (!src || !dest || !srclen || !destlen)
-	return dest;
-    while (*src && --srclen >= 0 && --destlen >= 0) {
-	if (us_iscodeG0(*src)) {
-	    *dest++ = (unsigned char)*src++;
-	} else if (us_iscodeG2(*src)) {
-	    *dest++ = RK_SS2;
-	    *dest++ = (unsigned char)*src++;
-	    destlen--;
-	} else if (destlen > 2) {
-	  if (us_iscodeG3(*src)) {
-	    *dest++ = RK_SS3;
-	  }
-	  *dest++ = (unsigned char)(*src >> 8);
-	  *dest++ = (unsigned char)(*src++ | 0x80);
-	  destlen--;
-	};
-    };
-    *dest = (unsigned char)0;
+  if (!src || !dest || !srclen || !destlen)
     return dest;
+  while (*src && --srclen >= 0 && --destlen >= 0) {
+    if (us_iscodeG0(*src)) {
+      *dest++ = (unsigned char)*src++;
+    } else if (us_iscodeG2(*src)) {
+      *dest++ = RK_SS2;
+      *dest++ = (unsigned char)*src++;
+      destlen--;
+    } else if (destlen > 2) {
+      if (us_iscodeG3(*src)) {
+        *dest++ = RK_SS3;
+      }
+      *dest++ = (unsigned char)(*src >> 8);
+      *dest++ = (unsigned char)(*src++ | 0x80);
+      destlen--;
+    };
+  };
+  *dest = (unsigned char)0;
+  return dest;
 }
 
-WCHAR_T *
-euctous(unsigned char *src, int srclen, WCHAR_T *dest, int destlen)
+WCHAR_T*
+euctous(unsigned char* src, int srclen, WCHAR_T* dest, int destlen)
 {
-  WCHAR_T	*a = dest;
+  WCHAR_T* a = dest;
 
   if (!src || !dest || !srclen || !destlen)
-    return(a);
+    return (a);
   while (*src && (srclen-- > 0) && (destlen-- > 0)) {
-    if (!(*src & 0x80) ) {
+    if (!(*src & 0x80)) {
       *dest++ = (WCHAR_T)*src++;
     } else if (srclen-- > 0) {
       if (*src == RK_SS2) {
-	src++;
-	*dest++ = (WCHAR_T)(0x0080 | (*src++ & 0x7f));
+        src++;
+        *dest++ = (WCHAR_T)(0x0080 | (*src++ & 0x7f));
       } else if ((*src == RK_SS3) && (srclen-- > 0)) {
-	src++;
-	*dest++ = (WCHAR_T)(0x8000 | ((src[0] & 0x7f) << 8) | (src[1] & (0x7f)));
-	src += 2;
+        src++;
+        *dest++ =
+          (WCHAR_T)(0x8000 | ((src[0] & 0x7f) << 8) | (src[1] & (0x7f)));
+        src += 2;
       } else {
-	*dest++ = (WCHAR_T)(0x8080 | ((src[0] & 0x7f) << 8) | (src[1] & 0x7f));
-	src += 2;
+        *dest++ = (WCHAR_T)(0x8080 | ((src[0] & 0x7f) << 8) | (src[1] & 0x7f));
+        src += 2;
       }
     } else {
       break;
@@ -145,15 +123,15 @@ euctous(unsigned char *src, int srclen, WCHAR_T *dest, int destlen)
 }
 
 #ifndef WIN
-static FILE	*logfile = NULL;
+static FILE* logfile = NULL;
 #endif
 
 void
-_Rkpanic(char *fmt, int p, int q, int r)
+_Rkpanic(char* fmt, int p, int q, int r)
 /* VARARGS2 */
 {
 #ifndef WIN
-  char	msg[RK_LINE_BMAX];
+  char msg[RK_LINE_BMAX];
 
   sprintf(msg, fmt, p, q, r);
   fprintf(logfile ? logfile : stderr, "%s\n", msg);
@@ -166,44 +144,44 @@ _Rkpanic(char *fmt, int p, int q, int r)
 int
 _RkCalcUnlog2(int x)
 {
-  return((1 << x) - 1);
+  return ((1 << x) - 1);
 }
 
 int
 _RkCalcLog2(int n)
 {
-  int	lg2;
+  int lg2;
 
   n--;
   for (lg2 = 0; n > 0; lg2++)
     n >>= 1;
-  return(lg2);
+  return (lg2);
 }
 
 WCHAR_T
 uniqAlnum(WCHAR_T c)
 {
-  return((0xa3a0 < c && c < 0xa3ff) ? (WCHAR_T)(c & 0x7f) : c);
+  return ((0xa3a0 < c && c < 0xa3ff) ? (WCHAR_T)(c & 0x7f) : c);
 }
 
 void
-_RkClearHeader(struct HD *hd)
+_RkClearHeader(struct HD* hd)
 {
-	if (hd) {
-		for (int i = 0; i < HD_MAXTAG; i++) {
-			if (hd->flag[i] > 0) {
-				free(hd->data[i].ptr);
-			}
-		}
-	}
+  if (hd) {
+    for (int i = 0; i < HD_MAXTAG; i++) {
+      if (hd->flag[i] > 0) {
+        free(hd->data[i].ptr);
+      }
+    }
+  }
 }
 
 int
-_RkReadHeader(int fd, struct HD *hd, off_t off_from_top)
+_RkReadHeader(int fd, struct HD* hd, off_t off_from_top)
 {
-  unsigned char	*src;
-  unsigned long	len, off;
-  int		i, tmpres;
+  unsigned char* src;
+  unsigned long len, off;
+  int i, tmpres;
   long hdrsize;
 #ifdef WIN
   DWORD readsize;
@@ -220,8 +198,8 @@ _RkReadHeader(int fd, struct HD *hd, off_t off_from_top)
     goto read_err;
   }
 
-  hdrsize = read(fd, (char *)localbuffer, RK_MAX_HDRSIZ);
-  if (hdrsize <= ((long) 0)) {
+  hdrsize = read(fd, (char*)localbuffer, RK_MAX_HDRSIZ);
+  if (hdrsize <= ((long)0)) {
     RkSetErrno(RK_ERRNO_EACCES);
     goto read_err;
   }
@@ -229,8 +207,8 @@ _RkReadHeader(int fd, struct HD *hd, off_t off_from_top)
     if (isEndTag(src))
       break;
     for (i = 0; i < HD_MAXTAG; i++) {
-      if (!strncmp((char *)src, Hdrtag[i],  HD_TAGSIZ))
-	break;
+      if (!strncmp((char*)src, Hdrtag[i], HD_TAGSIZ))
+        break;
     }
     if (i == HD_MAXTAG)
       goto read_err;
@@ -246,23 +224,23 @@ _RkReadHeader(int fd, struct HD *hd, off_t off_from_top)
       hd->data[i].var = off;
     } else {
       hd->flag[i] = len;
-      if (!(hd->data[i].ptr = (unsigned char *)malloc((size_t) (len + 1)))) {
-	RkSetErrno(RK_ERRNO_NOMEM);
-	goto read_err;
+      if (!(hd->data[i].ptr = (unsigned char*)malloc((size_t)(len + 1)))) {
+        RkSetErrno(RK_ERRNO_NOMEM);
+        goto read_err;
       }
       if (off < (unsigned long)hdrsize) {
-	memcpy(hd->data[i].ptr, localbuffer + off, (size_t) len);
+        memcpy(hd->data[i].ptr, localbuffer + off, (size_t)len);
       } else {
-	tmpres = lseek(fd, off_from_top + off, 0);
-	if (tmpres < 0) {
-	  RkSetErrno(RK_ERRNO_EACCES);
-	  goto read_err;
-	}
-	tmpres = read(fd, (char *)hd->data[i].ptr, (unsigned)len);
-	if (tmpres != (int)len) {
-	  RkSetErrno(RK_ERRNO_EACCES);
-	  goto read_err;
-	}
+        tmpres = lseek(fd, off_from_top + off, 0);
+        if (tmpres < 0) {
+          RkSetErrno(RK_ERRNO_EACCES);
+          goto read_err;
+        }
+        tmpres = read(fd, (char*)hd->data[i].ptr, (unsigned)len);
+        if (tmpres != (int)len) {
+          RkSetErrno(RK_ERRNO_EACCES);
+          goto read_err;
+        }
       }
       hd->data[i].ptr[len] = 0;
     }
@@ -271,7 +249,7 @@ _RkReadHeader(int fd, struct HD *hd, off_t off_from_top)
     goto read_err;
   }
   return 0;
- read_err:
+read_err:
   for (i = 0; i < HD_MAXTAG; i++) {
     if (hd->flag[i] > 0)
       free(hd->data[i].ptr);
@@ -281,12 +259,12 @@ _RkReadHeader(int fd, struct HD *hd, off_t off_from_top)
   return -1;
 }
 
-unsigned char *
-_RkCreateHeader(struct HD *hd, unsigned *size)
+unsigned char*
+_RkCreateHeader(struct HD* hd, unsigned* size)
 {
-  unsigned char	*tagdst, *datadst, *ptr;
-  int		i, j;
-  unsigned long	len, off;
+  unsigned char *tagdst, *datadst, *ptr;
+  int i, j;
+  unsigned long len, off;
 
   if (!hd)
     return 0;
@@ -296,7 +274,7 @@ _RkCreateHeader(struct HD *hd, unsigned *size)
   for (i = 0; i < HD_MAXTAG; i++) {
     for (j = 0; j < sizeof(essential_tag); j++) {
       if (essential_tag[j] == i) {
-	break;
+        break;
       }
     }
     memcpy(tagdst, Hdrtag[i], HD_TAGSIZ);
@@ -307,18 +285,23 @@ _RkCreateHeader(struct HD *hd, unsigned *size)
     } else if (hd->flag[i] > 0) {
       len = hd->flag[i];
       off = datadst - localbuffer;
-      memcpy(datadst, hd->data[i].ptr, (size_t) len);
+      memcpy(datadst, hd->data[i].ptr, (size_t)len);
       datadst += len;
     } else {
       len = 0;
       off = 0;
     }
-    l_to_bst4(len, tagdst); tagdst += HD_TAGSIZ;
-    l_to_bst4(off, tagdst); tagdst += HD_TAGSIZ;
+    l_to_bst4(len, tagdst);
+    tagdst += HD_TAGSIZ;
+    l_to_bst4(off, tagdst);
+    tagdst += HD_TAGSIZ;
   }
-  *tagdst++ = 0; *tagdst++ = 0; *tagdst++ = 0; *tagdst++ = 0;
+  *tagdst++ = 0;
+  *tagdst++ = 0;
+  *tagdst++ = 0;
+  *tagdst++ = 0;
   *size = datadst - localbuffer;
-  if (!(ptr = (unsigned char *)malloc(*size))) {
+  if (!(ptr = (unsigned char*)malloc(*size))) {
     return 0;
   }
   memcpy(ptr, localbuffer, *size);
@@ -329,65 +312,69 @@ unsigned long
 _RkGetTick(int mode)
 {
   static unsigned long time = 10000;
-  return(mode ? time++ : time);
+  return (mode ? time++ : time);
 }
 
 int
-set_hdr_var(struct HD *hd, int n, unsigned long var)
+set_hdr_var(struct HD* hd, int n, unsigned long var)
 {
-    if (!hd)
-	return -1;
-    hd->data[n].var = var;
-    hd->flag[n] = -1;
-    return 0;
+  if (!hd)
+    return -1;
+  hd->data[n].var = var;
+  hd->flag[n] = -1;
+  return 0;
 }
 
 int
-_RkGetLink(struct ND *dic, long pgno, unsigned long off, unsigned long *lvo, unsigned long *csn)
+_RkGetLink(struct ND* dic,
+           long pgno,
+           unsigned long off,
+           unsigned long* lvo,
+           unsigned long* csn)
 {
-  struct NP	*pg = dic->pgs + pgno;
-  unsigned char	*p;
-  unsigned	i;
+  struct NP* pg = dic->pgs + pgno;
+  unsigned char* p;
+  unsigned i;
 
   for (i = 0, p = pg->buf + 14 + 4 * pg->ndsz; i < pg->lnksz; i++, p += 5) {
     if (thisPWO(p) == off) {
       *lvo = pg->lvo + thisLVO(p);
       *csn = pg->csn + thisCSN(p);
-      return(0);
+      return (0);
     }
   }
-  return(-1);
+  return (-1);
 }
 
 unsigned long
-_RkGetOffset(struct ND *dic, unsigned char *pos)
+_RkGetOffset(struct ND* dic, unsigned char* pos)
 {
-  struct NP	*pg;
-  unsigned char	*p;
-  unsigned	i;
-  unsigned long	lvo;
+  struct NP* pg;
+  unsigned char* p;
+  unsigned i;
+  unsigned long lvo;
 
   for (i = 0; i < dic->ttlpg; i++) {
     if (dic->pgs[i].buf) {
       if (dic->pgs[i].buf < pos && pos < dic->pgs[i].buf + dic->pgsz)
-	break;
+        break;
     }
   }
   if (i == dic->ttlpg) {
-    return(0);
+    return (0);
   }
   pg = dic->pgs + i;
   for (i = 0, p = pg->buf + 14 + 4 * pg->ndsz; i < pg->lnksz; i++, p += 5) {
-    if ((unsigned long) (pos - pg->buf) == thisPWO(p)) {
+    if ((unsigned long)(pos - pg->buf) == thisPWO(p)) {
       lvo = pg->lvo + thisLVO(p);
-      return(lvo);
+      return (lvo);
     }
   }
   _Rkpanic("Cannot get Offset", 0, 0, 0);
 }
 
 int
-HowManyChars(WCHAR_T *yomi, int len)
+HowManyChars(WCHAR_T* yomi, int len)
 {
   int chlen, bytelen;
 
@@ -401,11 +388,11 @@ HowManyChars(WCHAR_T *yomi, int len)
     else
       bytelen += 2;
   }
-  return(chlen);
+  return (chlen);
 }
 
 int
-HowManyBytes(WCHAR_T *yomi, int len)
+HowManyBytes(WCHAR_T* yomi, int len)
 {
   int chlen, bytelen;
 
@@ -420,5 +407,5 @@ HowManyBytes(WCHAR_T *yomi, int len)
       bytelen += 2;
     }
   }
-  return(bytelen);
+  return (bytelen);
 }

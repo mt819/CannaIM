@@ -36,11 +36,16 @@ int		debug_flags = D_CONC|D_PARSE|D_SUCC;
 int		debug_flags = D_PARSE|D_SUCC;
 */
 int debug_flags = 0;
-static void dumpSimpleWordRec();
-static void  dumpWordRec();
-static void  dumpAllBunq();
-static void dumpXQH();
-static void dumpXQ();
+static void
+dumpSimpleWordRec();
+static void
+dumpWordRec();
+static void
+dumpAllBunq();
+static void
+dumpXQH();
+static void
+dumpXQ();
 
 #else
 #define rk_debug(file, fmt, a, b, c)
@@ -167,7 +172,11 @@ _RkFreeBunq(struct nstore* st) /* freeWord = derefWord + killWord */
 }
 
 static struct nword*
-concWord(struct RkContext* cx, struct nword * p, struct nword * q, int  loc,  int bb)
+concWord(struct RkContext* cx,
+         struct nword* p,
+         struct nword* q,
+         int loc,
+         int bb)
 /* create the concatinated word p+q */
 {
   struct nword conc;
@@ -912,10 +921,15 @@ _RkRegisterNV(struct NV* nv, Wrec* yomi, int len, int half)
  *	bunsestu no ki wo seichou saseru.
  */
 static int
-parseWord(struct RkContext* cx, int yy, int  ys, int  ye, int class,
-  struct nword*  xqh[], /* indexed by nw_ylen */
-   int  maxclen, /* saishou yomi no nagasa */
-  int  doflush, int   douniq)
+parseWord(struct RkContext* cx,
+          int yy,
+          int ys,
+          int ye,
+          int class,
+          struct nword* xqh[], /* indexed by nw_ylen */
+          int maxclen,         /* saishou yomi no nagasa */
+          int doflush,
+          int douniq)
 {
   struct RkKxGram* gram = cx->gram->gramdic;
   int clen;
@@ -1202,12 +1216,11 @@ struct compRec
   long prio;
 };
 
-
 static int
-compword(const struct compRec *x, const struct compRec *y)
+compword(const struct compRec* x, const struct compRec* y)
 {
-  int lowdiff = (y->word->nw_flags & NW_LOWPRI) -
-                (x->word->nw_flags & NW_LOWPRI);
+  int lowdiff =
+    (y->word->nw_flags & NW_LOWPRI) - (x->word->nw_flags & NW_LOWPRI);
   long d = ((long)y->word->nw_prio) - ((long)(x->word->nw_prio));
 
   if (lowdiff > 0)
@@ -1329,12 +1342,14 @@ list2height(struct nword* height[], int maxclen, struct nword* parse)
  *	key yori hajimaru bunsetsu wo kaiseki suru
  */
 static struct nword*
-  parseBun(struct RkContext* cx,
-  int yy, int ys, int ye,  /* kaiseki seiyaku */
-  int doflush,
-  int douniq,  /* unique shori sitei */
-  int* maxclen /* bunsetu saidai moji suu */
-  )
+parseBun(struct RkContext* cx,
+         int yy,
+         int ys,
+         int ye, /* kaiseki seiyaku */
+         int doflush,
+         int douniq,  /* unique shori sitei */
+         int* maxclen /* bunsetu saidai moji suu */
+)
 {
   struct nstore* st = cx->store;
   struct nword** xqh = st->xqh;
@@ -2067,12 +2082,8 @@ doLearn(struct RkContext* cx, struct nword* thisW)
         if (current < ncands) {
           entryRut(qm->dm_rut, thisW->nw_csn, cx->time);
           if (0 < current) {
-            _RkCopyBits(tmp,
-                        (unsigned long)0L,
-                        bits,
-                        qm->dm_qbits,
-                        offset,
-                        current);
+            _RkCopyBits(
+              tmp, (unsigned long)0L, bits, qm->dm_qbits, offset, current);
             _RkCopyBits(qm->dm_qbits,
                         (offset + 0L),
                         bits,

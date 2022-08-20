@@ -31,30 +31,34 @@
  *                      wchar_t replace begin                        *
  *********************************************************************/
 #ifdef wchar_t
-# error "wchar_t is already defined"
+#error "wchar_t is already defined"
 #endif
 #define wchar_t cannawc
 
-#define DEFAULT_COLUMN_WIDTH	70
+#define DEFAULT_COLUMN_WIDTH 70
 
-extern char *CANNA_initfilename;
+extern char* CANNA_initfilename;
 extern char saveapname[];
 
-static int insertEmptySlots(uiContext d);
-static int callCallback(uiContext d, int res);
-static void freeKeysup(void);
-static void freeBuffer(void);
-static void freeExtra(void);
+static int
+insertEmptySlots(uiContext d);
+static int
+callCallback(uiContext d, int res);
+static void
+freeKeysup(void);
+static void
+freeBuffer(void);
+static void
+freeExtra(void);
 extern int ckverbose;
-
 
 static int
 doInitializeFunctions(uiContext d)
 {
-  BYTE *p;
+  BYTE* p;
   int res = 0;
   wcKanjiStatus ks, *pks;
-  extern BYTE *initfunc;
+  extern BYTE* initfunc;
   wchar_t xxxx[10];
 
   d->ch = 0;
@@ -68,7 +72,7 @@ doInitializeFunctions(uiContext d)
   if (initfunc) {
     pks = d->kanji_status_return;
     d->kanji_status_return = &ks;
-    for (p = initfunc ; *p ; p++) {
+    for (p = initfunc; *p; p++) {
       res = _doFunc(d, *p);
     }
     res = _afterDoFunc(d, res);
@@ -112,7 +116,8 @@ static void
 freeModec(mode_context modec)
 {
   coreContext cc;
-  union {
+  union
+  {
     coreContext c;
     yomiContext y;
     ichiranContext i;
@@ -124,49 +129,49 @@ freeModec(mode_context modec)
   cc = (coreContext)modec;
   while (cc) {
     switch (cc->id) {
-    case CORE_CONTEXT:
-      gc.c = cc;
-      cc = (coreContext)gc.c->next;
-      freeCoreContext(gc.c);
-      break;
-    case YOMI_CONTEXT:
-      gc.y = (yomiContext)cc;
-      cc = (coreContext)gc.y->next;
-      /* yc->context の close はいらないのかなあ。1996.10.30 今 */
-      freeYomiContext(gc.y);
-      break;
-    case ICHIRAN_CONTEXT:
-      gc.i = (ichiranContext)cc;
-      cc = (coreContext)gc.i->next;
-      freeIchiranContext(gc.i);
-      break;
-    case FORICHIRAN_CONTEXT:
-      gc.f = (forichiranContext)cc;
-      cc = (coreContext)gc.f->next;
-      freeForIchiranContext(gc.f);
-      break;
-    case MOUNT_CONTEXT:
-      gc.m = (mountContext)cc;
-      cc = (coreContext)gc.m->next;
-      freeIchiranContext(gc.i);
-      break;
-    case TOUROKU_CONTEXT:
-      gc.t = (tourokuContext)cc;
-      cc = (coreContext)gc.t->next;
-      free(gc.t);
-      break;
-    default:
-      break;
+      case CORE_CONTEXT:
+        gc.c = cc;
+        cc = (coreContext)gc.c->next;
+        freeCoreContext(gc.c);
+        break;
+      case YOMI_CONTEXT:
+        gc.y = (yomiContext)cc;
+        cc = (coreContext)gc.y->next;
+        /* yc->context の close はいらないのかなあ。1996.10.30 今 */
+        freeYomiContext(gc.y);
+        break;
+      case ICHIRAN_CONTEXT:
+        gc.i = (ichiranContext)cc;
+        cc = (coreContext)gc.i->next;
+        freeIchiranContext(gc.i);
+        break;
+      case FORICHIRAN_CONTEXT:
+        gc.f = (forichiranContext)cc;
+        cc = (coreContext)gc.f->next;
+        freeForIchiranContext(gc.f);
+        break;
+      case MOUNT_CONTEXT:
+        gc.m = (mountContext)cc;
+        cc = (coreContext)gc.m->next;
+        freeIchiranContext(gc.i);
+        break;
+      case TOUROKU_CONTEXT:
+        gc.t = (tourokuContext)cc;
+        cc = (coreContext)gc.t->next;
+        free(gc.t);
+        break;
+      default:
+        break;
     }
   }
 }
 
 static void
-freeCallbacks(struct callback *cb)
+freeCallbacks(struct callback* cb)
 {
-  struct callback *nextcb;
+  struct callback* nextcb;
 
-  for (; cb ; cb = nextcb) {
+  for (; cb; cb = nextcb) {
     nextcb = cb->next;
     free(cb);
   }
@@ -182,7 +187,7 @@ freeRomeStruct(uiContext d)
   if (d->contextCache >= 0) {
     if (RkwCloseContext(d->contextCache) < 0) {
       if (errno == EPIPE) {
-	jrKanjiPipeError();
+        jrKanjiPipeError();
       }
     }
   }
@@ -192,33 +197,38 @@ freeRomeStruct(uiContext d)
   if (d->selinfo) {
     selectinfo *p, *q;
 
-    for (p = d->selinfo ; p ; p = q) {
+    for (p = d->selinfo; p; p = q) {
       q = p->next;
       free(p);
     }
   }
-    if (d->attr) {
-        free(d->attr->u.attr);
+  if (d->attr) {
+    free(d->attr->u.attr);
     free(d->attr);
-    }
+  }
   free(d);
 }
 
 static int
 insertEmptySlots(uiContext d)
 {
-  extern KanjiModeRec	empty_mode;
-  yomiContext		yc;
+  extern KanjiModeRec empty_mode;
+  yomiContext yc;
 
-  if (pushCallback(d, (mode_context) NULL, NO_CALLBACK, NO_CALLBACK,
-		   NO_CALLBACK, NO_CALLBACK) == NULL)
+  if (pushCallback(d,
+                   (mode_context)NULL,
+                   NO_CALLBACK,
+                   NO_CALLBACK,
+                   NO_CALLBACK,
+                   NO_CALLBACK) == NULL)
     return NoMoreMemory();
 
-  yc = newYomiContext(NULL, 0, /* 結果は格納しない */
-		      CANNA_NOTHING_RESTRICTED,
-		      !CANNA_YOMI_CHGMODE_INHIBITTED,
-		      !CANNA_YOMI_END_IF_KAKUTEI,
-		      CANNA_YOMI_INHIBIT_NONE);
+  yc = newYomiContext(NULL,
+                      0, /* 結果は格納しない */
+                      CANNA_NOTHING_RESTRICTED,
+                      !CANNA_YOMI_CHGMODE_INHIBITTED,
+                      !CANNA_YOMI_END_IF_KAKUTEI,
+                      CANNA_YOMI_INHIBIT_NONE);
   if (yc == (yomiContext)0) {
     popCallback(d);
     return NoMoreMemory();
@@ -249,32 +259,32 @@ insertEmptySlots(uiContext d)
 
 #define HASHTABLESIZE 96
 
-static struct bukRec {
+static struct bukRec
+{
   unsigned int data1, data2;
   uiContext context;
-  struct bukRec *next;
-} *conHash[HASHTABLESIZE];
+  struct bukRec* next;
+}* conHash[HASHTABLESIZE];
 
 /* ハッシュテーブルを調べてコンテクストがあるかどうか調べる関数 */
 
 static int
 countContext()
 {
-  struct bukRec *hash;
+  struct bukRec* hash;
 
   int i, c;
-  for(i = 0, c = 0; i < HASHTABLESIZE; i++) {
-    for(hash = conHash[i] ; hash && hash->context ;hash = hash->next){
+  for (i = 0, c = 0; i < HASHTABLESIZE; i++) {
+    for (hash = conHash[i]; hash && hash->context; hash = hash->next) {
       c++;
     }
   }
 #if defined(DEBUG)
   fprintf(stderr, "合計=%d\n", c);
 #endif
-  if(c) {
+  if (c) {
     return 0;
-  }
-  else {
+  } else {
     return 1;
   }
 }
@@ -307,10 +317,10 @@ uiContext
 keyToContext(unsigned int data1, unsigned int data2)
 {
   unsigned int key;
-  struct bukRec *p;
+  struct bukRec* p;
 
   key = makeKey(data1, data2);
-  for (p = conHash[key] ; p ; p = p->next) {
+  for (p = conHash[key]; p; p = p->next) {
     if (p->data1 == data1 && p->data2 == data2) {
       /* こりゃあコンテクストが見つかりましたな */
       return p->context;
@@ -319,7 +329,6 @@ keyToContext(unsigned int data1, unsigned int data2)
   return (uiContext)0; /* 見つかりませんでした。 */
 }
 
-
 /* internContext -- ハッシュテーブルに登録する
 
   このとき、既に、display と window の組が存在するのであれば、
@@ -327,7 +336,7 @@ keyToContext(unsigned int data1, unsigned int data2)
 
 */
 
-struct bukRec *
+struct bukRec*
 internContext(unsigned int data1, unsigned int data2, uiContext context)
 {
   unsigned int key;
@@ -341,7 +350,7 @@ internContext(unsigned int data1, unsigned int data2, uiContext context)
       return p;
     }
   }
-  p = *pp = (struct bukRec *)malloc(sizeof(struct bukRec));
+  p = *pp = (struct bukRec*)malloc(sizeof(struct bukRec));
   if (p) {
     p->data1 = data1;
     p->data2 = data2;
@@ -350,7 +359,6 @@ internContext(unsigned int data1, unsigned int data2, uiContext context)
   }
   return p;
 }
-
 
 /* rmContext -- ハッシュテーブルから削除する
 
@@ -364,13 +372,12 @@ rmContext(unsigned int data1, unsigned int data2)
 
   key = makeKey(data1, data2);
   pp = &conHash[key];
-  for (p = *pp ; p ; p = q) {
+  for (p = *pp; p; p = q) {
     q = p->next;
     if (p->data1 == data1 && p->data2 == data2) {
       *pp = q;
       free(p);
-    }
-    else {
+    } else {
       pp = &(p->next);
     }
   }
@@ -386,9 +393,9 @@ rmContext(unsigned int data1, unsigned int data2)
 */
 
 static void
-freeBukRecs(struct bukRec *p)
+freeBukRecs(struct bukRec* p)
 {
-  struct bukRec *nextp;
+  struct bukRec* nextp;
 
   if (p) { /* reconfirm that p points some structure */
     freeRomeStruct(p->context);
@@ -410,9 +417,9 @@ static void
 clearHashTable()
 {
   int i;
-  struct bukRec *p;
+  struct bukRec* p;
 
-  for (i = 0 ; i < HASHTABLESIZE ; i++) {
+  for (i = 0; i < HASHTABLESIZE; i++) {
     p = conHash[i];
     conHash[i] = 0;
     if (p) {
@@ -422,7 +429,7 @@ clearHashTable()
 }
 
 #define NWARNINGMESG 64
-static char *WarningMesg[NWARNINGMESG + 1]; /* +1 は最後の NULL ポインタの分 */
+static char* WarningMesg[NWARNINGMESG + 1]; /* +1 は最後の NULL ポインタの分 */
 static int nWarningMesg = 0;
 
 static void
@@ -430,7 +437,7 @@ initWarningMesg()
 {
   int i;
 
-  for (i = 0 ; i < nWarningMesg ; i++) {
+  for (i = 0; i < nWarningMesg; i++) {
     free(WarningMesg[i]);
     WarningMesg[i] = NULL;
   }
@@ -438,14 +445,14 @@ initWarningMesg()
 }
 
 void
-addWarningMesg(char *s)
+addWarningMesg(char* s)
 {
   int n;
-  char *work;
+  char* work;
 
   if (nWarningMesg < NWARNINGMESG) {
     n = strlen(s);
-    work = (char *)malloc(n + 1);
+    work = (char*)malloc(n + 1);
     if (work) {
       strcpy(work, s);
       WarningMesg[nWarningMesg++] = work;
@@ -454,37 +461,40 @@ addWarningMesg(char *s)
 }
 
 static int
-KC_keyconvCallback(uiContext d, char *arg)
+KC_keyconvCallback(uiContext d, char* arg)
 /* ARGSUSED */
 {
   extern void (*keyconvCallback)();
 
   if (arg) {
     keyconvCallback = (void (*)())arg;
-  }
-  else {
+  } else {
     keyconvCallback = NULL;
   }
   return 0;
 }
 
-
 static int
-KC_initialize(uiContext d, char *arg)
-     /* ARGSUSED */
+KC_initialize(uiContext d, char* arg)
+/* ARGSUSED */
 {
   extern int FirstTime;
 
   if (FirstTime) {
     InitCannaConfig(&cannaconf);
 
-    debug_message("KC_INITIALIZE \244\362\313\334\305\366\244\313\244\271\244\353\244\276\n",0,0,0);
-                                 /* を本当にするぞ */
+    debug_message("KC_INITIALIZE "
+                  "\244\362\313\334\305\366\244\313\244\271\244\353\244\276\n",
+                  0,
+                  0,
+                  0);
+    /* を本当にするぞ */
 
 #ifndef NO_EXTEND_MENU
     if (initExtMenu() < 0) {
       jrKanjiError = "Insufficient memory.";
-      if (arg) *(char ***)arg = NULL;
+      if (arg)
+        *(char***)arg = NULL;
       return -1;
     }
 #endif
@@ -516,7 +526,7 @@ KC_initialize(uiContext d, char *arg)
 #ifdef BINARY_CUSTOM
                     binparse();
 #else
-                    parse();
+      parse();
 #endif
 
                     /* keyconvCallback は parse 後は不要なのでクリアする */
@@ -530,12 +540,12 @@ KC_initialize(uiContext d, char *arg)
 
                       /* カナ漢字変換の初期化 */
                       if (ckverbose || !cannaconf.DelayConnect)
-			KanjiInit();
+                        KanjiInit();
                       /* ここでもエラーは無視します。
                          漢字にならなくてもいいし。 */
 
                       if (arg) {
-                      *(char ***)arg = nWarningMesg ? WarningMesg : NULL;
+                        *(char***)arg = nWarningMesg ? WarningMesg : NULL;
                       }
                       FirstTime = 0;
                       return 0;
@@ -561,7 +571,6 @@ KC_initialize(uiContext d, char *arg)
                     /* デフォルト以外のモード用メモリの開放 */
                     freeExtra();
 
-
                     /* キーマップテーブルのクリア */
                     restoreDefaultKeymaps();
                   }
@@ -583,11 +592,10 @@ KC_initialize(uiContext d, char *arg)
     /* RkSetServerName((char *)0); してはいけないのでは？ */
 
     return -1;
-  }
-  else {
+  } else {
     /* 前にInitializeをしている場合にはもうメッセージをださないことにする */
     if (arg) {
-      *(char ***)arg = NULL;
+      *(char***)arg = NULL;
     }
     return -1;
   }
@@ -600,7 +608,7 @@ freeKeysup()
   extern keySupplement keysup[];
   extern int nkeysup;
 
-  for (i = 0 ; i < nkeysup ; i++) {
+  for (i = 0; i < nkeysup; i++) {
     if (keysup[i].cand) {
       free(keysup[i].cand);
       keysup[i].cand = NULL;
@@ -618,7 +626,7 @@ extern int nothermodes;
 static void
 freeBuffer()
 {
-  if(CANNA_initfilename) {
+  if (CANNA_initfilename) {
     free(CANNA_initfilename);
   }
   CANNA_initfilename = NULL;
@@ -627,21 +635,20 @@ freeBuffer()
 static void
 freeExtra()
 {
-  extern extraFunc *extrafuncp;
+  extern extraFunc* extrafuncp;
   extraFunc *p, *q;
 
-  for (p = extrafuncp ; p ; p = q) {
+  for (p = extrafuncp; p; p = q) {
     q = p->next;
     switch (p->keyword) {
       case EXTRA_FUNC_DEFMODE:
-        if (p->u.modeptr->romdic_owner &&
-	    p->u.modeptr->romdic != NULL) {
-	  RkwCloseRoma(p->u.modeptr->romdic);
-	}
+        if (p->u.modeptr->romdic_owner && p->u.modeptr->romdic != NULL) {
+          RkwCloseRoma(p->u.modeptr->romdic);
+        }
         free(p->u.modeptr->emode);
-	if (p->u.modeptr->romaji_table) {
-	  free(p->u.modeptr->romaji_table);
-	}
+        if (p->u.modeptr->romaji_table) {
+          free(p->u.modeptr->romaji_table);
+        }
         free(p->u.modeptr);
         break;
       case EXTRA_FUNC_DEFSELECTION:
@@ -657,12 +664,12 @@ freeExtra()
     }
     free(p);
   }
-  extrafuncp = (extraFunc *)0;
+  extrafuncp = (extraFunc*)0;
 }
 
 static int
-KC_finalize(uiContext d, char *arg)
-     /* ARGSUSED */
+KC_finalize(uiContext d, char* arg)
+/* ARGSUSED */
 {
   extern int FirstTime;
   int res;
@@ -670,18 +677,18 @@ KC_finalize(uiContext d, char *arg)
   /* ウォーニングメッセージの初期化 */
   initWarningMesg();
   if (arg) {
-    *(char ***)arg = 0;
+    *(char***)arg = 0;
   }
 
   if (FirstTime) {
-    jrKanjiError = "\275\351\264\374\262\275\244\342\244\265\244\354\244\306"
-	"\244\244\244\312\244\244\244\316\244\313\241\330\275\252\244\357"
-	"\244\354\241\331\244\310\270\300\244\357\244\354\244\336\244\267"
-	"\244\277";
-                   /* 初期化もされていないのに『終われ』と言われました */
+    jrKanjiError =
+      "\275\351\264\374\262\275\244\342\244\265\244\354\244\306"
+      "\244\244\244\312\244\244\244\316\244\313\241\330\275\252\244\357"
+      "\244\354\241\331\244\310\270\300\244\357\244\354\244\336\244\267"
+      "\244\277";
+    /* 初期化もされていないのに『終われ』と言われました */
     return -1;
-  }
-  else {
+  } else {
     FirstTime = 1;
 
     /* カナ漢字変換の終了 */
@@ -726,7 +733,7 @@ KC_finalize(uiContext d, char *arg)
     freeExtra();
 
     if (arg) {
-      *(char ***)arg = nWarningMesg ? WarningMesg : NULL;
+      *(char***)arg = nWarningMesg ? WarningMesg : NULL;
     }
     return res;
   }
@@ -741,12 +748,11 @@ KC_setWidth(uiContext d, caddr_t arg)
 
 static int
 KC_setBunsetsuKugiri(uiContext d, caddr_t arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   cannaconf.BunsetsuKugiri = (int)(POINTERINT)arg;
   return 0;
 }
-
 
 static long gflags[] = {
   0L,
@@ -765,7 +771,7 @@ static long gflags[] = {
 };
 
 static int
-KC_changeMode(uiContext d, wcKanjiStatusWithValue *arg)
+KC_changeMode(uiContext d, wcKanjiStatusWithValue* arg)
 {
   coreContext cc;
   yomiContext yc;
@@ -785,21 +791,19 @@ KC_changeMode(uiContext d, wcKanjiStatusWithValue *arg)
        ベーシックモードはαモードか変換モードぐらいしかないと思う。 */
     if (arg->val == CANNA_MODE_AlphaMode) {
       return 0;
-    }
-    else {
+    } else {
       cc = (coreContext)cc->next; /* 次のコンテクスト */
       yc = (yomiContext)cc;
 
       if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
-	CannaBeep();
-	arg->val = 0;
-	return 0;
+        CannaBeep();
+        arg->val = 0;
+        return 0;
       }
 
       doFunc(d, CANNA_FN_JapaneseMode);
     }
-  }
-  else {
+  } else {
     yc = (yomiContext)cc;
 
     if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
@@ -810,56 +814,56 @@ KC_changeMode(uiContext d, wcKanjiStatusWithValue *arg)
   }
 
   switch (arg->val) {
-  case CANNA_MODE_AlphaMode:
-    arg->val = doFunc(d, CANNA_FN_AlphaMode);
-    return 0;
+    case CANNA_MODE_AlphaMode:
+      arg->val = doFunc(d, CANNA_FN_AlphaMode);
+      return 0;
 
-  case CANNA_MODE_HenkanMode:
-    arg->val = doFunc(d, CANNA_FN_HenkanNyuryokuMode);
-    return 0;
+    case CANNA_MODE_HenkanMode:
+      arg->val = doFunc(d, CANNA_FN_HenkanNyuryokuMode);
+      return 0;
 
 #ifndef NO_EXTEND_MENU
-  case CANNA_MODE_HexMode:
-    arg->val = doFunc(d, CANNA_FN_HexMode);
-    return 0;
+    case CANNA_MODE_HexMode:
+      arg->val = doFunc(d, CANNA_FN_HexMode);
+      return 0;
 #endif /* not NO_EXTEND_MENU */
 
-  case CANNA_MODE_BushuMode:
-    arg->val = doFunc(d, CANNA_FN_BushuMode);
-    return 0;
+    case CANNA_MODE_BushuMode:
+      arg->val = doFunc(d, CANNA_FN_BushuMode);
+      return 0;
 
-  case CANNA_MODE_KigoMode:
-    arg->val = doFunc(d, CANNA_FN_KigouMode);
-    return 0;
+    case CANNA_MODE_KigoMode:
+      arg->val = doFunc(d, CANNA_FN_KigouMode);
+      return 0;
 
-  case CANNA_MODE_TourokuMode:
-    arg->val = doFunc(d, CANNA_FN_ExtendMode);
-    return 0;
+    case CANNA_MODE_TourokuMode:
+      arg->val = doFunc(d, CANNA_FN_ExtendMode);
+      return 0;
 
-  case CANNA_MODE_HanKataHenkanMode:
-  case CANNA_MODE_HanKataKakuteiMode:
-    if (cannaconf.InhibitHankakuKana) {
-      CannaBeep();
+    case CANNA_MODE_HanKataHenkanMode:
+    case CANNA_MODE_HanKataKakuteiMode:
+      if (cannaconf.InhibitHankakuKana) {
+        CannaBeep();
+        arg->val = 0;
+        return 0;
+      }
+    case CANNA_MODE_ZenHiraHenkanMode:
+    case CANNA_MODE_HanHiraHenkanMode:
+    case CANNA_MODE_ZenKataHenkanMode:
+    case CANNA_MODE_ZenAlphaHenkanMode:
+    case CANNA_MODE_HanAlphaHenkanMode:
+    case CANNA_MODE_ZenHiraKakuteiMode:
+    case CANNA_MODE_HanHiraKakuteiMode:
+    case CANNA_MODE_ZenKataKakuteiMode:
+    case CANNA_MODE_ZenAlphaKakuteiMode:
+    case CANNA_MODE_HanAlphaKakuteiMode:
+      yc->generalFlags &= ~(CANNA_YOMI_ATTRFUNCS | CANNA_YOMI_BASE_HANKAKU);
+      yc->generalFlags |= gflags[arg->val - CANNA_MODE_ZenHiraHenkanMode];
+      EmptyBaseModeInfo(d, yc);
       arg->val = 0;
       return 0;
-    }
-  case CANNA_MODE_ZenHiraHenkanMode:
-  case CANNA_MODE_HanHiraHenkanMode:
-  case CANNA_MODE_ZenKataHenkanMode:
-  case CANNA_MODE_ZenAlphaHenkanMode:
-  case CANNA_MODE_HanAlphaHenkanMode:
-  case CANNA_MODE_ZenHiraKakuteiMode:
-  case CANNA_MODE_HanHiraKakuteiMode:
-  case CANNA_MODE_ZenKataKakuteiMode:
-  case CANNA_MODE_ZenAlphaKakuteiMode:
-  case CANNA_MODE_HanAlphaKakuteiMode:
-    yc->generalFlags &= ~(CANNA_YOMI_ATTRFUNCS | CANNA_YOMI_BASE_HANKAKU);
-    yc->generalFlags |= gflags[arg->val - CANNA_MODE_ZenHiraHenkanMode];
-    EmptyBaseModeInfo(d, yc);
-    arg->val = 0;
-    return 0;
-  default:
-    return(-1);
+    default:
+      return (-1);
   }
   /* NOTREACHED */
 }
@@ -870,8 +874,8 @@ baseModeP(uiContext d)
   extern KanjiModeRec alpha_mode, empty_mode;
 
   return (d->current_mode == &alpha_mode) ||
-    (d->current_mode == &empty_mode
-     && ((yomiContext)(d->modec))->next == (mode_context)0);
+         (d->current_mode == &empty_mode &&
+          ((yomiContext)(d->modec))->next == (mode_context)0);
 }
 
 /*
@@ -890,16 +894,15 @@ int
 escapeToBasicStat(uiContext d, int how)
 {
   int len = 0, totallen = 0;
-  wchar_t *p = d->buffer_return;
+  wchar_t* p = d->buffer_return;
   int totalinfo = 0;
   int maxcount = 32;
 
   do {
-    if(d->kanji_status_return) {
+    if (d->kanji_status_return) {
       d->kanji_status_return->length = 0;
       totalinfo |= (d->kanji_status_return->info & KanjiModeInfo);
-    }
-    else {
+    } else {
       return -1;
     }
     d->kanji_status_return->info = 0;
@@ -920,7 +923,7 @@ escapeToBasicStat(uiContext d, int how)
 
 static int
 KC_setUFunc(uiContext d, caddr_t arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   extern int howToBehaveInCaseOfUndefKey;
 
@@ -930,20 +933,20 @@ KC_setUFunc(uiContext d, caddr_t arg)
 
 static int
 KC_setModeInfoStyle(uiContext d, caddr_t arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
-  int	tmpval;
+  int tmpval;
   extern int howToReturnModeInfo;
 
   if ((tmpval = (int)(POINTERINT)arg) < 0 || tmpval > MaxModeInfoStyle)
-    return(-1);
+    return (-1);
   howToReturnModeInfo = (int)(POINTERINT)arg;
   return 0;
 }
 
 static int
 KC_setHexInputStyle(uiContext d, caddr_t arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   cannaconf.hexCharacterDefiningStyle = (int)(POINTERINT)arg;
   return 0;
@@ -951,7 +954,7 @@ KC_setHexInputStyle(uiContext d, caddr_t arg)
 
 static int
 KC_inhibitHankakuKana(uiContext d, caddr_t arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   cannaconf.InhibitHankakuKana = (int)(POINTERINT)arg;
   return 0;
@@ -962,7 +965,7 @@ extern void popTourokuMode(uiContext);
 
 static int
 popTourokuWithGLineClear(uiContext d, int retval, mode_context env)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   tourokuContext tc;
 
@@ -981,7 +984,7 @@ popTourokuWithGLineClear(uiContext d, int retval, mode_context env)
 #endif
 
 static int
-KC_defineKanji(uiContext d, wcKanjiStatusWithValue *arg)
+KC_defineKanji(uiContext d, wcKanjiStatusWithValue* arg)
 {
 #ifdef NO_EXTEND_MENU
   return 0;
@@ -990,7 +993,7 @@ KC_defineKanji(uiContext d, wcKanjiStatusWithValue *arg)
   d->n_buffer = arg->n_buffer;
   d->kanji_status_return = arg->ks;
 
-  if(arg->ks->length > 0 && arg->ks->echoStr && arg->ks->echoStr[0]) {
+  if (arg->ks->length > 0 && arg->ks->echoStr && arg->ks->echoStr[0]) {
     wchar_t xxxx[ROMEBUFSIZE]; /* BIGARRAY */
 
     WStrncpy(xxxx, arg->ks->echoStr, arg->ks->length);
@@ -1013,7 +1016,6 @@ KC_defineKanji(uiContext d, wcKanjiStatusWithValue *arg)
 #endif /* NO_EXTEND_MENU */
 }
 
-
 /* cfuncdef
 
   RK コンテクストを無効にする。
@@ -1022,7 +1024,7 @@ KC_defineKanji(uiContext d, wcKanjiStatusWithValue *arg)
  */
 
 static void
-closeRK(int *cxp, int flag)
+closeRK(int* cxp, int flag)
 {
   if (flag && *cxp >= 0) {
     RkwCloseContext(*cxp);
@@ -1036,17 +1038,17 @@ closeRK(int *cxp, int flag)
 
  */
 
-static void closeRKContextInUIContext(uiContext /*d*/, int /*flag*/);
+static void
+closeRKContextInUIContext(uiContext /*d*/, int /*flag*/);
 
 static void
-closeRKContextInUIContext(
-uiContext d,
-int flag) /* ０以外ならクローズもする。 */
+closeRKContextInUIContext(uiContext d,
+                          int flag) /* ０以外ならクローズもする。 */
 {
   coreContext cc;
 
   closeRK(&(d->contextCache), flag);
-  for (cc = (coreContext)d->modec ; cc ; cc = (coreContext)cc->next) {
+  for (cc = (coreContext)d->modec; cc; cc = (coreContext)cc->next) {
     if (cc->id == YOMI_CONTEXT) {
       closeRK(&(((yomiContext)cc)->context), flag);
     }
@@ -1063,7 +1065,7 @@ int flag) /* ０以外ならクローズもする。 */
 */
 
 static void
-closeRKContextInMemory(struct bukRec *p, int flag)
+closeRKContextInMemory(struct bukRec* p, int flag)
 {
 
   while (p) { /* reconfirm that p points some structure */
@@ -1082,9 +1084,9 @@ void
 makeAllContextToBeClosed(int flag)
 {
   int i;
-  struct bukRec *p;
+  struct bukRec* p;
 
-  for (i = 0 ; i < HASHTABLESIZE ; i++) {
+  for (i = 0; i < HASHTABLESIZE; i++) {
     p = conHash[i];
     if (p) {
       closeRKContextInMemory(p, flag);
@@ -1093,7 +1095,7 @@ makeAllContextToBeClosed(int flag)
 }
 
 static int
-KC_kakutei(uiContext d, wcKanjiStatusWithValue *arg)
+KC_kakutei(uiContext d, wcKanjiStatusWithValue* arg)
 {
   d->buffer_return = arg->buffer;
   d->n_buffer = arg->n_buffer;
@@ -1102,7 +1104,7 @@ KC_kakutei(uiContext d, wcKanjiStatusWithValue *arg)
   bzero(d->kanji_status_return, sizeof(wcKanjiStatus));
 
   d->nbytes = escapeToBasicStat(d, CANNA_FN_Kakutei);
-  if ( !baseModeP(d) ) {
+  if (!baseModeP(d)) {
     d->nbytes = escapeToBasicStat(d, CANNA_FN_Quit);
   }
   d->kanji_status_return->info &= ~KanjiThroughInfo;
@@ -1111,7 +1113,7 @@ KC_kakutei(uiContext d, wcKanjiStatusWithValue *arg)
 }
 
 static int
-KC_kill(uiContext d, wcKanjiStatusWithValue *arg)
+KC_kill(uiContext d, wcKanjiStatusWithValue* arg)
 {
   d->buffer_return = arg->buffer;
   d->n_buffer = arg->n_buffer;
@@ -1126,21 +1128,19 @@ KC_kill(uiContext d, wcKanjiStatusWithValue *arg)
 }
 
 static int
-KC_modekeys(uiContext d, unsigned char *arg)
+KC_modekeys(uiContext d, unsigned char* arg)
 {
   int n = 0;
   int i;
   extern KanjiModeRec alpha_mode;
   int func;
 
-  for (i = 0 ; i < 256 ; i++) {
+  for (i = 0; i < 256; i++) {
     func = alpha_mode.keytbl[i];
-    if (func != CANNA_FN_SelfInsert &&
-	func != CANNA_FN_FunctionalInsert &&
-	func != CANNA_FN_Undefined &&
-	func != CANNA_FN_FuncSequence &&
-	func != CANNA_FN_UseOtherKeymap	&&
-	alpha_mode.func(d, &alpha_mode, KEY_CHECK, 0/*dummy*/, func)) {
+    if (func != CANNA_FN_SelfInsert && func != CANNA_FN_FunctionalInsert &&
+        func != CANNA_FN_Undefined && func != CANNA_FN_FuncSequence &&
+        func != CANNA_FN_UseOtherKeymap &&
+        alpha_mode.func(d, &alpha_mode, KEY_CHECK, 0 /*dummy*/, func)) {
       arg[n++] = i;
     }
   }
@@ -1148,34 +1148,33 @@ KC_modekeys(uiContext d, unsigned char *arg)
 }
 
 static int
-KC_queryMode(uiContext d, wchar_t *arg)
+KC_queryMode(uiContext d, wchar_t* arg)
 {
   return queryMode(d, arg);
 }
 
 static int
-KC_queryConnection(uiContext d, unsigned char *arg)
-     /* ARGSUSED */
+KC_queryConnection(uiContext d, unsigned char* arg)
+/* ARGSUSED */
 {
   extern int defaultContext;
 
   if (defaultContext != -1) {
     return 1;
-  }
-  else {
+  } else {
     return 0;
   }
 }
 
 static int
-KC_parse(uiContext d, char **arg)
-     /* ARGSUSED */
+KC_parse(uiContext d, char** arg)
+/* ARGSUSED */
 {
   initWarningMesg();
 
   parse_string(*arg);
 
-  *(char ***)arg = nWarningMesg ? WarningMesg : NULL;
+  *(char***)arg = nWarningMesg ? WarningMesg : NULL;
 
   return nWarningMesg;
 }
@@ -1184,14 +1183,14 @@ int yomiInfoLevel = 0;
 
 static int
 KC_yomiInfo(uiContext d, int arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   yomiInfoLevel = arg;
   return 0;
 }
 
 static int
-KC_storeYomi(uiContext d, wcKanjiStatusWithValue *arg)
+KC_storeYomi(uiContext d, wcKanjiStatusWithValue* arg)
 {
   extern KanjiModeRec yomi_mode, cy_mode;
   coreContext cc;
@@ -1200,7 +1199,7 @@ KC_storeYomi(uiContext d, wcKanjiStatusWithValue *arg)
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   wchar_t buf[2048];
 #else
-  wchar_t *buf = (wchar_t *)malloc(sizeof(wchar_t) * 2048);
+  wchar_t* buf = (wchar_t*)malloc(sizeof(wchar_t) * 2048);
   if (!buf) {
     /* This should the 'no more memory' message on the guide line... */
     arg->val = 0;
@@ -1232,7 +1231,8 @@ KC_storeYomi(uiContext d, wcKanjiStatusWithValue *arg)
   if (p && *p) {
     d->current_mode =
       (((yomiContext)d->modec)->generalFlags & CANNA_YOMI_CHIKUJI_MODE)
-	? &cy_mode : &yomi_mode;
+        ? &cy_mode
+        : &yomi_mode;
   }
   makeYomiReturnStruct(d);
   arg->val = 0;
@@ -1242,11 +1242,11 @@ KC_storeYomi(uiContext d, wcKanjiStatusWithValue *arg)
   return 0;
 }
 
-char *initFileSpecified = NULL;
+char* initFileSpecified = NULL;
 
 static int
-KC_setInitFileName(uiContext d, char *arg)
-     /* ARGSUSED */
+KC_setInitFileName(uiContext d, char* arg)
+/* ARGSUSED */
 {
   int len;
 
@@ -1254,24 +1254,22 @@ KC_setInitFileName(uiContext d, char *arg)
     free(initFileSpecified);
   }
 
-  if ( arg && *arg ) {
+  if (arg && *arg) {
     len = strlen(arg);
     initFileSpecified = malloc(len + 1);
     if (initFileSpecified) {
       strcpy(initFileSpecified, arg);
-    }
-    else {
+    } else {
       return -1;
     }
-  }
-  else {
+  } else {
     initFileSpecified = NULL;
   }
   return 0;
 }
 
 static int
-KC_do(uiContext d, wcKanjiStatusWithValue *arg)
+KC_do(uiContext d, wcKanjiStatusWithValue* arg)
 {
   d->buffer_return = arg->buffer;
   d->n_buffer = arg->n_buffer;
@@ -1322,7 +1320,7 @@ _do_func_slightly(uiContext d, int fnum, mode_context mode_c, KanjiMode c_mode)
   e->kanji_status_return = &ks;
 
   e->nbytes = d->nbytes;
-  e->ch     = d->ch;
+  e->ch = d->ch;
 
   e->status = 0; /* モードについて"処理中"のステータスを既定値とする */
   e->more.todo = 0;
@@ -1345,10 +1343,10 @@ _do_func_slightly(uiContext d, int fnum, mode_context mode_c, KanjiMode c_mode)
     yc->henkanInhibition = inhback;
   }
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
-    free(e);
-  }
+  free(e);
+}
 #endif
-  return retval;
+return retval;
 }
 
 #endif
@@ -1357,9 +1355,9 @@ _do_func_slightly(uiContext d, int fnum, mode_context mode_c, KanjiMode c_mode)
 static int
 callCallback(uiContext d, int res)
 {
-  struct callback *cbp;
+  struct callback* cbp;
 
-  for (cbp = d->cb; cbp ;) {
+  for (cbp = d->cb; cbp;) {
     int index;
     int (*callbackfunc)(uiContext, int, mode_context);
 
@@ -1369,14 +1367,13 @@ callCallback(uiContext d, int res)
     if (callbackfunc) {
       d->kanji_status_return->info &= ~KanjiEmptyInfo;
       if (index) { /* everytime 以外 */
-	res = (*callbackfunc)(d, res, cbp->env);
-	cbp = d->cb; /* コールバック関数によりコールバックが
-			呼び出されるのを支援するため入れ直す */
-	/* ここでコールバック関数をポップアップしようかどうか考えどころ */
-	continue;
-      }
-      else {
-	res = (*callbackfunc)(d, res, cbp->env);
+        res = (*callbackfunc)(d, res, cbp->env);
+        cbp = d->cb; /* コールバック関数によりコールバックが
+                        呼び出されるのを支援するため入れ直す */
+        /* ここでコールバック関数をポップアップしようかどうか考えどころ */
+        continue;
+      } else {
+        res = (*callbackfunc)(d, res, cbp->env);
       }
     }
     cbp = cbp->next;
@@ -1406,17 +1403,17 @@ _doFunc(uiContext d, int fnum)
   res = tmpres = callCallback(d, tmpres);
 
   if (d->kanji_status_return->length >= 0) {
-    prevEcho    = d->kanji_status_return->echoStr;
+    prevEcho = d->kanji_status_return->echoStr;
     prevEchoLen = d->kanji_status_return->length;
-    prevRevPos  = d->kanji_status_return->revPos;
-    prevRevLen  = d->kanji_status_return->revLen;
+    prevRevPos = d->kanji_status_return->revPos;
+    prevRevLen = d->kanji_status_return->revLen;
   }
   if (d->kanji_status_return->info & KanjiGLineInfo) {
     ginfo = 1;
-    prevGEcho    = d->kanji_status_return->gline.line;
+    prevGEcho = d->kanji_status_return->gline.line;
     prevGEchoLen = d->kanji_status_return->gline.length;
-    prevGRevPos  = d->kanji_status_return->gline.revPos;
-    prevGRevLen  = d->kanji_status_return->gline.revLen;
+    prevGRevPos = d->kanji_status_return->gline.revPos;
+    prevGRevLen = d->kanji_status_return->gline.revLen;
   }
 
   /* moreToDo も実行しなくては */
@@ -1426,7 +1423,7 @@ _doFunc(uiContext d, int fnum)
     }
     d->kanji_status_return->info &= ~(KanjiThroughInfo | KanjiEmptyInfo);
     d->more.todo = 0;
-    d->ch = d->more.ch;	/* moreTodo に more.ch はいらないのでは？ */
+    d->ch = d->more.ch; /* moreTodo に more.ch はいらないのでは？ */
     d->nbytes = 1;
     d->buffer_return += tmpres;
     d->n_buffer -= tmpres;
@@ -1436,7 +1433,7 @@ _doFunc(uiContext d, int fnum)
       /* ２回目以降に以下のデータが失われている場合があるので入れ直す。 */
       d->buffer_return[0] = key2wchar(d->ch, &check);
       if (!check) {
-	d->nbytes = 0;
+        d->nbytes = 0;
       }
     }
 
@@ -1445,17 +1442,17 @@ _doFunc(uiContext d, int fnum)
     if (tmpres >= 0) {
       res += tmpres;
       if (d->kanji_status_return->length >= 0) {
-	prevEcho    = d->kanji_status_return->echoStr;
-	prevEchoLen = d->kanji_status_return->length;
-	prevRevPos  = d->kanji_status_return->revPos;
-	prevRevLen  = d->kanji_status_return->revLen;
+        prevEcho = d->kanji_status_return->echoStr;
+        prevEchoLen = d->kanji_status_return->length;
+        prevRevPos = d->kanji_status_return->revPos;
+        prevRevLen = d->kanji_status_return->revLen;
       }
       if (d->kanji_status_return->info & KanjiGLineInfo) {
-	ginfo = 1;
-	prevGEcho    = d->kanji_status_return->gline.line;
-	prevGEchoLen = d->kanji_status_return->gline.length;
-	prevGRevPos  = d->kanji_status_return->gline.revPos;
-	prevGRevLen  = d->kanji_status_return->gline.revLen;
+        ginfo = 1;
+        prevGEcho = d->kanji_status_return->gline.line;
+        prevGEchoLen = d->kanji_status_return->gline.length;
+        prevGRevPos = d->kanji_status_return->gline.revPos;
+        prevGRevLen = d->kanji_status_return->gline.revLen;
       }
     }
   }
@@ -1463,17 +1460,17 @@ _doFunc(uiContext d, int fnum)
     d->kanji_status_return->info &= ~KanjiThroughInfo;
   }
 
-  d->kanji_status_return->length  = prevEchoLen;
+  d->kanji_status_return->length = prevEchoLen;
   if (prevEchoLen >= 0) {
     d->kanji_status_return->echoStr = prevEcho;
-    d->kanji_status_return->revPos  = prevRevPos;
-    d->kanji_status_return->revLen  = prevRevLen;
+    d->kanji_status_return->revPos = prevRevPos;
+    d->kanji_status_return->revLen = prevRevLen;
   }
   if (ginfo) {
-    d->kanji_status_return->gline.line    = prevGEcho;
-    d->kanji_status_return->gline.length  = prevGEchoLen;
-    d->kanji_status_return->gline.revPos  = prevGRevPos;
-    d->kanji_status_return->gline.revLen  = prevGRevLen;
+    d->kanji_status_return->gline.line = prevGEcho;
+    d->kanji_status_return->gline.length = prevGEchoLen;
+    d->kanji_status_return->gline.revPos = prevGRevPos;
+    d->kanji_status_return->gline.revLen = prevGRevLen;
     d->kanji_status_return->info |= KanjiGLineInfo;
   }
 
@@ -1484,20 +1481,19 @@ int
 _afterDoFunc(uiContext d, int retval)
 {
   int res = retval;
-  wcKanjiStatus   *kanji_status_return = d->kanji_status_return;
+  wcKanjiStatus* kanji_status_return = d->kanji_status_return;
 
   /* GLine を消せと言うのなら消しましょう */
   if (d->flags & PLEASE_CLEAR_GLINE) {
     if (d->flags & PCG_RECOGNIZED) { /* 前の前以前なら */
-      if (res >= 0 &&	kanji_status_return->length >= 0) {
-	d->flags &= ~(PLEASE_CLEAR_GLINE | PCG_RECOGNIZED);
-	   /* これで役目を果たしました */
-	if (!(kanji_status_return->info & KanjiGLineInfo)) {
-	  GlineClear(d);
-	}
+      if (res >= 0 && kanji_status_return->length >= 0) {
+        d->flags &= ~(PLEASE_CLEAR_GLINE | PCG_RECOGNIZED);
+        /* これで役目を果たしました */
+        if (!(kanji_status_return->info & KanjiGLineInfo)) {
+          GlineClear(d);
+        }
       }
-    }
-    else {
+    } else {
       d->flags |= PCG_RECOGNIZED;
     }
   }
@@ -1519,12 +1515,11 @@ doFunc(uiContext d, int fnum)
 
 static int
 KC_getContext(uiContext d, int arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   extern int defaultContext, defaultBushuContext;
 
-  switch (arg)
-    {
+  switch (arg) {
     case 0:
       return RkwDuplicateContext(defaultContext);
     case 1:
@@ -1532,13 +1527,13 @@ KC_getContext(uiContext d, int arg)
     case 2:
       return defaultContext;
     default:
-      return(-1);
-    }
+      return (-1);
+  }
   /* NOTREACHED */
 }
 
 static int
-KC_closeUIContext(uiContext d, wcKanjiStatusWithValue *arg)
+KC_closeUIContext(uiContext d, wcKanjiStatusWithValue* arg)
 {
   int ret;
 
@@ -1568,17 +1563,16 @@ getYomiContext(uiContext d)
   yomiContext yc;
 
   switch (cc->id) {
-  case YOMI_CONTEXT:
-    yc = (yomiContext)cc;
-    break;
-  default:
-    if (cc->minorMode == CANNA_MODE_AlphaMode) {
-      yc = (yomiContext)(cc->next);
-    }
-    else {
-      yc = (yomiContext)0;
-    }
-    break;
+    case YOMI_CONTEXT:
+      yc = (yomiContext)cc;
+      break;
+    default:
+      if (cc->minorMode == CANNA_MODE_AlphaMode) {
+        yc = (yomiContext)(cc->next);
+      } else {
+        yc = (yomiContext)0;
+      }
+      break;
   }
   return yc;
 }
@@ -1592,13 +1586,11 @@ KC_inhibitChangeMode(uiContext d, int arg)
   if (yc) {
     if (arg) {
       yc->generalFlags |= CANNA_YOMI_CHGMODE_INHIBITTED;
-    }
-    else {
+    } else {
       yc->generalFlags &= ~CANNA_YOMI_CHGMODE_INHIBITTED;
     }
     return 0;
-  }
-  else {
+  } else {
     return -1;
   }
 }
@@ -1612,29 +1604,28 @@ KC_letterRestriction(uiContext d, int arg)
   if (yc) {
     yc->allowedChars = arg;
     return 0;
-  }
-  else {
+  } else {
     return -1;
   }
 }
 
 static int
-countColumns(wchar_t *str)
+countColumns(wchar_t* str)
 {
   int len = 0;
-  wchar_t *p;
+  wchar_t* p;
 
   if (str) {
-    for (p = str ; *p ; p++) {
+    for (p = str; *p; p++) {
       switch (WWhatGPlain(*p)) {
-      case 0:
-      case 2:
-	len += 1;
-	break;
-      case 1:
-      case 3:
-	len += 2;
-	break;
+        case 0:
+        case 2:
+          len += 1;
+          break;
+        case 1:
+        case 3:
+          len += 2;
+          break;
       }
     }
   }
@@ -1643,20 +1634,20 @@ countColumns(wchar_t *str)
 
 static int
 KC_queryMaxModeStr(uiContext d, int arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   int i, maxcolumns = 0, ncols;
   extern struct ModeNameRecs ModeNames[];
-  extern extraFunc *extrafuncp;
-  extraFunc *ep;
+  extern extraFunc* extrafuncp;
+  extraFunc* ep;
 
-  for (i = 0 ; i < CANNA_MODE_MAX_IMAGINARY_MODE ; i++) {
+  for (i = 0; i < CANNA_MODE_MAX_IMAGINARY_MODE; i++) {
     ncols = countColumns(ModeNames[i].name);
     if (ncols > maxcolumns) {
       maxcolumns = ncols;
     }
   }
-  for (ep = extrafuncp ; ep ; ep = ep->next) {
+  for (ep = extrafuncp; ep; ep = ep->next) {
     ncols = countColumns(ep->display_name);
     if (ncols > maxcolumns) {
       maxcolumns = ncols;
@@ -1666,37 +1657,36 @@ KC_queryMaxModeStr(uiContext d, int arg)
 }
 
 static int
-KC_setListCallback(uiContext d, jrListCallbackStruct *arg)
+KC_setListCallback(uiContext d, jrListCallbackStruct* arg)
 {
   if (cannaconf.iListCB) {
     d->client_data = NULL;
-    d->list_func = (int (*)(char *, int, wchar_t **, int, int *))0;
+    d->list_func = (int (*)(char*, int, wchar_t**, int, int*))0;
     return -1;
   }
   if (arg->callback_func) {
     d->list_func = arg->callback_func;
     if (arg->callback_func == &EUCListCallback
 #if SUPPORT_OLD_WCHAR
-	|| arg->callback_func == &owcListCallback
+        || arg->callback_func == &owcListCallback
 #endif
-	) {
+    ) {
       /* arg->client_dataはスタック上にあるのでuiContextに引っ越し */
-      d->elistcb = *((const jrEUCListCallbackStruct *)arg->client_data);
-      d->client_data = (char *)&d->elistcb;
+      d->elistcb = *((const jrEUCListCallbackStruct*)arg->client_data);
+      d->client_data = (char*)&d->elistcb;
     } else {
       d->client_data = arg->client_data;
     }
-  }
-  else {
+  } else {
     d->client_data = NULL;
-    d->list_func = (int (*)(char *, int, wchar_t **, int, int *))0;
+    d->list_func = (int (*)(char*, int, wchar_t**, int, int*))0;
   }
   return 0;
 }
 
 static int
 KC_setVerbose(uiContext d, int arg)
-     /* ARGSUSED */
+/* ARGSUSED */
 {
   extern int ckverbose;
 
@@ -1707,17 +1697,17 @@ KC_setVerbose(uiContext d, int arg)
 /* kanjiInitialize かな漢字変換の初期化 KC_INITIALIZEと等価である。 */
 
 int
-kanjiInitialize(char ***mes)
+kanjiInitialize(char*** mes)
 {
-  return KC_initialize((uiContext)0, (char *)mes);
+  return KC_initialize((uiContext)0, (char*)mes);
 }
 
 /* kanjiFinalize KC_FINALIZEと等価である。 */
 
 int
-kanjiFinalize(char ***mes)
+kanjiFinalize(char*** mes)
 {
-  return KC_finalize((uiContext)0, (char *)mes);
+  return KC_finalize((uiContext)0, (char*)mes);
 }
 
 /* createKanjiContext コンテクストを作成するものである。 */
@@ -1741,30 +1731,29 @@ createKanjiContext()
 /* wcCloseKanjiContext コンテクストをクローズするもの。 */
 
 int
-wcCloseKanjiContext(const int context, wcKanjiStatusWithValue *ksva)
+wcCloseKanjiContext(const int context, wcKanjiStatusWithValue* ksva)
 {
   context_table[context] = 0;
-  return  XwcKanjiControl2(0, context, KC_CLOSEUICONTEXT, (BYTE *)ksva);
+  return XwcKanjiControl2(0, context, KC_CLOSEUICONTEXT, (BYTE*)ksva);
 }
 
 /* jrCloseKanjiContext コンテクストをクローズするもの。 */
 
 int
-jrCloseKanjiContext(const int context, jrKanjiStatusWithValue *ksva)
+jrCloseKanjiContext(const int context, jrKanjiStatusWithValue* ksva)
 {
   context_table[context] = 0;
-  return  XKanjiControl2(0, context, KC_CLOSEUICONTEXT, (BYTE *)ksva);
+  return XKanjiControl2(0, context, KC_CLOSEUICONTEXT, (BYTE*)ksva);
 }
 
 int
 ToggleChikuji(uiContext d, int flg)
 {
-  yomiContext	yc = (yomiContext)d->modec;
+  yomiContext yc = (yomiContext)d->modec;
   extern KanjiModeRec empty_mode;
   extern struct CannaConfig cannaconf;
 
-  if ((yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE) &&
-      yc->context != -1) {
+  if ((yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE) && yc->context != -1) {
     RkwEndBun(yc->context, 0);
     abandonContext(d, yc);
   }
@@ -1776,8 +1765,7 @@ ToggleChikuji(uiContext d, int flg)
     yc->generalFlags |= CANNA_YOMI_CHIKUJI_MODE;
     yc->majorMode = CANNA_MODE_HenkanMode;
     cannaconf.chikuji = 1;
-  }
-  else {
+  } else {
     /* 連文節に変える */
     yc->generalFlags &= ~CANNA_YOMI_CHIKUJI_MODE;
     yc->majorMode = CANNA_MODE_HenkanMode;
@@ -1806,28 +1794,27 @@ KC_disconnectServer(uiContext d, int arg)
 {
 
 #if defined(DEBUG)
-  fprintf(stderr,"サーバとの接続を切る\n");
+  fprintf(stderr, "サーバとの接続を切る\n");
 #endif
   jrKanjiPipeError();
   return 0;
 }
 
 static int
-KC_setAppName(uiContext d, unsigned char *arg)
+KC_setAppName(uiContext d, unsigned char* arg)
 /* ARGSUSED */
 {
   extern int defaultContext;
 
-  if (strlen((char *)arg) > CANNA_MAXAPPNAME) {
-    strncpy(saveapname, (char *)arg, CANNA_MAXAPPNAME);
+  if (strlen((char*)arg) > CANNA_MAXAPPNAME) {
+    strncpy(saveapname, (char*)arg, CANNA_MAXAPPNAME);
     saveapname[CANNA_MAXAPPNAME - 1] = '\0';
-  }
-  else {
-    strcpy(saveapname, (char *)arg);
+  } else {
+    strcpy(saveapname, (char*)arg);
   }
   RkwSetAppName(defaultContext, saveapname);
 
-  return(0);
+  return (0);
 }
 
 static int
@@ -1851,44 +1838,44 @@ debug_yomibuf(yomiContext yc)
 
 #define MANYSPACES "                                                  "
 
-  kanap = kana; romap = roma; kap = ka; yap = ya;
+  kanap = kana;
+  romap = roma;
+  kap = ka;
+  yap = ya;
 
-  for (i = 0, j = 0 ; i < yc->kEndp || j < yc->rEndp ;) {
+  for (i = 0, j = 0; i < yc->kEndp || j < yc->rEndp;) {
     maxcol = 0;
 
     if (i < yc->kEndp) {
       k = i + 1;
       columns = 0;
-      tmp =
-	(WIsG0(yc->kana_buffer[i]) || WIsG2(yc->kana_buffer[i])) ? 1 : 2;
+      tmp = (WIsG0(yc->kana_buffer[i]) || WIsG2(yc->kana_buffer[i])) ? 1 : 2;
       if (i == yc->kRStartp && i != yc->kCurs) {
-	*kanap++ = '\'';
-	*kap++ = '\'';
-	columns++;
+        *kanap++ = '\'';
+        *kap++ = '\'';
+        columns++;
       }
       if (yc->kAttr[i] & HENKANSUMI) {
-	*kap++ = ' ';
-      }
-      else {
-	*kap++ = 'x';
+        *kap++ = ' ';
+      } else {
+        *kap++ = 'x';
       }
       if (tmp > 1) {
-	*kap++ = ' ';
+        *kap++ = ' ';
       }
       columns += tmp;
       while (!(yc->kAttr[k] & SENTOU)) {
-	tmp = (WIsG0(yc->kana_buffer[k]) || WIsG2(yc->kana_buffer[k])) ? 1 : 2;
-	columns += tmp;
-	if (yc->kAttr[k] & HENKANSUMI) {
-	  *kap++ = ' ';
-	}
-	else {
-	  *kap++ = 'x';
-	}
-	if (tmp > 1) {
-	  *kap++ = ' ';
-	}
-	k++;
+        tmp = (WIsG0(yc->kana_buffer[k]) || WIsG2(yc->kana_buffer[k])) ? 1 : 2;
+        columns += tmp;
+        if (yc->kAttr[k] & HENKANSUMI) {
+          *kap++ = ' ';
+        } else {
+          *kap++ = 'x';
+        }
+        if (tmp > 1) {
+          *kap++ = ' ';
+        }
+        k++;
       }
       WStrncpy(xxx, yc->kana_buffer + i, k - i);
       xxx[k - i] = (wchar_t)0;
@@ -1896,13 +1883,12 @@ debug_yomibuf(yomiContext yc)
       *kap++ = ' ';
       len = strlen(kanap);
       if (columns > maxcol) {
-	maxcol = columns;
-      }
-      else {
-	strncpy(kanap + len, MANYSPACES, maxcol - columns);
-	strncpy(kap, MANYSPACES, maxcol - columns);
-	kap += maxcol - columns;
-	len += maxcol - columns;
+        maxcol = columns;
+      } else {
+        strncpy(kanap + len, MANYSPACES, maxcol - columns);
+        strncpy(kap, MANYSPACES, maxcol - columns);
+        kap += maxcol - columns;
+        len += maxcol - columns;
       }
       kanap += len;
       i = k;
@@ -1911,30 +1897,29 @@ debug_yomibuf(yomiContext yc)
     if (j < yc->rEndp) {
       k = j + 1;
       columns =
-	(WIsG0(yc->romaji_buffer[j]) || WIsG2(yc->romaji_buffer[j])) ? 1 : 2;
+        (WIsG0(yc->romaji_buffer[j]) || WIsG2(yc->romaji_buffer[j])) ? 1 : 2;
       if (j == yc->rStartp && j != yc->rCurs) {
-	*romap++ = '\'';
-	columns++;
+        *romap++ = '\'';
+        columns++;
       }
       while (!(yc->rAttr[k] & SENTOU)) {
-	columns +=
-	  (WIsG0(yc->romaji_buffer[k]) || WIsG2(yc->romaji_buffer[k])) ? 1 : 2;
-	k++;
+        columns +=
+          (WIsG0(yc->romaji_buffer[k]) || WIsG2(yc->romaji_buffer[k])) ? 1 : 2;
+        k++;
       }
       WStrncpy(xxx, yc->romaji_buffer + j, k - j);
       xxx[k - j] = (wchar_t)0;
       sprintf(romap, "%ws ", xxx);
       len = strlen(romap);
       if (columns > maxcol) {
-	strncpy(kanap, MANYSPACES, columns - maxcol);
-	kanap += columns - maxcol;
-	strncpy(kap, MANYSPACES, columns - maxcol);
-	kap += columns - maxcol;
-	maxcol = columns;
-      }
-      else {
-	strncpy(romap + len, MANYSPACES, maxcol - columns);
-	len += maxcol - columns;
+        strncpy(kanap, MANYSPACES, columns - maxcol);
+        kanap += columns - maxcol;
+        strncpy(kap, MANYSPACES, columns - maxcol);
+        kap += columns - maxcol;
+        maxcol = columns;
+      } else {
+        strncpy(romap + len, MANYSPACES, maxcol - columns);
+        len += maxcol - columns;
       }
       romap += len;
       j = k;
@@ -1958,27 +1943,27 @@ KC_debugyomi(uiContext d, int arg)
 }
 
 static int
-KC_queryPhono(uiContext d, char *arg)
+KC_queryPhono(uiContext d, char* arg)
 /* ARGSUSED */
 {
-  extern struct RkRxDic *romajidic;
-  struct RkRxDic **foo = (struct RkRxDic **)arg;
+  extern struct RkRxDic* romajidic;
+  struct RkRxDic** foo = (struct RkRxDic**)arg;
 
   *foo = romajidic;
   return 0;
 }
 
 static int
-KC_setUserInfo(uiContext d, jrUserInfoStruct *arg)
+KC_setUserInfo(uiContext d, jrUserInfoStruct* arg)
 /* ARGSUSED */
 {
-  extern jrUserInfoStruct *uinfo;
+  extern jrUserInfoStruct* uinfo;
   int ret = -1;
   char *uname, *gname, *srvname, *topdir, *cannafile, *romkanatable;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
   char buf[256];
 #else
-  char *buf = malloc(256);
+  char* buf = malloc(256);
   if (!buf) {
     return -1;
   }
@@ -1991,14 +1976,14 @@ KC_setUserInfo(uiContext d, jrUserInfoStruct *arg)
       if (gname || !arg->gname) {
         srvname = arg->srvname ? strdup(arg->srvname) : NULL;
         if (srvname || !arg->srvname) {
-	  topdir = arg->topdir ? strdup(arg->topdir) : NULL;
+          topdir = arg->topdir ? strdup(arg->topdir) : NULL;
           if (topdir || !arg->topdir) {
-	    cannafile = arg->cannafile ? strdup(arg->cannafile) : NULL;
+            cannafile = arg->cannafile ? strdup(arg->cannafile) : NULL;
             if (cannafile || !arg->cannafile) {
               romkanatable =
-		arg->romkanatable ? strdup(arg->romkanatable) : NULL;
+                arg->romkanatable ? strdup(arg->romkanatable) : NULL;
               if (romkanatable || !arg->romkanatable) {
-                uinfo = (jrUserInfoStruct *)malloc(sizeof(jrUserInfoStruct));
+                uinfo = (jrUserInfoStruct*)malloc(sizeof(jrUserInfoStruct));
                 if (uinfo) {
                   uinfo->uname = uname;
                   uinfo->gname = gname;
@@ -2008,50 +1993,62 @@ KC_setUserInfo(uiContext d, jrUserInfoStruct *arg)
                   uinfo->romkanatable = romkanatable;
 
                   if (uinfo->cannafile) {
-                    char *p = uinfo->cannafile;
+                    char* p = uinfo->cannafile;
 
                     if (strlen(p) >= 3 && (p[0] == '\\' || p[0] == '/' ||
-                        (p[1] == ':' && p[2] == '\\') ||
-                        (p[1] == ':' && p[2] == '/')))
+                                           (p[1] == ':' && p[2] == '\\') ||
+                                           (p[1] == ':' && p[2] == '/')))
                       strcpy(buf, p);
                     else if (uinfo->uname)
-                      sprintf(buf, "%s/%s/%s/%s/%s",
+                      sprintf(buf,
+                              "%s/%s/%s/%s/%s",
                               uinfo->topdir ? uinfo->topdir : "",
-			      "dic", "user",
-                              uinfo->uname, uinfo->cannafile);
+                              "dic",
+                              "user",
+                              uinfo->uname,
+                              uinfo->cannafile);
                     else
                       buf[0] = '\0';
-                  }
-                  else {
-                    sprintf(buf, "%s/%s",
-			    uinfo->topdir ? uinfo->topdir : "", "default.can");
+                  } else {
+                    sprintf(buf,
+                            "%s/%s",
+                            uinfo->topdir ? uinfo->topdir : "",
+                            "default.can");
                   }
                   wcKanjiControl((int)d, KC_SETINITFILENAME, buf);
-		  RkwSetUserInfo(uinfo->uname, uinfo->gname, uinfo->topdir);
+                  RkwSetUserInfo(uinfo->uname, uinfo->gname, uinfo->topdir);
                   ret = 1;
-		  goto return_ret;
+                  goto return_ret;
                 }
-		if (romkanatable) free(romkanatable);
+                if (romkanatable)
+                  free(romkanatable);
               }
-              if (cannafile) free(cannafile);
+              if (cannafile)
+                free(cannafile);
             }
-            if (topdir) free(topdir);
+            if (topdir)
+              free(topdir);
           }
-          if (srvname) free(srvname);
+          if (srvname)
+            free(srvname);
         }
-        if (gname) free(gname);
+        if (gname)
+          free(gname);
       }
-      if (uname) free(uname);
+      if (uname)
+        free(uname);
     }
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (SetUserinfo) できませんでした";
 #else
-    jrKanjiError = "malloc (SetUserinfo) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
+    jrKanjiError =
+      "malloc (SetUserinfo) "
+      "\244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
 #endif
   }
   ret = -1;
 
- return_ret:
+return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(buf);
 #endif
@@ -2059,11 +2056,11 @@ KC_setUserInfo(uiContext d, jrUserInfoStruct *arg)
 }
 
 static int
-KC_queryCustom(uiContext d, jrCInfoStruct *arg)
+KC_queryCustom(uiContext d, jrCInfoStruct* arg)
 /* ARGSUSED */
 {
   extern struct CannaConfig cannaconf;
-  static char *input_code[CANNA_MAX_CODE] = {"jis", "sjis", "kuten"};
+  static char* input_code[CANNA_MAX_CODE] = { "jis", "sjis", "kuten" };
 
   if (/* 0 <= cannaconf.code_input && // unsigned なので必ず真 */
       cannaconf.code_input <= CANNA_MAX_CODE) {
@@ -2080,7 +2077,7 @@ KC_queryCustom(uiContext d, jrCInfoStruct *arg)
 }
 
 static int
-KC_closeAllContext(uiContext d, char *arg)
+KC_closeAllContext(uiContext d, char* arg)
 /* ARGSUSED */
 {
   makeAllContextToBeClosed(1);
@@ -2088,31 +2085,29 @@ KC_closeAllContext(uiContext d, char *arg)
 }
 
 static int
-KC_attributeInfo(uiContext d, char *arg)
+KC_attributeInfo(uiContext d, char* arg)
 {
-  wcKanjiAttributeInternal **p = (wcKanjiAttributeInternal **)arg;
+  wcKanjiAttributeInternal** p = (wcKanjiAttributeInternal**)arg;
 
   if (p) {
     if (!d->attr) {
-      d->attr = (wcKanjiAttributeInternal *)
-	malloc(sizeof(wcKanjiAttributeInternal));
+      d->attr =
+        (wcKanjiAttributeInternal*)malloc(sizeof(wcKanjiAttributeInternal));
       if (d->attr) {
-	d->attr->u.attr = malloc(ROMEBUFSIZE);
-	if (d->attr->u.attr) {
-	  d->attr->len = ROMEBUFSIZE;
-	  *p = d->attr;
-	  return 0;
-	}
-	free(d->attr);
-	d->attr = NULL;
+        d->attr->u.attr = malloc(ROMEBUFSIZE);
+        if (d->attr->u.attr) {
+          d->attr->len = ROMEBUFSIZE;
+          *p = d->attr;
+          return 0;
+        }
+        free(d->attr);
+        d->attr = NULL;
       }
-    }
-    else { /* called twice */
+    } else { /* called twice */
       *p = d->attr;
       return 0;
     }
-  }
-  else if (d->attr) { /* && !p */
+  } else if (d->attr) { /* && !p */
     free(d->attr->u.attr);
     free(d->attr);
     d->attr = NULL;
@@ -2123,9 +2118,9 @@ KC_attributeInfo(uiContext d, char *arg)
 
 /* 学習辞書に書き込む */
 static int
-KC_syncDictionary(uiContext d, char *arg)
+KC_syncDictionary(uiContext d, char* arg)
 {
-  yomiContext	yc = (yomiContext)d->modec;
+  yomiContext yc = (yomiContext)d->modec;
   RkwSync(yc->context, NULL);
   return 0;
 }
@@ -2180,7 +2175,7 @@ kanjiControl(int request, uiContext d, caddr_t arg)
 }
 
 #ifndef wchar_t
-# error "wchar_t is already undefined"
+#error "wchar_t is already undefined"
 #endif
 #undef wchar_t
 /*********************************************************************

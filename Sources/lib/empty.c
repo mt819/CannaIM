@@ -44,17 +44,16 @@ inEmptySelfInsert(uiContext d)
   return res;
 }
 
-
 static int
 EmptySelfInsert(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
   int res = inEmptySelfInsert(d);
 
-/* 単語登録のときに yomi mode の確定キーが empty mode では確定キーでな
-   かったりすると、そのキーの押下で死んでしまったりするのの救済。yomi
-   mode の上に yomi mode が乗っているのは単語登録の時ぐらいだろうと言
-   うことで判断の材料にしている。本当はこんなことやりたくない。 */
+  /* 単語登録のときに yomi mode の確定キーが empty mode では確定キーでな
+     かったりすると、そのキーの押下で死んでしまったりするのの救済。yomi
+     mode の上に yomi mode が乗っているのは単語登録の時ぐらいだろうと言
+     うことで判断の材料にしている。本当はこんなことやりたくない。 */
 
   if (yc->next && yc->next->id == YOMI_CONTEXT &&
       yomi_mode.keytbl[d->buffer_return[0]] == CANNA_FN_Kakutei) {
@@ -71,14 +70,13 @@ EmptySelfInsert(uiContext d)
  *
  */
 
-
 static int
 EmptyYomiInsert(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  d->current_mode = (yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE) ?
-    &cy_mode : &yomi_mode;
+  d->current_mode =
+    (yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE) ? &cy_mode : &yomi_mode;
   RomajiClearYomi(d);
   return YomiInsert(d); /* コールバックのチェックは YomiInsert でされる */
 }
@@ -93,21 +91,19 @@ EmptyYomiInsert(uiContext d)
   するなんてことは必要ないのではないのかなぁ。
  */
 
-
 static int
 EmptyQuotedInsert(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  d->current_mode = (yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE) ?
-    &cy_mode : &yomi_mode;
+  d->current_mode =
+    (yc->generalFlags & CANNA_YOMI_CHIKUJI_MODE) ? &cy_mode : &yomi_mode;
   return YomiQuotedInsert(d);
 }
 
 /*
   AlphaSelfInsert -- 自分自身を確定文字列として返す関数。
  */
-
 
 static int
 AlphaSelfInsert(uiContext d)
@@ -117,19 +113,16 @@ AlphaSelfInsert(uiContext d)
   d->kanji_status_return->length = 0;
   d->kanji_status_return->info |= KanjiEmptyInfo;
   d->kanji_status_return->info |= KanjiThroughInfo;
-  if ( d->nbytes != 1 || kanap <= 0xa0 || 0xe0 <= kanap ) {
+  if (d->nbytes != 1 || kanap <= 0xa0 || 0xe0 <= kanap) {
     return d->nbytes;
-  }
-  else { /* 仮名キー入力の場合 */
+  } else { /* 仮名キー入力の場合 */
     if (d->n_buffer > 1) {
       return 1;
-    }
-    else {
+    } else {
       return 0;
     }
   }
 }
-
 
 static int
 AlphaNop(uiContext d)
@@ -139,7 +132,6 @@ AlphaNop(uiContext d)
   currentModeInfo(d);
   return 0;
 }
-
 
 static int
 EmptyQuit(uiContext d)
@@ -155,7 +147,6 @@ EmptyQuit(uiContext d)
   return res;
 }
 
-
 static int
 EmptyKakutei(uiContext d)
 {
@@ -170,7 +161,6 @@ EmptyKakutei(uiContext d)
   return res;
 }
 
-
 static int
 EmptyDeletePrevious(uiContext d)
 {
@@ -179,33 +169,32 @@ EmptyDeletePrevious(uiContext d)
   if (yc->generalFlags & CANNA_YOMI_DELETE_DONT_QUIT) {
     /* Delete で QUIT しないのであれば、selfInsert */
     return inEmptySelfInsert(d);
-  }
-  else {
+  } else {
     return EmptyQuit(d);
   }
 }
 
-extraFunc *
+extraFunc*
 FindExtraFunc(int fnum)
 {
-  extern extraFunc *extrafuncp;
-  extraFunc *extrafunc;
+  extern extraFunc* extrafuncp;
+  extraFunc* extrafunc;
 
   for (extrafunc = extrafuncp; extrafunc; extrafunc = extrafunc->next) {
     if (extrafunc->fnum == fnum) {
       return extrafunc;
     }
   }
-  return (extraFunc *)0;
+  return (extraFunc*)0;
 }
 
 static int
-UserMode(uiContext d, extraFunc *estruct)
+UserMode(uiContext d, extraFunc* estruct)
 {
-  newmode *nmode = estruct->u.modeptr;
+  newmode* nmode = estruct->u.modeptr;
   yomiContext yc = (yomiContext)d->modec;
-  int modeid
-    = estruct->fnum - CANNA_FN_MAX_FUNC + CANNA_MODE_MAX_IMAGINARY_MODE;
+  int modeid =
+    estruct->fnum - CANNA_FN_MAX_FUNC + CANNA_MODE_MAX_IMAGINARY_MODE;
 
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
@@ -230,10 +219,10 @@ UserMode(uiContext d, extraFunc *estruct)
 
 #ifndef NO_EXTEND_MENU /* continues to the bottom of this file */
 static int
-UserSelect(uiContext d, extraFunc *estruct)
+UserSelect(uiContext d, extraFunc* estruct)
 {
   int curkigo = 0, *posp = NULL;
-  kigoIchiran *kigop = NULL;
+  kigoIchiran* kigop = NULL;
   selectinfo *selinfo = NULL, *info;
   yomiContext yc = (yomiContext)d->modec;
 
@@ -250,7 +239,7 @@ UserSelect(uiContext d, extraFunc *estruct)
   }
 
   if (!selinfo) {
-    selinfo = (selectinfo *)malloc(sizeof(selectinfo));
+    selinfo = (selectinfo*)malloc(sizeof(selectinfo));
     /* malloc に失敗した場合は、前回選択した番号が保存されない */
     if (selinfo) {
       selinfo->ichiran = estruct->u.kigoptr;
@@ -269,12 +258,17 @@ UserSelect(uiContext d, extraFunc *estruct)
   if (!kigop) {
     return NothingChangedWithBeep(d);
   }
-  return uuKigoMake(d, kigop->kigo_data, kigop->kigo_size,
-                    curkigo, kigop->kigo_mode, uuKigoGeneralExitCatch, posp);
+  return uuKigoMake(d,
+                    kigop->kigo_data,
+                    kigop->kigo_size,
+                    curkigo,
+                    kigop->kigo_mode,
+                    uuKigoGeneralExitCatch,
+                    posp);
 }
 
 static int
-UserMenu(uiContext d, extraFunc *estruct)
+UserMenu(uiContext d, extraFunc* estruct)
 {
   return showmenu(d, estruct->u.menuptr);
 }
@@ -285,7 +279,7 @@ UserMenu(uiContext d, extraFunc *estruct)
 static int
 ProcExtraFunc(uiContext d, int fnum)
 {
-  extraFunc *extrafunc;
+  extraFunc* extrafunc;
 
   extrafunc = FindExtraFunc(fnum);
   if (extrafunc) {
@@ -313,14 +307,11 @@ getBaseMode(yomiContext yc)
 
   if (yc->myMinorMode) {
     return yc->myMinorMode;
-  }
-  else if (fl & CANNA_YOMI_ROMAJI) {
+  } else if (fl & CANNA_YOMI_ROMAJI) {
     res = CANNA_MODE_ZenAlphaHenkanMode;
-  }
-  else if (fl & CANNA_YOMI_KATAKANA) {
+  } else if (fl & CANNA_YOMI_KATAKANA) {
     res = CANNA_MODE_ZenKataHenkanMode;
-  }
-  else {
+  } else {
     res = CANNA_MODE_ZenHiraHenkanMode;
   }
   if (fl & CANNA_YOMI_BASE_HANKAKU) {
@@ -332,8 +323,7 @@ getBaseMode(yomiContext yc)
   if (res == CANNA_MODE_ZenHiraHenkanMode) {
     if (chikujip(yc)) {
       res = CANNA_MODE_ChikujiYomiMode;
-    }
-    else {
+    } else {
       res = CANNA_MODE_HenkanMode;
     }
   }
@@ -360,7 +350,7 @@ EmptyBaseHira(uiContext d)
     return NothingChangedWithBeep(d);
   }
   yc->generalFlags &= ~(CANNA_YOMI_KATAKANA | CANNA_YOMI_HANKAKU |
-			CANNA_YOMI_ROMAJI | CANNA_YOMI_ZENKAKU);
+                        CANNA_YOMI_ROMAJI | CANNA_YOMI_ZENKAKU);
   EmptyBaseModeInfo(d, yc);
   return 0;
 }
@@ -370,13 +360,14 @@ EmptyBaseKata(uiContext d)
 {
   yomiContext yc = (yomiContext)d->modec;
 
-  if ((yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED)
-      || (cannaconf.InhibitHankakuKana
-	  && (yc->generalFlags & CANNA_YOMI_BASE_HANKAKU))) {
+  if ((yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) ||
+      (cannaconf.InhibitHankakuKana &&
+       (yc->generalFlags & CANNA_YOMI_BASE_HANKAKU))) {
     return NothingChangedWithBeep(d);
   }
   yc->generalFlags &= ~(CANNA_YOMI_ROMAJI | CANNA_YOMI_ZENKAKU);
-  yc->generalFlags |= CANNA_YOMI_KATAKANA |
+  yc->generalFlags |=
+    CANNA_YOMI_KATAKANA |
     ((yc->generalFlags & CANNA_YOMI_BASE_HANKAKU) ? CANNA_YOMI_HANKAKU : 0);
   EmptyBaseModeInfo(d, yc);
   return 0;
@@ -390,8 +381,9 @@ EmptyBaseEisu(uiContext d)
   if (yc->generalFlags & CANNA_YOMI_CHGMODE_INHIBITTED) {
     return NothingChangedWithBeep(d);
   }
-/*  yc->generalFlags &= ~CANNA_YOMI_ATTRFUNCS; クリアするのやめ */
-  yc->generalFlags |= CANNA_YOMI_ROMAJI |
+  /*  yc->generalFlags &= ~CANNA_YOMI_ATTRFUNCS; クリアするのやめ */
+  yc->generalFlags |=
+    CANNA_YOMI_ROMAJI |
     ((yc->generalFlags & CANNA_YOMI_BASE_HANKAKU) ? 0 : CANNA_YOMI_ZENKAKU);
   EmptyBaseModeInfo(d, yc);
   return 0;
@@ -509,18 +501,20 @@ renbunInit(uiContext d)
   d->status = 0;
   killmenu(d);
   if (ToggleChikuji(d, 0) == -1) {
-    jrKanjiError = "\317\242\312\270\300\341\312\321\264\271\244\313\300\332"
-	"\302\330\244\250\244\353\244\263\244\310\244\254\244\307\244\255"
-	"\244\336\244\273\244\363";
-                   /* 連文節変換に切替えることができません */
+    jrKanjiError =
+      "\317\242\312\270\300\341\312\321\264\271\244\313\300\332"
+      "\302\330\244\250\244\353\244\263\244\310\244\254\244\307\244\255"
+      "\244\336\244\273\244\363";
+    /* 連文節変換に切替えることができません */
     makeGLineMessageFromString(d, jrKanjiError);
     currentModeInfo(d);
-    return(-1);
-  }
-  else {
-    makeGLineMessageFromString(d, "\317\242\312\270\300\341\312\321\264\271"
-	"\244\313\300\332\302\330\244\250\244\336\244\267\244\277");
-                   /* 連文節変換に切替えました */
+    return (-1);
+  } else {
+    makeGLineMessageFromString(
+      d,
+      "\317\242\312\270\300\341\312\321\264\271"
+      "\244\313\300\332\302\330\244\250\244\336\244\267\244\277");
+    /* 連文節変換に切替えました */
     currentModeInfo(d);
     return 0;
   }
@@ -541,11 +535,13 @@ dicSync(uiContext d)
   killmenu(d);
 
   retval = RkwSync(defaultContext, "");
-  sprintf(s, "\274\255\275\361\244\316 Sync \275\350\315\375%s",
+  sprintf(s,
+          "\274\255\275\361\244\316 Sync \275\350\315\375%s",
           retval < 0 ? "\244\313\274\272\307\324\244\267\244\336\244\267"
-	"\244\277" : "\244\362\271\324\244\244\244\336\244\267\244\277");
-          /* 辞書の Sync 処理%s",
-                retval < 0 ? "に失敗しました" : "を行いました */
+                       "\244\277"
+                     : "\244\362\271\324\244\244\244\336\244\267\244\277");
+  /* 辞書の Sync 処理%s",
+        retval < 0 ? "に失敗しました" : "を行いました */
   makeGLineMessageFromString(d, s);
   currentModeInfo(d);
 

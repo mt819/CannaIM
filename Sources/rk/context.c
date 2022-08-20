@@ -928,7 +928,7 @@ RkwGetProtocolVersion(int* majorp, int* minorp)
 }
 
 int
-RkwGetServerVersion(int* majorp, int * minorp)
+RkwGetServerVersion(int* majorp, int* minorp)
 {
   *majorp = CANNA_MAJOR_MINOR / 1000;
   *minorp = CANNA_MAJOR_MINOR % 1000;

@@ -61,7 +61,7 @@ int ckverbose = 0;
  * エラーのメッセージを入れておく変数
  */
 
-char *jrKanjiError = "";
+char* jrKanjiError = "";
 
 /*
  * デバグメッセージを出すかどうかのフラグ
@@ -77,8 +77,8 @@ int FirstTime = 1;
 
 #ifdef __HAIKU__
 /*
-* dictonary base path
-*/
+ * dictonary base path
+ */
 
 char basepath[256];
 
@@ -94,14 +94,14 @@ int (*jrBeepFunc)(void) = NULL;
  * KC_INITIALIZE 直後に実行する機能の列
  */
 
-BYTE *initfunc = NULL;
+BYTE* initfunc = NULL;
 int howToReturnModeInfo = ModeInfoStyleIsString;
-char *RomkanaTable = NULL;
-char *EnglishTable = NULL;
+char* RomkanaTable = NULL;
+char* EnglishTable = NULL;
 /* char *Dictionary = (char *)NULL; */
-struct dicname *RengoGakushu = NULL;
-struct dicname *KatakanaGakushu = NULL;
-struct dicname *HiraganaGakushu = NULL;
+struct dicname* RengoGakushu = NULL;
+struct dicname* KatakanaGakushu = NULL;
+struct dicname* HiraganaGakushu = NULL;
 
 int nKouhoBunsetsu = 16;
 
@@ -117,36 +117,36 @@ int nkeysup = 0;
  * ファイル名は","で区切られる。(拡張機能で使用)
  */
 
-char *CANNA_initfilename = NULL;
+char* CANNA_initfilename = NULL;
 
 ///*
 // * バージョン
 // */
 //
-//int protocol_version = -1;
-//int server_version = -1;
-//char *server_name = NULL;
+// int protocol_version = -1;
+// int server_version = -1;
+// char *server_name = NULL;
 
 int chikuji_debug = 0;
 int auto_define = 0;
 
 void (*keyconvCallback)() = NULL;
 
-extraFunc *extrafuncp = (extraFunc *)NULL;
-struct dicname *kanjidicnames; /* .canna で指定している辞書リスト */
-char *kataautodic = NULL; /* カタカナ語自動登録用辞書 */
+extraFunc* extrafuncp = (extraFunc*)NULL;
+struct dicname* kanjidicnames; /* .canna で指定している辞書リスト */
+char* kataautodic = NULL;      /* カタカナ語自動登録用辞書 */
 #ifdef HIRAGANAAUTO
-char *hiraautodic = NULL; /* ひらがな語自動登録用辞書 */
+char* hiraautodic = NULL; /* ひらがな語自動登録用辞書 */
 #endif
 
 /* ユーザ情報 */
-jrUserInfoStruct *uinfo = NULL;
+jrUserInfoStruct* uinfo = NULL;
 
- /* マウント処理を行っているかどうか */
+/* マウント処理を行っているかどうか */
 int mountnottry = 1;
 
 void
-InitCannaConfig(struct CannaConfig *cf)
+InitCannaConfig(struct CannaConfig* cf)
 {
   bzero(cf, sizeof(struct CannaConfig));
   cf->CannaVersion = CANNA_MAJOR_MINOR;
@@ -177,7 +177,8 @@ InitCannaConfig(struct CannaConfig *cf)
 static void
 freeUInfo(void)
 {
-  if (!uinfo) return;
+  if (!uinfo)
+    return;
   free(uinfo->uname);
   free(uinfo->gname);
   free(uinfo->srvname);
@@ -199,9 +200,9 @@ restoreBindings()
   free(initfunc);
   initfunc = NULL;
 
-//  free(server_name);
-//  server_name = NULL;
-//
+  //  free(server_name);
+  //  server_name = NULL;
+  //
   free(RomkanaTable);
   RomkanaTable = NULL;
 
@@ -214,7 +215,7 @@ restoreBindings()
   KatakanaGakushu = NULL;
   HiraganaGakushu = NULL;
   howToBehaveInCaseOfUndefKey = kc_normal;
-/*  kanjidicname[nkanjidics = 0] = NULL; 代わりのことをしなければ */
+  /*  kanjidicname[nkanjidics = 0] = NULL; 代わりのことをしなければ */
   kanjidicnames = NULL;
   kataautodic = NULL;
 #ifdef HIRAGANAAUTO
@@ -225,7 +226,7 @@ restoreBindings()
   KeepCursorPosition = 0;
 
   nothermodes = 0;
-//  protocol_version = server_version = -1;
+  //  protocol_version = server_version = -1;
   nKouhoBunsetsu = 16;
   nkeysup = 0;
   chikuji_debug = 0;

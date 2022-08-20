@@ -20,8 +20,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include	"canna.h"
-#include	<errno.h>
+#include "canna.h"
+#include <errno.h>
 
 #ifdef luna88k
 extern int errno;
@@ -37,12 +37,13 @@ newYesNoContext()
 {
   coreContext ccxt;
 
-  if ((ccxt = (coreContext)malloc(sizeof(coreContextRec)))
-                                       == NULL) {
+  if ((ccxt = (coreContext)malloc(sizeof(coreContextRec))) == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newcoreContext) できませんでした";
 #else
-    jrKanjiError = "malloc (newcoreContext) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
+    jrKanjiError =
+      "malloc (newcoreContext) "
+      "\244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
 #endif
     return NULL;
   }
@@ -62,23 +63,31 @@ freeYesNoContext(coreContext qc)
  */
 int
 getYesNoContext(uiContext d,
-	canna_callback_t everyTimeCallback, canna_callback_t exitCallback,
-	canna_callback_t quitCallback, canna_callback_t auxCallback)
+                canna_callback_t everyTimeCallback,
+                canna_callback_t exitCallback,
+                canna_callback_t quitCallback,
+                canna_callback_t auxCallback)
 {
   extern KanjiModeRec tourokureibun_mode;
   coreContext qc;
   int retval = 0;
 
-  if(pushCallback(d, d->modec,
-	everyTimeCallback, exitCallback, quitCallback, auxCallback) == 0) {
-    jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
-                  /* できませんでした */
-    return(NG);
+  if (pushCallback(d,
+                   d->modec,
+                   everyTimeCallback,
+                   exitCallback,
+                   quitCallback,
+                   auxCallback) == 0) {
+    jrKanjiError =
+      "malloc (pushCallback) "
+      "\244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
+    /* できませんでした */
+    return (NG);
   }
 
-  if((qc = newYesNoContext()) == NULL) {
+  if ((qc = newYesNoContext()) == NULL) {
     popCallback(d);
-    return(NG);
+    return (NG);
   }
   qc->majorMode = d->majorMode;
   qc->minorMode = CANNA_MODE_HenkanMode;
@@ -88,7 +97,7 @@ getYesNoContext(uiContext d,
   qc->prevMode = d->current_mode;
   d->current_mode = &tourokureibun_mode;
 
-  return(retval);
+  return (retval);
 }
 
 static void
@@ -124,24 +133,22 @@ YesNoNop(uiContext d)
  * auxCallback ...       n が入力された
  */
 
-
 static int
-YesNo(uiContext	d)
+YesNo(uiContext d)
 {
-  if((d->ch == 'y') || (d->ch == 'Y')) {
+  if ((d->ch == 'y') || (d->ch == 'Y')) {
     popYesNoMode(d);
     d->status = EXIT_CALLBACK;
-  } else if((d->ch == 'n') || (d->ch == 'N')) {
+  } else if ((d->ch == 'n') || (d->ch == 'N')) {
     popYesNoMode(d);
     d->status = AUX_CALLBACK;
   } else {
     /* d->status = EVERYTIME_CALLBACK; */
-    return(NothingChangedWithBeep(d));
+    return (NothingChangedWithBeep(d));
   }
 
-  return(0);
+  return (0);
 }
-
 
 static int
 YesNoQuit(uiContext d)
@@ -151,7 +158,7 @@ YesNoQuit(uiContext d)
   popYesNoMode(d);
   d->status = QUIT_CALLBACK;
 
-  return(retval);
+  return (retval);
 }
 
-#include	"t_reimap.h"
+#include "t_reimap.h"

@@ -25,7 +25,7 @@
 /*
  * PackBits
  */
-#define	BIT_UNIT	8
+#define BIT_UNIT 8
 
 /*
   学習ファイル用ビット操作処理
@@ -50,19 +50,22 @@
  */
 
 long
-_RkPackBits(unsigned char *dst_bits, long dst_offset, int bit_size,
-  unsigned *src_ints, int count)
+_RkPackBits(unsigned char* dst_bits,
+            long dst_offset,
+            int bit_size,
+            unsigned* src_ints,
+            int count)
 {
-  unsigned char	*dstB;
-  unsigned		dstQ;
-  unsigned		dstCount;
-  unsigned		bitMask;
+  unsigned char* dstB;
+  unsigned dstQ;
+  unsigned dstCount;
+  unsigned bitMask;
 
   dstB = dst_bits + dst_offset / BIT_UNIT;
   dstCount = (dst_offset % BIT_UNIT);
 
   /* 途中なので、手を付けない部分があることに注意 */
-  dstQ  = *dstB & ((1 << dstCount) - 1);
+  dstQ = *dstB & ((1 << dstCount) - 1);
   bitMask = (1 << bit_size) - 1;
   while (count-- > 0) {
     dstQ |= (*src_ints++ & bitMask) << dstCount;
@@ -99,17 +102,20 @@ _RkPackBits(unsigned char *dst_bits, long dst_offset, int bit_size,
  */
 
 long
-_RkUnpackBits(unsigned *dst_ints, unsigned char *src_bits, long src_offset,
-  int bit_size, int count)
+_RkUnpackBits(unsigned* dst_ints,
+              unsigned char* src_bits,
+              long src_offset,
+              int bit_size,
+              int count)
 {
-  unsigned char	*srcB;
-  unsigned		srcQ;
-  unsigned		srcCount;
-  unsigned		bitMask;
+  unsigned char* srcB;
+  unsigned srcQ;
+  unsigned srcCount;
+  unsigned bitMask;
 
   srcB = src_bits + src_offset / BIT_UNIT;
   srcCount = BIT_UNIT - (src_offset % BIT_UNIT);
-  srcQ  = *srcB++ >> (src_offset % BIT_UNIT);
+  srcQ = *srcB++ >> (src_offset % BIT_UNIT);
   bitMask = (1 << bit_size) - 1;
   while (count-- > 0) {
     while (srcCount < (unsigned)bit_size) {
@@ -143,24 +149,28 @@ _RkUnpackBits(unsigned *dst_ints, unsigned char *src_bits, long src_offset,
  */
 
 long
-_RkCopyBits(unsigned char *dst_bits, long dst_offset, int bit_size,
-  unsigned char *src_bits, long src_offset, int count)
+_RkCopyBits(unsigned char* dst_bits,
+            long dst_offset,
+            int bit_size,
+            unsigned char* src_bits,
+            long src_offset,
+            int count)
 {
-  unsigned char	*dstB;
-  unsigned		dstQ;
-  unsigned		dstCount;
-  unsigned char	*srcB;
-  unsigned		srcQ;
-  unsigned		srcCount;
-  unsigned		bitMask;
-  unsigned		bits;
+  unsigned char* dstB;
+  unsigned dstQ;
+  unsigned dstCount;
+  unsigned char* srcB;
+  unsigned srcQ;
+  unsigned srcCount;
+  unsigned bitMask;
+  unsigned bits;
 
   dstB = dst_bits + dst_offset / BIT_UNIT;
   dstCount = (dst_offset % BIT_UNIT);
-  dstQ  = *dstB & ((1 << dstCount) - 1);
+  dstQ = *dstB & ((1 << dstCount) - 1);
   srcB = src_bits + src_offset / BIT_UNIT;
   srcCount = BIT_UNIT - (src_offset % BIT_UNIT);
-  srcQ  = *srcB++ >> (src_offset % BIT_UNIT);
+  srcQ = *srcB++ >> (src_offset % BIT_UNIT);
   bitMask = (1 << bit_size) - 1;
   while (count-- > 0) {
     /* unpack */
@@ -206,10 +216,13 @@ _RkCopyBits(unsigned char *dst_bits, long dst_offset, int bit_size,
  */
 
 int
-_RkSetBitNum(unsigned char *dst_bits, unsigned long dst_offset,
-  int bit_size, int n, int val)
+_RkSetBitNum(unsigned char* dst_bits,
+             unsigned long dst_offset,
+             int bit_size,
+             int n,
+             int val)
 {
-  unsigned char	*dstB;
+  unsigned char* dstB;
   unsigned dstQ, dstCount, bitMask;
 
   dst_offset += bit_size * n;
@@ -218,7 +231,7 @@ _RkSetBitNum(unsigned char *dst_bits, unsigned long dst_offset,
   dstCount = (dst_offset % BIT_UNIT);
 
   /* 途中なので、手を付けない部分があることに注意 */
-  dstQ  = *dstB & ((1 << dstCount) - 1);
+  dstQ = *dstB & ((1 << dstCount) - 1);
   bitMask = (1 << bit_size) - 1;
 
   dstQ |= (val & bitMask) << dstCount;
@@ -238,81 +251,80 @@ _RkSetBitNum(unsigned char *dst_bits, unsigned long dst_offset,
 int
 _RkCalcFqSize(int n)
 {
-  return n*(_RkCalcLog2(n) + 1);
+  return n * (_RkCalcLog2(n) + 1);
 }
 
 #ifdef __BITS_DEBUG__
 #include <stdio.h>
-_RkPrintPackedBits(unsigned char *bits, int offset, int bit_size, int count)
+_RkPrintPackedBits(unsigned char* bits, int offset, int bit_size, int count)
 {
-    fprintf(stderr, "%d <", count);
-    while ( count-- > 0 ) {
-	unsigned w;
+  fprintf(stderr, "%d <", count);
+  while (count-- > 0) {
+    unsigned w;
 
-        offset = _RkUnpackBits(&w, bits, offset, bit_size, 1);
-        fprintf(stderr, " %d", w/2);
-    };
-    fprintf(stderr, ">\n");
+    offset = _RkUnpackBits(&w, bits, offset, bit_size, 1);
+    fprintf(stderr, " %d", w / 2);
+  };
+  fprintf(stderr, ">\n");
 }
 
 int
 _RkCalcLog2(int n)
 {
-  int	lg2;
+  int lg2;
 
   n--;
   for (lg2 = 0; n > 0; lg2++)
     n >>= 1;
-  return(lg2);
+  return (lg2);
 }
 
 main()
 {
-  int		 offset;
-  int		 bit_size;
-  int		 size;
-  unsigned char bits[1024*8];
-  unsigned char Bits[1024*8];
-  int	c, i;
-  int		ec;
-  int	o;
+  int offset;
+  int bit_size;
+  int size;
+  unsigned char bits[1024 * 8];
+  unsigned char Bits[1024 * 8];
+  int c, i;
+  int ec;
+  int o;
 
   /* create test run */
-  for ( size = 1; size <= 32; size++ ) {
+  for (size = 1; size <= 32; size++) {
     bit_size = _RkCalcLog2(size) + 1;
     printf("#%4d/%2d\t", size, bit_size);
     /* pack 'em all */
     o = 0;
-    for ( i = 0; i < size; i++ )
+    for (i = 0; i < size; i++)
       o = _RkPackBits(Bits, o, bit_size, &i, 1);
     printf("PK ");
-    for ( i = 0; i < (bit_size*size+7)/8; i++ )
+    for (i = 0; i < (bit_size * size + 7) / 8; i++)
       printf(" %02x", Bits[i]);
     printf("\n");
 
-
-    for ( offset = 0; offset < 16; offset++ ) {
+    for (offset = 0; offset < 16; offset++) {
       /* copybits */
       o = _RkCopyBits(bits, offset, bit_size, Bits, 0, size);
       printf("%d ", offset);
-      for ( i = 0; i < (o + 7)/8; i++ )
-	printf(" %02x", bits[i]);
+      for (i = 0; i < (o + 7) / 8; i++)
+        printf(" %02x", bits[i]);
       printf("\n");
 
       /* unpack 'em again */
       ec = 0;
       o = offset;
-      for ( i = 0; i < size; i++ ) {
-	unsigned w;
+      for (i = 0; i < size; i++) {
+        unsigned w;
 
-	o = _RkUnpackBits(&w, bits, o, bit_size, 1);
-	if ( w != i )
-	  ec++;
+        o = _RkUnpackBits(&w, bits, o, bit_size, 1);
+        if (w != i)
+          ec++;
       };
-      if ( ec )
-	printf(" %d", offset);
+      if (ec)
+        printf(" %d", offset);
       else
-	printf(".");
+        printf(".");
     };
     printf("\n");
   };

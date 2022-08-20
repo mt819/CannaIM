@@ -21,12 +21,12 @@
  */
 
 #include "cannaconf.h"
-#define WARN_REFERENCES_EVAL(sym,msg) WARN_REFERENCES(sym,msg)
+#define WARN_REFERENCES_EVAL(sym, msg) WARN_REFERENCES(sym, msg)
 
 #if SUPPORT_OLD_WCHAR
 
 #if defined(CANNA_WCHAR16) && !defined(WCHAR16)
-# define WCHAR16
+#define WCHAR16
 #endif
 
 #include "canna.h"
@@ -35,68 +35,78 @@
 #undef wcKanjiControl
 #undef wcCloseKanjiContext
 
-typedef struct {
-    wchar_t *echoStr;		/* local echo string */
-    int length;		        /* length of echo string */
-    int revPos;                 /* reverse position  */
-    int revLen;                 /* reverse length    */
-    unsigned long info;		/* その他の情報 */
-    wchar_t  *mode;		/* モード情報 */
-    struct {
-      wchar_t       *line;
-      int           length;
-      int           revPos;
-      int           revLen;
-    } gline;			/* 一覧表示のための情報 */
+typedef struct
+{
+  wchar_t* echoStr;   /* local echo string */
+  int length;         /* length of echo string */
+  int revPos;         /* reverse position  */
+  int revLen;         /* reverse length    */
+  unsigned long info; /* その他の情報 */
+  wchar_t* mode;      /* モード情報 */
+  struct
+  {
+    wchar_t* line;
+    int length;
+    int revPos;
+    int revLen;
+  } gline; /* 一覧表示のための情報 */
 } owcKanjiStatus;
 
-typedef struct {
-  int  val;
-  wchar_t *buffer;
-  int  n_buffer;
-  owcKanjiStatus *ks;
+typedef struct
+{
+  int val;
+  wchar_t* buffer;
+  int n_buffer;
+  owcKanjiStatus* ks;
 } owcKanjiStatusWithValue;
 
-typedef struct {
-  char *client_data;
-  int (*callback_func)(char *, int, wchar_t **, int, int *);
+typedef struct
+{
+  char* client_data;
+  int (*callback_func)(char*, int, wchar_t**, int, int*);
 } owcListCallbackStruct;
 
 typedef canna_uint16_t cannawc16;
 typedef canna_uint32_t cannawc32;
 
 extern int howToReturnModeInfo;
-extern char *context_table;
+extern char* context_table;
 
-int wcKanjiString(const int /*context_id*/, const int /*ch*/, wchar_t * /*buffer_return*/, const int /*nbuffer*/,
-			    owcKanjiStatus * /*kanji_status_return*/);
-int wcKanjiControl(const int /*context*/, const int /*request*/, char * /*arg*/);
-int wcCloseKanjiContext(const int /*context*/, owcKanjiStatusWithValue * /*ksva*/);
+int
+wcKanjiString(const int /*context_id*/,
+              const int /*ch*/,
+              wchar_t* /*buffer_return*/,
+              const int /*nbuffer*/,
+              owcKanjiStatus* /*kanji_status_return*/);
+int
+wcKanjiControl(const int /*context*/, const int /*request*/, char* /*arg*/);
+int
+wcCloseKanjiContext(const int /*context*/, owcKanjiStatusWithValue* /*ksva*/);
 
 static size_t
-wc32stowc16s(cannawc16 *wc16s, const cannawc32 *wc32s, size_t len)
+wc32stowc16s(cannawc16* wc16s, const cannawc32* wc32s, size_t len)
 {
   size_t i;
   for (i = 0; i < len && wc32s[i]; i++) {
     cannawc32 wc32 = wc32s[i];
     cannawc32 wc16 = 0;
     switch (wc32 >> 28) {
-    case 0:
-      /* ASCII */
-      wc16 = wc32 & 0x7f;
-      break;
-    case 1:
-      /* 半角カナ */
-      wc16 = 0x80 | (wc32 & 0x7f);
-      break;
-    case 2:
-      /* 外字 */
-      wc16 = 0x8000 | ((wc32 & 0x3f80) << 1) | (wc32 & 0x7f);
-      break;
-    case 3:
-      /* 漢字 */
-      wc16 = 0x8080 | ((wc32 & 0x3f80) << 1) | (wc32 & 0x7f);
-      break;
+      case 0:
+        /* ASCII */
+        wc16 = wc32 & 0x7f;
+        break;
+      case 1:
+        /* 半角カナ */
+        wc16 = 0x80 | (wc32 & 0x7f);
+        break;
+      case 2:
+        /* 外字 */
+        wc16 = 0x8000 | ((wc32 & 0x3f80) << 1) | (wc32 & 0x7f);
+        break;
+      case 3:
+        /* 漢字 */
+        wc16 = 0x8080 | ((wc32 & 0x3f80) << 1) | (wc32 & 0x7f);
+        break;
     }
     wc16s[i] = (cannawc16)wc16;
   }
@@ -106,29 +116,29 @@ wc32stowc16s(cannawc16 *wc16s, const cannawc32 *wc32s, size_t len)
 }
 
 static size_t
-wc16stowc32s(cannawc32 *wc32s, const cannawc16 *wc16s, size_t len)
+wc16stowc32s(cannawc32* wc32s, const cannawc16* wc16s, size_t len)
 {
   size_t i;
   for (i = 0; i < len && wc16s[i]; i++) {
     cannawc32 wc16 = (cannawc32)wc16s[i];
     cannawc32 wc32 = 0;
     switch (wc16 & 0x8080) {
-    case 0x0000:
-      /* ASCII */
-      wc32 = wc16 & 0x7f;
-      break;
-    case 0x0080:
-      /* 半角カナ */
-      wc32 = (1 << 28) | (wc16 & 0x7f);
-      break;
-    case 0x8000:
-      /* 外字 */
-      wc32 = (2 << 28) | ((wc16 & 0x7f00) >> 1) | (wc16 & 0x7f);
-      break;
-    case 0x8080:
-      /* 漢字 */
-      wc32 = (3 << 28) | ((wc16 & 0x7f00) >> 1) | (wc16 & 0x7f);
-      break;
+      case 0x0000:
+        /* ASCII */
+        wc32 = wc16 & 0x7f;
+        break;
+      case 0x0080:
+        /* 半角カナ */
+        wc32 = (1 << 28) | (wc16 & 0x7f);
+        break;
+      case 0x8000:
+        /* 外字 */
+        wc32 = (2 << 28) | ((wc16 & 0x7f00) >> 1) | (wc16 & 0x7f);
+        break;
+      case 0x8080:
+        /* 漢字 */
+        wc32 = (3 << 28) | ((wc16 & 0x7f00) >> 1) | (wc16 & 0x7f);
+        break;
     }
     wc32s[i] = wc32;
   }
@@ -138,7 +148,7 @@ wc16stowc32s(cannawc32 *wc32s, const cannawc16 *wc16s, size_t len)
 }
 
 static size_t
-OldwcstoWCs(cannawc *cwcs, const wchar_t *owcs, size_t len)
+OldwcstoWCs(cannawc* cwcs, const wchar_t* owcs, size_t len)
 {
   if (sizeof(wchar_t) == sizeof(cannawc)) {
     unsigned int i;
@@ -148,13 +158,13 @@ OldwcstoWCs(cannawc *cwcs, const wchar_t *owcs, size_t len)
       cwcs[i] = (cannawc)0;
     return i;
   } else if (sizeof(wchar_t) == 4 /* && sizeof(cannawc) == 2 */)
-    return wc32stowc16s((cannawc16 *)cwcs, (const cannawc32 *)owcs, len);
+    return wc32stowc16s((cannawc16*)cwcs, (const cannawc32*)owcs, len);
   else /* if (sizeof(wchar_t) == 2 && sizeof(cannawc) == 4) */
-    return wc16stowc32s((cannawc32 *)cwcs, (const cannawc16 *)owcs, len);
+    return wc16stowc32s((cannawc32*)cwcs, (const cannawc16*)owcs, len);
 }
 
 static size_t
-WCstoOldwcs(wchar_t *owcs, const cannawc *cwcs, size_t len)
+WCstoOldwcs(wchar_t* owcs, const cannawc* cwcs, size_t len)
 {
   if (sizeof(wchar_t) == sizeof(cannawc)) {
     unsigned int i;
@@ -164,25 +174,24 @@ WCstoOldwcs(wchar_t *owcs, const cannawc *cwcs, size_t len)
       owcs[i] = (cannawc)0;
     return i;
   } else if (sizeof(wchar_t) == 4 /* && sizeof(cannawc) == 2 */)
-    return wc16stowc32s((cannawc32 *)owcs, (const cannawc16 *)cwcs, len);
+    return wc16stowc32s((cannawc32*)owcs, (const cannawc16*)cwcs, len);
   else /* if (sizeof(wchar_t) == 2 && sizeof(cannawc) == 4) */
-    return wc32stowc16s((cannawc16 *)owcs, (const cannawc32 *)cwcs, len);
+    return wc32stowc16s((cannawc16*)owcs, (const cannawc32*)cwcs, len);
 }
 
 static int
-StoreWCtoOldwc(
-const cannawc *wbuf,
-int wbuflen,
-const wcKanjiStatus *wks,
-wchar_t *owbuf,
-int maxowbuf,
-owcKanjiStatus *owks,
-wchar_t ch,
-int nbytes)
+StoreWCtoOldwc(const cannawc* wbuf,
+               int wbuflen,
+               const wcKanjiStatus* wks,
+               wchar_t* owbuf,
+               int maxowbuf,
+               owcKanjiStatus* owks,
+               wchar_t ch,
+               int nbytes)
 {
   int ret, totallen = 0, len;
   wchar_t *p, *endp;
-  static wchar_t *inbuf = 0;
+  static wchar_t* inbuf = 0;
   static int inbufsize = 0;
 
   /* info */
@@ -195,25 +204,25 @@ int nbytes)
     if (nbytes)
       owbuf[0] = ch;
     ret = nbytes;
-  }
-  else {
+  } else {
     if (wbuflen <= 0)
       ret = 0;
     else {
       size_t fixlen = (wbuflen < maxowbuf) ? wbuflen : maxowbuf;
       ret = (int)WCstoOldwcs(owbuf, wbuf, fixlen);
       if (/* ret >= 0 && */ ret < maxowbuf)
-	owbuf[ret] = (wchar_t)0;
+        owbuf[ret] = (wchar_t)0;
     }
     if (owks->info & KanjiYomiInfo && wbuflen >= 0 && maxowbuf >= ret + 1) {
-      const cannawc *ep;
-      len = WCstoOldwcs(owbuf + ret + 1, wbuf + wbuflen + 1,
-			maxowbuf - ret - 1);
+      const cannawc* ep;
+      len =
+        WCstoOldwcs(owbuf + ret + 1, wbuf + wbuflen + 1, maxowbuf - ret - 1);
       ep = wbuf + wbuflen + 1;
-      while (*ep) ep++;
+      while (*ep)
+        ep++;
       if (maxowbuf >= ret + 1 + len + 1)
-	WCstoOldwcs(owbuf + ret + 1 + len + 1, ep + 1,
-		      maxowbuf - ret - 1 - len - 1);
+        WCstoOldwcs(
+          owbuf + ret + 1 + len + 1, ep + 1, maxowbuf - ret - 1 - len - 1);
     }
   }
 
@@ -228,11 +237,12 @@ int nbytes)
   if (inbufsize < totallen) {
     inbufsize = totallen; /* inbufsize will be greater than 0 */
     free(inbuf);
-    inbuf = (wchar_t *)malloc(inbufsize * sizeof(wchar_t));
+    inbuf = (wchar_t*)malloc(inbufsize * sizeof(wchar_t));
     if (!inbuf) {
       inbufsize = 0;
-      jrKanjiError = "\245\341\245\342\245\352\244\254\302\255\244\352\244\336\244\273\244\363";
-                     /* メモリが足りません */
+      jrKanjiError = "\245\341\245\342\245\352\244\254\302\255\244\352\244\336"
+                     "\244\273\244\363";
+      /* メモリが足りません */
       return -1;
     }
   }
@@ -242,8 +252,7 @@ int nbytes)
 
   if (wks->length < 0) {
     owks->length = -1;
-  }
-  else {
+  } else {
     /* エコー文字 */
 
     owks->length = owks->revLen = owks->revPos = 0;
@@ -251,19 +260,20 @@ int nbytes)
     if (wks->length > 0) {
       owks->echoStr = p;
       if (wks->revPos > 0) {
-	len = owks->revPos = WCstoOldwcs(p, wks->echoStr, wks->revPos);
-	p += len;
+        len = owks->revPos = WCstoOldwcs(p, wks->echoStr, wks->revPos);
+        p += len;
       }
       if (wks->revLen > 0) {
-	len = owks->revLen
-	  = WCstoOldwcs(p, wks->echoStr + wks->revPos, wks->revLen);
-	p += len;
+        len = owks->revLen =
+          WCstoOldwcs(p, wks->echoStr + wks->revPos, wks->revLen);
+        p += len;
       }
       len = 0;
       if (wks->length - wks->revPos - wks->revLen > 0) {
-	len = WCstoOldwcs(p, wks->echoStr + wks->revPos + wks->revLen,
-			    wks->length - wks->revPos - wks->revLen);
-	p += len;
+        len = WCstoOldwcs(p,
+                          wks->echoStr + wks->revPos + wks->revLen,
+                          wks->length - wks->revPos - wks->revLen);
+        p += len;
       }
       owks->length = owks->revLen + owks->revPos + len;
       *p++ = (wchar_t)0;
@@ -287,21 +297,22 @@ int nbytes)
     if (wks->gline.length > 0) {
       owks->gline.line = p;
       if (wks->gline.revPos > 0) {
-	len = owks->gline.revPos
-	  = WCstoOldwcs(p, wks->gline.line, wks->gline.revPos);
-	p += len;
+        len = owks->gline.revPos =
+          WCstoOldwcs(p, wks->gline.line, wks->gline.revPos);
+        p += len;
       }
       if (wks->gline.revLen > 0) {
-	len = owks->gline.revLen
-	  = WCstoOldwcs(p, wks->gline.line + wks->gline.revPos, wks->gline.revLen);
-	p += len;
+        len = owks->gline.revLen = WCstoOldwcs(
+          p, wks->gline.line + wks->gline.revPos, wks->gline.revLen);
+        p += len;
       }
       len = 0;
       if (wks->gline.length - wks->gline.revPos - wks->gline.revLen > 0) {
-	len = WCstoOldwcs(p,
-	    wks->gline.line + wks->gline.revPos + wks->gline.revLen,
-	    wks->gline.length - wks->gline.revPos - wks->gline.revLen);
-	p += len;
+        len = WCstoOldwcs(
+          p,
+          wks->gline.line + wks->gline.revPos + wks->gline.revLen,
+          wks->gline.length - wks->gline.revPos - wks->gline.revLen);
+        p += len;
       }
       owks->gline.length = owks->gline.revLen + owks->gline.revPos + len;
       *p++ = (wchar_t)0;
@@ -311,29 +322,35 @@ int nbytes)
 }
 
 static int
-owcLookupKanji2(unsigned int dpy, unsigned int win, wchar_t * buffer_return,
-  int n_buffer, int nbytes, int functionalChar, owcKanjiStatus * kanji_status_return)
+owcLookupKanji2(unsigned int dpy,
+                unsigned int win,
+                wchar_t* buffer_return,
+                int n_buffer,
+                int nbytes,
+                int functionalChar,
+                owcKanjiStatus* kanji_status_return)
 {
   int ret;
   wcKanjiStatus wks;
   wchar_t ch;
-  cannawc *inbuf = NULL;
+  cannawc* inbuf = NULL;
   int inbufsize;
   int r;
 
   /* 内部バッファをアロケートする */
   inbufsize = n_buffer; /* inbufsize will be greater than 0 */
-  inbuf = (cannawc *)malloc(inbufsize * sizeof(cannawc));
+  inbuf = (cannawc*)malloc(inbufsize * sizeof(cannawc));
   if (!inbuf) {
-    jrKanjiError = "\245\341\245\342\245\352\244\254\302\255\244\352\244\336\244\273\244\363";
-		   /* メモリが足りません */
+    jrKanjiError = "\245\341\245\342\245\352\244\254\302\255\244\352\244\336"
+                   "\244\273\244\363";
+    /* メモリが足りません */
     return -1;
   }
 
   OldwcstoWCs(inbuf, buffer_return, nbytes ? nbytes : 1);
   ch = buffer_return[0];
-  ret = XwcLookupKanji2(dpy, win, inbuf, inbufsize, nbytes, functionalChar,
-			&wks);
+  ret =
+    XwcLookupKanji2(dpy, win, inbuf, inbufsize, nbytes, functionalChar, &wks);
   if (ret < 0) {
     free(inbuf);
     return ret;
@@ -342,44 +359,46 @@ owcLookupKanji2(unsigned int dpy, unsigned int win, wchar_t * buffer_return,
     ret = inbufsize - 1;
   inbuf[ret] = (cannawc)0;
 
-  r = StoreWCtoOldwc(inbuf, ret, &wks,
-		      buffer_return, n_buffer, kanji_status_return,
-		      ch, nbytes);
+  r = StoreWCtoOldwc(
+    inbuf, ret, &wks, buffer_return, n_buffer, kanji_status_return, ch, nbytes);
   free(inbuf);
   return r;
 }
 
-
 int
-owcListCallback(char *client_data, int func, cannawc **items, int nitems, int *cur_item)
+owcListCallback(char* client_data,
+                int func,
+                cannawc** items,
+                int nitems,
+                int* cur_item)
 {
-  const owcListCallbackStruct *owlistcb;
+  const owcListCallbackStruct* owlistcb;
   int r = -1;
-  wchar_t **owitems = NULL;
-  wchar_t *owbuf = NULL;
-  wchar_t *owp;
+  wchar_t** owitems = NULL;
+  wchar_t* owbuf = NULL;
+  wchar_t* owp;
   size_t buflen = 0;
   int i;
 
-  owlistcb = (const owcListCallbackStruct *)client_data;
+  owlistcb = (const owcListCallbackStruct*)client_data;
   if (!items) /* CANNA_LIST_Insert sets 'nitems' to the pressed key (!=0) */
-    return owlistcb->callback_func(owlistcb->client_data,
-	func, NULL, nitems, cur_item);
+    return owlistcb->callback_func(
+      owlistcb->client_data, func, NULL, nitems, cur_item);
   for (i = 0; i < nitems; i++)
     buflen += WStrlen(items[i]) + 1;
-  owbuf = (wchar_t *)malloc(buflen * sizeof(wchar_t));
-  owitems = (wchar_t **)malloc((nitems + 1) * sizeof(wchar_t *));
+  owbuf = (wchar_t*)malloc(buflen * sizeof(wchar_t));
+  owitems = (wchar_t**)malloc((nitems + 1) * sizeof(wchar_t*));
   if (!owbuf || !owitems)
-    goto last;	/* XXX: 単に-1を返していいのか？ */
+    goto last; /* XXX: 単に-1を返していいのか？ */
   owp = owbuf;
   for (i = 0; i < nitems; i++) {
     size_t len = WCstoOldwcs(owp, items[i], owbuf + buflen - owp);
     owitems[i] = owp;
-    owp += len + 1;	/* バッファは常に足りていてヌル終端がある */
+    owp += len + 1; /* バッファは常に足りていてヌル終端がある */
   }
   owitems[nitems] = NULL;
-  r = owlistcb->callback_func(owlistcb->client_data,
-      func, owitems, nitems, cur_item);
+  r = owlistcb->callback_func(
+    owlistcb->client_data, func, owitems, nitems, cur_item);
 last:
   free(owbuf);
   free(owitems);
@@ -387,22 +406,24 @@ last:
 }
 
 static int
-owcKanjiControl2(unsigned int display, unsigned int window, unsigned int request,
-  BYTE *arg)
+owcKanjiControl2(unsigned int display,
+                 unsigned int window,
+                 unsigned int request,
+                 BYTE* arg)
 {
   int ret = -1, len1, len2;
   wcKanjiStatusWithValue wksv;
   wcKanjiStatus wks;
-  owcKanjiStatusWithValue *ksvarg = (owcKanjiStatusWithValue *)arg;
-  wchar_t *owarg = (wchar_t *)arg;
+  owcKanjiStatusWithValue* ksvarg = (owcKanjiStatusWithValue*)arg;
+  wchar_t* owarg = (wchar_t*)arg;
   jrListCallbackStruct list_cb;
   wchar_t ch;
   cannawc *arg2, *wbuf, *wbuf1, *wbuf2;
 
-  arg2 = (cannawc *)malloc(sizeof(cannawc) * 256);
-  wbuf = (cannawc *)malloc(sizeof(cannawc) * 320);
-  wbuf1 = (cannawc *)malloc(sizeof(cannawc) * 320);
-  wbuf2 = (cannawc *)malloc(sizeof(cannawc) * 320);
+  arg2 = (cannawc*)malloc(sizeof(cannawc) * 256);
+  wbuf = (cannawc*)malloc(sizeof(cannawc) * 320);
+  wbuf1 = (cannawc*)malloc(sizeof(cannawc) * 320);
+  wbuf2 = (cannawc*)malloc(sizeof(cannawc) * 320);
   if (!arg2 || !wbuf || !wbuf1 || !wbuf2) {
     free(arg2);
     free(wbuf);
@@ -416,88 +437,96 @@ owcKanjiControl2(unsigned int display, unsigned int window, unsigned int request
   wksv.ks = &wks;
 
   switch (request) {
-  case KC_DO: /* val と buffer_return に入れるタイプ */
-    wbuf[0] = (cannawc)ksvarg->buffer[0];
-    /* FALLTHROUGH */
-  case KC_CHANGEMODE: /* val を与えるタイプ */
-    wksv.val = ksvarg->val;
-    goto withksv;
-  case KC_STOREYOMI: /* echoStr と length と mode を与えるタイプ */
-    /* まず mode をワイドにしてみよう */
-    if (((owcKanjiStatusWithValue *)arg)->ks->mode) {
-      len2 = OldwcstoWCs(wbuf2, ksvarg->ks->mode, 319);
-      wbuf2[len2] = (wchar_t)0;
-      wks.mode = wbuf2;
-    } else
-      wks.mode = NULL;
-    /* FALLTHROUGH */
-  case KC_DEFINEKANJI: /* echoStr と length を与えるタイプ */
-    /* echoStr をワイドにして与えてみよう */
-    len1 = OldwcstoWCs(wbuf1, ksvarg->ks->echoStr, 319);
-    wbuf1[len1] = (wchar_t)0;
-    wks.echoStr = wbuf1;
-    wks.length = len1;
-    /* FALLTHROUGH */
-  case KC_KAKUTEI: /* ただ単に与えて返って来るタイプ */
-  case KC_KILL:
-    goto withksv;
-  case KC_CLOSEUICONTEXT:
-    goto closecont;
-  case KC_QUERYMODE: /* querymode */
-    ret = XwcKanjiControl2(display, window, request, (BYTE *)arg2);
-    if (!ret) {
-      switch (howToReturnModeInfo) {
-      case ModeInfoStyleIsString:
-	WCstoOldwcs(owarg, arg2, 256); /* XXX */
-	break;
-      case ModeInfoStyleIsBaseNumeric:
-        owarg[2] = (wchar_t)arg2[2];
-      case ModeInfoStyleIsExtendedNumeric:
-	owarg[1] = (wchar_t)arg2[1];
-      case ModeInfoStyleIsNumeric:
-	owarg[0] = (wchar_t)arg2[0];
-	break;
+    case KC_DO: /* val と buffer_return に入れるタイプ */
+      wbuf[0] = (cannawc)ksvarg->buffer[0];
+      /* FALLTHROUGH */
+    case KC_CHANGEMODE: /* val を与えるタイプ */
+      wksv.val = ksvarg->val;
+      goto withksv;
+    case KC_STOREYOMI: /* echoStr と length と mode を与えるタイプ */
+      /* まず mode をワイドにしてみよう */
+      if (((owcKanjiStatusWithValue*)arg)->ks->mode) {
+        len2 = OldwcstoWCs(wbuf2, ksvarg->ks->mode, 319);
+        wbuf2[len2] = (wchar_t)0;
+        wks.mode = wbuf2;
+      } else
+        wks.mode = NULL;
+      /* FALLTHROUGH */
+    case KC_DEFINEKANJI: /* echoStr と length を与えるタイプ */
+      /* echoStr をワイドにして与えてみよう */
+      len1 = OldwcstoWCs(wbuf1, ksvarg->ks->echoStr, 319);
+      wbuf1[len1] = (wchar_t)0;
+      wks.echoStr = wbuf1;
+      wks.length = len1;
+      /* FALLTHROUGH */
+    case KC_KAKUTEI: /* ただ単に与えて返って来るタイプ */
+    case KC_KILL:
+      goto withksv;
+    case KC_CLOSEUICONTEXT:
+      goto closecont;
+    case KC_QUERYMODE: /* querymode */
+      ret = XwcKanjiControl2(display, window, request, (BYTE*)arg2);
+      if (!ret) {
+        switch (howToReturnModeInfo) {
+          case ModeInfoStyleIsString:
+            WCstoOldwcs(owarg, arg2, 256); /* XXX */
+            break;
+          case ModeInfoStyleIsBaseNumeric:
+            owarg[2] = (wchar_t)arg2[2];
+          case ModeInfoStyleIsExtendedNumeric:
+            owarg[1] = (wchar_t)arg2[1];
+          case ModeInfoStyleIsNumeric:
+            owarg[0] = (wchar_t)arg2[0];
+            break;
+        }
       }
-    }
-    goto return_ret;
-  case KC_SETLISTCALLBACK: /* dirty, dirty hack */
-    /* list_cbはKC_setListCallbackでd->elistcbに引っ越す */
-    list_cb.client_data = (char *)arg;
-    list_cb.callback_func = &owcListCallback;
-    ret = XwcKanjiControl2(display, window, request, (BYTE *)&list_cb);
-    goto return_ret;
-  default: /* 新ワイドと変わらないもの */
-    ret = XwcKanjiControl2(display, window, request, arg);
-    goto return_ret;
+      goto return_ret;
+    case KC_SETLISTCALLBACK: /* dirty, dirty hack */
+      /* list_cbはKC_setListCallbackでd->elistcbに引っ越す */
+      list_cb.client_data = (char*)arg;
+      list_cb.callback_func = &owcListCallback;
+      ret = XwcKanjiControl2(display, window, request, (BYTE*)&list_cb);
+      goto return_ret;
+    default: /* 新ワイドと変わらないもの */
+      ret = XwcKanjiControl2(display, window, request, arg);
+      goto return_ret;
   }
- withksv:
+withksv:
   ch = ksvarg->buffer[0];
-  ret = XwcKanjiControl2(display, window, request, (BYTE *)&wksv);
+  ret = XwcKanjiControl2(display, window, request, (BYTE*)&wksv);
   if (ret < 0) {
     goto return_ret;
-  }
-  else {
+  } else {
     wksv.buffer[ret] = (wchar_t)0;
-    ksvarg->val = StoreWCtoOldwc(wksv.buffer, wksv.val, wksv.ks,
-		   ksvarg->buffer, ksvarg->n_buffer, ksvarg->ks,
-		   ch, ksvarg->val);
+    ksvarg->val = StoreWCtoOldwc(wksv.buffer,
+                                 wksv.val,
+                                 wksv.ks,
+                                 ksvarg->buffer,
+                                 ksvarg->n_buffer,
+                                 ksvarg->ks,
+                                 ch,
+                                 ksvarg->val);
     ret = ksvarg->val;
     goto return_ret;
   }
- closecont:
+closecont:
   ch = ksvarg->buffer[0];
-  ret = XwcKanjiControl2(display, window, request, (BYTE *)&wksv);
+  ret = XwcKanjiControl2(display, window, request, (BYTE*)&wksv);
   if (ret < 0) {
     goto return_ret;
-  }
-  else {
+  } else {
     wksv.val = 0;
-    ksvarg->val = StoreWCtoOldwc(wksv.buffer, wksv.val, wksv.ks,
-		   ksvarg->buffer, ksvarg->n_buffer, ksvarg->ks,
-		   ch, ksvarg->val);
+    ksvarg->val = StoreWCtoOldwc(wksv.buffer,
+                                 wksv.val,
+                                 wksv.ks,
+                                 ksvarg->buffer,
+                                 ksvarg->n_buffer,
+                                 ksvarg->ks,
+                                 ch,
+                                 ksvarg->val);
     goto return_ret;
   }
- return_ret:
+return_ret:
   free(wbuf2);
   free(wbuf1);
   free(wbuf);
@@ -506,40 +535,46 @@ owcKanjiControl2(unsigned int display, unsigned int window, unsigned int request
 }
 
 int
-wcKanjiString(int context_id, int ch, wchar_t *buffer_return,
-	int nbuffer, owcKanjiStatus *kanji_status_return)
+wcKanjiString(int context_id,
+              int ch,
+              wchar_t* buffer_return,
+              int nbuffer,
+              owcKanjiStatus* kanji_status_return)
 {
   *buffer_return = (wchar_t)ch;
 
-  return owcLookupKanji2((unsigned int)0, (unsigned int)context_id,
-		       buffer_return, nbuffer,
-		       1/* byte */, 1/* functional char*/,
-		       kanji_status_return);
+  return owcLookupKanji2((unsigned int)0,
+                         (unsigned int)context_id,
+                         buffer_return,
+                         nbuffer,
+                         1 /* byte */,
+                         1 /* functional char*/,
+                         kanji_status_return);
 }
 
 int
-wcKanjiControl(int context, int request, char *arg)
+wcKanjiControl(int context, int request, char* arg)
 {
-  return owcKanjiControl2((unsigned int)0, (unsigned int)context,
-			request, (BYTE *)arg);
+  return owcKanjiControl2(
+    (unsigned int)0, (unsigned int)context, request, (BYTE*)arg);
 }
 
 int
-wcCloseKanjiContext(int context, owcKanjiStatusWithValue *ksva)
+wcCloseKanjiContext(int context, owcKanjiStatusWithValue* ksva)
 {
   /* really working? */
   context_table[context] = 0;
-  return  owcKanjiControl2(0, context, KC_CLOSEUICONTEXT, (BYTE *)ksva);
+  return owcKanjiControl2(0, context, KC_CLOSEUICONTEXT, (BYTE*)ksva);
 }
 
-#define WARNSTR "warning: libcanna: using old wchar API; consider to use new one."
+#define WARNSTR                                                                \
+  "warning: libcanna: using old wchar API; consider to use new one."
 #else /* !SUPPORT_OLD_WCHAR */
 
 #include "canna.h"
 #undef wcKanjiString
 #undef wcKanjiControl
 #undef wcCloseKanjiContext
-
 
 static int
 wc_unsupported()
@@ -549,25 +584,29 @@ wc_unsupported()
 }
 
 int
-wcKanjiString(int context_id, int ch, int nbuffer,
-	cannawc *buffer_return, wcKanjiStatus *kanji_status_return)
+wcKanjiString(int context_id,
+              int ch,
+              int nbuffer,
+              cannawc* buffer_return,
+              wcKanjiStatus* kanji_status_return)
 {
   return wc_unsupported();
 }
 
 int
-wcKanjiControl(int context, int request, char *arg)
+wcKanjiControl(int context, int request, char* arg)
 {
   return wc_unsupported();
 }
 
 int
-wcCloseKanjiContext(int context, wcKanjiStatusWithValue *ksva)
+wcCloseKanjiContext(int context, wcKanjiStatusWithValue* ksva)
 {
-  return  wc_unsupported();
+  return wc_unsupported();
 }
 
-#define WARNSTR "warning: libcanna: old API is disabled; consider to use new one."
+#define WARNSTR                                                                \
+  "warning: libcanna: old API is disabled; consider to use new one."
 #endif /* !SUPPORT_OLD_WCHAR */
 
 WARN_REFERENCES_EVAL(wcKanjiString, WARNSTR);

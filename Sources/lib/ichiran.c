@@ -20,8 +20,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include	"canna.h"
-#include	<errno.h>
+#include "canna.h"
+#include <errno.h>
 
 #ifdef luna88k
 extern int errno;
@@ -31,40 +31,47 @@ extern int errno;
  *                      wchar_t replace begin                        *
  *********************************************************************/
 #ifdef wchar_t
-# error "wchar_t is already defined"
+#error "wchar_t is already defined"
 #endif
 #define wchar_t cannawc
 
-
-static void clearIchiranContext(ichiranContext p);
+static void
+clearIchiranContext(ichiranContext p);
 static int IchiranKakutei(uiContext /*d*/);
-static void getIchiranPreviousKouhoretsu(uiContext d);
-static void getIchiranNextKouhoretsu(uiContext d);
-static int makeKouhoIchiran(uiContext d, int nelem, int bangomax,
-			unsigned char inhibit, int currentkouho);
-static int ichiranQuitCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
+static void
+getIchiranPreviousKouhoretsu(uiContext d);
+static void
+getIchiranNextKouhoretsu(uiContext d);
+static int
+makeKouhoIchiran(uiContext d,
+                 int nelem,
+                 int bangomax,
+                 unsigned char inhibit,
+                 int currentkouho);
+static int
+ichiranQuitCatch(uiContext /*d*/, int /*retval*/, mode_context /*env*/);
 
 #define ICHISIZE 9
-static char *sbango =
+static char* sbango =
   "\243\261\241\241\243\262\241\241\243\263\241\241\243\264\241\241\243\265"
   "\241\241\243\266\241\241\243\267\241\241\243\270\241\241\243\271\241\241"
   "\243\341\241\241\243\342\241\241\243\343\241\241\243\344\241\241\243\345"
   "\241\241\243\346";
-     /* １　２　３　４　５　６　７　８　９　ａ　ｂ　ｃ　ｄ　ｅ　ｆ */
-                                                /* 候補行の候補番号の文字列 */
-static wchar_t *bango;
+/* １　２　３　４　５　６　７　８　９　ａ　ｂ　ｃ　ｄ　ｅ　ｆ */
+/* 候補行の候補番号の文字列 */
+static wchar_t* bango;
 
 /*  "1.","　2.","　3.","　4.","　5.","　6.","　7.","　8.","　9.",*/
-static char  *sbango2[] = {
-  "1","\241\2412","\241\2413","\241\2414","\241\2415",
-  "\241\2416","\241\2417","\241\2418","\241\2419",
-  };
+static char* sbango2[] = {
+  "1",         "\241\2412", "\241\2413", "\241\2414", "\241\2415",
+  "\241\2416", "\241\2417", "\241\2418", "\241\2419",
+};
 
-static wchar_t *bango2[ICHISIZE];
+static wchar_t* bango2[ICHISIZE];
 
-static char *skuuhaku = "\241\241";
-			/* 　 */
-static wchar_t *kuuhaku;
+static char* skuuhaku = "\241\241";
+/* 　 */
+static wchar_t* kuuhaku;
 
 int
 initIchiran()
@@ -74,12 +81,11 @@ initIchiran()
 
   retval = setWStrings(&bango, &sbango, 1);
   if (retval != NG) {
-    for(i = 0; i < ICHISIZE; i++) {
+    for (i = 0; i < ICHISIZE; i++) {
 
       /* セパレーターの処理 */
-      if (cannaconf.indexSeparator &&
-	  0x20 <= cannaconf.indexSeparator &&
-	  0x80 > cannaconf.indexSeparator)
+      if (cannaconf.indexSeparator && 0x20 <= cannaconf.indexSeparator &&
+          0x80 > cannaconf.indexSeparator)
         sprintf(buf, "%s%c", sbango2[i], (char)cannaconf.indexSeparator);
       else
         sprintf(buf, "%s%c", sbango2[i], (char)DEFAULTINDEXSEPARATOR);
@@ -91,7 +97,6 @@ initIchiran()
   }
   return retval;
 }
-
 
 /*
  * 一覧行表示中のカレント文節の候補を更新する
@@ -141,7 +146,7 @@ void
 makeGlineStatus(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
-  wchar_t *p;
+  wchar_t* p;
   char str[16];
   int i, cur = 0;
 
@@ -154,15 +159,13 @@ makeGlineStatus(uiContext d)
     ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].gldata;
   d->kanji_status_return->gline.length =
     ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].gllen;
-  d->kanji_status_return->gline.revPos =
-    ic->kouhoifp[*(ic->curIkouho)].khpoint;
+  d->kanji_status_return->gline.revPos = ic->kouhoifp[*(ic->curIkouho)].khpoint;
   if (cannaconf.ReverseWord && ic->inhibit & NUMBERING) {
     p = ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].gldata +
-      ic->kouhoifp[*(ic->curIkouho)].khpoint;
-    for (i = 0;
-         *p != *kuuhaku && *p != ((wchar_t)' ') && *p != ((wchar_t)0)
-	 && i < ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].gllen;
-	 i++) {
+        ic->kouhoifp[*(ic->curIkouho)].khpoint;
+    for (i = 0; *p != *kuuhaku && *p != ((wchar_t)' ') && *p != ((wchar_t)0) &&
+                i < ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].gllen;
+         i++) {
       p++;
     }
     d->kanji_status_return->gline.revLen = i;
@@ -173,13 +176,14 @@ makeGlineStatus(uiContext d)
     int a = ic->nIkouho, b = DEC_COLUMNS(cur) + DEC_COLUMNS(a) + 2;
     sprintf(str, " %d/%d", cur, a);
     CANNA_mbstowcs(d->kanji_status_return->gline.line +
-	     d->kanji_status_return->gline.length - b, str, b + 1);
+                     d->kanji_status_return->gline.length - b,
+                   str,
+                   b + 1);
     /* 以下はいらないのでは？ */
-    d->kanji_status_return->gline.length
-      = WStrlen(d->kanji_status_return->gline.line);
+    d->kanji_status_return->gline.length =
+      WStrlen(d->kanji_status_return->gline.line);
   }
 }
-
 
 static int
 ichiranEveryTimeCatch(uiContext d, int retval, mode_context env)
@@ -191,9 +195,8 @@ ichiranEveryTimeCatch(uiContext d, int retval, mode_context env)
   makeIchiranEchoStrCurChange(yc);
   makeIchiranKanjiStatusReturn(d, env, yc);
 
-  return(retval);
+  return (retval);
 }
-
 
 static int
 ichiranExitCatch(uiContext d, int retval, mode_context env)
@@ -207,13 +210,13 @@ ichiranExitCatch(uiContext d, int retval, mode_context env)
     if (errno == EPIPE) {
       jrKanjiPipeError();
     }
-    jrKanjiError = "\245\253\245\354\245\363\245\310\270\365\312\344\244\362"
-	"\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307"
-	"\244\267\244\277";
-      /* カレント候補を取り出せませんでした */
+    jrKanjiError =
+      "\245\253\245\354\245\363\245\310\270\365\312\344\244\362"
+      "\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307"
+      "\244\267\244\277";
+    /* カレント候補を取り出せませんでした */
     /* カレント候補が取り出せないくらいでは何ともないぞ */
-  }
-  else {
+  } else {
     retval = d->nbytes = 0;
   }
 
@@ -231,9 +234,8 @@ ichiranExitCatch(uiContext d, int retval, mode_context env)
   }
   currentModeInfo(d);
 
-  return(retval);
+  return (retval);
 }
-
 
 static int
 ichiranQuitCatch(uiContext d, int retval, mode_context env)
@@ -244,16 +246,16 @@ ichiranQuitCatch(uiContext d, int retval, mode_context env)
   yc->kouhoCount = 0;
 
   if ((retval = RkwXfer(yc->context, yc->curIkouho)) == NG) {
-    if(errno == EPIPE) {
+    if (errno == EPIPE) {
       jrKanjiPipeError();
     }
-    jrKanjiError = "\245\253\245\354\245\363\245\310\270\365\312\344\244\362"
-	"\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307"
-	"\244\267\244\277";
-           /* カレント候補を取り出せませんでした */
+    jrKanjiError =
+      "\245\253\245\354\245\363\245\310\270\365\312\344\244\362"
+      "\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307"
+      "\244\267\244\277";
+    /* カレント候補を取り出せませんでした */
     /* カレント候補が取り出せないくらいでは何ともないぞ */
-  }
-  else {
+  } else {
     retval = d->nbytes = 0;
   }
 
@@ -264,23 +266,23 @@ ichiranQuitCatch(uiContext d, int retval, mode_context env)
 
   popCallback(d);
   currentModeInfo(d);
-  return(retval);
+  return (retval);
 }
 
 void
 freeIchiranBuf(ichiranContext ic)
 {
-    free(ic->glinebufp);
-    free(ic->kouhoifp);
-    free(ic->glineifp);
+  free(ic->glinebufp);
+  free(ic->kouhoifp);
+  free(ic->glineifp);
 }
 
 void
-freeGetIchiranList(wchar_t **buf)
+freeGetIchiranList(wchar_t** buf)
 {
-    /* 候補一覧表示行用のエリアをフリーする */
-  if(buf) {
-    if(*buf) {
+  /* 候補一覧表示行用のエリアをフリーする */
+  if (buf) {
+    if (*buf) {
       free(*buf);
     }
     free(buf);
@@ -301,37 +303,38 @@ popIchiranMode(uiContext d)
  * すべての候補を取り出して、配列にする
  */
 
-
-wchar_t **
-getIchiranList(int context, int *nelem, int *currentkouho)
+wchar_t**
+getIchiranList(int context, int* nelem, int* currentkouho)
 {
   wchar_t *work, *wptr, **bptr, **buf;
   RkStat st;
   int i;
 
   /* RkwGetKanjiList で得る、すべての候補のための領域を得る */
-  if ((work = (wchar_t *)malloc(ROMEBUFSIZE * sizeof(wchar_t)))
-                                               == NULL) {
+  if ((work = (wchar_t*)malloc(ROMEBUFSIZE * sizeof(wchar_t))) == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (getIchiranList) できませんでした";
 #else
-    jrKanjiError = "malloc (getIchiranList) \244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
+    jrKanjiError =
+      "malloc (getIchiranList) "
+      "\244\307\244\255\244\336\244\273\244\363\244\307\244\267\244\277";
 #endif
     return NULL;
   }
 
   /* すべての候補を得る。
      例: けいかん → 警官@景観@掛冠@@ (@はNULL) */
-  if((*nelem = RkwGetKanjiList(context, work, ROMEBUFSIZE)) < 0) {
-    jrKanjiError = "\244\271\244\331\244\306\244\316\270\365\312\344\244\316"
-	"\274\350\244\352\275\320\244\267\244\313\274\272\307\324\244\267"
-	"\244\336\244\267\244\277";
-                   /* すべての候補の取り出しに失敗しました */
+  if ((*nelem = RkwGetKanjiList(context, work, ROMEBUFSIZE)) < 0) {
+    jrKanjiError =
+      "\244\271\244\331\244\306\244\316\270\365\312\344\244\316"
+      "\274\350\244\352\275\320\244\267\244\313\274\272\307\324\244\267"
+      "\244\336\244\267\244\277";
+    /* すべての候補の取り出しに失敗しました */
     free(work);
     return NULL;
   }
 
-#ifdef	INHIBIT_DUPLICATION
+#ifdef INHIBIT_DUPLICATION
   if (*nelem == 3) {
     wchar_t *w1, *w2, *w3;
 
@@ -340,42 +343,42 @@ getIchiranList(int context, int *nelem, int *currentkouho)
     w3 = w2 + WStrlen(w2);
     if (!WStrcmp(w1, ++w3)) {
       if (!WStrcmp(w1, ++w2))
-	*nelem = 1;
+        *nelem = 1;
       else
-	*nelem = 2;
+        *nelem = 2;
     }
   }
-#endif	/* INHIBIT_DUPLICATION */
+#endif /* INHIBIT_DUPLICATION */
 
   /* makeKouhoIchiran()に渡すデータ */
-  if((buf = (wchar_t **)calloc
-      (*nelem + 1, sizeof(wchar_t *))) == NULL) {
+  if ((buf = (wchar_t**)calloc(*nelem + 1, sizeof(wchar_t*))) == NULL) {
     jrKanjiError = "malloc (getIchiranList) \244\307\244\255\244\336\244\273"
-	"\244\363\244\307\244\267\244\277";
-                                            /* できませんでした */
+                   "\244\363\244\307\244\267\244\277";
+    /* できませんでした */
     free(work);
     return NULL;
   }
-  for(wptr = work, bptr = buf, i = 0; *wptr && i++ < *nelem; bptr++) {
+  for (wptr = work, bptr = buf, i = 0; *wptr && i++ < *nelem; bptr++) {
     *bptr = wptr;
-    while(*wptr++)
+    while (*wptr++)
       /* EMPTY */
       ;
   }
   *bptr = NULL;
 
-  if(RkwGetStat(context, &st) == -1) {
-    jrKanjiError = "\245\271\245\306\245\244\245\277\245\271\244\362\274\350"
-	"\244\352\275\320\244\273\244\336\244\273\244\363\244\307\244\267"
-	"\244\277";
-                   /* ステイタスを取り出せませんでした */
+  if (RkwGetStat(context, &st) == -1) {
+    jrKanjiError =
+      "\245\271\245\306\245\244\245\277\245\271\244\362\274\350"
+      "\244\352\275\320\244\273\244\336\244\273\244\363\244\307\244\267"
+      "\244\277";
+    /* ステイタスを取り出せませんでした */
     free(work);
     free(buf);
     return NULL;
   }
   *currentkouho = st.candnum; /* カレント候補は何番目？ */
 
-  return(buf);
+  return (buf);
 }
 
 /* cfunc ichiranContext
@@ -388,13 +391,12 @@ newIchiranContext()
 {
   ichiranContext icxt;
 
-  if ((icxt = (ichiranContext)malloc(sizeof(ichiranContextRec)))
-                                          == NULL) {
+  if ((icxt = (ichiranContext)malloc(sizeof(ichiranContextRec))) == NULL) {
 #ifdef CODED_MESSAGE
     jrKanjiError = "malloc (newIchiranContext) できませんでした";
 #else
     jrKanjiError = "malloc (newIchiranContext) \244\307\244\255\244\336"
-	"\244\273\244\363\244\307\244\267\244\277";
+                   "\244\273\244\363\244\307\244\267\244\277";
 #endif
     return NULL;
   }
@@ -408,30 +410,42 @@ newIchiranContext()
  */
 
 int
-selectOne(uiContext d, wchar_t **buf, int *ck, int nelem, int bangomax,
-	  unsigned inhibit, int currentkouho, int allowcallback,
-	  canna_callback_t everyTimeCallback, canna_callback_t exitCallback,
-	  canna_callback_t quitCallback, canna_callback_t auxCallback)
+selectOne(uiContext d,
+          wchar_t** buf,
+          int* ck,
+          int nelem,
+          int bangomax,
+          unsigned inhibit,
+          int currentkouho,
+          int allowcallback,
+          canna_callback_t everyTimeCallback,
+          canna_callback_t exitCallback,
+          canna_callback_t quitCallback,
+          canna_callback_t auxCallback)
 {
   extern KanjiModeRec ichiran_mode;
   ichiranContext ic;
 
   if (allowcallback != WITHOUT_LIST_CALLBACK &&
-      d->list_func == (int (*)(char *, int, wchar_t **, int, int *))0) {
+      d->list_func == (int (*)(char*, int, wchar_t**, int, int*))0) {
     allowcallback = WITHOUT_LIST_CALLBACK;
   }
 
-  if(pushCallback(d, d->modec,
-	everyTimeCallback, exitCallback, quitCallback, auxCallback) == 0) {
+  if (pushCallback(d,
+                   d->modec,
+                   everyTimeCallback,
+                   exitCallback,
+                   quitCallback,
+                   auxCallback) == 0) {
     jrKanjiError = "malloc (pushCallback) \244\307\244\255\244\336\244\273"
-	"\244\363\244\307\244\267\244\277";
-                                          /* できませんでした */
-    return(NG);
+                   "\244\363\244\307\244\267\244\277";
+    /* できませんでした */
+    return (NG);
   }
 
-  if((ic = newIchiranContext()) == NULL) {
+  if ((ic = newIchiranContext()) == NULL) {
     popCallback(d);
-    return(NG);
+    return (NG);
   }
   ic->majorMode = d->majorMode;
   ic->next = d->modec;
@@ -455,13 +469,12 @@ selectOne(uiContext d, wchar_t **buf, int *ck, int nelem, int bangomax,
   }
 
   if (allowcallback == WITHOUT_LIST_CALLBACK) {
-    if (makeKouhoIchiran(d, nelem, bangomax, inhibit, currentkouho)   == NG) {
+    if (makeKouhoIchiran(d, nelem, bangomax, inhibit, currentkouho) == NG) {
       popIchiranMode(d);
       popCallback(d);
-      return(NG);
+      return (NG);
     }
-  }
-  else {
+  } else {
     if (cannaconf.kCount) {
       *(ic->curIkouho) += currentkouho;
       if (*(ic->curIkouho) >= ic->nIkouho)
@@ -470,7 +483,7 @@ selectOne(uiContext d, wchar_t **buf, int *ck, int nelem, int bangomax,
     d->list_func(d->client_data, CANNA_LIST_Start, buf, nelem, ic->curIkouho);
   }
 
-  return(0);
+  return (0);
 }
 
 /*
@@ -503,34 +516,34 @@ allocIchiranBuf(uiContext d)
 
   /* サイズの分と番号の分の領域を得る*/
   size = ic->nIkouho * (d->ncolumns + 1) * WCHARSIZE; /* えいやっ */
-  if((ic->glinebufp = (wchar_t *)malloc(size)) ==  NULL) {
+  if ((ic->glinebufp = (wchar_t*)malloc(size)) == NULL) {
     jrKanjiError = "malloc (allocIchiranBuf) \244\307\244\255\244\336\244\273"
-	"\244\363\244\307\244\267\244\277";
-                                             /* できませんでした */
-    return(NG);
+                   "\244\363\244\307\244\267\244\277";
+    /* できませんでした */
+    return (NG);
   }
 
   /* kouhoinfoの領域を得る */
   size = (ic->nIkouho + 1) * sizeof(kouhoinfo);
-  if((ic->kouhoifp = (kouhoinfo *)malloc(size)) == NULL) {
+  if ((ic->kouhoifp = (kouhoinfo*)malloc(size)) == NULL) {
     jrKanjiError = "malloc (allocIchiranBuf) \244\307\244\255\244\336\244\273"
-	"\244\363\244\307\244\267\244\277";
-                                             /* できませんでした */
+                   "\244\363\244\307\244\267\244\277";
+    /* できませんでした */
     free(ic->glinebufp);
-    return(NG);
+    return (NG);
   }
 
   /* glineinfoの領域を得る */
   size = (ic->nIkouho + 1) * sizeof(glineinfo);
-  if((ic->glineifp = (glineinfo *)malloc(size)) == NULL) {
+  if ((ic->glineifp = (glineinfo*)malloc(size)) == NULL) {
     jrKanjiError = "malloc (allocIchiranBuf) \244\307\244\255\244\336\244\273"
-	"\244\363\244\307\244\267\244\277";
-                                             /* できませんでした */
+                   "\244\363\244\307\244\267\244\277";
+    /* できませんでした */
     free(ic->glinebufp);
     free(ic->kouhoifp);
-    return(NG);
+    return (NG);
   }
-  return(0);
+  return (0);
 }
 
 /*
@@ -542,31 +555,35 @@ allocIchiranBuf(uiContext d)
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 static int
-makeKouhoIchiran(uiContext d, int nelem, int bangomax, unsigned char inhibit,
-	int currentkouho)
+makeKouhoIchiran(uiContext d,
+                 int nelem,
+                 int bangomax,
+                 unsigned char inhibit,
+                 int currentkouho)
 {
   ichiranContext ic = (ichiranContext)d->modec;
   wchar_t **kkptr, *kptr, *gptr, *svgptr;
-  int           ko, lnko, cn = 0, line = 0, dn = 0, svdn;
+  int ko, lnko, cn = 0, line = 0, dn = 0, svdn;
   int netwidth;
 
-  netwidth = d->ncolumns -
-    (cannaconf.kCount ? (DEC_COLUMNS(nelem) * 2 + 2/* 2は/とSPの分 */) : 0);
+  netwidth =
+    d->ncolumns -
+    (cannaconf.kCount ? (DEC_COLUMNS(nelem) * 2 + 2 /* 2は/とSPの分 */) : 0);
 
-  ic->nIkouho = nelem;	/* 候補の数 */
+  ic->nIkouho = nelem; /* 候補の数 */
 
   /* カレント候補をセットする */
   ic->svIkouho = *(ic->curIkouho);
   *(ic->curIkouho) += currentkouho;
-  if(*(ic->curIkouho) >= ic->nIkouho)
+  if (*(ic->curIkouho) >= ic->nIkouho)
     ic->svIkouho = *(ic->curIkouho) = 0;
 
-  if(allocIchiranBuf(d) == NG)
-    return(NG);
+  if (allocIchiranBuf(d) == NG)
+    return (NG);
 
-  if(d->ncolumns < 1) {
+  if (d->ncolumns < 1) {
     ic->tooSmall = 1;
-    return(0);
+    return (0);
   }
 
   /* glineinfoとkouhoinfoを作る */
@@ -599,78 +616,83 @@ makeKouhoIchiran(uiContext d, int nelem, int bangomax, unsigned char inhibit,
      lnko -- 列の先頭から何番目の候補か
      cn   -- 列の先頭から何バイト目か */
 
-  for(line=0, ko=0; ko<ic->nIkouho; line++) {
+  for (line = 0, ko = 0; ko < ic->nIkouho; line++) {
     ic->glineifp[line].gldata = gptr; /* 候補行を表示するための文字列 */
-    ic->glineifp[line].glhead = ko;   /* この行の先頭候補は、全体でのko番目 */
+    ic->glineifp[line].glhead = ko; /* この行の先頭候補は、全体でのko番目 */
 
     ic->tooSmall = 1;
-    for (lnko = cn = dn = 0 ;
-	dn < netwidth && lnko < bangomax && ko < ic->nIkouho ; lnko++, ko++) {
+    for (lnko = cn = dn = 0;
+         dn < netwidth && lnko < bangomax && ko < ic->nIkouho;
+         lnko++, ko++) {
       ic->tooSmall = 0;
       kptr = kkptr[ko];
       ic->kouhoifp[ko].khretsu = line; /* 何行目に存在するかを記録 */
       ic->kouhoifp[ko].khpoint = cn + (lnko ? 1 : 0);
-      ic->kouhoifp[ko].khdata = kptr;  /* その文字列へのポインタ */
+      ic->kouhoifp[ko].khdata = kptr; /* その文字列へのポインタ */
       svgptr = gptr;
       svdn = dn;
       /* ２種類の表示を分ける */
-      if(!(inhibit & (unsigned char)NUMBERING)) {
-	/* 番号をコピーする */
-	if (!cannaconf.indexHankaku) {/* 全角 */
-	  if(lnko == 0) {
-	    *gptr++ = *bango; cn ++; dn +=2;
-	  } else {
-	    WStrncpy(gptr, bango + 1 + BANGOSIZE * (lnko - 1), BANGOSIZE);
-	    cn += BANGOSIZE; gptr += BANGOSIZE; dn += BANGOSIZE*2;
-	  }
-	}
-	else{ /* 半角 */
-	  WStrcpy(gptr, bango2[lnko]);
-	  if(lnko == 0) {
-	    dn +=2;
-	  } else {
-	    dn +=4;
-	  }
-	  cn += WStrlen(bango2[lnko]);
-	  gptr += WStrlen(bango2[lnko]);
-	}
+      if (!(inhibit & (unsigned char)NUMBERING)) {
+        /* 番号をコピーする */
+        if (!cannaconf.indexHankaku) { /* 全角 */
+          if (lnko == 0) {
+            *gptr++ = *bango;
+            cn++;
+            dn += 2;
+          } else {
+            WStrncpy(gptr, bango + 1 + BANGOSIZE * (lnko - 1), BANGOSIZE);
+            cn += BANGOSIZE;
+            gptr += BANGOSIZE;
+            dn += BANGOSIZE * 2;
+          }
+        } else { /* 半角 */
+          WStrcpy(gptr, bango2[lnko]);
+          if (lnko == 0) {
+            dn += 2;
+          } else {
+            dn += 4;
+          }
+          cn += WStrlen(bango2[lnko]);
+          gptr += WStrlen(bango2[lnko]);
+        }
       } else {
-	/* 空白をコピーする */
-	if(lnko) {
-	  *gptr++ = *kuuhaku; cn ++; dn +=2;
-	}
+        /* 空白をコピーする */
+        if (lnko) {
+          *gptr++ = *kuuhaku;
+          cn++;
+          dn += 2;
+        }
       }
       /* 候補をコピーする */
-      for (; *kptr && dn < netwidth ; gptr++, kptr++, cn++) {
-	*gptr = *kptr;
-	if (WIsG0(*gptr))
-	  dn++;
-	else if (WIsG1(*gptr))
-	  dn += 2;
-	else if (WIsG2(*gptr))
-	  dn ++;
-	else if (WIsG3(*gptr))
-	  dn += 2;
+      for (; *kptr && dn < netwidth; gptr++, kptr++, cn++) {
+        *gptr = *kptr;
+        if (WIsG0(*gptr))
+          dn++;
+        else if (WIsG1(*gptr))
+          dn += 2;
+        else if (WIsG2(*gptr))
+          dn++;
+        else if (WIsG3(*gptr))
+          dn += 2;
       }
 
       /* カラム数よりはみだしてしまいそうになったので１つ戻す */
       if (dn >= netwidth) {
-	if (lnko) {
-	  gptr = svgptr;
-	  dn = svdn;
-	}
-	else {
-	  ic->tooSmall = 1;
-	}
-	break;
+        if (lnko) {
+          gptr = svgptr;
+          dn = svdn;
+        } else {
+          ic->tooSmall = 1;
+        }
+        break;
       }
     }
     if (ic->tooSmall) {
       return 0;
     }
     if (cannaconf.kCount) {
-      for (;dn < d->ncolumns - 1; dn++)
-	*gptr++ = ' ';
+      for (; dn < d->ncolumns - 1; dn++)
+        *gptr++ = ' ';
     }
     /* １行終わり */
     *gptr++ = 0;
@@ -681,21 +703,21 @@ makeKouhoIchiran(uiContext d, int nelem, int bangomax, unsigned char inhibit,
   /* 最後にNULLを入れる */
   ic->kouhoifp[ko].khretsu = 0;
   ic->kouhoifp[ko].khpoint = 0;
-  ic->kouhoifp[ko].khdata  = NULL;
-  ic->glineifp[line].glkosu  = 0;
-  ic->glineifp[line].glhead  = 0;
-  ic->glineifp[line].gllen   = 0;
-  ic->glineifp[line].gldata  = NULL;
+  ic->kouhoifp[ko].khdata = NULL;
+  ic->glineifp[line].glkosu = 0;
+  ic->glineifp[line].glhead = 0;
+  ic->glineifp[line].gllen = 0;
+  ic->glineifp[line].gldata = NULL;
 
 #if defined(DEBUG)
   if (iroha_debug) {
     int i;
-    for(i=0; ic->glineifp[i].glkosu; i++)
+    for (i = 0; ic->glineifp[i].glkosu; i++)
       printf("%d: %s\n", i, ic->glineifp[i].gldata);
   }
 #endif
 
-  return(0);
+  return (0);
 }
 
 int
@@ -708,8 +730,9 @@ tanKouhoIchiran(uiContext d, int step)
   unsigned char listcallback = (unsigned char)(d->list_func ? 1 : 0);
   int netwidth;
 
-  netwidth = d->ncolumns -
-    (cannaconf.kCount ? (DEC_COLUMNS(9999) * 2 + 2/* 2は / と SP の分 */) : 0);
+  netwidth =
+    d->ncolumns -
+    (cannaconf.kCount ? (DEC_COLUMNS(9999) * 2 + 2 /* 2は / と SP の分 */) : 0);
 
   /* 候補一覧行が狭くて候補一覧が出せない */
   if (listcallback == 0 && netwidth < 2) {
@@ -735,14 +758,22 @@ tanKouhoIchiran(uiContext d, int step)
     inhibit |= (unsigned char)NUMBERING;
   }
 
-  yc->curIkouho = currentkouho;	/* 現在のカレント候補番号を保存する */
-  currentkouho = step;	/* カレント候補から何番目をカレント候補とするか */
+  yc->curIkouho = currentkouho; /* 現在のカレント候補番号を保存する */
+  currentkouho = step; /* カレント候補から何番目をカレント候補とするか */
 
   /* 候補一覧に移行する */
-  if ((retval = selectOne(d, yc->allkouho, &yc->curIkouho, nelem, BANGOMAX,
-			  inhibit, currentkouho, WITH_LIST_CALLBACK,
-			  ichiranEveryTimeCatch, ichiranExitCatch,
-			  ichiranQuitCatch, NO_CALLBACK)) == NG) {
+  if ((retval = selectOne(d,
+                          yc->allkouho,
+                          &yc->curIkouho,
+                          nelem,
+                          BANGOMAX,
+                          inhibit,
+                          currentkouho,
+                          WITH_LIST_CALLBACK,
+                          ichiranEveryTimeCatch,
+                          ichiranExitCatch,
+                          ichiranQuitCatch,
+                          NO_CALLBACK)) == NG) {
     freeGetIchiranList(yc->allkouho);
     return GLineNGReturn(d);
   }
@@ -758,12 +789,12 @@ tanKouhoIchiran(uiContext d, int step)
   ic->minorMode = CANNA_MODE_IchiranMode;
   currentModeInfo(d);
 
-  if ( !(ic->flags & ICHIRAN_ALLOW_CALLBACK) ) {
+  if (!(ic->flags & ICHIRAN_ALLOW_CALLBACK)) {
     makeGlineStatus(d);
   }
   /* d->status = EVERYTIME_CALLBACK; */
 
-  return(retval);
+  return (retval);
 }
 
 /*
@@ -775,28 +806,23 @@ IchiranQuit(uiContext d)
   ichiranContext ic = (ichiranContext)d->modec;
   int retval = 0;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     if (ic->flags & ICHIRAN_NEXT_EXIT) {
-      d->list_func(d->client_data,
-                     CANNA_LIST_Select, NULL, 0, NULL);
-    }
-    else {
-      d->list_func(d->client_data,
-                     CANNA_LIST_Quit, NULL, 0, NULL);
+      d->list_func(d->client_data, CANNA_LIST_Select, NULL, 0, NULL);
+    } else {
+      d->list_func(d->client_data, CANNA_LIST_Quit, NULL, 0, NULL);
     }
   }
 
   if (ic->flags & ICHIRAN_NEXT_EXIT) {
     ichiranFin(d);
     d->status = EXIT_CALLBACK;
-  }
-  else {
+  } else {
     *(ic->curIkouho) = ic->nIkouho - 1; /* ひらがな候補にする */
     ichiranFin(d);
     d->status = QUIT_CALLBACK;
   }
-  return(retval);
+  return (retval);
 }
 
 int
@@ -805,8 +831,7 @@ IchiranNop(uiContext d)
   ichiranContext ic = (ichiranContext)d->modec;
 
   if ((ic->flags & ICHIRAN_ALLOW_CALLBACK) && d->list_func) {
-    (*d->list_func)
-      (d->client_data, CANNA_LIST_Query, NULL, 0, NULL);
+    (*d->list_func)(d->client_data, CANNA_LIST_Query, NULL, 0, NULL);
   }
 
   /* currentModeInfo でモード情報が必ず返るようにダミーのモードを入れておく */
@@ -833,8 +858,8 @@ IchiranKakuteiThenDo(uiContext d, int func)
   BYTE ifl = ic->flags;
 
   if (!ic->prevMode || !ic->prevMode->func ||
-      !(*ic->prevMode->func)((uiContext)0/*dummy*/, ic->prevMode, KEY_CHECK,
-			     0/*dummy*/, func)) {
+      !(*ic->prevMode->func)(
+        (uiContext)0 /*dummy*/, ic->prevMode, KEY_CHECK, 0 /*dummy*/, func)) {
     return NothingChangedWithBeep(d);
   }
   retval = IchiranKakutei(d);
@@ -854,8 +879,8 @@ IchiranQuitThenDo(uiContext d, int func)
   int retval;
 
   if (!ic->prevMode || !ic->prevMode->func ||
-      !(*ic->prevMode->func)((uiContext)0/*dummy*/, ic->prevMode, KEY_CHECK,
-			     0/*dummy*/, func)) {
+      !(*ic->prevMode->func)(
+        (uiContext)0 /*dummy*/, ic->prevMode, KEY_CHECK, 0 /*dummy*/, func)) {
     return NothingChangedWithBeep(d);
   }
   retval = IchiranQuit(d);
@@ -878,28 +903,24 @@ IchiranForwardKouho(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     int res;
 
-    res = (*d->list_func)
-      (d->client_data, CANNA_LIST_Forward, NULL, 0, NULL);
+    res = (*d->list_func)(d->client_data, CANNA_LIST_Forward, NULL, 0, NULL);
     if (res) {
       return 0;
-    }
-    else { /* CANNA_LIST_Forward was not prepared at the callback func */
+    } else { /* CANNA_LIST_Forward was not prepared at the callback func */
       return IchiranKakuteiThenDo(d, CANNA_FN_Forward);
     }
   }
 
   /* 次候補にする (単語候補一覧状態で、最後の候補だったら一覧をやめる) */
   *(ic->curIkouho) += 1;
-  if(*(ic->curIkouho) >= ic->nIkouho) {
-    if (cannaconf.QuitIchiranIfEnd
-       && (((coreContext)d->modec)->minorMode == CANNA_MODE_IchiranMode)) {
-      return(IchiranQuit(d));
-    }
-    else if (cannaconf.CursorWrap) {
+  if (*(ic->curIkouho) >= ic->nIkouho) {
+    if (cannaconf.QuitIchiranIfEnd &&
+        (((coreContext)d->modec)->minorMode == CANNA_MODE_IchiranMode)) {
+      return (IchiranQuit(d));
+    } else if (cannaconf.CursorWrap) {
       *(ic->curIkouho) = 0;
     } else {
       *(ic->curIkouho) -= 1;
@@ -907,7 +928,7 @@ IchiranForwardKouho(uiContext d)
     }
   }
 
-  if(ic->tooSmall) { /* for bushu */
+  if (ic->tooSmall) { /* for bushu */
     d->status = AUX_CALLBACK;
     return 0;
   }
@@ -932,15 +953,12 @@ IchiranBackwardKouho(uiContext d)
   ichiranContext ic = (ichiranContext)d->modec;
   BYTE mode = 0;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     int res;
-    res = (*d->list_func)
-      (d->client_data, CANNA_LIST_Backward, NULL, 0, NULL);
+    res = (*d->list_func)(d->client_data, CANNA_LIST_Backward, NULL, 0, NULL);
     if (res) {
       return 0;
-    }
-    else { /* CANNA_LIST_Backward was not prepared at the callback func */
+    } else { /* CANNA_LIST_Backward was not prepared at the callback func */
       return IchiranKakuteiThenDo(d, CANNA_FN_Backward);
     }
   }
@@ -950,13 +968,12 @@ IchiranBackwardKouho(uiContext d)
     mode = ((coreContext)d->modec)->minorMode;
 
   /* 前候補にする (単語候補一覧状態で、最初の候補だったら一覧をやめる) */
-  if(*(ic->curIkouho))
+  if (*(ic->curIkouho))
     *(ic->curIkouho) -= 1;
   else {
     if (cannaconf.QuitIchiranIfEnd && (mode == CANNA_MODE_IchiranMode)) {
-      return(IchiranQuit(d));
-    }
-    else if (cannaconf.CursorWrap) {
+      return (IchiranQuit(d));
+    } else if (cannaconf.CursorWrap) {
       *(ic->curIkouho) = ic->nIkouho - 1;
     } else {
       *(ic->curIkouho) = 0;
@@ -964,7 +981,7 @@ IchiranBackwardKouho(uiContext d)
     }
   }
 
-  if(ic->tooSmall) { /* for bushu */
+  if (ic->tooSmall) { /* for bushu */
     d->status = AUX_CALLBACK;
     return 0;
   }
@@ -987,11 +1004,9 @@ IchiranConvert(uiContext d)
   ichiranContext ic = (ichiranContext)d->modec;
 
   if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
-    (*d->list_func)
-      (d->client_data, CANNA_LIST_Convert, NULL, 0, NULL);
+    (*d->list_func)(d->client_data, CANNA_LIST_Convert, NULL, 0, NULL);
     return 0;
-  }
-  else {
+  } else {
     return IchiranForwardKouho(d);
   }
 }
@@ -1009,21 +1024,18 @@ IchiranPreviousKouhoretsu(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     int res;
-    res = (*d->list_func)
-      (d->client_data, CANNA_LIST_Prev, NULL, 0, NULL);
+    res = (*d->list_func)(d->client_data, CANNA_LIST_Prev, NULL, 0, NULL);
     if (res) {
       return 0;
-    }
-    else { /* CANNA_LIST_Backward was not prepared at the callback func */
+    } else { /* CANNA_LIST_Backward was not prepared at the callback func */
       return IchiranKakuteiThenDo(d, CANNA_FN_Prev);
     }
   }
 
-  if(ic->tooSmall) { /* for bushu */
-    return(IchiranBackwardKouho(d));
+  if (ic->tooSmall) { /* for bushu */
+    return (IchiranBackwardKouho(d));
   }
 
   /* 前候補列にする (*(ic->curIkouho)を求める)*/
@@ -1053,11 +1065,11 @@ getIchiranPreviousKouhoretsu(uiContext d)
 
   /* カレント候補行のなかで何番目の候補かなのかを得る */
   kindex = *(ic->curIkouho) -
-    ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead;
+           ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead;
   /* 前候補列を得る */
   curretsu = ic->kouhoifp[*(ic->curIkouho)].khretsu;
   nretsu = ic->kouhoifp[ic->nIkouho - 1].khretsu + 1;
-  if(curretsu == 0) {
+  if (curretsu == 0) {
     if (cannaconf.CursorWrap)
       curretsu = nretsu;
     else {
@@ -1068,7 +1080,7 @@ getIchiranPreviousKouhoretsu(uiContext d)
   curretsu -= 1;
   /* kindex がカレント候補列の候補数より大きくなってしまったら
      最右候補をカレント候補とする */
-  if(ic->glineifp[curretsu].glkosu <= kindex)
+  if (ic->glineifp[curretsu].glkosu <= kindex)
     kindex = ic->glineifp[curretsu].glkosu - 1;
   /* 前候補列の同じ番号に移動する */
   *(ic->curIkouho) = kindex + ic->glineifp[curretsu].glhead;
@@ -1085,21 +1097,18 @@ IchiranNextKouhoretsu(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     int res;
-    res = (*d->list_func)
-      (d->client_data, CANNA_LIST_Next, NULL, 0, NULL);
+    res = (*d->list_func)(d->client_data, CANNA_LIST_Next, NULL, 0, NULL);
     if (res) {
       return 0;
-    }
-    else { /* CANNA_LIST_Backward was not prepared at the callback func */
+    } else { /* CANNA_LIST_Backward was not prepared at the callback func */
       return IchiranKakuteiThenDo(d, CANNA_FN_Next);
     }
   }
 
-  if(ic->tooSmall) {
-    return(IchiranForwardKouho(d));
+  if (ic->tooSmall) {
+    return (IchiranForwardKouho(d));
   }
 
   /* 次候補列にする (*(ic->curIkouho) を求める) */
@@ -1118,21 +1127,17 @@ IchiranNextKouhoretsu(uiContext d)
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-
 static int
 IchiranNextPage(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     int res;
-    res = (*d->list_func)
-      (d->client_data, CANNA_LIST_PageDown, NULL, 0, NULL);
+    res = (*d->list_func)(d->client_data, CANNA_LIST_PageDown, NULL, 0, NULL);
     if (res) {
       return 0;
-    }
-    else { /* CANNA_LIST_Backward was not prepared at the callback func */
+    } else { /* CANNA_LIST_Backward was not prepared at the callback func */
       return IchiranKakuteiThenDo(d, CANNA_FN_PageDown);
     }
   }
@@ -1147,21 +1152,17 @@ IchiranNextPage(uiContext d)
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-
 static int
 IchiranPreviousPage(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     int res;
-    res = (*d->list_func)
-      (d->client_data, CANNA_LIST_PageUp, NULL, 0, NULL);
+    res = (*d->list_func)(d->client_data, CANNA_LIST_PageUp, NULL, 0, NULL);
     if (res) {
       return 0;
-    }
-    else { /* CANNA_LIST_Backward was not prepared at the callback func */
+    } else { /* CANNA_LIST_Backward was not prepared at the callback func */
       return IchiranKakuteiThenDo(d, CANNA_FN_PageUp);
     }
   }
@@ -1187,12 +1188,12 @@ getIchiranNextKouhoretsu(uiContext d)
 
   /* カレント候補行のなかで何番目の候補かなのかを得る */
   kindex = *(ic->curIkouho) -
-    ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead;
+           ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead;
   /* 次候補列を得る */
   curretsu = ic->kouhoifp[*(ic->curIkouho)].khretsu;
   nretsu = ic->kouhoifp[ic->nIkouho - 1].khretsu + 1;
   curretsu += 1;
-  if(curretsu >= nretsu) {
+  if (curretsu >= nretsu) {
     if (cannaconf.CursorWrap)
       curretsu = 0;
     else {
@@ -1202,7 +1203,7 @@ getIchiranNextKouhoretsu(uiContext d)
   }
   /* kindex がカレント候補列の候補数より大きくなってしまったら
      最右候補をカレント候補とする */
-  if(ic->glineifp[curretsu].glkosu <= kindex)
+  if (ic->glineifp[curretsu].glkosu <= kindex)
     kindex = ic->glineifp[curretsu].glkosu - 1;
   /* 前候補列の同じ番号に移動する */
   *(ic->curIkouho) = kindex + ic->glineifp[curretsu].glhead;
@@ -1219,20 +1220,18 @@ IchiranBeginningOfKouho(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     int res;
-    res = (*d->list_func)
-      (d->client_data, CANNA_LIST_BeginningOfLine, NULL, 0,NULL);
+    res = (*d->list_func)(
+      d->client_data, CANNA_LIST_BeginningOfLine, NULL, 0, NULL);
     if (res) {
       return 0;
-    }
-    else { /* CANNA_LIST_Backward was not prepared at the callback func */
+    } else { /* CANNA_LIST_Backward was not prepared at the callback func */
       return IchiranKakuteiThenDo(d, CANNA_FN_BeginningOfLine);
     }
   }
 
-  if(ic->tooSmall) {
+  if (ic->tooSmall) {
     d->status = AUX_CALLBACK;
     return 0;
   }
@@ -1258,28 +1257,25 @@ IchiranEndOfKouho(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
 
-  if (ic->flags & ICHIRAN_ALLOW_CALLBACK &&
-      d->list_func) {
+  if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
     int res;
-    res = (*d->list_func)
-      (d->client_data, CANNA_LIST_EndOfLine, NULL, 0, NULL);
+    res = (*d->list_func)(d->client_data, CANNA_LIST_EndOfLine, NULL, 0, NULL);
     if (res) {
       return 0;
-    }
-    else { /* CANNA_LIST_Backward was not prepared at the callback func */
+    } else { /* CANNA_LIST_Backward was not prepared at the callback func */
       return IchiranKakuteiThenDo(d, CANNA_FN_EndOfLine);
     }
   }
 
-  if(ic->tooSmall) {
+  if (ic->tooSmall) {
     d->status = AUX_CALLBACK;
     return 0;
   }
 
   /* 候補列の最右候補をカレント候補にする */
   *(ic->curIkouho) =
-    ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead
-    + ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glkosu - 1;
+    ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glhead +
+    ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glkosu - 1;
 
   makeGlineStatus(d);
   /* d->status = EVERYTIME_CALLBACK; */
@@ -1294,7 +1290,8 @@ IchiranEndOfKouho(uiContext d)
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-static int getIchiranBangoKouho(uiContext d);
+static int
+getIchiranBangoKouho(uiContext d);
 
 static int
 IchiranBangoKouho(uiContext d)
@@ -1302,61 +1299,58 @@ IchiranBangoKouho(uiContext d)
   ichiranContext ic = (ichiranContext)d->modec;
   int zflag, retval = 0;
 
-  if(ic->tooSmall) {
+  if (ic->tooSmall) {
     d->status = AUX_CALLBACK;
-    return(retval);
+    return (retval);
   }
 
   /* d->status = EVERYTIME_CALLBACK; */
 
   if (cannaconf.HexkeySelect && !(ic->inhibit & NUMBERING)) {
     /* 入力された番号の候補をカレント候補とする */
-    if((zflag = getIchiranBangoKouho(d)) == NG)
+    if ((zflag = getIchiranBangoKouho(d)) == NG)
       goto insert;
 
     /* SelectDirect のカスタマイズの処理 */
   do_selection:
     if (cannaconf.SelectDirect) /* ON */ {
-      if(zflag) /* ０が入力された */
-	retval = IchiranQuit(d);
+      if (zflag) /* ０が入力された */
+        retval = IchiranQuit(d);
       else
-	retval = IchiranKakutei(d);
-    } else {          /* OFF */
+        retval = IchiranKakutei(d);
+    } else { /* OFF */
       makeGlineStatus(d);
       /* d->status = EVERYTIME_CALLBACK; */
     }
-    return(retval);
-  }
-  else {
+    return (retval);
+  } else {
 #ifdef CANNA_LIST_Insert /* 絶対定義されているんだけどね */
     if (ic->flags & ICHIRAN_ALLOW_CALLBACK && d->list_func) {
       int res = (*d->list_func) /* list_func を呼び出す */
-	(d->client_data, CANNA_LIST_Insert, NULL, d->ch, NULL);
+        (d->client_data, CANNA_LIST_Insert, NULL, d->ch, NULL);
       if (res) { /* d->ch がアプリケーション側で処理された */
-	if (res == CANNA_FN_FunctionalInsert) {
-	  zflag = 1; /* 0 じゃなければいい */
-	  goto do_selection;
-	}
-	else if (res != CANNA_FN_Nop) {
-	  /* アプリケーション側から要求して来た機能を続けて実行する */
-	  d->more.todo = 1;
-	  d->more.ch = d->ch;
-	  d->more.fnum = CANNA_FN_FunctionalInsert;
-	}
-	return 0;
-      }
-      else { /* CANNA_LIST_Insert was not processed at the callback func */
-	/* continue to the 'insert:' tag.. */
+        if (res == CANNA_FN_FunctionalInsert) {
+          zflag = 1; /* 0 じゃなければいい */
+          goto do_selection;
+        } else if (res != CANNA_FN_Nop) {
+          /* アプリケーション側から要求して来た機能を続けて実行する */
+          d->more.todo = 1;
+          d->more.ch = d->ch;
+          d->more.fnum = CANNA_FN_FunctionalInsert;
+        }
+        return 0;
+      } else { /* CANNA_LIST_Insert was not processed at the callback func */
+               /* continue to the 'insert:' tag.. */
       }
     }
 #endif
 
   insert:
-    if(!(ic->inhibit & CHARINSERT) && cannaconf.allowNextInput) {
+    if (!(ic->inhibit & CHARINSERT) && cannaconf.allowNextInput) {
       BYTE ifl = ic->flags;
       retval = IchiranKakutei(d);
       if (ifl & ICHIRAN_STAY_LONG) {
-	IchiranQuit(d);
+        IchiranQuit(d);
       }
       d->more.todo = 1;
       d->more.ch = d->ch;
@@ -1364,7 +1358,7 @@ IchiranBangoKouho(uiContext d)
     } else {
       NothingChangedWithBeep(d);
     }
-    return(retval);
+    return (retval);
   }
 }
 
@@ -1384,30 +1378,29 @@ getIchiranBangoKouho(uiContext d)
   int num = 0, kindex;
 
   /* 入力データは ０〜９ ａ〜ｆ か？ */
-  if(((0x30 <= d->ch) && (d->ch <= 0x39))
-     || ((0x61 <= d->ch) && (d->ch <= 0x66))) {
-    if((0x30 <= d->ch) && (d->ch <= 0x39))
+  if (((0x30 <= d->ch) && (d->ch <= 0x39)) ||
+      ((0x61 <= d->ch) && (d->ch <= 0x66))) {
+    if ((0x30 <= d->ch) && (d->ch <= 0x39))
       num = (d->ch & 0x0f);
-    else if((0x61 <= d->ch) && (d->ch <= 0x66))
+    else if ((0x61 <= d->ch) && (d->ch <= 0x66))
       num = (d->ch - 0x57);
-  }
-  else {
+  } else {
     /* 入力された番号は正しくありません */
-    return(NG);
+    return (NG);
   }
   /* 入力データは 候補行の中に存在する数か？ */
-  if(num > ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glkosu) {
+  if (num > ic->glineifp[ic->kouhoifp[*(ic->curIkouho)].khretsu].glkosu) {
     /* 入力された番号は正しくありません */
-    return(NG);
+    return (NG);
   }
 
   /* 入力された数が０で SelectDirect が ON なら読みに戻して１を返す */
-  if(num == 0) {
+  if (num == 0) {
     if (cannaconf.SelectDirect)
-      return(1);
+      return (1);
     else {
       /* 入力された番号は正しくありません */
-      return(NG);
+      return (NG);
     }
   } else {
     /* 候補列の先頭候補を得る */
@@ -1415,7 +1408,7 @@ getIchiranBangoKouho(uiContext d)
     *(ic->curIkouho) = kindex + (num - 1);
   }
 
-  return(0);
+  return (0);
 }
 
 /*
@@ -1425,22 +1418,18 @@ getIchiranBangoKouho(uiContext d)
  * 戻り値	正常終了時 0	異常終了時 -1
  */
 
-
 static int
 IchiranKakutei(uiContext d)
 {
   ichiranContext ic = (ichiranContext)d->modec;
   int retval = 0;
-  wchar_t *kakuteiStrings;
+  wchar_t* kakuteiStrings;
 
   if ((ic->flags & ICHIRAN_ALLOW_CALLBACK) && d->list_func) {
     if (ic->flags & ICHIRAN_STAY_LONG) {
-      d->list_func(d->client_data,
-                     CANNA_LIST_Query, NULL, 0, NULL);
-    }
-    else {
-      d->list_func(d->client_data,
-                     CANNA_LIST_Select, NULL, 0, NULL);
+      d->list_func(d->client_data, CANNA_LIST_Query, NULL, 0, NULL);
+    } else {
+      d->list_func(d->client_data, CANNA_LIST_Select, NULL, 0, NULL);
     }
   }
 
@@ -1451,14 +1440,13 @@ IchiranKakutei(uiContext d)
   if (ic->flags & ICHIRAN_STAY_LONG) {
     ic->flags |= ICHIRAN_NEXT_EXIT;
     d->status = EVERYTIME_CALLBACK;
-  }
-  else {
+  } else {
     ichiranFin(d);
 
     d->status = EXIT_CALLBACK;
   }
 
-  return(retval);
+  return (retval);
 }
 
 /*
@@ -1481,13 +1469,11 @@ ichiranFin(uiContext d)
   GlineClear(d);
 }
 
-
 static int
 IchiranExtendBunsetsu(uiContext d)
 {
   return IchiranQuitThenDo(d, CANNA_FN_Extend);
 }
-
 
 static int
 IchiranShrinkBunsetsu(uiContext d)
@@ -1495,13 +1481,11 @@ IchiranShrinkBunsetsu(uiContext d)
   return IchiranQuitThenDo(d, CANNA_FN_Shrink);
 }
 
-
 static int
 IchiranAdjustBunsetsu(uiContext d)
 {
   return IchiranQuitThenDo(d, CANNA_FN_AdjustBunsetsu);
 }
-
 
 static int
 IchiranKillToEndOfLine(uiContext d)
@@ -1509,13 +1493,11 @@ IchiranKillToEndOfLine(uiContext d)
   return IchiranKakuteiThenDo(d, CANNA_FN_KillToEndOfLine);
 }
 
-
 static int
 IchiranDeleteNext(uiContext d)
 {
   return IchiranKakuteiThenDo(d, CANNA_FN_DeleteNext);
 }
-
 
 static int
 IchiranBubunMuhenkan(uiContext d)
@@ -1523,13 +1505,11 @@ IchiranBubunMuhenkan(uiContext d)
   return IchiranQuitThenDo(d, CANNA_FN_BubunMuhenkan);
 }
 
-
 static int
 IchiranHiragana(uiContext d)
 {
   return IchiranQuitThenDo(d, CANNA_FN_Hiragana);
 }
-
 
 static int
 IchiranKatakana(uiContext d)
@@ -1537,13 +1517,11 @@ IchiranKatakana(uiContext d)
   return IchiranQuitThenDo(d, CANNA_FN_Katakana);
 }
 
-
 static int
 IchiranZenkaku(uiContext d)
 {
   return IchiranQuitThenDo(d, CANNA_FN_Zenkaku);
 }
-
 
 static int
 IchiranHankaku(uiContext d)
@@ -1551,13 +1529,11 @@ IchiranHankaku(uiContext d)
   return IchiranQuitThenDo(d, CANNA_FN_Hankaku);
 }
 
-
 static int
 IchiranRomaji(uiContext d)
 {
   return IchiranQuitThenDo(d, CANNA_FN_Romaji);
 }
-
 
 static int
 IchiranToUpper(uiContext d)
@@ -1565,13 +1541,11 @@ IchiranToUpper(uiContext d)
   return IchiranQuitThenDo(d, CANNA_FN_ToUpper);
 }
 
-
 static int
 IchiranToLower(uiContext d)
 {
   return IchiranQuitThenDo(d, CANNA_FN_ToLower);
 }
-
 
 static int
 IchiranCapitalize(uiContext d)
@@ -1579,20 +1553,17 @@ IchiranCapitalize(uiContext d)
   return IchiranQuitThenDo(d, CANNA_FN_Capitalize);
 }
 
-
 static int
 IchiranKanaRotate(uiContext d)
 {
   return IchiranQuitThenDo(d, CANNA_FN_KanaRotate);
 }
 
-
 static int
 IchiranRomajiRotate(uiContext d)
 {
   return IchiranQuitThenDo(d, CANNA_FN_RomajiRotate);
 }
-
 
 static int
 IchiranCaseRotateForward(uiContext d)
@@ -1601,11 +1572,11 @@ IchiranCaseRotateForward(uiContext d)
 }
 
 #ifndef wchar_t
-# error "wchar_t is already undefined"
+#error "wchar_t is already undefined"
 #endif
 #undef wchar_t
 /*********************************************************************
  *                       wchar_t replace end                         *
  *********************************************************************/
 
-#include	"ichiranmap.h"
+#include "ichiranmap.h"

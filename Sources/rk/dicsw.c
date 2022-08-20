@@ -20,10 +20,24 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include	"RKintern.h"
+#include "RKintern.h"
 
-
-struct RkDST 	_RkDST[] = {
-/* PERMDIC */ { _Rkpopen, _Rkpclose, _Rkpsearch, _Rkpio, _Rkpctl, _Rkpsync, },
-/* TEMPDIC */ { _Rktopen, _Rktclose, _Rktsearch, _Rktio, _Rktctl, _Rktsync, },
+struct RkDST _RkDST[] = {
+  /* PERMDIC */ {
+    _Rkpopen,
+    _Rkpclose,
+    _Rkpsearch,
+    _Rkpio,
+    _Rkpctl,
+    _Rkpsync,
+  },
+  /* TEMPDIC */
+  {
+    _Rktopen,
+    _Rktclose,
+    _Rktsearch,
+    _Rktio,
+    _Rktctl,
+    _Rktsync,
+  },
 };

@@ -25,19 +25,28 @@
 
 extern int BunsetsuKugiri;
 
-static char *e_message[] = {
+static char* e_message[] = {
 #ifdef CODED_MESSAGE
-  /* 0*/"\312\270\300\341\244\316\260\334\306\260\244\313\274\272\307\324\244\267\244\336\244\267\244\277",
-  /* 1*/"\264\301\273\372\244\316\306\311\244\337\244\362\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307\244\267\244\277",
-  /* 2*/"\312\270\300\341\244\316\260\334\306\260\244\313\274\272\307\324\244\267\244\336\244\267\244\277",
-  /* 3*/"\264\301\273\372\244\316\306\311\244\337\244\362\274\350\244\352\275\320\244\273\244\336\244\273\244\363\244\307\244\267\244\277",
-  /* 4*/"\244\253\244\312\264\301\273\372\312\321\264\271\244\313\274\272\307\324\244\267\244\336\244\267\244\277",
+  /* 0*/ "\312\270\300\341\244\316\260\334\306\260\244\313\274\272\307\324\244"
+         "\267\244\336\244\267\244\277",
+  /* 1*/
+  "\264\301\273\372\244\316\306\311\244\337\244\362\274\350\244\352\275\320\244"
+  "\273\244\336\244\273\244\363\244\307\244\267\244\277",
+  /* 2*/
+  "\312\270\300\341\244\316\260\334\306\260\244\313\274\272\307\324\244\267\244"
+  "\336\244\267\244\277",
+  /* 3*/
+  "\264\301\273\372\244\316\306\311\244\337\244\362\274\350\244\352\275\320\244"
+  "\273\244\336\244\273\244\363\244\307\244\267\244\277",
+  /* 4*/
+  "\244\253\244\312\264\301\273\372\312\321\264\271\244\313\274\272\307\324\244"
+  "\267\244\336\244\267\244\277",
 #else
-  /* 0*/"文節の移動に失敗しました",
-  /* 1*/"漢字の読みを取り出せませんでした",
-  /* 2*/"文節の移動に失敗しました",
-  /* 3*/"漢字の読みを取り出せませんでした",
-  /* 4*/"かな漢字変換に失敗しました",
+  /* 0*/ "文節の移動に失敗しました",
+  /* 1*/ "漢字の読みを取り出せませんでした",
+  /* 2*/ "文節の移動に失敗しました",
+  /* 3*/ "漢字の読みを取り出せませんでした",
+  /* 4*/ "かな漢字変換に失敗しました",
 #endif
 };
 
@@ -48,7 +57,7 @@ enterAdjustMode(uiContext d, yomiContext yc)
   int i, n = 0;
   RkStat rst;
 
-  for (i = 0 ; i < yc->curbun ; i++) {
+  for (i = 0; i < yc->curbun; i++) {
     if (RkwGoTo(yc->context, i) == -1) {
       return makeRkError(d, e_message[0]);
     }
@@ -74,7 +83,6 @@ enterAdjustMode(uiContext d, yomiContext yc)
   return 0;
 }
 
-
 int
 leaveAdjustMode(uiContext d, yomiContext yc)
 {
@@ -86,7 +94,6 @@ leaveAdjustMode(uiContext d, yomiContext yc)
   return 0;
 }
 
-
 static int
 BunFullExtend(uiContext d)
 {
@@ -97,7 +104,6 @@ BunFullExtend(uiContext d)
   return 0;
 }
 
-
 static int
 BunFullShrink(uiContext d)
 {
@@ -107,7 +113,6 @@ BunFullShrink(uiContext d)
   makeKanjiStatusReturn(d, yc);
   return 0;
 }
-
 
 static int
 BunExtend(uiContext d)
@@ -120,14 +125,12 @@ BunExtend(uiContext d)
     yc->bunlen++;
     makeKanjiStatusReturn(d, yc);
     return 0;
-  }
-  else if (cannaconf.CursorWrap) {
+  } else if (cannaconf.CursorWrap) {
     return BunFullShrink(d);
   }
   NothingChangedWithBeep(d);
   return 0;
 }
-
 
 static int
 BunShrink(uiContext d)
@@ -143,15 +146,13 @@ BunShrink(uiContext d)
       yc->bunlen = newlen;
       makeKanjiStatusReturn(d, yc);
       return 0;
-    }
-    else if (cannaconf.CursorWrap) {
+    } else if (cannaconf.CursorWrap) {
       return BunFullExtend(d);
     }
   }
   NothingChangedWithBeep(d);
   return 0;
 }
-
 
 static int
 BunHenkan(uiContext d)
@@ -162,14 +163,13 @@ BunHenkan(uiContext d)
   leaveAdjustMode(d, yc);
   if (yc->nbunsetsu < 0) {
     makeRkError(d, e_message[4]);
-    yc->nbunsetsu = 1/* dummy */;
+    yc->nbunsetsu = 1 /* dummy */;
     return TanMuhenkan(d);
   }
   makeKanjiStatusReturn(d, yc);
   currentModeInfo(d);
   return 0;
 }
-
 
 static int
 BunQuit(uiContext d)
@@ -182,7 +182,6 @@ BunQuit(uiContext d)
   return 0;
 }
 
-
 static int
 BunSelfInsert(uiContext d)
 {
@@ -193,7 +192,6 @@ BunSelfInsert(uiContext d)
   return d->nbytes;
 }
 
-
 static int
 BunQuotedInsert(uiContext d)
 {
@@ -203,7 +201,6 @@ BunQuotedInsert(uiContext d)
   d->more.fnum = CANNA_FN_QuotedInsert;
   return d->nbytes;
 }
-
 
 static int
 BunKillToEOL(uiContext d)

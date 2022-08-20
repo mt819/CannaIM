@@ -41,58 +41,97 @@ enum
 };
 #endif
 
-static FILE *outstream = NULL;
+static FILE* outstream = NULL;
 
 static char *celltop, *cellbtm, *freecell;
-static char *memtop;
+static char* memtop;
 
 static int ncells = CELLSIZE;
 
-static char *Strncpy(char *x, char *y, int len);
-static int allocarea(void);
-static int equal(list x, list y);
-static int evpsh(list args);
-static int initIS(void);
-static int isnum(char *name);
-static int isterm(int c);
-static int skipspaces(void);
-static int tyi(void);
-static int tyipeek(void);
-static int zaplin(void);
-static list assq(list e, list a);
-static list copystring(char *s, int n);
-static list getatm(char *name, int key);
-static list getatmz(char *name);
-static list Lcons(int n);
-static list Leval(int n);
-static list Lncons(int n);
-static list Lprint(int n);
-static list Lprogn(void);
-static list Lread(int n);
-static list newsymbol(char *name);
-static list pop1(void);
-static list ratom(void);
-static list ratom2(int a);
-static list rcharacter(void);
-static list read1(void);
-static list rstring(void);
-static void defatms(void);
-static void epush(list value);
-static void finIS(void);
-static void freearea(void);
-static void gc(void);
-static void markcopycell(list *addr);
-static void patom(list atm);
-static void prins(char *s);
-static void print(list l);
-static void push(list value);
-static void tyo(int c);
-static void untyi(int c);
-
+static char*
+Strncpy(char* x, char* y, int len);
+static int
+allocarea(void);
+static int
+equal(list x, list y);
+static int
+evpsh(list args);
+static int
+initIS(void);
+static int
+isnum(char* name);
+static int
+isterm(int c);
+static int
+skipspaces(void);
+static int
+tyi(void);
+static int
+tyipeek(void);
+static int
+zaplin(void);
+static list
+assq(list e, list a);
+static list
+copystring(char* s, int n);
+static list
+getatm(char* name, int key);
+static list
+getatmz(char* name);
+static list
+Lcons(int n);
+static list
+Leval(int n);
+static list
+Lncons(int n);
+static list
+Lprint(int n);
+static list
+Lprogn(void);
+static list
+Lread(int n);
+static list
+newsymbol(char* name);
+static list
+pop1(void);
+static list
+ratom(void);
+static list
+ratom2(int a);
+static list
+rcharacter(void);
+static list
+read1(void);
+static list
+rstring(void);
+static void
+defatms(void);
+static void
+epush(list value);
+static void
+finIS(void);
+static void
+freearea(void);
+static void
+gc(void);
+static void
+markcopycell(list* addr);
+static void
+patom(list atm);
+static void
+prins(char* s);
+static void
+print(list l);
+static void
+push(list value);
+static void
+tyo(int c);
+static void
+untyi(int c);
 
 /* error functions	*/
-static void error(char *msg, list v) __attribute__((noreturn));
-
+static void
+error(char* msg, list v) __attribute__((noreturn));
 
 /* parameter stack */
 
@@ -104,29 +143,29 @@ static list *estack, *esp;
 
 /* oblist */
 
-static list *oblist; /* oblist hashing array		*/
+static list* oblist; /* oblist hashing array		*/
 
 #define LISPERROR -1
 
 typedef struct
 {
-  FILE *f;
-  char *name;
+  FILE* f;
+  char* name;
   unsigned line;
 } lispfile;
 
-static lispfile *files;
+static lispfile* files;
 static int filep;
 
 /* lisp read buffer & read pointer */
 
-static char *readbuf; /* read buffer	*/
-static char *readptr; /* read pointer	*/
+static char* readbuf; /* read buffer	*/
+static char* readptr; /* read pointer	*/
 
 /* multiple values */
 
 #define MAXVALUES 16
-static list *values; /* multiple values here	*/
+static list* values; /* multiple values here	*/
 static int valuec;   /* number of values here	*/
 
 /* symbols */
@@ -141,7 +180,7 @@ static struct lispcenv
   jmp_buf jmp_env;
   int base_stack;
   int base_estack;
-} * env; /* environment for setjmp & longjmp	*/
+}* env; /* environment for setjmp & longjmp	*/
 static int jmpenvp = MAX_DEPTH;
 
 static jmp_buf fatal_env;
@@ -213,10 +252,10 @@ clisp_init()
 static void
 fillMenuEntry()
 {
-  extern extraFunc *extrafuncp;
+  extern extraFunc* extrafuncp;
   extraFunc *p, *fp;
   int i, n, fid;
-  menuitem *mb;
+  menuitem* mb;
 
   for (p = extrafuncp; p; p = p->next) {
     if (p->keyword == EXTRA_FUNC_DEFMENU) {
@@ -247,7 +286,7 @@ fillMenuEntry()
 #endif /* NO_EXTEND_MENU */
 
 #define UNTYIUNIT 32
-static char *untyibuf = 0;
+static char* untyibuf = 0;
 static int untyisize = 0, untyip = 0;
 
 void
@@ -277,12 +316,12 @@ clisp_fin()
 }
 
 int
-YYparse_by_rcfilename(char *s)
+YYparse_by_rcfilename(char* s)
 {
   extern int ckverbose;
   int retval = 0;
-  FILE *f;
-  FILE *saved_outstream = NULL;
+  FILE* f;
+  FILE* saved_outstream = NULL;
 
   if (setjmp(fatal_env)) {
     retval = 0;
@@ -356,9 +395,9 @@ intr(int sig)
 */
 
 int
-parse_string(char *str)
+parse_string(char* str)
 {
-  char *readbufbk;
+  char* readbufbk;
 
   if (clisp_init() == 0) {
     return -1;
@@ -420,8 +459,11 @@ clisp_main()
   }
   jmpenvp--;
 
-  fprintf(stderr, "CannaLisp listener %d.%d%s\n", CANNA_MAJOR_MINOR / 1000,
-          CANNA_MAJOR_MINOR % 1000, CANNA_PATCH_LEVEL);
+  fprintf(stderr,
+          "CannaLisp listener %d.%d%s\n",
+          CANNA_MAJOR_MINOR / 1000,
+          CANNA_MAJOR_MINOR % 1000,
+          CANNA_PATCH_LEVEL);
 
   outstream = stdout;
 
@@ -456,7 +498,7 @@ static int longestkeywordlen;
 
 typedef struct
 {
-  char *seq;
+  char* seq;
   int id;
 } SeqToID;
 
@@ -535,15 +577,15 @@ static SeqToID keywordtable[] = {
 
 #define charToNum(c) charToNumTbl[(c) - ' ']
 
-static int *charToNumTbl;
+static int* charToNumTbl;
 
 typedef struct
 {
   int id;
-  int *tbl;
+  int* tbl;
 } seqlines;
 
-static seqlines *seqTbl; /* 内部の表(実際には表の表) */
+static seqlines* seqTbl; /* 内部の表(実際には表の表) */
 static int nseqtbl;      /* 状態の数。状態の数だけ表がある */
 static int nseq;
 static int seqline;
@@ -551,8 +593,8 @@ static int seqline;
 static int
 initIS()
 {
-  SeqToID *p;
-  char *s;
+  SeqToID* p;
+  char* s;
   int i;
   seqlines seqTbls[1024];
 
@@ -565,7 +607,7 @@ initIS()
     seqTbls[i].tbl = NULL;
     seqTbls[i].id = 0;
   }
-  charToNumTbl = (int *)calloc('~' - ' ' + 1, sizeof(int));
+  charToNumTbl = (int*)calloc('~' - ' ' + 1, sizeof(int));
   if (!charToNumTbl) {
     return 0;
   }
@@ -586,7 +628,7 @@ initIS()
     }
   }
   /* 文字数分のテーブル */
-  seqTbls[nseqtbl].tbl = (int *)calloc(nseq, sizeof(int));
+  seqTbls[nseqtbl].tbl = (int*)calloc(nseq, sizeof(int));
   if (!seqTbls[nseqtbl].tbl) {
     goto initISerr;
   }
@@ -597,7 +639,7 @@ initIS()
     line = 0;
     for (s = p->seq; *s; s++) {
       if (seqTbls[line].tbl == 0) { /* テーブルがない */
-        seqTbls[line].tbl = (int *)calloc(nseq, sizeof(int));
+        seqTbls[line].tbl = (int*)calloc(nseq, sizeof(int));
         if (!seqTbls[line].tbl) {
           goto initISerr;
         }
@@ -612,7 +654,7 @@ initIS()
     }
     seqTbls[line].id = p->id;
   }
-  seqTbl = (seqlines *)calloc(nseqtbl, sizeof(seqlines));
+  seqTbl = (seqlines*)calloc(nseqtbl, sizeof(seqlines));
   if (!seqTbl) {
     goto initISerr;
   }
@@ -662,7 +704,7 @@ finIS() /* identifySequence に用いたメモリ資源を開放する */
 #define END 0
 
 static int
-identifySequence(unsigned c, int *val)
+identifySequence(unsigned c, int* val)
 {
   int nextline;
 
@@ -687,7 +729,7 @@ static int
 alloccell()
 {
   int cellsize, odd;
-  char *p;
+  char* p;
 
   cellsize = ncells * sizeof(list);
   p = malloc(cellsize);
@@ -709,27 +751,27 @@ allocarea()
   /* まずはセル領域 */
   if (alloccell()) {
     /* スタック領域 */
-    stack = (list *)calloc(STKSIZE, sizeof(list));
+    stack = (list*)calloc(STKSIZE, sizeof(list));
     if (stack) {
-      estack = (list *)calloc(STKSIZE, sizeof(list));
+      estack = (list*)calloc(STKSIZE, sizeof(list));
       if (estack) {
         /* oblist */
-        oblist = (list *)calloc(BUFSIZE, sizeof(list));
+        oblist = (list*)calloc(BUFSIZE, sizeof(list));
         if (oblist) {
           /* I/O */
           filep = 0;
-          files = (lispfile *)calloc(MAX_DEPTH, sizeof(lispfile));
+          files = (lispfile*)calloc(MAX_DEPTH, sizeof(lispfile));
           if (files) {
             readbuf = malloc(BUFSIZE);
             if (readbuf) {
               /* jump env */
               jmpenvp = MAX_DEPTH;
               env =
-                (struct lispcenv *)calloc(MAX_DEPTH, sizeof(struct lispcenv));
+                (struct lispcenv*)calloc(MAX_DEPTH, sizeof(struct lispcenv));
               if (env) {
                 /* multiple values returning buffer */
                 valuec = 1;
-                values = (list *)calloc(MAXVALUES, sizeof(list));
+                values = (list*)calloc(MAXVALUES, sizeof(list));
                 if (values) {
                   return 1;
                 }
@@ -767,10 +809,10 @@ freearea()
 }
 
 static list
-getatmz(char *name)
+getatmz(char* name)
 {
   int key;
-  char *p;
+  char* p;
 
   for (p = name, key = 0; *p; p++)
     key += *p;
@@ -781,10 +823,10 @@ getatmz(char *name)
         making symbol function	*/
 
 static list
-mkatm(char *name)
+mkatm(char* name)
 {
   list temp;
-  struct atomcell *newatom;
+  struct atomcell* newatom;
 
   temp = newsymbol(name);
   newatom = symbolpointer(temp);
@@ -803,10 +845,10 @@ mkatm(char *name)
 /* getatm -- get atom from the oblist if possible	*/
 
 static list
-getatm(char *name, int key)
+getatm(char* name, int key)
 {
   list p;
-  struct atomcell *atomp;
+  struct atomcell* atomp;
 
   key &= 0x00ff;
   for (p = oblist[key]; p;) {
@@ -826,7 +868,7 @@ getatm(char *name, int key)
 #define MESSAGE_MAX 256
 
 static void
-error(char *msg, list v)
+error(char* msg, list v)
 /* ARGSUSED */
 {
   char buf[MESSAGE_MAX];
@@ -838,8 +880,8 @@ error(char *msg, list v)
     prins("\n");
   } else {
     if (files[filep].name) {
-      sprintf(buf, " (%s near line %d)\n", files[filep].name,
-              files[filep].line);
+      sprintf(
+        buf, " (%s near line %d)\n", files[filep].name, files[filep].line);
     } else {
       sprintf(buf, " (near line %d)\n", files[filep].line);
     }
@@ -852,7 +894,7 @@ error(char *msg, list v)
 }
 
 static void
-fatal(char *msg, list v)
+fatal(char* msg, list v)
 /* ARGSUSED */
 {
   char buf[MESSAGE_MAX];
@@ -864,8 +906,8 @@ fatal(char *msg, list v)
     prins("\n");
   } else {
     if (files[filep].name) {
-      sprintf(buf, " (%s near line %d)\n", files[filep].name,
-              files[filep].line);
+      sprintf(
+        buf, " (%s near line %d)\n", files[filep].name, files[filep].line);
     } else {
       sprintf(buf, " (near line %d)\n", files[filep].line);
     }
@@ -875,7 +917,7 @@ fatal(char *msg, list v)
 }
 
 static void
-argnerr(char *msg)
+argnerr(char* msg)
 {
   prins("incorrect number of args to ");
   error(msg, NON);
@@ -883,7 +925,7 @@ argnerr(char *msg)
 }
 
 static void
-numerr(char *fn, list arg)
+numerr(char* fn, list arg)
 {
   prins("Non-number ");
   if (fn) {
@@ -895,7 +937,7 @@ numerr(char *fn, list arg)
 }
 
 static void
-lisp_strerr(char *fn, list arg)
+lisp_strerr(char* fn, list arg)
 {
   prins("Non-string ");
   if (fn) {
@@ -941,7 +983,7 @@ read1()
   int c;
   list p, *pp;
   list t;
-  char *eofmsg = "EOF hit in reading a list : ";
+  char* eofmsg = "EOF hit in reading a list : ";
 
 lab:
   if (!skipspaces()) {
@@ -1076,10 +1118,10 @@ newcons()
 }
 
 static list
-newsymbol(char *name)
+newsymbol(char* name)
 {
   list retval;
-  struct atomcell *temp;
+  struct atomcell* temp;
   int namesize;
 
   namesize = strlen(name);
@@ -1087,7 +1129,7 @@ newsymbol(char *name)
   if (freecell + (sizeof(struct atomcell)) + namesize >= cellbtm) {
     gc();
   }
-  temp = (struct atomcell *)freecell;
+  temp = (struct atomcell*)freecell;
   retval = SYMBOL_TAG | (freecell - celltop);
   freecell += sizeof(struct atomcell);
   strcpy(freecell, name);
@@ -1215,7 +1257,7 @@ rstring()
 static list
 rcharacter()
 {
-  char *tempbuf;
+  char* tempbuf;
   unsigned ch;
   list retval;
   int bufp;
@@ -1275,7 +1317,7 @@ rcharacter()
 }
 
 static int
-isnum(char *name)
+isnum(char* name)
 {
   if (*name == '-') {
     name++;
@@ -1380,7 +1422,7 @@ tyo(int c)
         print string	*/
 
 static void
-prins(char *s)
+prins(char* s)
 {
   while (*s) {
     tyo(*s++);
@@ -1484,7 +1526,7 @@ patom(list atm)
       prins(namebuf);
     } else { /* this is a string */
       int i, len = xstrlen(atm);
-      char *s = xstring(atm);
+      char* s = xstring(atm);
 
       tyo('"');
       for (i = 0; i < len; i++) {
@@ -1497,8 +1539,8 @@ patom(list atm)
   }
 }
 
-static char *oldcelltop;
-static char *oldcellp;
+static char* oldcelltop;
+static char* oldcellp;
 
 #define oldpointer(x) (oldcelltop + celloffset(x))
 
@@ -1506,7 +1548,7 @@ static void
 gc() /* コピー方式のガーベジコレクションである */
 {
   int i;
-  list *p;
+  list* p;
   static int under_gc = 0;
 
   if (under_gc) {
@@ -1564,14 +1606,14 @@ allocstring(int n)
   if (freecell + namesize >= cellbtm) { /* gc 中は起こり得ないはず */
     gc();
   }
-  ((struct stringcell *)freecell)->length = n;
+  ((struct stringcell*)freecell)->length = n;
   retval = STRING_TAG | (freecell - celltop);
   freecell += namesize;
   return retval;
 }
 
 static list
-copystring(char *s, int n)
+copystring(char* s, int n)
 {
   list retval;
 
@@ -1582,7 +1624,7 @@ copystring(char *s, int n)
 }
 
 static list
-copycons(struct cell *l)
+copycons(struct cell* l)
 {
   list newcell;
 
@@ -1593,7 +1635,7 @@ copycons(struct cell *l)
 }
 
 static void
-markcopycell(list *addr)
+markcopycell(list* addr)
 {
   list temp;
 redo:
@@ -1603,13 +1645,13 @@ redo:
     *addr = newaddr(gcfield(oldpointer(*addr)));
     return;
   } else if (stringp(*addr)) {
-    temp = copystring(((struct stringcell *)oldpointer(*addr))->str,
-                      ((struct stringcell *)oldpointer(*addr))->length);
+    temp = copystring(((struct stringcell*)oldpointer(*addr))->str,
+                      ((struct stringcell*)oldpointer(*addr))->length);
     gcfield(oldpointer(*addr)) = mkcopied(temp);
     *addr = temp;
     return;
   } else if (consp(*addr)) {
-    temp = copycons((struct cell *)(oldpointer(*addr)));
+    temp = copycons((struct cell*)(oldpointer(*addr)));
     gcfield(oldpointer(*addr)) = mkcopied(temp);
     *addr = temp;
     markcopycell(&car(temp));
@@ -1618,7 +1660,7 @@ redo:
   } else { /* symbol */
     struct atomcell *newatom, *oldatom;
 
-    oldatom = (struct atomcell *)(oldpointer(*addr));
+    oldatom = (struct atomcell*)(oldpointer(*addr));
     temp = newsymbol(oldatom->pname);
     newatom = symbolpointer(temp);
     newatom->value = oldatom->value;
@@ -1638,7 +1680,7 @@ redo:
     }
     markcopycell(&newatom->plist);
     if (newatom->ftype == EXPR || newatom->ftype == MACRO) {
-      markcopycell((list *)&newatom->func);
+      markcopycell((list*)&newatom->func);
     }
     addr = &newatom->hlink;
     goto redo;
@@ -1705,7 +1747,7 @@ Leval(int n)
       pop1();
       return (e);
     } else {
-      struct atomcell *sym;
+      struct atomcell* sym;
 
       t = assq(e, *esp);
       if (t) {
@@ -2000,7 +2042,7 @@ Lset(int n)
 {
   list val, t;
   list var;
-  struct atomcell *sym;
+  struct atomcell* sym;
 
   argnchk("set", 2);
   val = pop1();
@@ -2054,7 +2096,7 @@ Lequal(int n)
 /* null 文字で終わらない strncmp */
 
 static int
-Strncmp(char *x, char *y, int len)
+Strncmp(char* x, char* y, int len)
 {
   int i;
 
@@ -2068,8 +2110,8 @@ Strncmp(char *x, char *y, int len)
 
 /* null 文字で終わらない strncpy */
 
-static char *
-Strncpy(char *x, char *y, int len)
+static char*
+Strncpy(char* x, char* y, int len)
 {
   int i;
 
@@ -2415,12 +2457,12 @@ Lusedic(int n)
   int i;
   list retval = NIL, temp;
   int dictype;
-  extern struct dicname *kanjidicnames;
-  struct dicname *kanjidicname;
+  extern struct dicname* kanjidicnames;
+  struct dicname* kanjidicname;
   extern int auto_define;
-  extern char *kataautodic;
+  extern char* kataautodic;
 #ifdef HIRAGANAAUTO
-  extern char *hiraautodic;
+  extern char* hiraautodic;
 #endif
 
   for (i = n; i; i--) {
@@ -2445,7 +2487,7 @@ Lusedic(int n)
       temp = sp[i - 1];
     }
     if (stringp(temp)) {
-      kanjidicname = (struct dicname *)malloc(sizeof(struct dicname));
+      kanjidicname = (struct dicname*)malloc(sizeof(struct dicname));
       if (kanjidicname) {
         kanjidicname->name = malloc(strlen(xstring(temp)) + 1);
         if (kanjidicname->name) {
@@ -2520,7 +2562,7 @@ static list
 Lload(int n)
 {
   list p, t;
-  FILE *instream;
+  FILE* instream;
 
   argnchk("load", 1);
   p = pop1();
@@ -2587,7 +2629,7 @@ Lmodestr(int n)
 /* 機能シーケンスの取り出し */
 
 static int
-xfseq(char *fname, list l, unsigned char *arr, int arrsize)
+xfseq(char* fname, list l, unsigned char* arr, int arrsize)
 {
   int i;
 
@@ -2640,13 +2682,15 @@ Lsetkey(int n)
   }
   if (xfseq(S_SetKey, sp[0], fseq, 256)) {
     slen = xstrlen(p);
-    Strncpy((char *)keyseq, xstring(p), slen);
+    Strncpy((char*)keyseq, xstring(p), slen);
     keyseq[slen] = 255;
     retval =
-      changeKeyfunc(mode, (unsigned)keyseq[0],
+      changeKeyfunc(mode,
+                    (unsigned)keyseq[0],
                     slen > 1 ? CANNA_FN_UseOtherKeymap
                              : (fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0]),
-                    fseq, keyseq);
+                    fseq,
+                    keyseq);
     if (retval == NG) {
       error("Insufficient memory.", NON);
       /* NOTREACHED */
@@ -2672,13 +2716,14 @@ Lgsetkey(int n)
   }
   if (xfseq(S_GSetKey, sp[0], fseq, 256)) {
     slen = xstrlen(p);
-    Strncpy((char *)keyseq, xstring(p), slen);
+    Strncpy((char*)keyseq, xstring(p), slen);
     keyseq[slen] = 255;
     retval = changeKeyfuncOfAll(
       (unsigned)keyseq[0],
       slen > 1 ? CANNA_FN_UseOtherKeymap
                : (fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0]),
-      fseq, keyseq);
+      fseq,
+      keyseq);
     if (retval == NG) {
       error("Insufficient memory.", NON);
       /* NOTREACHED */
@@ -2696,7 +2741,7 @@ Lputd(int n)
 {
   list body, a;
   list sym;
-  struct atomcell *symp;
+  struct atomcell* symp;
 
   argnchk("putd", 2);
   a = body = pop1();
@@ -2907,8 +2952,10 @@ Lunbindkey(int n)
   }
   if (xfseq(S_UnbindKey, sp[0], fseq, 2)) {
     int ret;
-    ret = changeKeyfunc(mode, CANNA_KEY_Undefine,
-                        fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0], fseq,
+    ret = changeKeyfunc(mode,
+                        CANNA_KEY_Undefine,
+                        fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0],
+                        fseq,
                         keyseq);
     if (ret == NG) {
       error("Insufficient memory.", NON);
@@ -2935,7 +2982,8 @@ Lgunbindkey(int n)
     int ret;
     ret = changeKeyfuncOfAll(CANNA_KEY_Undefine,
                              fseq[1] != 0 ? CANNA_FN_FuncSequence : fseq[0],
-                             fseq, keyseq);
+                             fseq,
+                             keyseq);
     if (ret == NG) {
       error("Insufficient memory.", NON);
       /* NOTREACHED */
@@ -2956,9 +3004,9 @@ static list
 Ldefmode()
 {
   list form, *sym, e, *p, fn, rd, md, us;
-  extern extraFunc *extrafuncp;
+  extern extraFunc* extrafuncp;
   extern int nothermodes;
-  extraFunc *extrafunc = NULL;
+  extraFunc* extrafunc = NULL;
   int i, j;
   int ecode;
   list l, edata = 0;
@@ -3002,7 +3050,7 @@ Ldefmode()
   pop(4);
 
   ecode = DEFMODE_MEMORY;
-  extrafunc = (extraFunc *)malloc(sizeof(extraFunc));
+  extrafunc = (extraFunc*)malloc(sizeof(extraFunc));
   if (extrafunc) {
     /* シンボルの関数値としての定義 */
     symbolpointer(*sym)->mid = CANNA_MODE_MAX_IMAGINARY_MODE + nothermodes;
@@ -3011,7 +3059,7 @@ Ldefmode()
 
     /* デフォルトの設定 */
     extrafunc->display_name = NULL;
-    extrafunc->u.modeptr = (newmode *)malloc(sizeof(newmode));
+    extrafunc->u.modeptr = (newmode*)malloc(sizeof(newmode));
     if (extrafunc->u.modeptr) {
       KanjiMode kanjimode;
 
@@ -3025,7 +3073,7 @@ Ldefmode()
       kanjimode = (KanjiMode)malloc(sizeof(KanjiModeRec));
       if (kanjimode) {
         extern KanjiModeRec empty_mode;
-        extern BYTE *emptymap;
+        extern BYTE* emptymap;
 
         kanjimode->func = searchfunc;
         kanjimode->keytbl = emptymap;
@@ -3047,7 +3095,7 @@ Ldefmode()
             ecode = DEFMODE_NOTSTRING;
             edata = rd;
             if (stringp(rd) || null(rd)) {
-              char *newstr = NULL;
+              char* newstr = NULL;
               long f = extrafunc->u.modeptr->flags;
 
               if (stringp(rd)) {
@@ -3215,12 +3263,12 @@ Ldefsym()
     }
     *p++ = (wchar_t)0;
     mcandsize = p - cand;
-    mcand = (wchar_t *)calloc(mcandsize, sizeof(wchar_t));
+    mcand = (wchar_t*)calloc(mcandsize, sizeof(wchar_t));
     if (mcand == NULL) {
       error("Insufficient memory", NON);
       /* NOTREACHED */
     }
-    acand = (wchar_t **)calloc(ncand + 1, sizeof(wchar_t *));
+    acand = (wchar_t**)calloc(ncand + 1, sizeof(wchar_t*));
     if (acand == NULL) {
       free(mcand);
       error("Insufficient memory", NON);
@@ -3271,7 +3319,7 @@ static int cswidth[4] = { 1, 2, 2, 3 };
  */
 
 static int
-getKutenCode(char *data, int *ku, int *ten)
+getKutenCode(char* data, int* ku, int* ten)
 {
   int codeset;
 
@@ -3300,7 +3348,7 @@ getKutenCode(char *data, int *ku, int *ten)
  */
 
 static int
-howManyCharsAre(char *tdata, char *edata, int *tku, int *tten, int *codeset)
+howManyCharsAre(char* tdata, char* edata, int* tku, int* tten, int* codeset)
 {
   int eku, eten, kosdata, koedata;
 
@@ -3318,12 +3366,12 @@ howManyCharsAre(char *tdata, char *edata, int *tku, int *tten, int *codeset)
    pickupChars -- 範囲内の図形文字を取り出す
  */
 
-static char *
+static char*
 pickupChars(int tku, int tten, int num, int kodata)
 {
   char *dptr, *tdptr, *edptr;
 
-  dptr = (char *)malloc(num * cswidth[kodata] + 1);
+  dptr = (char*)malloc(num * cswidth[kodata] + 1);
   if (dptr) {
     tdptr = dptr;
     edptr = dptr + num * cswidth[kodata];
@@ -3366,7 +3414,7 @@ pickupChars(int tku, int tten, int num, int kodata)
  */
 
 static void
-numtostr(unsigned long num, char *str)
+numtostr(unsigned long num, char* str)
 {
   if (num & 0xff0000) {
     *str++ = (char)((num >> 16) & 0xff);
@@ -3389,11 +3437,11 @@ static list
 Ldefselection()
 {
   list form, sym, e, e2, md, kigo_list, buf;
-  extern extraFunc *extrafuncp;
+  extern extraFunc* extrafuncp;
   extern int nothermodes;
   int i, len, cs, nkigo_data = 0, kigolen = 0;
   wchar_t *p, *kigo_str, **akigo_data;
-  extraFunc *extrafunc = NULL;
+  extraFunc* extrafunc = NULL;
 
   form = sp[0];
 
@@ -3490,7 +3538,7 @@ Ldefselection()
     }
   }
 
-  kigo_str = (wchar_t *)malloc(kigolen * sizeof(wchar_t));
+  kigo_str = (wchar_t*)malloc(kigolen * sizeof(wchar_t));
   if (!kigo_str) {
     error("Insufficient memory ", NON);
     /* NOTREACHED */
@@ -3541,7 +3589,7 @@ Ldefselection()
     }
   }
 
-  akigo_data = (wchar_t **)calloc(nkigo_data + 1, sizeof(wchar_t *));
+  akigo_data = (wchar_t**)calloc(nkigo_data + 1, sizeof(wchar_t*));
   if (akigo_data == NULL) {
     free(kigo_str);
     error("Insufficient memory", NON);
@@ -3556,14 +3604,14 @@ Ldefselection()
   }
 
   /* 領域を確保する */
-  extrafunc = (extraFunc *)malloc(sizeof(extraFunc));
+  extrafunc = (extraFunc*)malloc(sizeof(extraFunc));
   if (!extrafunc) {
     free(kigo_str);
     free(akigo_data);
     error("Insufficient memory", NON);
     /* NOTREACHED */
   }
-  extrafunc->u.kigoptr = (kigoIchiran *)malloc(sizeof(kigoIchiran));
+  extrafunc->u.kigoptr = (kigoIchiran*)malloc(sizeof(kigoIchiran));
   if (!extrafunc->u.kigoptr) {
     free(kigo_str);
     free(akigo_data);
@@ -3608,13 +3656,13 @@ static list
 Ldefmenu()
 {
   list form, sym, e;
-  extern extraFunc *extrafuncp;
+  extern extraFunc* extrafuncp;
   extern int nothermodes;
-  extraFunc *extrafunc = NULL;
+  extraFunc* extrafunc = NULL;
   int i, n, clen, len;
   wchar_t foo[512];
-  menustruct *men;
-  menuitem *menubody;
+  menustruct* men;
+  menuitem* menubody;
   wchar_t *wp, **wpp;
 
   form = sp[0];
@@ -3645,7 +3693,7 @@ Ldefmenu()
     }
   }
 
-  extrafunc = (extraFunc *)malloc(sizeof(extraFunc));
+  extrafunc = (extraFunc*)malloc(sizeof(extraFunc));
   if (extrafunc) {
     men = allocMenu(n, clen);
     if (men) {
@@ -3658,7 +3706,7 @@ Ldefmenu()
         wp += len + 1;
 
         menubody[i].flag = MENU_SUSPEND;
-        menubody[i].u.misc = (char *)car(cdr(car(e)));
+        menubody[i].u.misc = (char*)car(cdr(car(e)));
       }
       men->nentries = n;
 
@@ -3691,7 +3739,7 @@ Lsetinifunc(int n)
   unsigned char fseq[256];
   int i, len;
   list ret = NIL;
-  extern BYTE *initfunc;
+  extern BYTE* initfunc;
 
   argnchk(S_SetInitFunc, 1);
 
@@ -3699,7 +3747,7 @@ Lsetinifunc(int n)
 
   if (len > 0) {
     free(initfunc);
-    initfunc = (BYTE *)malloc(len + 1);
+    initfunc = (BYTE*)malloc(len + 1);
     if (!initfunc) {
       error("Insufficient memory", NON);
       /* NOTREACHED */
@@ -3718,7 +3766,7 @@ static list
 Lboundp(int n)
 {
   list e;
-  struct atomcell *sym;
+  struct atomcell* sym;
 
   argnchk("boundp", 1);
   e = pop1();
@@ -3813,8 +3861,8 @@ LdefEscSeq(int n)
     /* NOTREACHED */
   }
   if (keyconvCallback) {
-    (*keyconvCallback)(CANNA_CTERMINAL, xstring(sp[2]), xstring(sp[1]),
-                       xnum(sp[0]));
+    (*keyconvCallback)(
+      CANNA_CTERMINAL, xstring(sp[2]), xstring(sp[1]), xnum(sp[0]));
   }
   pop(3);
   return NIL;
@@ -3825,7 +3873,7 @@ Lconcat(int n)
 {
   list t, res;
   int i, len;
-  char *p;
+  char* p;
 
   /* まず長さを数える。 */
   for (len = 0, i = n; i--;) {
@@ -3853,7 +3901,7 @@ Lconcat(int n)
 /* 変数アクセスのための関数 */
 
 static list
-VTorNIL(BYTE *var, int setp, list arg)
+VTorNIL(BYTE* var, int setp, list arg)
 {
   if (setp == VALSET) {
     *var = (arg == NIL) ? 0 : 1;
@@ -3864,7 +3912,7 @@ VTorNIL(BYTE *var, int setp, list arg)
 }
 
 static list
-StrAcc(char **var, int setp, list arg)
+StrAcc(char** var, int setp, list arg)
 {
   if (setp == VALSET) {
     if (null(arg) || stringp(arg)) {
@@ -3897,7 +3945,7 @@ StrAcc(char **var, int setp, list arg)
 }
 
 static list
-NumAcc(int *var, int setp, list arg)
+NumAcc(int* var, int setp, list arg)
 {
   if (setp == VALSET) {
     if (numberp(arg)) {
@@ -3916,7 +3964,7 @@ NumAcc(int *var, int setp, list arg)
 /* 実際のアクセス関数 */
 
 #define DEFVAR(fn, acc, ty, var)                                               \
-  static list fn(int setp, list arg)                                          \
+  static list fn(int setp, list arg)                                           \
   {                                                                            \
     extern ty var;                                                             \
     return acc(&var, setp, arg);                                               \
@@ -3951,9 +3999,9 @@ VCannaDir(int setp, list arg)
 {
 #ifdef __HAIKU__
   extern char basepath[];
-  char *canna_dir = basepath;
+  char* canna_dir = basepath;
 #else
-  char *canna_dir = CANNALIBDIR;
+  char* canna_dir = CANNALIBDIR;
 #endif
 
   if (setp == VALGET) {
@@ -3967,13 +4015,13 @@ static list
 VCodeInput(int setp, list arg)
 {
   extern struct CannaConfig cannaconf;
-  static char *input_code[CANNA_MAX_CODE] = { "jis", "sjis", "kuten" };
+  static char* input_code[CANNA_MAX_CODE] = { "jis", "sjis", "kuten" };
 
   if (setp == VALSET) {
     if (null(arg) || stringp(arg)) {
       if (stringp(arg)) {
         int i;
-        char *s = xstring(arg);
+        char* s = xstring(arg);
 
         for (i = 0; i < CANNA_MAX_CODE; i++) {
           if (!strcmp(s, input_code[i])) {
@@ -4006,8 +4054,8 @@ VCodeInput(int setp, list arg)
   /* end else .. } */
 }
 
-DEFVAR(Vromkana, StrAcc, char *, RomkanaTable)
-DEFVAR(Venglish, StrAcc, char *, EnglishTable)
+DEFVAR(Vromkana, StrAcc, char*, RomkanaTable)
+DEFVAR(Venglish, StrAcc, char*, EnglishTable)
 
 DEFVAREX(Vnhenkan, NumAcc, cannaconf.kouho_threshold)
 DEFVAREX(Vndisconnect, NumAcc, cannaconf.strokelimit)
@@ -4115,10 +4163,10 @@ static struct atomdefs initatom[] = {
 static void
 deflispfunc()
 {
-  struct atomdefs *p;
+  struct atomdefs* p;
 
   for (p = initatom; p->symname; p++) {
-    struct atomcell *atomp;
+    struct atomcell* atomp;
     list temp;
 
     temp = getatmz(p->symname);
@@ -4189,7 +4237,7 @@ static struct cannavardefs cannavars[] = {
 static void
 defcannavar()
 {
-  struct cannavardefs *p;
+  struct cannavardefs* p;
 
   for (p = cannavars; p->varname; p++) {
     symbolpointer(getatmz(p->varname))->valfunc = p->varfunc;
@@ -4247,7 +4295,7 @@ static struct cannamodedefs cannamodes[] = {
 static void
 defcannamode()
 {
-  struct cannamodedefs *p;
+  struct cannamodedefs* p;
 
   for (p = cannamodes; p->mdname; p++) {
     symbolpointer(getatmz(p->mdname))->mid = p->mdid;
@@ -4343,7 +4391,7 @@ static struct cannafndefs cannafns[] = {
 static void
 defcannafunc()
 {
-  struct cannafndefs *p;
+  struct cannafndefs* p;
 
   for (p = cannafns; p->fnname; p++) {
     symbolpointer(getatmz(p->fnname))->fid = p->fnid;

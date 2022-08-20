@@ -28,24 +28,24 @@
 #include <fcntl.h> /* for O_BINARY */
 #endif
 
-#define dm_td		dm_extdata.ptr
-#define cx_gwt		cx_extdata.ptr
+#define dm_td dm_extdata.ptr
+#define cx_gwt cx_extdata.ptr
 #define Is_Gwt_CTX(cx)
 
-#define ND2RK(s)	((0x80 >> (int)(s)) & 0xff)
-#define	STRCMP(d, s)	strcmp((char *)(d), (char *)(s))
+#define ND2RK(s) ((0x80 >> (int)(s)) & 0xff)
+#define STRCMP(d, s) strcmp((char*)(d), (char*)(s))
 
 #ifndef WINDOWS_STYLE_FILENAME
-#define FREQ_TEMPLATE	"freq%d.fq"
-#define USER_TEMPLATE	"user%d.t"
-#define PERM_TEMPLATE	"bin%d.d"
+#define FREQ_TEMPLATE "freq%d.fq"
+#define USER_TEMPLATE "user%d.t"
+#define PERM_TEMPLATE "bin%d.d"
 #else
-#define FREQ_TEMPLATE	"frq%d.cld"
-#define USER_TEMPLATE	"usr%d.ctd"
-#define PERM_TEMPLATE	"bin%d.cbd"
+#define FREQ_TEMPLATE "frq%d.cld"
+#define USER_TEMPLATE "usr%d.ctd"
+#define PERM_TEMPLATE "bin%d.cbd"
 #endif
 
-#define DEFAULT_PERMISSION	"w"
+#define DEFAULT_PERMISSION "w"
 
 /* locatepath -- 辞書サーチパスを mode に応じて張る
 
@@ -55,33 +55,28 @@
  */
 
 static int
-locatepath(struct DD *userDDP[], struct DD *ddpath[], int mode)
+locatepath(struct DD* userDDP[], struct DD* ddpath[], int mode)
 {
   /* find dictionary under system and user/group directory */
   if (mode & RK_SYS_DIC) {
     if (ddpath[2]) {
       userDDP[0] = ddpath[2];
-    }
-    else {
+    } else {
       return ACCES;
     }
-  } else
-  if (mode & RK_GRP_DIC) {
+  } else if (mode & RK_GRP_DIC) {
     if (ddpath[1] && ddpath[2]) {
       /* グループ辞書とシステム辞書がちゃんとあれば */
       userDDP[0] = ddpath[1];
-    }
-    else {
+    } else {
       return ACCES;
     }
-  }
-  else { /* ユーザ辞書 */
+  } else { /* ユーザ辞書 */
     userDDP[0] = ddpath[0];
   }
   userDDP[1] = NULL;
   return 0;
 }
-
 
 /* int
  * RkwCreateDic(cx_num, dicname, mode)
@@ -120,26 +115,26 @@ locatepath(struct DD *userDDP[], struct DD *ddpath[], int mode)
  */
 
 int
-RkwCreateDic(int cx_num, char *dicname, int mode)
+RkwCreateDic(int cx_num, char* dicname, int mode)
 {
-  struct RkParam	*sx = RkGetSystem();
+  struct RkParam* sx = RkGetSystem();
 
-  struct RkContext	*cx = RkGetContext(cx_num);
-  struct DM             *sm, *um, *tm;
-  int			type;
-  struct DD		*userDDP[2], *systemDDP[2];
-  char	      		*filename, extent[5];
+  struct RkContext* cx = RkGetContext(cx_num);
+  struct DM *sm, *um, *tm;
+  int type;
+  struct DD *userDDP[2], *systemDDP[2];
+  char *filename, extent[5];
   int ret;
 #ifndef USE_MALLOC_FOR_BIG_ARRAY
-  char            	spec[RK_LINE_BMAX];
+  char spec[RK_LINE_BMAX];
 #else
-  char *spec = malloc(RK_LINE_BMAX);
+  char* spec = malloc(RK_LINE_BMAX);
   if (!spec) {
     return NOTALC;
   }
 #endif
 
-  if(!dicname || !dicname[0]) {
+  if (!dicname || !dicname[0]) {
     ret = ACCES;
     goto return_ret;
   }
@@ -147,11 +142,11 @@ RkwCreateDic(int cx_num, char *dicname, int mode)
     ret = INVAL;
     goto return_ret;
   }
-  if ( !cx || !cx->ddpath || !cx->ddpath[0] ) {
+  if (!cx || !cx->ddpath || !cx->ddpath[0]) {
     ret = BADCONT;
     goto return_ret;
   }
-  if ( !sx || !sx->ddpath || !sx->ddpath[0] ) {
+  if (!sx || !sx->ddpath || !sx->ddpath[0]) {
     ret = BADCONT;
     goto return_ret;
   }
@@ -168,7 +163,7 @@ RkwCreateDic(int cx_num, char *dicname, int mode)
   systemDDP[1] = NULL;
 
   type = (mode & PL_DIC) ? DF_FREQDIC : DF_TEMPDIC;
-/* find dictionary in current mount list */
+  /* find dictionary in current mount list */
   sm = _RkSearchDDQ(systemDDP, dicname, type);
   um = _RkSearchDDQ(userDDP, dicname, type);
 
@@ -179,64 +174,66 @@ RkwCreateDic(int cx_num, char *dicname, int mode)
 
   if (mode & PL_DIC) {
     if (!sm) {
-      if(_RkSearchDDQ(systemDDP, dicname, DF_TEMPDIC)) {
-	ret = BADF;
-	goto return_ret;
+      if (_RkSearchDDQ(systemDDP, dicname, DF_TEMPDIC)) {
+        ret = BADF;
+        goto return_ret;
       }
       ret = NOENT;
       goto return_ret;
     }
     if (!um) {
-      struct DM	*dm;
+      struct DM* dm;
 
       if (!(filename = _RkCreateUniquePath(userDDP[0], FREQ_TEMPLATE))) {
-	ret = ACCES;
-	goto return_ret;
+        ret = ACCES;
+        goto return_ret;
       }
-      sprintf(spec, "%s(%s) -%s--%s-\n",
-		    filename, sm->dm_dicname, sm->dm_nickname,
-		    DEFAULT_PERMISSION);
+      sprintf(spec,
+              "%s(%s) -%s--%s-\n",
+              filename,
+              sm->dm_dicname,
+              sm->dm_nickname,
+              DEFAULT_PERMISSION);
       if (!DMcheck(spec, dicname)) {
-	ret = NOENT;
-	goto return_ret;
+        ret = NOENT;
+        goto return_ret;
       }
       if (!(dm = DMcreate(userDDP[0], spec))) {
-	ret = NOTALC;
-	goto return_ret;
+        ret = NOTALC;
+        goto return_ret;
       }
       if (copyFile(sm, dm)) {
-	ret = ACCES;
-	goto return_ret;
-      }
-      else {
-	ret = 0;
-	goto return_ret;
+        ret = ACCES;
+        goto return_ret;
+      } else {
+        ret = 0;
+        goto return_ret;
       }
     } else {
       if (!(ND2RK(um->dm_class) & mode)) {
-	ret = INVAL;
-	goto return_ret;
+        ret = INVAL;
+        goto return_ret;
       }
-      if ( um->dm_rcount > 0 ) {
-	ret = TXTBSY;
-	goto return_ret;
+      if (um->dm_rcount > 0) {
+        ret = TXTBSY;
+        goto return_ret;
       }
-      if ( !um->dm_file ) {
-	ret = BADCONT;	/* INVAL SHOULD BE REPLACED... MAKO 1225 */
-	goto return_ret;
+      if (!um->dm_file) {
+        ret = BADCONT; /* INVAL SHOULD BE REPLACED... MAKO 1225 */
+        goto return_ret;
       }
 
-      if(_RkRealizeDF(um->dm_file)) {/* これいらないんじゃない？ kon 1993.11 */
-	ret = ACCES;
-	goto return_ret;
+      if (_RkRealizeDF(
+            um->dm_file)) { /* これいらないんじゃない？ kon 1993.11 */
+        ret = ACCES;
+        goto return_ret;
       }
-      if ( copyFile(sm, um) ) {
-	ret = ACCES;
-	goto return_ret;
-      }
-      else {
-	ret = 1;
-	goto return_ret;
+      if (copyFile(sm, um)) {
+        ret = ACCES;
+        goto return_ret;
+      } else {
+        ret = 1;
+        goto return_ret;
       }
     }
   } else {
@@ -248,55 +245,62 @@ RkwCreateDic(int cx_num, char *dicname, int mode)
     }
     if (!um) {
       if (!(filename = _RkCreateUniquePath(userDDP[0], USER_TEMPLATE))) {
-	ret = ACCES;
-	goto return_ret;
+        ret = ACCES;
+        goto return_ret;
       }
       if (mode & Rk_MWD) {
-	  strcpy(extent, "mwd");
+        strcpy(extent, "mwd");
       } else if (mode & Rk_SWD) {
-	  strcpy(extent, "swd");
+        strcpy(extent, "swd");
       } else if (mode & Rk_PRE) {
-	  strcpy(extent, "pre");
+        strcpy(extent, "pre");
       } else if (mode & Rk_SUC) {
-	  strcpy(extent, "suc");
+        strcpy(extent, "suc");
       } else {
-	  /* return INVAL;	*/
-	  strcpy(extent, "mwd");
+        /* return INVAL;	*/
+        strcpy(extent, "mwd");
       }
-      sprintf(spec, "%s(.%s) -%s--%s-\n", filename, extent, dicname,
-		    DEFAULT_PERMISSION);
+      sprintf(spec,
+              "%s(.%s) -%s--%s-\n",
+              filename,
+              extent,
+              dicname,
+              DEFAULT_PERMISSION);
       if (!DMcheck(spec, dicname)) {
-	ret = NOENT;
-	goto return_ret;
+        ret = NOENT;
+        goto return_ret;
       }
       if (!DMcreate(userDDP[0], spec)) {
-	ret = NOTALC;
-	goto return_ret;
+        ret = NOTALC;
+        goto return_ret;
       }
       _RkRealizeDD(userDDP[0]);
       ret = 0;
       goto return_ret;
     } else {
-      if ( um->dm_rcount > 0 ) {
-	ret = TXTBSY;
-	goto return_ret;
+      if (um->dm_rcount > 0) {
+        ret = TXTBSY;
+        goto return_ret;
       }
-      if ( !um->dm_file ) {
-	ret = BADCONT;	/* INVAL SHOULD BE REPLACED... MAKO 1225 */
-	goto return_ret;
+      if (!um->dm_file) {
+        ret = BADCONT; /* INVAL SHOULD BE REPLACED... MAKO 1225 */
+        goto return_ret;
       }
-      sprintf(spec, "%s(%s) -%s--%s%s-\n",
-	      um->dm_file->df_link, um->dm_dicname, um->dm_nickname,
-	      (um->dm_flags & DM_READOK) ? "r" : "",
-	      (um->dm_flags & DM_WRITEOK) ? "w" : "");
-      if(_RkRealizeDF(um->dm_file)) {
-	ret = ACCES;
-	goto return_ret;
+      sprintf(spec,
+              "%s(%s) -%s--%s%s-\n",
+              um->dm_file->df_link,
+              um->dm_dicname,
+              um->dm_nickname,
+              (um->dm_flags & DM_READOK) ? "r" : "",
+              (um->dm_flags & DM_WRITEOK) ? "w" : "");
+      if (_RkRealizeDF(um->dm_file)) {
+        ret = ACCES;
+        goto return_ret;
       }
-      ret = 1;	/* backward compatiblity ... 1224 Xmas */
+      ret = 1; /* backward compatiblity ... 1224 Xmas */
     }
   }
- return_ret:
+return_ret:
 #ifdef USE_MALLOC_FOR_BIG_ARRAY
   free(spec);
 #endif
@@ -304,16 +308,16 @@ RkwCreateDic(int cx_num, char *dicname, int mode)
 }
 
 int
-copyFile(struct DM *src, struct DM *dst)
+copyFile(struct DM* src, struct DM* dst)
 {
-  struct DF	*srcF = src->dm_file;
-  struct DD	*srcD = srcF->df_direct;
-  struct DF	*dstF = dst->dm_file;
-  struct DD	*dstD = dstF->df_direct;
-  char		*srcN, *dstN;
-  int		srcFd, dstFd;
-  int		n;
-  int		ecount = 0;
+  struct DF* srcF = src->dm_file;
+  struct DD* srcD = srcF->df_direct;
+  struct DF* dstF = dst->dm_file;
+  struct DD* dstD = dstF->df_direct;
+  char *srcN, *dstN;
+  int srcFd, dstFd;
+  int n;
+  int ecount = 0;
 
   srcN = _RkCreatePath(srcD, srcF->df_link);
   if (srcN) {
@@ -325,36 +329,36 @@ copyFile(struct DM *src, struct DM *dst)
     if (srcFd >= 0) {
       dstN = _RkCreatePath(dstD, dstF->df_link);
       if (dstN) {
-	dstFd = creat(dstN, 0666);
+        dstFd = creat(dstN, 0666);
 #ifdef __CYGWIN32__
-	setmode(dstFd, O_BINARY);
+        setmode(dstFd, O_BINARY);
 #endif
-	free(dstN);
+        free(dstN);
 
-	if (dstFd >= 0) {
-	  char b[RK_BUFFER_SIZE];
-	  /* I will leave this array on the stack because it may be a rare
-	     case to use this function. 1996.6.5 kon */
+        if (dstFd >= 0) {
+          char b[RK_BUFFER_SIZE];
+          /* I will leave this array on the stack because it may be a rare
+             case to use this function. 1996.6.5 kon */
 
-	  _RkRealizeDD(dstD);
+          _RkRealizeDD(dstD);
 
-	  while ((n = read(srcFd, b, RK_BUFFER_SIZE)) > 0) { /* do copy */
-	    if ( write(dstFd, b, n) != n ) {
-	      ecount++;
-	      break;
-	    }
-	  }
-	  if ( close(dstFd) < 0 || n < 0) {
-	    ecount++;
-	  }
-	}
+          while ((n = read(srcFd, b, RK_BUFFER_SIZE)) > 0) { /* do copy */
+            if (write(dstFd, b, n) != n) {
+              ecount++;
+              break;
+            }
+          }
+          if (close(dstFd) < 0 || n < 0) {
+            ecount++;
+          }
+        }
       }
       close(srcFd);
     }
   }
   return ecount ? -1 : 0;
 }
-
+
 /*
  * RkwListDic(cx_num, dirname, buf, size)
  * int  cx_num;             コンテクストナンバー
@@ -369,16 +373,16 @@ copyFile(struct DM *src, struct DM *dst)
  *             RkwSetDicPathに失敗した場合              NOTALC
  */
 int
-RkwListDic(int  cx_num, char *dirname, char *buf, int  size)
+RkwListDic(int cx_num, char* dirname, char* buf, int size)
 {
   int dicscnt;
   int new_cx_num;
 
-  if(!dirname || !strlen(dirname))
+  if (!dirname || !strlen(dirname))
     return 0;
   if (cx_num < 0)
     return BADCONT;
-  if((new_cx_num = RkwCreateContext()) < 0)
+  if ((new_cx_num = RkwCreateContext()) < 0)
     return BADCONT;
   if (RkwSetDicPath(new_cx_num, dirname) == -1) {
     RkwCloseContext(new_cx_num);
@@ -388,7 +392,7 @@ RkwListDic(int  cx_num, char *dirname, char *buf, int  size)
   RkwCloseContext(new_cx_num);
   return (dicscnt);
 }
-
+
 /* int
  * RkwRemoveDic(cx_num, dicname, mode)
  *
@@ -408,19 +412,19 @@ RkwListDic(int  cx_num, char *dirname, char *buf, int  size)
  *             コンテクスト構造体が存在しない場合    -100 BADCONT
  */
 int
-RkwRemoveDic(int cx_num, char *dicname, int mode)
+RkwRemoveDic(int cx_num, char* dicname, int mode)
 {
-  struct RkContext	*cx = RkGetContext(cx_num);
-/*  struct RkParam	*sx = RkGetSystem();	*/
-  struct DD		*userDDP[2], *dum_direct;
-  struct DM             *dm;
-  char			*path;
+  struct RkContext* cx = RkGetContext(cx_num);
+  /*  struct RkParam	*sx = RkGetSystem();	*/
+  struct DD *userDDP[2], *dum_direct;
+  struct DM* dm;
+  char* path;
   int res;
 
-  if(!dicname)
+  if (!dicname)
     return NOENT;
-  if ( !cx || !cx->ddpath || !cx->ddpath[0] )
-      return BADCONT;
+  if (!cx || !cx->ddpath || !cx->ddpath[0])
+    return BADCONT;
 
   if (locatepath(userDDP, cx->ddpath, mode) < 0) {
     return ACCES;
@@ -431,26 +435,26 @@ RkwRemoveDic(int cx_num, char *dicname, int mode)
   if (!dm || ((mode & PL_DIC) && dm->dm_file->df_type != DF_FREQDIC)) {
     return NOENT;
   }
-  if ( dm->dm_rcount > 0 )
-	return TXTBSY;
-  if ( !dm->dm_file ) /* ? */
-	return BADCONT;
+  if (dm->dm_rcount > 0)
+    return TXTBSY;
+  if (!dm->dm_file) /* ? */
+    return BADCONT;
   if (!(dm->dm_file->df_direct->dd_flags & DD_WRITEOK) ||
       (!(dm->dm_flags & DM_WRITEOK) && !(mode & KYOUSEI))) {
     return ACCES;
   }
   if (!(path = _RkMakePath(dm->dm_file)))
-	return NOTALC;
+    return NOTALC;
   res = unlink(path);
   free(path);
-  if(res)
+  if (res)
     return ACCES;
   dum_direct = dm->dm_file->df_direct;
   DMremove(dm);
   _RkRealizeDD(dum_direct);
   return 0;
 }
-
+
 /* int
  * RkwRenameDic(cx_num, oldnick, newnick, mode)
  *
@@ -475,19 +479,19 @@ RkwRemoveDic(int cx_num, char *dicname, int mode)
  *          コンテクスト構造体が存在しない場合    -100   BADCONT
  */
 int
-RkwRenameDic(int cx_num, char *old, char *new, int mode)
+RkwRenameDic(int cx_num, char* old, char* new, int mode)
 {
-  struct RkContext	*cx = RkGetContext(cx_num);
-  struct DD		*userDDP[2], *dd;
-  struct DM		*dm1, *dm2;
-  char			*path;
-  char            	spec[RK_LINE_BMAX];
+  struct RkContext* cx = RkGetContext(cx_num);
+  struct DD *userDDP[2], *dd;
+  struct DM *dm1, *dm2;
+  char* path;
+  char spec[RK_LINE_BMAX];
   /* I leave this array on the stack because this will not glow so big.
    1996.6.5 kon */
 
-  if(!old || !*old)
+  if (!old || !*old)
     return NOENT;
-  if(!new || !*new)
+  if (!new || !*new)
     return ACCES;
   if (!cx || !cx->ddpath || !cx->ddpath[0])
     return BADCONT;
@@ -528,13 +532,21 @@ RkwRenameDic(int cx_num, char *old, char *new, int mode)
     return 1;
   } else {
 #ifndef WINDOWS_STYLE_FILENAME
-    sprintf(spec, "%s(.%s) -%s--%s%s-\n", "tmp.t", "mwd", new,
-		  (dm1->dm_flags & DM_READOK) ? "r" : "",
-		  (dm1->dm_flags & DM_WRITEOK) ? "w" : "");
+    sprintf(spec,
+            "%s(.%s) -%s--%s%s-\n",
+            "tmp.t",
+            "mwd",
+            new,
+            (dm1->dm_flags & DM_READOK) ? "r" : "",
+            (dm1->dm_flags & DM_WRITEOK) ? "w" : "");
 #else
-    sprintf(spec, "%s(.%s) -%s--%s%s-\n", "tmp.ctd", "mwd", new,
-		  (dm1->dm_flags & DM_READOK) ? "r" : "",
-		  (dm1->dm_flags & DM_WRITEOK) ? "w" : "");
+    sprintf(spec,
+            "%s(.%s) -%s--%s%s-\n",
+            "tmp.ctd",
+            "mwd",
+            new,
+            (dm1->dm_flags & DM_READOK) ? "r" : "",
+            (dm1->dm_flags & DM_WRITEOK) ? "w" : "");
 #endif
     if (!DMcheck(spec, new))
       return NOENT; /* なんなんだか良く分からない (1993.11 今) */
@@ -572,13 +584,13 @@ RkwRenameDic(int cx_num, char *old, char *new, int mode)
  */
 
 int
-RkwCopyDic(int co, char *dir, char *from, char *to, int mode)
+RkwCopyDic(int co, char* dir, char* from, char* to, int mode)
 {
-  struct RkContext	*cx;
-  struct DD		*userDDP[2];
-  struct DM		*dm1, *dm2;
-  char			*path, *perm = DEFAULT_PERMISSION;
-  char *myddname;
+  struct RkContext* cx;
+  struct DD* userDDP[2];
+  struct DM *dm1, *dm2;
+  char *path, *perm = DEFAULT_PERMISSION;
+  char* myddname;
   int res, v, con;
 
   if (!dir || !*dir) {
@@ -605,17 +617,17 @@ RkwCopyDic(int co, char *dir, char *from, char *to, int mode)
   if (con >= 0) {
     int n = 2; /* for system dic */
     switch (mode & (RK_GRP_DIC | RK_SYS_DIC)) {
-    case RK_GRP_DIC:
-      n = 1; /* for group dic */
-    case RK_SYS_DIC:
-      if (!cx->ddpath[2]) {
-	return BADCONT;
-      }
-      myddname = cx->ddpath[n]->dd_name;
-      break;
-    default:
-      myddname = cx->ddpath[0]->dd_name;
-      break;
+      case RK_GRP_DIC:
+        n = 1; /* for group dic */
+      case RK_SYS_DIC:
+        if (!cx->ddpath[2]) {
+          return BADCONT;
+        }
+        myddname = cx->ddpath[n]->dd_name;
+        break;
+      default:
+        myddname = cx->ddpath[0]->dd_name;
+        break;
     }
 
     res = NOTALC;
@@ -629,92 +641,94 @@ RkwCopyDic(int co, char *dir, char *from, char *to, int mode)
       v = RkwSetDicPath(con, path);
       free(path);
       if (v >= 0) {
-	struct RkContext *cy = RkGetContext(con);
+        struct RkContext* cy = RkGetContext(con);
 
-	res = ACCES;
-	if (cy->ddpath[1]->dd_flags & DD_WRITEOK) {
-	  userDDP[0] = cy->ddpath[0];
-	  userDDP[1] = NULL;
+        res = ACCES;
+        if (cy->ddpath[1]->dd_flags & DD_WRITEOK) {
+          userDDP[0] = cy->ddpath[0];
+          userDDP[1] = NULL;
 
-	  res = NOENT;
-	  dm1 = _RkSearchDDP(userDDP, from);
-	  if (dm1) {
-	    int type = dm1->dm_file->df_type;
+          res = NOENT;
+          dm1 = _RkSearchDDP(userDDP, from);
+          if (dm1) {
+            int type = dm1->dm_file->df_type;
 
-	    res = BADF;
-	    if (type != DF_RUCDIC) {
-	      userDDP[0] = cy->ddpath[1];
-	      userDDP[1] = NULL;
+            res = BADF;
+            if (type != DF_RUCDIC) {
+              userDDP[0] = cy->ddpath[1];
+              userDDP[1] = NULL;
 
-	      dm2 = _RkSearchDDP(userDDP, to);
-	      if (dm2) { /* to があって、強制モードなら消す */
-		if (dm2->dm_rcount > 0) {
-		  res = TXTBSY;
-		  goto newdicUsed;
-		}
-		if (!(mode & KYOUSEI)) {
-		  res = EXIST;
-		  goto newdicUsed;
-		}
-		if (!(path = _RkMakePath(dm2->dm_file))) {
-		  res = NOTALC;
-		  goto newdicUsed;
-		}
-		unlink(path);
-		free(path);
-		switch (dm2->dm_flags & (DM_READOK | DM_WRITEOK)) {
-		case (DM_READOK | DM_WRITEOK):
-		  perm = "rw";
-		  break;
-		case DM_READOK:
-		  perm = "r";
-		  break;
-		case DM_WRITEOK:
-		  perm = "w";
-		  break;
-		default:
-		  perm = "";
-		  break;
-		}
-		DMremove(dm2);
-	      }
+              dm2 = _RkSearchDDP(userDDP, to);
+              if (dm2) { /* to があって、強制モードなら消す */
+                if (dm2->dm_rcount > 0) {
+                  res = TXTBSY;
+                  goto newdicUsed;
+                }
+                if (!(mode & KYOUSEI)) {
+                  res = EXIST;
+                  goto newdicUsed;
+                }
+                if (!(path = _RkMakePath(dm2->dm_file))) {
+                  res = NOTALC;
+                  goto newdicUsed;
+                }
+                unlink(path);
+                free(path);
+                switch (dm2->dm_flags & (DM_READOK | DM_WRITEOK)) {
+                  case (DM_READOK | DM_WRITEOK):
+                    perm = "rw";
+                    break;
+                  case DM_READOK:
+                    perm = "r";
+                    break;
+                  case DM_WRITEOK:
+                    perm = "w";
+                    break;
+                  default:
+                    perm = "";
+                    break;
+                }
+                DMremove(dm2);
+              }
 
-	      { /* いよいよ辞書を作る */
-		char *template, *filename;
+              { /* いよいよ辞書を作る */
+                char* template, *filename;
 
-		RkwSync(co, from); /* sometimes, this failes to an error */
-		template =
-		  (type == DF_FREQDIC) ? FREQ_TEMPLATE :
-		    (type == DF_TEMPDIC) ? USER_TEMPLATE :
-		      PERM_TEMPLATE;
+                RkwSync(co, from); /* sometimes, this failes to an error */
+                template = (type == DF_FREQDIC)   ? FREQ_TEMPLATE
+                           : (type == DF_TEMPDIC) ? USER_TEMPLATE
+                                                  : PERM_TEMPLATE;
 
-		res = ACCES;
-		filename = _RkCreateUniquePath(userDDP[0], template);
-		if (filename) {
-		  char spec[RK_LINE_BMAX];
-  /* I leave this array on the stack because this will not glow so big.
-   1996.6.5 kon */
+                res = ACCES;
+                filename = _RkCreateUniquePath(userDDP[0], template);
+                if (filename) {
+                  char spec[RK_LINE_BMAX];
+                  /* I leave this array on the stack because this will not glow
+                   so big. 1996.6.5 kon */
 
-		  sprintf(spec, "%s(%s) -%s--%s-\n",
-				filename, dm1->dm_dicname, to, perm);
-		  res = NOTALC;
-		  dm2 = DMcreate(userDDP[0], spec);
-		  if (dm2) {
-		    res = ACCES;
-		    if (copyFile(dm1, dm2) == 0) {
-		      _RkRealizeDD(userDDP[0]);
-		      res = 0;
-		    }
-		    else {
-		      DMremove(dm2);
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	newdicUsed:;
-	}
+                  sprintf(spec,
+                          "%s(%s) -%s--%s-\n",
+                          filename,
+                          dm1->dm_dicname,
+                          to,
+                          perm);
+                  res = NOTALC;
+                  dm2 = DMcreate(userDDP[0], spec);
+                  if (dm2) {
+                    res = ACCES;
+                    if (copyFile(dm1, dm2) == 0) {
+                      _RkRealizeDD(userDDP[0]);
+                      res = 0;
+                    } else {
+                      DMremove(dm2);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        newdicUsed:;
+        }
       }
     }
     RkwCloseContext(con);
@@ -739,11 +753,11 @@ RkwCopyDic(int co, char *dir, char *from, char *to, int mode)
  *          コンテクスト構造体が存在しない場合    -100   BADCONT
  */
 int
-RkwChmodDic(int cx_num, char *dicname, int mode)
+RkwChmodDic(int cx_num, char* dicname, int mode)
 {
-  struct RkContext	*cx = RkGetContext(cx_num);
-  struct DD		*dd=NULL, *userDDP[2];
-  struct DM		*dm;
+  struct RkContext* cx = RkGetContext(cx_num);
+  struct DD *dd = NULL, *userDDP[2];
+  struct DM* dm;
   int res;
   unsigned dirmode;
 
@@ -752,37 +766,35 @@ RkwChmodDic(int cx_num, char *dicname, int mode)
     dirmode = mode & RK_DIRECTORY;
     if (dirmode != 0) { /* ディレクトリ */
       switch (dirmode) {
-      case RK_SYS_DIR:
-	dd = NULL; /* or SX.ddpath[0] */
-	break;
-      case RK_GRP_DIR:
-	if (cx->ddpath[1] && cx->ddpath[2]) {
-	  dd = cx->ddpath[1];
-	}
-	break;
-      default: /* RK_USR_DIR */
-	dd = cx->ddpath[0];
-	break;
+        case RK_SYS_DIR:
+          dd = NULL; /* or SX.ddpath[0] */
+          break;
+        case RK_GRP_DIR:
+          if (cx->ddpath[1] && cx->ddpath[2]) {
+            dd = cx->ddpath[1];
+          }
+          break;
+        default: /* RK_USR_DIR */
+          dd = cx->ddpath[0];
+          break;
       }
       res = dd ? DDchmod(dd, mode) : ACCES;
-    }
-    else { /* ファイル */
+    } else { /* ファイル */
       res = ACCES;
       if (locatepath(userDDP, cx->ddpath, mode) == 0) {
-	res = NOENT;
-	if(dicname && *dicname) {
-	  dm = _RkSearchDDP(userDDP, dicname);
-	  res = NOENT;
-	  if (dm) {
-	    res = DMchmod(dm, mode);
-	    if (res >= 0) {
-	      _RkRealizeDD(dm->dm_file->df_direct);
-	    }
-	    else {
-	      res = ACCES;
-	    }
-	  }
-	}
+        res = NOENT;
+        if (dicname && *dicname) {
+          dm = _RkSearchDDP(userDDP, dicname);
+          res = NOENT;
+          if (dm) {
+            res = DMchmod(dm, mode);
+            if (res >= 0) {
+              _RkRealizeDD(dm->dm_file->df_direct);
+            } else {
+              res = ACCES;
+            }
+          }
+        }
       }
     }
   }
@@ -799,16 +811,16 @@ RkwChmodDic(int cx_num, char *dicname, int mode)
  * 返り値 成功  0
  *        失敗 -1
  */
-static struct td_n_tupple *
-pushTdn(struct RkContext *cx, struct TD *tdp)
+static struct td_n_tupple*
+pushTdn(struct RkContext* cx, struct TD* tdp)
 {
-  struct td_n_tupple	*new;
-  struct _rec		*gwt;
-  if (!cx || !(gwt = (struct _rec *)cx->cx_gwt) ||
-      !(new = (struct td_n_tupple *)malloc(sizeof(struct td_n_tupple)))) {
+  struct td_n_tupple* new;
+  struct _rec* gwt;
+  if (!cx || !(gwt = (struct _rec*)cx->cx_gwt) ||
+      !(new = (struct td_n_tupple*)malloc(sizeof(struct td_n_tupple)))) {
     return NULL;
   }
-  new->td = (char *)tdp;
+  new->td = (char*)tdp;
   new->n = 0;
   new->next = gwt->tdn;
   gwt->tdn = new;
@@ -816,12 +828,12 @@ pushTdn(struct RkContext *cx, struct TD *tdp)
 }
 
 void
-freeTdn(struct RkContext *cx)  /* tdn を next をたどりながら free する */
+freeTdn(struct RkContext* cx) /* tdn を next をたどりながら free する */
 {
-  struct td_n_tupple *work;
-  struct _rec	*gwt = (struct _rec *)cx->cx_gwt;
+  struct td_n_tupple* work;
+  struct _rec* gwt = (struct _rec*)cx->cx_gwt;
   if (gwt) {
-    while((work = gwt->tdn) != NULL) {
+    while ((work = gwt->tdn) != NULL) {
       gwt->tdn = work->next;
       free(work);
     }
@@ -829,10 +841,10 @@ freeTdn(struct RkContext *cx)  /* tdn を next をたどりながら free する
 }
 
 static void
-popTdn(struct RkContext *cx)
+popTdn(struct RkContext* cx)
 {
-  struct td_n_tupple *work;
-  struct _rec	*gwt = (struct _rec *)cx->cx_gwt;
+  struct td_n_tupple* work;
+  struct _rec* gwt = (struct _rec*)cx->cx_gwt;
   work = gwt->tdn;
   if (work) {
     gwt->tdn = work->next;
@@ -841,29 +853,33 @@ popTdn(struct RkContext *cx)
 }
 
 static int
-GetLine(struct RkContext *cx, struct RkKxGram *gram, struct TD *tdp, Wchar *line, int size)
+GetLine(struct RkContext* cx,
+        struct RkKxGram* gram,
+        struct TD* tdp,
+        Wchar* line,
+        int size)
 {
-  struct TD	*vtd;
-  struct TN	*vtn;
-  struct _rec	*gwt = (struct _rec *)cx->cx_gwt;
+  struct TD* vtd;
+  struct TN* vtn;
+  struct _rec* gwt = (struct _rec*)cx->cx_gwt;
 
   if (tdp) {
     if (gwt->tdn)
       freeTdn(cx);
-    if(!pushTdn(cx, tdp))
+    if (!pushTdn(cx, tdp))
       return NOTALC;
   }
-  while (gwt->tdn && gwt->tdn->n >= (int)((struct TD *)gwt->tdn->td)->td_n)
+  while (gwt->tdn && gwt->tdn->n >= (int)((struct TD*)gwt->tdn->td)->td_n)
     popTdn(cx);
   if (gwt->tdn == NULL)
     return -1;
-  vtd = (struct TD *)gwt->tdn->td;
+  vtd = (struct TD*)gwt->tdn->td;
   vtn = vtd->td_node + gwt->tdn->n;
-  while ( !IsWordNode(vtn) ) {
+  while (!IsWordNode(vtn)) {
     gwt->tdn->n++;
-    if(!pushTdn(cx, vtn->tn_tree))
+    if (!pushTdn(cx, vtn->tn_tree))
       return NOTALC;
-    vtd = (struct TD *)gwt->tdn->td;
+    vtd = (struct TD*)gwt->tdn->td;
     vtn = vtd->td_node;
   }
   if (RkUparseWrec(gram, vtn->tn_word->word, line, size, vtn->tn_word->lucks)) {
@@ -894,54 +910,57 @@ GetLine(struct RkContext *cx, struct RkKxGram *gram, struct TD *tdp, Wchar *line
  *          dics.dirに異常があった場合                 -10   BADDR
  */
 int
-RkwGetWordTextDic(int cx_num, unsigned char *dirname, unsigned char *dicname,
- Wchar *info, int infolen)
+RkwGetWordTextDic(int cx_num,
+                  unsigned char* dirname,
+                  unsigned char* dicname,
+                  Wchar* info,
+                  int infolen)
 {
   struct RkContext *new_cx, *cx;
-  struct DM *dm;
+  struct DM* dm;
   int new_cx_num;
-  struct TD *initial_td;
+  struct TD* initial_td;
   unsigned size;
-  unsigned char *buff = 0;
-  struct _rec	*gwt;
+  unsigned char* buff = 0;
+  struct _rec* gwt;
 
   if (!dicname || !dirname || !info || !(cx = RkGetContext(cx_num)) ||
-      !(gwt = (struct _rec *)cx->cx_gwt))
+      !(gwt = (struct _rec*)cx->cx_gwt))
     return BADCONT;
 
-  if(dicname[0] != '\0') {
-    size = strlen((char *)dicname) + 1;
-    if (!(buff = (unsigned char *)malloc(size)))
+  if (dicname[0] != '\0') {
+    size = strlen((char*)dicname) + 1;
+    if (!(buff = (unsigned char*)malloc(size)))
       return (NOTALC);
-    strcpy((char *)buff, (char *)dicname);
+    strcpy((char*)buff, (char*)dicname);
 
-    if(dirname[0] != '\0') {
-      if((new_cx_num = RkwCreateContext()) < 0) {
-	free(buff);
-	return BADCONT;
+    if (dirname[0] != '\0') {
+      if ((new_cx_num = RkwCreateContext()) < 0) {
+        free(buff);
+        return BADCONT;
       }
-      if(RkwSetDicPath(new_cx_num, (char *)dirname) < 0) {
-	RkwCloseContext(new_cx_num);
-	free(buff);
-	return NOTALC;
+      if (RkwSetDicPath(new_cx_num, (char*)dirname) < 0) {
+        RkwCloseContext(new_cx_num);
+        free(buff);
+        return NOTALC;
       }
     } else {
       if ((new_cx_num = RkwDuplicateContext(cx_num)) < 0) {
-	free(buff);
-	return BADCONT;
+        free(buff);
+        return BADCONT;
       }
     }
-    if (!(cx = RkGetContext(cx_num)) || !(gwt = (struct _rec *)cx->cx_gwt)) {
+    if (!(cx = RkGetContext(cx_num)) || !(gwt = (struct _rec*)cx->cx_gwt)) {
       RkwCloseContext(new_cx_num);
       free(buff);
       return BADCONT;
     }
 
     if (!(new_cx = RkGetContext(new_cx_num))) {
-      if(dirname[0] != '\0') {
-	RkwCloseContext(new_cx_num);
-	free(buff);
-	return BADCONT;
+      if (dirname[0] != '\0') {
+        RkwCloseContext(new_cx_num);
+        free(buff);
+        return BADCONT;
       }
     }
     if (gwt->gwt_cx >= 0) {
@@ -949,37 +968,37 @@ RkwGetWordTextDic(int cx_num, unsigned char *dirname, unsigned char *dicname,
       gwt->gwt_cx = -1;
     }
 
-    if(!STRCMP(dirname, SYSTEM_DDHOME_NAME)) {
-      if (!(dm = _RkSearchDDP(new_cx->ddpath, (char *)dicname))) {
-	if (dirname[0] != '\0') {
-	  RkwCloseContext(new_cx_num);
-	}
-	free(buff);
-	return NOENT;
+    if (!STRCMP(dirname, SYSTEM_DDHOME_NAME)) {
+      if (!(dm = _RkSearchDDP(new_cx->ddpath, (char*)dicname))) {
+        if (dirname[0] != '\0') {
+          RkwCloseContext(new_cx_num);
+        }
+        free(buff);
+        return NOENT;
       }
     } else {
       if (!(dm = _RkSearchUDDP(new_cx->ddpath, dicname))) {
-	if(dirname[0] != '\0') {
-	  RkwCloseContext(new_cx_num);
-	}
-	free(buff);
-	return NOENT;
+        if (dirname[0] != '\0') {
+          RkwCloseContext(new_cx_num);
+        }
+        free(buff);
+        return NOENT;
       }
     }
-    if (DM2TYPE(dm) != DF_TEMPDIC ) {
-      if(dirname[0] != '\0') {
-	RkwCloseContext(new_cx_num);
+    if (DM2TYPE(dm) != DF_TEMPDIC) {
+      if (dirname[0] != '\0') {
+        RkwCloseContext(new_cx_num);
       }
       free(buff);
       return BADF;
     }
-    if(RkwMountDic(new_cx_num, (char *)dicname,0) == -1) {
+    if (RkwMountDic(new_cx_num, (char*)dicname, 0) == -1) {
       RkwCloseContext(new_cx_num);
       free(buff);
       return NOMOUNT;
     }
 
-    if (!_RkSearchDDP(new_cx->ddpath, (char *)dicname)) {
+    if (!_RkSearchDDP(new_cx->ddpath, (char*)dicname)) {
       RkwCloseContext(new_cx_num);
       free(buff);
       return BADDR;
@@ -988,21 +1007,19 @@ RkwGetWordTextDic(int cx_num, unsigned char *dirname, unsigned char *dicname,
     if (gwt->gwt_dicname)
       free(gwt->gwt_dicname);
     gwt->gwt_dicname = buff;
-    initial_td = (struct TD *)dm->dm_td;
-  }
-  else {
-    if ((new_cx_num = gwt->gwt_cx) < 0
-	|| !(new_cx = RkGetContext(new_cx_num))) {
+    initial_td = (struct TD*)dm->dm_td;
+  } else {
+    if ((new_cx_num = gwt->gwt_cx) < 0 ||
+        !(new_cx = RkGetContext(new_cx_num))) {
       if (gwt->gwt_dicname)
-	free(gwt->gwt_dicname);
+        free(gwt->gwt_dicname);
       gwt->gwt_dicname = NULL;
       return BADCONT;
     }
     initial_td = NULL;
   }
-  if (GetLine(new_cx, cx->gram->gramdic, initial_td,
-	      info, infolen) < 0) {
-    RkwUnmountDic(new_cx_num, (char *)gwt->gwt_dicname);
+  if (GetLine(new_cx, cx->gram->gramdic, initial_td, info, infolen) < 0) {
+    RkwUnmountDic(new_cx_num, (char*)gwt->gwt_dicname);
     RkwCloseContext(new_cx_num);
     gwt->gwt_cx = -1;
     return 0;

@@ -27,60 +27,52 @@
  *                      wchar_t replace begin                        *
  *********************************************************************/
 #ifdef wchar_t
-# error "wchar_t is already defined"
+#error "wchar_t is already defined"
 #endif
 #define wchar_t cannawc
 
 #define NONE CANNA_FN_Undefined
 
+static unsigned char* keyHistory;
 
-static unsigned char *keyHistory;
-
-
-static unsigned char *
+static unsigned char*
 showChar(int c)
 {
   static unsigned char Gkey[9];
-  static char *keyCharMap[] = {
-    "space",    "DEL",      "Nfer",     "Xfer",     "Up",
-    "Left",     "Right",    "Down",     "Insert",   "Rollup",
-    "Rolldown", "Home",     "HELP",     "KeyPad",   "S-nfer",
-    "S-xfer",   "S-up",     "S-left",   "S-right",  "S-down",
-    "C-nfer",   "C-xfer",   "C-up",     "C-left",   "C-right",
-    "C-down",   "F1",       "F2",       "F3",       "F4",
-    "F5",       "F6",       "F7",       "F8",       "F9",
-    "F10",      "PF1",      "PF2",      "PF3",      "PF4",
-    "PF5",      "PF6",      "PF7",      "PF8",      "PF9",
-    "PF10",
+  static char* keyCharMap[] = {
+    "space",  "DEL",    "Nfer",   "Xfer",     "Up",      "Left",   "Right",
+    "Down",   "Insert", "Rollup", "Rolldown", "Home",    "HELP",   "KeyPad",
+    "S-nfer", "S-xfer", "S-up",   "S-left",   "S-right", "S-down", "C-nfer",
+    "C-xfer", "C-up",   "C-left", "C-right",  "C-down",  "F1",     "F2",
+    "F3",     "F4",     "F5",     "F6",       "F7",      "F8",     "F9",
+    "F10",    "PF1",    "PF2",    "PF3",      "PF4",     "PF5",    "PF6",
+    "PF7",    "PF8",    "PF9",    "PF10",
   };
 
   if (c < 0x20) {
-    strcpy((char *)Gkey, "C-");
-    if (c == 0x00 || (c > 0x1a && c < 0x20 ))
+    strcpy((char*)Gkey, "C-");
+    if (c == 0x00 || (c > 0x1a && c < 0x20))
       Gkey[2] = c + 0x40;
     else
       Gkey[2] = c + 0x60;
     Gkey[3] = '\0';
-  }
-  else if (c > ' ' && c <= '~' ) {
+  } else if (c > ' ' && c <= '~') {
     Gkey[0] = c;
     Gkey[1] = '\0';
-  }
-  else if (c > 0xa0 && c < 0xdf) {
+  } else if (c > 0xa0 && c < 0xdf) {
     Gkey[0] = 0x8e;
     Gkey[1] = c;
     Gkey[2] = '\0';
-  }
-  else if (c == 0x20)
-    strcpy((char *)Gkey, keyCharMap[0]);
+  } else if (c == 0x20)
+    strcpy((char*)Gkey, keyCharMap[0]);
   else if (c > 0x7e && c < 0x8c)
-    strcpy((char *)Gkey, keyCharMap[c -0x7f +1]);
+    strcpy((char*)Gkey, keyCharMap[c - 0x7f + 1]);
   else if (c > 0x8f && c < 0x9c)
-    strcpy((char *)Gkey, keyCharMap[c -0x90 +14]);
+    strcpy((char*)Gkey, keyCharMap[c - 0x90 + 14]);
   else if (c > 0xdf && c < 0xea)
-    strcpy((char *)Gkey, keyCharMap[c -0xe0 +26]);
+    strcpy((char*)Gkey, keyCharMap[c - 0xe0 + 26]);
   else if (c > 0xef && c < 0xfa)
-    strcpy((char *)Gkey, keyCharMap[c -0xf0 +36]);
+    strcpy((char*)Gkey, keyCharMap[c - 0xf0 + 36]);
   else
     return 0;
   return Gkey;
@@ -89,19 +81,18 @@ showChar(int c)
 int
 UseOtherKeymap(uiContext d)
 {
-  struct map *p;
+  struct map* p;
   unsigned char showKey[10];
 
-  strcpy((char *)showKey, (char *)showChar(d->ch));
-  p = mapFromHash((KanjiMode)d->current_mode->keytbl,
-		  d->ch, NULL);
+  strcpy((char*)showKey, (char*)showChar(d->ch));
+  p = mapFromHash((KanjiMode)d->current_mode->keytbl, d->ch, NULL);
   if (p == NULL)
     return NothingChangedWithBeep(d);
-  p->mode->ftbl = (struct funccfunc *)d->current_mode;
-  keyHistory = (unsigned char *)malloc(strlen((char *)showKey) + 1);
+  p->mode->ftbl = (struct funccfunc*)d->current_mode;
+  keyHistory = (unsigned char*)malloc(strlen((char*)showKey) + 1);
   if (keyHistory) {
-    strcpy((char *)keyHistory,(char *)showKey);
-    makeGLineMessageFromString(d, (char *)keyHistory);
+    strcpy((char*)keyHistory, (char*)showKey);
+    makeGLineMessageFromString(d, (char*)keyHistory);
     if (p->mode->keytbl == NULL) {
       free(keyHistory);
       return NothingChangedWithBeep(d);
@@ -113,13 +104,13 @@ UseOtherKeymap(uiContext d)
 
 /* 複数の機能の割り当て */
 static int
-_DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
+_DoFuncSequence(uiContext d, BYTE* keytbl, BYTE key)
 {
   int res, total_res, ginfo = 0;
   int prevEchoLen = -1, prevRevPos = -1, prevRevLen = -1;
   int prevGEchoLen = -1, prevGRevPos = -1, prevGRevLen = -1;
   wchar_t *prevEcho = NULL, *prevGEcho = NULL;
-  BYTE *p;
+  BYTE* p;
   wchar_t *malloc_echo = NULL, *malloc_gline = NULL;
 
   if (key == 0) {
@@ -135,53 +126,48 @@ _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
   }
 
   total_res = 0;
-  for(; *p ; p++) {
+  for (; *p; p++) {
     /* ２回目以降に以下のデータが失われている場合があるので入れ直す。 */
     d->ch = (unsigned)(*(d->buffer_return) = (wchar_t)key);
     d->nbytes = 1;
     res = _doFunc(d, (int)*p); /* 生の doFunc を呼ぶ。 */
 
     if (d->kanji_status_return->length >= 0) {
-      prevEcho    = d->kanji_status_return->echoStr;
+      prevEcho = d->kanji_status_return->echoStr;
       prevEchoLen = d->kanji_status_return->length;
-      prevRevPos  = d->kanji_status_return->revPos;
-      prevRevLen  = d->kanji_status_return->revLen;
+      prevRevPos = d->kanji_status_return->revPos;
+      prevRevLen = d->kanji_status_return->revLen;
       if (d->genbuf <= prevEcho && prevEcho < d->genbuf + ROMEBUFSIZE) {
-	/* データは d->genbuf にあるね */
-	if (!malloc_echo &&
-	    !(malloc_echo =
-	      (wchar_t *)malloc(ROMEBUFSIZE * sizeof(wchar_t)))) {
-	  res = -1; /* エラーがもともと返って来たということにする */
-	}
-	else {
-	  prevEcho = malloc_echo;
-	  WStrncpy(prevEcho, d->kanji_status_return->echoStr, prevEchoLen);
-	  prevEcho[prevEchoLen] = (wchar_t)0;
-	  d->kanji_status_return->echoStr = prevEcho;
-	}
+        /* データは d->genbuf にあるね */
+        if (!malloc_echo &&
+            !(malloc_echo = (wchar_t*)malloc(ROMEBUFSIZE * sizeof(wchar_t)))) {
+          res = -1; /* エラーがもともと返って来たということにする */
+        } else {
+          prevEcho = malloc_echo;
+          WStrncpy(prevEcho, d->kanji_status_return->echoStr, prevEchoLen);
+          prevEcho[prevEchoLen] = (wchar_t)0;
+          d->kanji_status_return->echoStr = prevEcho;
+        }
       }
     }
     if (d->kanji_status_return->info & KanjiGLineInfo) {
       ginfo = 1;
-      prevGEcho    = d->kanji_status_return->gline.line;
+      prevGEcho = d->kanji_status_return->gline.line;
       prevGEchoLen = d->kanji_status_return->gline.length;
-      prevGRevPos  = d->kanji_status_return->gline.revPos;
-      prevGRevLen  = d->kanji_status_return->gline.revLen;
+      prevGRevPos = d->kanji_status_return->gline.revPos;
+      prevGRevLen = d->kanji_status_return->gline.revLen;
       if (d->genbuf <= prevGEcho && prevGEcho < d->genbuf + ROMEBUFSIZE) {
-	/* データは d->genbuf にあるね */
-	if (!malloc_gline &&
-	    !(malloc_gline =
-	      (wchar_t *)malloc(ROMEBUFSIZE * sizeof(wchar_t)))) {
-	  res = -1; /* エラーがもともと返って来たということにする */
-	}
-	else {
-	  prevGEcho = malloc_gline;
-	  WStrncpy(prevGEcho, d->kanji_status_return->gline.line,
-		   prevGEchoLen);
-	  prevGEcho[prevGEchoLen] = (wchar_t)0;
-	  d->kanji_status_return->gline.line = prevGEcho;
-	  d->kanji_status_return->info &= ~KanjiGLineInfo;
-	}
+        /* データは d->genbuf にあるね */
+        if (!malloc_gline &&
+            !(malloc_gline = (wchar_t*)malloc(ROMEBUFSIZE * sizeof(wchar_t)))) {
+          res = -1; /* エラーがもともと返って来たということにする */
+        } else {
+          prevGEcho = malloc_gline;
+          WStrncpy(prevGEcho, d->kanji_status_return->gline.line, prevGEchoLen);
+          prevGEcho[prevGEchoLen] = (wchar_t)0;
+          d->kanji_status_return->gline.line = prevGEcho;
+          d->kanji_status_return->info &= ~KanjiGLineInfo;
+        }
       }
     }
     if (res < 0) {
@@ -202,9 +188,9 @@ _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
     prevEcho = d->genbuf;
   }
   d->kanji_status_return->echoStr = prevEcho;
-  d->kanji_status_return->length  = prevEchoLen;
-  d->kanji_status_return->revPos  = prevRevPos;
-  d->kanji_status_return->revLen  = prevRevLen;
+  d->kanji_status_return->length = prevEchoLen;
+  d->kanji_status_return->revPos = prevRevPos;
+  d->kanji_status_return->revLen = prevRevLen;
   if (ginfo) {
     if (malloc_gline) {
       WStrncpy(d->genbuf, prevGEcho, prevGEchoLen);
@@ -212,10 +198,10 @@ _DoFuncSequence(uiContext d, BYTE *keytbl, BYTE key)
       free(malloc_gline); /* 多分 malloc_gline が prevGEcho かも */
       prevGEcho = d->genbuf;
     }
-    d->kanji_status_return->gline.line    = prevGEcho;
-    d->kanji_status_return->gline.length  = prevGEchoLen;
-    d->kanji_status_return->gline.revPos  = prevGRevPos;
-    d->kanji_status_return->gline.revLen  = prevGRevLen;
+    d->kanji_status_return->gline.line = prevGEcho;
+    d->kanji_status_return->gline.length = prevGEchoLen;
+    d->kanji_status_return->gline.revPos = prevGRevPos;
+    d->kanji_status_return->gline.revLen = prevGRevLen;
     d->kanji_status_return->info |= KanjiGLineInfo;
   }
   return total_res;
@@ -232,8 +218,8 @@ int
 multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
 {
   int i;
-  unsigned char *p;
-  struct map *m;
+  unsigned char* p;
+  struct map* m;
 
   if (whattodo != KEY_CALL)
     return 0;
@@ -251,18 +237,20 @@ multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
     d->flags |= MULTI_SEQUENCE_EXECUTED;
     return 0;
   }
-  for (i= 0, p = mode->keytbl; *p != 255; p += 2,i+=2) {
-    debug_message("multiSequenceFunc:\263\254\301\330[%d]\n",i,0,0);
-                                   /* 階層 */
+  for (i = 0, p = mode->keytbl; *p != 255; p += 2, i += 2) {
+    debug_message("multiSequenceFunc:\263\254\301\330[%d]\n", i, 0, 0);
+    /* 階層 */
     if (*p == key) { /* このキーは登録されていた。 */
-      keyHistory =
-	(unsigned char *)realloc(keyHistory, strlen((char *)keyHistory) + strlen((char *)showChar(key)) +2);
+      keyHistory = (unsigned char*)realloc(keyHistory,
+                                           strlen((char*)keyHistory) +
+                                             strlen((char*)showChar(key)) + 2);
       if (keyHistory) {
-	strcat((char *)keyHistory," ");
-	strcat((char *)keyHistory,(char *)showChar(key));
+        strcat((char*)keyHistory, " ");
+        strcat((char*)keyHistory, (char*)showChar(key));
 
-        makeGLineMessageFromString(d, (char *)keyHistory);
-        if (*++p == CANNA_FN_UseOtherKeymap) { /* まだキーシケンスの続きが存在 */
+        makeGLineMessageFromString(d, (char*)keyHistory);
+        if (*++p ==
+            CANNA_FN_UseOtherKeymap) { /* まだキーシケンスの続きが存在 */
           m = mapFromHash(mode, key, NULL);
           m->mode->ftbl = mode->ftbl;
           d->current_mode = m->mode;
@@ -273,16 +261,16 @@ multiSequenceFunc(uiContext d, KanjiMode mode, int whattodo, int key, int fnum)
       GlineClear(d);
       d->current_mode = (KanjiMode)(mode->ftbl); /* 機能を実行 */
       if (*p == CANNA_FN_FuncSequence) {
-	return _DoFuncSequence(d, (unsigned char *)mode, key);
+        return _DoFuncSequence(d, (unsigned char*)mode, key);
       }
       return (*d->current_mode->func)(d, d->current_mode, KEY_CALL, 0, *p);
     }
   }
-  return NothingForGLineWithBeep(d);  /* 登録していないキーを押した */
+  return NothingForGLineWithBeep(d); /* 登録していないキーを押した */
 }
 
 #ifndef wchar_t
-# error "wchar_t is already undefined"
+#error "wchar_t is already undefined"
 #endif
 #undef wchar_t
 /*********************************************************************
