@@ -23,9 +23,12 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 all: kanbe
 
+libcanna:
+	make -C Sources/lib
+	make -C Sources/rk
+
 kanbe: $(OBJS)
 	make -C Sources/lib
 	make -C Sources/rk
 	$(CC) $(OBJS) -l$(LIBS) -o $(INSTALLDIR)kanbe -c $<
-
 
